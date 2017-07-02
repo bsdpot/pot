@@ -11,15 +11,21 @@ JAIL=$1
 shift
 if [ ! -d ${CARTON_JAILS}/${JAIL} -o \
 	! -r ${CARTON_JAILS}/${JAIL}/conf/jail.conf -o \
-	! -r ${CARTON_JAILS}/${JAIL}/conf/mount.conf ]; then
+	! -r ${CARTON_JAILS}/${JAIL}/conf/fs.conf ]; then
 	echo "The jail ${JAIL} doesn't exists or some component is missing"
 	exit
 fi
 
 jail -r ${JAIL}
 
-# TODO: this part has to be reworked
-# unmounting everyhing
+umount_fs() {
+	rev ${CARTON_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
+	umount -t tmpfs tmpfs ${CARTON_JAILS}/${JAIL}/m/tmp
+	while read -r line ; do
+		mount_point=$( echo $line | awk '{ print $2 }')
+		umount $mount_point
+	done < /tmp/fs.conf
+}
+umount_fs
 
-unmount ${CARTON_JAILS}/${JAIL}/m/dev
-# sh ${CARTON_JAILS}/${JAIL}/mount.conf
+umount ${CARTON_JAILS}/${JAIL}/m/dev

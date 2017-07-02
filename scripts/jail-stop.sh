@@ -10,8 +10,8 @@ fi
 JAIL=$1
 shift
 if [ ! -d ${CARTON_JAILS}/${JAIL} -o \
-	! -r ${CARTON_JAILS}/${JAIL}/jail.conf -o \
-	! -r ${CARTON_JAILS}/${JAIL}/mount.conf ]; then
+	! -r ${CARTON_JAILS}/${JAIL}/conf/jail.conf -o \
+	! -r ${CARTON_JAILS}/${JAIL}/conf/mount.conf ]; then
 	echo "The jail ${JAIL} doesn't exists or some component is missing"
 	exit
 fi

@@ -19,8 +19,8 @@ fi
 jail -r ${JAIL}
 
 umount_fs() {
-	rev ${CARTON_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
-	umount -t tmpfs tmpfs ${CARTON_JAILS}/${JAIL}/m/tmp
+	tac ${CARTON_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
+	umount ${CARTON_JAILS}/${JAIL}/m/tmp
 	while read -r line ; do
 		mount_point=$( echo $line | awk '{ print $2 }')
 		umount $mount_point

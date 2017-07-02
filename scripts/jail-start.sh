@@ -31,7 +31,7 @@ mount_fs() {
 		mount_special=$( echo $line | awk '{ print $1 }')
 		mount_point=$( echo $line | awk '{ print $2 }')
 		mount_opt=$( echo $line | awk '{ print $3 }')
-		mount -o ${mount_opt:-rw} $mount_special $mount_point
+		mount_nullfs -o ${mount_opt:-rw} $mount_special $mount_point
 	done < ${CARTON_JAILS}/${JAIL}/conf/fs.conf
 
 	mount -t tmpfs tmpfs ${CJAIL_MOUNTPOINT}/tmp

@@ -16,13 +16,6 @@ if [ ! -d ${CARTON_JAILS}/${JAIL} -o \
 	exit
 fi
 
-# updating the resolv.conf
-
-if [ -d ${CARTON_JAILS}/${JAIL}/etc ]; then
-	cp /etc/resolv.conf ${CARTON_JAILS}/${JAIL}/etc
-else
-	echo "Warning: no 'etc' directory found. resolv.conf not updated"
-fi
 
 CJAIL_MOUNTPOINT=${CARTON_JAILS}/${JAIL}/m/
 
@@ -37,5 +30,13 @@ mount_fs() {
 	mount -t tmpfs tmpfs ${CJAIL_MOUNTPOINT}/tmp
 }
 mount_fs
+
+# updating the resolv.conf
+if [ -d ${CARTON_JAILS}/${JAIL}/etc ]; then
+	cp /etc/resolv.conf ${CARTON_JAILS}/${JAIL}/etc
+else
+	echo "Warning: no 'etc' directory found. resolv.conf backup mode"
+	cp /etc/resolv.conf ${CJAIL_MOUNTPOINT}/etc
+fi
 
 jail -c -f ${CARTON_JAILS}/${JAIL}/conf/jail.conf

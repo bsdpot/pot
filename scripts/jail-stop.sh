@@ -18,6 +18,11 @@ fi
 
 jail -r ${JAIL}
 
+# removing resolv.conf if no etc is found
+if [ -f ${CARTON_JAILS}/${JAIL}/m/etc/resolv.conf ]; then
+	rm ${CARTON_JAILS}/${JAIL}/m/etc/resolv.conf
+fi
+
 umount_fs() {
 	tail -r ${CARTON_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
 	umount ${CARTON_JAILS}/${JAIL}/m/tmp

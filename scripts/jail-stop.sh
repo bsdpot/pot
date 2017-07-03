@@ -23,6 +23,7 @@ umount_fs() {
 	umount ${CARTON_JAILS}/${JAIL}/m/tmp
 	while read -r line ; do
 		mount_point=$( echo $line | awk '{ print $2 }')
+		sleep 2
 		umount $mount_point
 	done < /tmp/fs.conf
 }

@@ -21,12 +21,11 @@ jail -r ${JAIL}
 umount_fs() {
 	tail -r ${CARTON_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
 	umount ${CARTON_JAILS}/${JAIL}/m/tmp
+	umount ${CARTON_JAILS}/${JAIL}/m/dev
 	while read -r line ; do
 		mount_point=$( echo $line | awk '{ print $2 }')
-		sleep 2
 		umount $mount_point
 	done < /tmp/fs.conf
 }
 umount_fs
 
-umount ${CARTON_JAILS}/${JAIL}/m/dev

@@ -32,8 +32,8 @@ mount_fs() {
 mount_fs
 
 # updating the resolv.conf
-if [ -d ${CARTON_JAILS}/${JAIL}/etc ]; then
-	cp /etc/resolv.conf ${CARTON_JAILS}/${JAIL}/etc
+if [ -d ${CARTON_JAILS}/${JAIL}/custom/etc ]; then
+	cp /etc/resolv.conf ${CARTON_JAILS}/${JAIL}/custom/etc
 else
 	echo "Warning: no 'etc' directory found. resolv.conf backup mode"
 	cp /etc/resolv.conf ${CJAIL_MOUNTPOINT}/etc

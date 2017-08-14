@@ -1,0 +1,3 @@
+#!/bin/sh
+
+jexec $1 tcsh

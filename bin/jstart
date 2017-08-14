@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/opt/carton/git/scripts/jail-start.sh $1

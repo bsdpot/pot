@@ -41,11 +41,16 @@ _get_last_zfs_snap()
 {
 	local _dataset _output
 	_dataset=$1
-	if [ -z "$dataset" ]; then
+	if [ -z "$_dataset" ]; then
 		return
 	fi
 	_output="$( zfs list -d 1 -H -t snapshot $_dataset | sort -r | cut -d'@' -f2 | cut -f1)"
-	echo $_output
+	if [ -z "$_output" ]; then
+		return 1 # false
+	else
+		echo ${_output}
+		return 0 # true
+	fi
 }
 
 # $1 the jailname
@@ -69,22 +74,40 @@ create_jail_fs()
 		mkdir -p ${_jaildir}/m
 	fi
 	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/usr.local ; then
-		# TODO check if the specific base exists
-		if ! _is_zfs_dataset _get_last_zfs_snap ${JOCKER_ZFS_BASE}/${_basever} ; then
+		# check if the specific base exists
+		if ! _is_zfs_dataset ${JOCKER_ZFS_BASE}/${_basever} ; then
 			return 1 # false
 		fi
 		# looking for the last snapshot
-		_snap=$( _get_last_zfs_snap ${JOCKER_ZFS_BASE}/${_basever} )
+		_snap=$( _get_last_zfs_snap ${JOCKER_ZFS_BASE}/${_basever}/usr.local )
 		if [ -z "$_snap" ]; then
 			return 1 # false
 		fi
 		zfs clone -o mountpoint=${_jaildir}/usr.local ${JOCKER_ZFS_BASE}/${_basever}/usr.local@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/usr.local
 	fi
-	zfs clone -o mountpoint=${_jaildir}/custom ${JOCKER_ZFS_BASE}/11.1/custom@p1 ${JOCKER_ZFS_JAIL}/${_jailname}/custom
+	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/custom ; then
+		# check if the specific base exists
+		if ! _is_zfs_dataset ${JOCKER_ZFS_BASE}/${_basever} ; then
+			return 1 # false
+		fi
+		# looking for the last snapshot
+		_snap=$( _get_last_zfs_snap ${JOCKER_ZFS_BASE}/${_basever}/custom )
+		if [ -z "$_snap" ]; then
+			return 1 # false
+		fi
+		zfs clone -o mountpoint=${_jaildir}/custom ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/custom
+	fi
 }
 
+main()
+{
 if ! is_zfs_ready ; then
 	echo "The zfs infra is not ready"
 else
 	echo "The zfs infra is fine"
 fi
+
+if create_jail_fs $1 "11.1" ; then
+	echo created jail $1
+fi
+}

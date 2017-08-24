@@ -67,6 +67,7 @@ create_jail_fs()
 		return 1 # false
 	fi
 	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname} ; then
+		echo "Creating zfs dataset: ${JOCKER_ZFS_JAIL}/${_jailname}"
 		zfs create ${JOCKER_ZFS_JAIL}/${_jailname}
 	fi
 	_jaildir=${JOCKER_FS_JAIL}/${_jailname}
@@ -83,6 +84,7 @@ create_jail_fs()
 		if [ -z "$_snap" ]; then
 			return 1 # false
 		fi
+		echo "Cloning zfs snapshot: ${JOCKER_ZFS_BASE}/${_basever}/usr.local@${_snap}"
 		zfs clone -o mountpoint=${_jaildir}/usr.local ${JOCKER_ZFS_BASE}/${_basever}/usr.local@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/usr.local
 	fi
 	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/custom ; then
@@ -95,6 +97,7 @@ create_jail_fs()
 		if [ -z "$_snap" ]; then
 			return 1 # false
 		fi
+		echo "Cloning zfs snapshot: ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap}"
 		zfs clone -o mountpoint=${_jaildir}/custom ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/custom
 	fi
 }

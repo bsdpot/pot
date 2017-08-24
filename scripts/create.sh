@@ -123,7 +123,7 @@ create_jail_conf() {
 	{
 		echo "${_jailname} {"
 		echo "  host.hostname = \"${_jailname}.$( hostname )\";"
-		echo "  path = ${_jaildir}/m"
+		echo "  path = ${_jaildir}/m ;"
 		echo "  oserelease = \"${_basever}-RELEASE\";"
 		echo "  mount.devfs;"
 		echo "  allow.set_hostname;"
@@ -144,17 +144,19 @@ create_jail_conf() {
 
 main()
 {
-if ! is_zfs_ready ; then
-	echo "The zfs infra is not ready"
-else
-	echo "The zfs infra is fine"
-fi
+	if ! is_zfs_ready ; then
+		echo "The zfs infra is not ready"
+	else
+		echo "The zfs infra is fine"
+	fi
 
-if create_jail_fs $1 "11.1" ; then
-	echo created zfs datasets for jail $1
-fi
+	if create_jail_fs $1 "11.1" ; then
+		echo created zfs datasets for jail $1
+	fi
 
-if create_jail_conf $1 "11.1" $2 ; then
-	echo created conf for jail $1 with IP address $2
-fi
+	if create_jail_conf $1 "11.1" $2 ; then
+		echo created conf for jail $1 with IP address $2
+	fi
 }
+
+main $1 $2

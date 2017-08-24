@@ -6,6 +6,7 @@ JOCKER_FS_ROOT=/opt/carton
 # derived entries
 JOCKER_ZFS_BASE=${JOCKER_ZFS_ROOT}/bases
 JOCKER_ZFS_JAIL=${JOCKER_ZFS_ROOT}/jails
+JOCKER_FS_BASE=${JOCKER_FS_ROOT}/bases
 JOCKER_FS_JAIL=${JOCKER_FS_ROOT}/jails
 
 # It check if the root zfs datasets are present
@@ -102,6 +103,45 @@ create_jail_fs()
 	fi
 }
 
+create_jail_conf() {
+	local _jailname _jaildir _basever
+	_jailname=$1
+	_basever=$2
+	_ipaddr=$3
+	if [ -z "${_jailname}" ]; then
+		return 1 # false
+	fi
+	_jaildir=${JOCKER_FS_JAIL}/${_jailname}
+	if [ ! -d ${_jaildir}/conf ]; then
+		mkdir -p ${_jaildir}/conf
+	fi
+	{
+		echo "${JOCKER_FS_BASE}/${_basever} ${_jaildir}/m ro"
+		echo "${_jaildir}/usr.local ${_jaildir}/m/usr/local"
+		echo "${_jaildir}/custom ${_jaildir}/m/custom"
+	} > ${_jaildir}/conf/fs.conf
+	{
+		echo "${_jailname} {"
+		echo "\thost.hostname = \"${_jailname}.$( hostname )\";"
+		echo "\tpath = ${_jaildir}/m"
+		echo "\toserelease = \"${_basever}-RELEASE\";"
+		echo "\tmount.devfs;"
+		echo "\tallow.set_hostname;"
+		echo "\tallow.mount;"
+		echo "\tallow.mount.fdescfs;"
+		echo "\tallow.raw_sockets;"
+		echo "\tallow.socket_af;"
+		echo "\tallow.sysvipc;"
+		echo "\texec.start = \"sh /etc/rc\";"
+		echo "\texec.stop = \"sh /etc/rc.shutdown\";"
+		echo "\tpersist;"
+		echo "\tinterface = lo1;"
+		echo "\tip4.addr = ${_ipaddr};"
+		echo "}"
+	} > ${_jaildir}/conf/jail.conf
+	return 0 # true
+}
+
 main()
 {
 if ! is_zfs_ready ; then
@@ -111,6 +151,10 @@ else
 fi
 
 if create_jail_fs $1 "11.1" ; then
-	echo created jail $1
+	echo created zfs datasets for jail $1
+fi
+
+if create_jail_conf $1 "11.1" $2 ; then
+	echo created conf for jail $1 with IP address $2
 fi
 }

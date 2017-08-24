@@ -124,7 +124,7 @@ create_jail_conf() {
 		echo "${_jailname} {"
 		echo "  host.hostname = \"${_jailname}.$( hostname )\";"
 		echo "  path = ${_jaildir}/m ;"
-		echo "  oserelease = \"${_basever}-RELEASE\";"
+		echo "  osrelease = \"${_basever}-RELEASE\";"
 		echo "  mount.devfs;"
 		echo "  allow.set_hostname;"
 		echo "  allow.mount;"

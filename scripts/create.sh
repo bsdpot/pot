@@ -159,4 +159,54 @@ main()
 	fi
 }
 
+usage()
+{
+	echo "$(basename ${0}) [-h] [-o optio.name] jailname IP-addr"
+	echo '    -h print this help'
+	echo '    -o optionname enable the option optionname'
+	echo '       = appdata create a zfs dataset to support /appdata'
+	echo '    jailname the name of the jail'
+	echo '    IP-addre the IP address of the jail'
+}
+
+args=$( getopt ho: $* )
+
+set -- $args
+
+APPDATA=no
+
+while true; do
+	case "$1" in
+	-h)
+		usage
+		exit 0
+		;;
+	-o)
+		case "$2" in
+		appdata)
+			APPDATA=yes
+			;;
+		*)
+			echo "option $2 not supported"
+			usage
+			exit 1
+			;;
+		esac
+		shift; shift
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		usage
+		exit 1
+	esac
+done
+
+if [ -z "$1" -o -z "$2" ]; then
+	usage
+	exit 1
+fi
+
 main $1 $2

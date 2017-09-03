@@ -8,6 +8,7 @@ JOCKER_ZFS_BASE=${JOCKER_ZFS_ROOT}/bases
 JOCKER_ZFS_JAIL=${JOCKER_ZFS_ROOT}/jails
 JOCKER_FS_BASE=${JOCKER_FS_ROOT}/bases
 JOCKER_FS_JAIL=${JOCKER_FS_ROOT}/jails
+JOCKER_FS_COMP=${JOCKER_FS_ROOT}/fscom
 
 # It check if the root zfs datasets are present
 is_zfs_ready()
@@ -101,6 +102,12 @@ create_jail_fs()
 		echo "Cloning zfs snapshot: ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap}"
 		zfs clone -o mountpoint=${_jaildir}/custom ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/custom
 	fi
+	if [ "$JOCKER_APPDATA" != "no" ]; then
+		if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/appdata ; then
+			# no appdata cloning support yet
+			zfs create -o mountpoint=${_jaildir}/appdata ${JOCKER_ZFS_JAIL}/${_jailname}/appdata
+		fi
+	fi
 }
 
 create_jail_conf() {
@@ -119,6 +126,22 @@ create_jail_conf() {
 		echo "${JOCKER_FS_BASE}/${_basever} ${_jaildir}/m ro"
 		echo "${_jaildir}/usr.local ${_jaildir}/m/usr/local"
 		echo "${_jaildir}/custom ${_jaildir}/m/opt/custom"
+		if [ "${JOCKER_APPDATA}" != "no" ]; then
+			echo "${_jaildir}/appdata ${_jaildir}/m/appdata"
+		fi
+		if [ "${JOCKER_USRPORTS}" != "no" ]; then
+			case "${JOCKER_USRPORTS}" in
+			git)
+				echo "${JOCKER_FS_COMP}/gitport ${_jaildir}/m/usr/ports"
+				;;
+			svn)
+				echo "${JOCKER_FS_COMP}/svnports ${_jaildir}/m/usr/ports"
+				;;
+			esac
+		fi
+		if [ "${JOCKER_DISTFILES}" != "no" ]; then
+			echo "/opt/distfiles ${_jaildir}/m/usr/ports/distfiles"
+		fi
 	} > ${_jaildir}/conf/fs.conf
 	{
 		echo "${_jailname} {"
@@ -161,10 +184,14 @@ main()
 
 usage()
 {
-	echo "$(basename ${0}) [-h] [-o optio.name] jailname IP-addr"
+	echo "$(basename ${0}) [-h] [-o optionname] jailname IP-addr"
+	echo '    [-m distfiles] [-m usrports=[git|svn]]'
 	echo '    -h print this help'
 	echo '    -o optionname enable the option optionname'
 	echo '       = appdata create a zfs dataset to support /appdata'
+	echo '    -m optionname enable the option optionname'
+	echo '       => distfiles=yes '
+	echo '       => usrports=[git|svn] '
 	echo '    jailname the name of the jail'
 	echo '    IP-addre the IP address of the jail'
 }
@@ -173,7 +200,9 @@ args=$( getopt ho: $* )
 
 set -- $args
 
-APPDATA=no
+JOCKER_APPDATA=no
+JOCKER_USRPORTS=no
+JOCKER_DISTFILES=no
 
 while true; do
 	case "$1" in
@@ -184,12 +213,29 @@ while true; do
 	-o)
 		case "$2" in
 		appdata)
-			APPDATA=yes
+			JOCKER_APPDATA=yes
 			;;
 		*)
 			echo "option $2 not supported"
 			usage
 			exit 1
+			;;
+		esac
+		shift; shift
+		;;
+	-m)
+		case "$2" in
+		distfiles)
+			JOCKER_DISTFILES=yes
+			;;
+		usrports=*)
+			JOCKER_USRPORTS="${2##usrports=}"
+			if [ "${JOCKER_USRPORTS}" != git -a \
+			     "${JOCKER_USRPORTS}" != svn ]; then
+				echo "usrports mountpoint $JOCKER_USRPORTS not supported"
+				usage
+				exit 1
+			fi
 			;;
 		esac
 		shift; shift

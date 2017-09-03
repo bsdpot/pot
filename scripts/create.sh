@@ -8,7 +8,7 @@ JOCKER_ZFS_BASE=${JOCKER_ZFS_ROOT}/bases
 JOCKER_ZFS_JAIL=${JOCKER_ZFS_ROOT}/jails
 JOCKER_FS_BASE=${JOCKER_FS_ROOT}/bases
 JOCKER_FS_JAIL=${JOCKER_FS_ROOT}/jails
-JOCKER_FS_COMP=${JOCKER_FS_ROOT}/fscom
+JOCKER_FS_COMP=${JOCKER_FS_ROOT}/fscomp
 
 # It check if the root zfs datasets are present
 is_zfs_ready()
@@ -190,14 +190,18 @@ usage()
 	echo '    -o optionname enable the option optionname'
 	echo '       = appdata create a zfs dataset to support /appdata'
 	echo '    -m optionname enable the option optionname'
-	echo '       => distfiles=yes '
+	echo '       => distfiles '
 	echo '       => usrports=[git|svn] '
 	echo '    jailname the name of the jail'
 	echo '    IP-addre the IP address of the jail'
 }
 
-args=$( getopt ho: $* )
+args=$( getopt ho:m: $* )
 
+if [ $? -ne 0 ]; then
+	usage
+	exit 1
+fi
 set -- $args
 
 JOCKER_APPDATA=no
@@ -236,6 +240,11 @@ while true; do
 				usage
 				exit 1
 			fi
+			;;
+		*)
+			echo "mountpoint option $2 not supported"
+			usage
+			exit 1
 			;;
 		esac
 		shift; shift

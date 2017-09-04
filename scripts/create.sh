@@ -162,6 +162,9 @@ create_jail_conf() {
 		echo "  ip4.addr = ${_ipaddr};"
 		echo "}"
 	} > ${_jaildir}/conf/jail.conf
+	if [ "${JOCKER_DISTFILES}" != "no" ]; then
+		echo "setenv DISTDIR /usr/ports/distfiles" >> "${_jaildir}/custom/root/.cshrc"
+	fi
 	return 0 # true
 }
 

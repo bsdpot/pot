@@ -16,7 +16,7 @@ _is_zfs_dataset()
 	if [ -z "${_dataset}" ]; then
 		return 1 # false
 	fi
-	zfs list -H "${_dataset}" 2>/dev/null
+	zfs list -H "${_dataset}" >/dev/null 2>/dev/null
 	return $?
 }
 
@@ -55,7 +55,7 @@ destroy_zfs_datasets()
 		echo "There is still some snapshot left: $(_get_snapshots ${JOCKER_ZFS_JAIL}/$_jailname)"
 		return 1 # false
 	fi
-	if _is_zfs_dataset JOCKER_ZFS_JAIL ; then
+	if _is_zfs_dataset ${JOCKER_ZFS_JAIL}/$_jailname ; then
 		zfs destroy -vrf ${JOCKER_ZFS_JAIL}/$_jailname
 	fi
 }

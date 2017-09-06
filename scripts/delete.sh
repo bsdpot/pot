@@ -16,7 +16,7 @@ _is_zfs_dataset()
 	if [ -z "${_dataset}" ]; then
 		return 1 # false
 	fi
-	_output="$(zfs get -H mountpoint ${_dataset} 2>/dev/null)"
+	zfs list -H "${_dataset}" 2>/dev/null
 	return $?
 }
 
@@ -25,7 +25,10 @@ _get_snapshots()
 	local _dataset _output
 	_dataset=$1
 	if [ -z "$_dataset" ]; then
-		return
+		return 1 # false
+	fi
+	if _is_zfs_dataset "$_dataset" ; then
+		return 1 # false
 	fi
 	_output="$( zfs list -H -r -t snapshot $_dataset | sort -r | cut -f1)"
 	if [ -z "$_output" ]; then

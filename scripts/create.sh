@@ -1,27 +1,27 @@
 #!/bin/sh
 
-JOCKER_ZFS_ROOT=zroot/carton
-JOCKER_FS_ROOT=/opt/carton
+POT_ZFS_ROOT=zroot/carton
+POT_FS_ROOT=/opt/carton
 
 # derived entries
-JOCKER_ZFS_BASE=${JOCKER_ZFS_ROOT}/bases
-JOCKER_ZFS_JAIL=${JOCKER_ZFS_ROOT}/jails
-JOCKER_FS_BASE=${JOCKER_FS_ROOT}/bases
-JOCKER_FS_JAIL=${JOCKER_FS_ROOT}/jails
-JOCKER_FS_COMP=${JOCKER_FS_ROOT}/fscomp
+POT_ZFS_BASE=${POT_ZFS_ROOT}/bases
+POT_ZFS_JAIL=${POT_ZFS_ROOT}/jails
+POT_FS_BASE=${POT_FS_ROOT}/bases
+POT_FS_JAIL=${POT_FS_ROOT}/jails
+POT_FS_COMP=${POT_FS_ROOT}/fscomp
 
 # It check if the root zfs datasets are present
 is_zfs_ready()
 {
 	local _output
-	for _dataset in ${JOCKER_ZFS_ROOT} ${JOCKER_ZFS_BASE} ${JOCKER_ZFS_JAIL} ; do
+	for _dataset in ${POT_ZFS_ROOT} ${POT_ZFS_BASE} ${POT_ZFS_JAIL} ; do
 		_output="$(zfs get -H mountpoint ${_dataset} 2>/dev/null)"
 		if [ "$?" -ne 0 ]; then
 			echo ${_dataset} not existing \[ $_output \]
 			return 1 # false
 		fi
 	done
-	_output="$(zfs get -H mountpoint ${JOCKER_ZFS_JAIL} 2>/dev/null)"
+	_output="$(zfs get -H mountpoint ${POT_ZFS_JAIL} 2>/dev/null)"
 	if [ "$( echo $_output | awk '{print $3}')" != "none" ]; then
 		echo ${_dataset} has the wrong mountpoint
 		return 1 # false
@@ -68,44 +68,44 @@ create_jail_fs()
 	if ! is_zfs_ready ; then
 		return 1 # false
 	fi
-	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname} ; then
-		echo "Creating zfs dataset: ${JOCKER_ZFS_JAIL}/${_jailname}"
-		zfs create ${JOCKER_ZFS_JAIL}/${_jailname}
+	if ! _is_zfs_dataset ${POT_ZFS_JAIL}/${_jailname} ; then
+		echo "Creating zfs dataset: ${POT_ZFS_JAIL}/${_jailname}"
+		zfs create ${POT_ZFS_JAIL}/${_jailname}
 	fi
-	_jaildir=${JOCKER_FS_JAIL}/${_jailname}
+	_jaildir=${POT_FS_JAIL}/${_jailname}
 	if [ ! -d ${_jaildir} ]; then
 		mkdir -p ${_jaildir}/m
 	fi
-	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/usr.local ; then
+	if ! _is_zfs_dataset ${POT_ZFS_JAIL}/${_jailname}/usr.local ; then
 		# check if the specific base exists
-		if ! _is_zfs_dataset ${JOCKER_ZFS_BASE}/${_basever} ; then
+		if ! _is_zfs_dataset ${POT_ZFS_BASE}/${_basever} ; then
 			return 1 # false
 		fi
 		# looking for the last snapshot
-		_snap=$( _get_last_zfs_snap ${JOCKER_ZFS_BASE}/${_basever}/usr.local )
+		_snap=$( _get_last_zfs_snap ${POT_ZFS_BASE}/${_basever}/usr.local )
 		if [ -z "$_snap" ]; then
 			return 1 # false
 		fi
-		echo "Cloning zfs snapshot: ${JOCKER_ZFS_BASE}/${_basever}/usr.local@${_snap}"
-		zfs clone -o mountpoint=${_jaildir}/usr.local ${JOCKER_ZFS_BASE}/${_basever}/usr.local@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/usr.local
+		echo "Cloning zfs snapshot: ${POT_ZFS_BASE}/${_basever}/usr.local@${_snap}"
+		zfs clone -o mountpoint=${_jaildir}/usr.local ${POT_ZFS_BASE}/${_basever}/usr.local@${_snap} ${POT_ZFS_JAIL}/${_jailname}/usr.local
 	fi
-	if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/custom ; then
+	if ! _is_zfs_dataset ${POT_ZFS_JAIL}/${_jailname}/custom ; then
 		# check if the specific base exists
-		if ! _is_zfs_dataset ${JOCKER_ZFS_BASE}/${_basever} ; then
+		if ! _is_zfs_dataset ${POT_ZFS_BASE}/${_basever} ; then
 			return 1 # false
 		fi
 		# looking for the last snapshot
-		_snap=$( _get_last_zfs_snap ${JOCKER_ZFS_BASE}/${_basever}/custom )
+		_snap=$( _get_last_zfs_snap ${POT_ZFS_BASE}/${_basever}/custom )
 		if [ -z "$_snap" ]; then
 			return 1 # false
 		fi
-		echo "Cloning zfs snapshot: ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap}"
-		zfs clone -o mountpoint=${_jaildir}/custom ${JOCKER_ZFS_BASE}/${_basever}/custom@${_snap} ${JOCKER_ZFS_JAIL}/${_jailname}/custom
+		echo "Cloning zfs snapshot: ${POT_ZFS_BASE}/${_basever}/custom@${_snap}"
+		zfs clone -o mountpoint=${_jaildir}/custom ${POT_ZFS_BASE}/${_basever}/custom@${_snap} ${POT_ZFS_JAIL}/${_jailname}/custom
 	fi
-	if [ "$JOCKER_APPDATA" != "no" ]; then
-		if ! _is_zfs_dataset ${JOCKER_ZFS_JAIL}/${_jailname}/appdata ; then
+	if [ "$POT_APPDATA" != "no" ]; then
+		if ! _is_zfs_dataset ${POT_ZFS_JAIL}/${_jailname}/appdata ; then
 			# no appdata cloning support yet
-			zfs create -o mountpoint=${_jaildir}/appdata ${JOCKER_ZFS_JAIL}/${_jailname}/appdata
+			zfs create -o mountpoint=${_jaildir}/appdata ${POT_ZFS_JAIL}/${_jailname}/appdata
 		fi
 	fi
 }
@@ -118,28 +118,28 @@ create_jail_conf() {
 	if [ -z "${_jailname}" ]; then
 		return 1 # false
 	fi
-	_jaildir=${JOCKER_FS_JAIL}/${_jailname}
+	_jaildir=${POT_FS_JAIL}/${_jailname}
 	if [ ! -d ${_jaildir}/conf ]; then
 		mkdir -p ${_jaildir}/conf
 	fi
 	{
-		echo "${JOCKER_FS_BASE}/${_basever} ${_jaildir}/m ro"
+		echo "${POT_FS_BASE}/${_basever} ${_jaildir}/m ro"
 		echo "${_jaildir}/usr.local ${_jaildir}/m/usr/local"
 		echo "${_jaildir}/custom ${_jaildir}/m/opt/custom"
-		if [ "${JOCKER_APPDATA}" != "no" ]; then
+		if [ "${POT_APPDATA}" != "no" ]; then
 			echo "${_jaildir}/appdata ${_jaildir}/m/appdata"
 		fi
-		if [ "${JOCKER_USRPORTS}" != "no" ]; then
-			case "${JOCKER_USRPORTS}" in
+		if [ "${POT_USRPORTS}" != "no" ]; then
+			case "${POT_USRPORTS}" in
 			git)
-				echo "${JOCKER_FS_COMP}/gitport ${_jaildir}/m/usr/ports"
+				echo "${POT_FS_COMP}/gitport ${_jaildir}/m/usr/ports"
 				;;
 			svn)
-				echo "${JOCKER_FS_COMP}/svnports ${_jaildir}/m/usr/ports"
+				echo "${POT_FS_COMP}/svnports ${_jaildir}/m/usr/ports"
 				;;
 			esac
 		fi
-		if [ "${JOCKER_DISTFILES}" != "no" ]; then
+		if [ "${POT_DISTFILES}" != "no" ]; then
 			echo "/opt/distfiles ${_jaildir}/m/usr/ports/distfiles"
 		fi
 	} > ${_jaildir}/conf/fs.conf
@@ -162,7 +162,7 @@ create_jail_conf() {
 		echo "  ip4.addr = ${_ipaddr};"
 		echo "}"
 	} > ${_jaildir}/conf/jail.conf
-	if [ "${JOCKER_DISTFILES}" != "no" ]; then
+	if [ "${POT_DISTFILES}" != "no" ]; then
 		echo "setenv DISTDIR /usr/ports/distfiles" >> "${_jaildir}/custom/root/.cshrc"
 	fi
 	return 0 # true
@@ -207,9 +207,9 @@ if [ $? -ne 0 ]; then
 fi
 set -- $args
 
-JOCKER_APPDATA=no
-JOCKER_USRPORTS=no
-JOCKER_DISTFILES=no
+POT_APPDATA=no
+POT_USRPORTS=no
+POT_DISTFILES=no
 
 while true; do
 	case "$1" in
@@ -220,7 +220,7 @@ while true; do
 	-o)
 		case "$2" in
 		appdata)
-			JOCKER_APPDATA=yes
+			POT_APPDATA=yes
 			;;
 		*)
 			echo "option $2 not supported"
@@ -233,13 +233,13 @@ while true; do
 	-m)
 		case "$2" in
 		distfiles)
-			JOCKER_DISTFILES=yes
+			POT_DISTFILES=yes
 			;;
 		usrports=*)
-			JOCKER_USRPORTS="${2##usrports=}"
-			if [ "${JOCKER_USRPORTS}" != git -a \
-			     "${JOCKER_USRPORTS}" != svn ]; then
-				echo "usrports mountpoint $JOCKER_USRPORTS not supported"
+			POT_USRPORTS="${2##usrports=}"
+			if [ "${POT_USRPORTS}" != git -a \
+			     "${POT_USRPORTS}" != svn ]; then
+				echo "usrports mountpoint $POT_USRPORTS not supported"
 				usage
 				exit 1
 			fi

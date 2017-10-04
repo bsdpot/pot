@@ -1,13 +1,13 @@
 #!/bin/sh
 
-JOCKER_ZFS_ROOT=zroot/carton
-JOCKER_FS_ROOT=/opt/carton
+POT_ZFS_ROOT=zroot/carton
+POT_FS_ROOT=/opt/carton
 
 # derived entries
-JOCKER_ZFS_BASE=${JOCKER_ZFS_ROOT}/bases
-JOCKER_ZFS_JAIL=${JOCKER_ZFS_ROOT}/jails
-JOCKER_FS_BASE=${JOCKER_FS_ROOT}/bases
-JOCKER_FS_JAIL=${JOCKER_FS_ROOT}/jails
+POT_ZFS_BASE=${POT_ZFS_ROOT}/bases
+POT_ZFS_JAIL=${POT_ZFS_ROOT}/jails
+POT_FS_BASE=${POT_FS_ROOT}/bases
+POT_FS_JAIL=${POT_FS_ROOT}/jails
 
 _is_zfs_dataset()
 {
@@ -47,16 +47,16 @@ destroy_zfs_datasets()
 		return
 	fi
 	# removing all snapshot 
-	for snap in $(_get_snapshots ${JOCKER_ZFS_JAIL}/$_jailname)
+	for snap in $(_get_snapshots ${POT_ZFS_JAIL}/$_jailname)
 	do
 		zfs destroy -d $snap
 	done
-	if [ -n "$(_get_snapshots ${JOCKER_ZFS_JAIL}/$_jailname)" ]; then
-		echo "There is still some snapshot left: $(_get_snapshots ${JOCKER_ZFS_JAIL}/$_jailname)"
+	if [ -n "$(_get_snapshots ${POT_ZFS_JAIL}/$_jailname)" ]; then
+		echo "There is still some snapshot left: $(_get_snapshots ${POT_ZFS_JAIL}/$_jailname)"
 		return 1 # false
 	fi
-	if _is_zfs_dataset ${JOCKER_ZFS_JAIL}/$_jailname ; then
-		zfs destroy -vrf ${JOCKER_ZFS_JAIL}/$_jailname
+	if _is_zfs_dataset ${POT_ZFS_JAIL}/$_jailname ; then
+		zfs destroy -vrf ${POT_ZFS_JAIL}/$_jailname
 	fi
 }
 
@@ -66,7 +66,7 @@ main()
 	destroy_zfs_datasets $1
 
 	# remove all directories
-	rm -rf ${JOCKER_FS_JAIL}/$1
+	rm -rf ${POT_FS_JAIL}/$1
 }
 
 main $1

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-CARTON_ROOT=/opt/carton
-CARTON_JAILS=${CARTON_ROOT}/jails
+POT_ROOT=/opt/carton
+POT_JAILS=${POT_ROOT}/jails
 
 if [ -z "$1" ]; then
 	echo "Please provide a jail name"
@@ -9,9 +9,9 @@ if [ -z "$1" ]; then
 fi
 JAIL=$1
 shift
-if [ ! -d ${CARTON_JAILS}/${JAIL} -o \
-	! -r ${CARTON_JAILS}/${JAIL}/conf/jail.conf -o \
-	! -r ${CARTON_JAILS}/${JAIL}/conf/fs.conf ]; then
+if [ ! -d ${POT_JAILS}/${JAIL} -o \
+	! -r ${POT_JAILS}/${JAIL}/conf/jail.conf -o \
+	! -r ${POT_JAILS}/${JAIL}/conf/fs.conf ]; then
 	echo "The jail ${JAIL} doesn't exists or some component is missing"
 	exit
 fi
@@ -19,8 +19,8 @@ fi
 jail -r ${JAIL}
 
 # removing resolv.conf
-if [ -f ${CARTON_JAILS}/${JAIL}/m/etc/resolv.conf ]; then
-	rm ${CARTON_JAILS}/${JAIL}/m/etc/resolv.conf
+if [ -f ${POT_JAILS}/${JAIL}/m/etc/resolv.conf ]; then
+	rm ${POT_JAILS}/${JAIL}/m/etc/resolv.conf
 fi
 
 _is_mounted() {
@@ -51,9 +51,9 @@ _umount() {
 }
 
 umount_fs() {
-	tail -r ${CARTON_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
-	_umount ${CARTON_JAILS}/${JAIL}/m/tmp
-	_umount ${CARTON_JAILS}/${JAIL}/m/dev
+	tail -r ${POT_JAILS}/${JAIL}/conf/fs.conf > /tmp/fs.conf
+	_umount ${POT_JAILS}/${JAIL}/m/tmp
+	_umount ${POT_JAILS}/${JAIL}/m/dev
 	while read -r line ; do
 		mount_point=$( echo $line | awk '{ print $2 }')
 		_umount $mount_point

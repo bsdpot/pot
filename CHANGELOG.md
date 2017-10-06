@@ -7,5 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unrelease]
 
+### Added
+- Add the central utility called 'pot'
+- Add a central configuration file
+
+
 ### Changed
-- After long time spent on thinking, the project a new nice name, pot.
+- After long time spent on thinking, the project has a new nice name, pot.

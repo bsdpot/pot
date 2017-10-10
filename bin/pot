@@ -63,6 +63,7 @@ Usage: pot command [options]
 
 Commands:
 	help	-- Show help
+	show
 EOF
 }
 
@@ -72,10 +73,15 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 CMD="$1"
+shift
 
 case "${CMD}" in
 	help)
 		usage
+		exit 0
+		;;
+	show)
+		pot-cmd show $@
 		exit 0
 		;;
 	*)

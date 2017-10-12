@@ -28,16 +28,53 @@ _cb_zfs()
 	_mnt="${POT_FS_ROOT}/bases/${_rel}"
 	echo "Create the zfs datasets for base release $_dset"
 	if ! _zfs_exist "${_dset}" "${_mnt}" ; then
-		echo zfs create "$_dset"
+		zfs create "$_dset"
+		[ $? != 0 ] && return 1
 	fi
 
 	if ! _zfs_exist "${_dset}/usr.local" "${_mnt}/usr/local" ; then
-		echo zfs create -o mountpoint "${_mnt}/usr/local" "$_dset/usr.local"
+		zfs create -o mountpoint="${_mnt}/usr/local" "$_dset/usr.local"
+		[ $? != 0 ] && return 1
 	fi
 
 	if ! _zfs_exist "${_dset}/custom" "${_mnt}/opt/custom" ; then
-		echo zfs create -o mountpoint "${_mnt}/opt/custom" "$_dset/custom"
+		zfs create -o mountpoint="${_mnt}/opt/custom" "$_dset/custom"
+		[ $? != 0 ] && return 1
 	fi
+	set -x
+	return 0
+}
+
+_cb_tar_dir()
+{
+	local _rel _dset _mnt
+	_rel=$1
+	_mnt="${POT_FS_ROOT}/bases/${_rel}"
+	(
+		cd $_mnt
+		tar xkf /tmp/${_rel}_base.txz
+		cp -a root opt/custom/
+		cp -a etc opt/custom/
+		cp -a var opt/custom/
+		mkdir opt/custom/usr.local.etc
+		mkdir opt/custom/usr.home
+		# they could be part of flavor
+		mkdir usr/ports
+		mkdir appdata
+
+		# remove duplicated dirs
+		chflags -R noschg var/empty
+		rm -rf etc/ root/ var/
+
+		# create links
+		ln -s opt/custom/etc etc
+		ln -s opt/custom/root root
+		ln -s opt/custom/var var
+		cd usr
+		ln -s ../opt/custom/usr.home home
+		cd local
+		ln -s ../../opt/custom/usr.local.etc
+	)
 }
 
 pot-create-base()
@@ -76,7 +113,11 @@ pot-create-base()
 		exit 1
 	fi
 	# create zfs dataset
-	_cb_zfs "${_FBSD_RELEASE}"
-	# move binaries to the dataset
-	# create ??
+	if ! _cb_zfs "${_FBSD_RELEASE}" ; then
+		echo "zfs dataset of ${_FBSD_RELEASE}-RELEASE failed"
+		exit 1
+	fi
+	# move binaries to the dataset and create linkx
+	_cb_tar_dir "${_FBSD_RELEASE}"
+	# create jail level 0
 }

@@ -8,14 +8,14 @@ pot-init()
 			return 1 # false
 		fi
 		# create the pot root
-		echo zfs create -o mountpoint=${POT_FS_ROOT} -o canmount=off -o compression=lz4 -o atime=off ${POT_ZFS_ROOT}
+		zfs create -o mountpoint=${POT_FS_ROOT} -o canmount=off -o compression=lz4 -o atime=off ${POT_ZFS_ROOT}
 	else
 		echo "${POT_ZFS_ROOT} already present"
 	fi
 
 	# create the root directory
 	if [ ! -d ${POT_FS_ROOT} ]; then
-		echo mkdir -p ${POT_FS_ROOT}
+		mkdir -p ${POT_FS_ROOT}
 		if [ ! -d ${POT_FS_ROOT} ]; then
 			echo "Not able to create the dir ${POT_FS_ROOT}"
 			return 1 # false
@@ -24,26 +24,13 @@ pot-init()
 
 	# create mandatory datasets
 	if ! _zfs_is_dataset "${POT_FS_ROOT}/bases" ; then
-		echo zfs create ${POT_FS_ROOT}/bases
+		zfs create ${POT_FS_ROOT}/bases
 	fi
 	if ! _zfs_is_dataset "${POT_FS_ROOT}/jails" ; then
-		echo zfs create ${POT_FS_ROOT}/jails
+		zfs create ${POT_FS_ROOT}/jails
 	fi
 	if ! _zfs_is_dataset "${POT_FS_ROOT}/fscomp" ; then
-		echo zfs create ${POT_FS_ROOT}/fscomp
+		zfs create ${POT_FS_ROOT}/fscomp
 	fi
 }
-# create the pot root
-
-#zfs create -o mountpoint=/opt/pot -o canmount=off -o compression=lz4 -o atime=off zroot/pot
-
-# create the root directory
-
-#mkdir -p /opt/pot
-
-# create mandatory datasets
-
-#zfs create zroot/pot/bases
-#zfs create zroot/pot/jails
-#zfs create zroot/pot/fscomp
 

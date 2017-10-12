@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add the central utility called 'pot'
 - Add a central configuration file
+- Add a init command, to initialize the zfs layout
+- Add a create-base command, to create a new base
 
 
 ### Changed

@@ -69,6 +69,7 @@ Commands:
 	show
 	init	-- Initialize the ZFS layout
 	create-base	-- Create a new base image
+	create-fscomp -- Create a new fs component
 EOF
 }
 
@@ -87,7 +88,8 @@ case "${CMD}" in
 		;;
 	show|\
 	init|\
-	create-base)
+	create-base|\
+	create-fscomp)
 		pot-cmd "${CMD}" $@
 		exit 0
 		;;

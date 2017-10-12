@@ -23,6 +23,22 @@ _zfs_exist()
 	return 0 ## true
 }
 
+# $1 the dataset name
+_zfs_last_snap()
+{
+	local _dset _output
+	_dset="$1"
+	if [ -z "$_dset" ]; then
+		return 1 # false
+	fi
+	_output="$(zfs list -d 1 -H -t snapshot $_dataset | sort -r | cut -d'@' -f2 | cut -f1)"
+	if [ -z "$d_set" ]; then
+		return 1 # false
+	fi
+	echo "${_output}"
+	return 0 # true
+}
+
 # $1 the element to search
 # $2.. the list
 _is_in_list()

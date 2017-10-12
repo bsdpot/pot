@@ -13,6 +13,7 @@ pot-init()
 		echo "${POT_ZFS_ROOT} already present"
 	fi
 
+	set -x
 	# create the root directory
 	if [ ! -d ${POT_FS_ROOT} ]; then
 		mkdir -p ${POT_FS_ROOT}
@@ -23,14 +24,14 @@ pot-init()
 	fi
 
 	# create mandatory datasets
-	if ! _zfs_is_dataset "${POT_FS_ROOT}/bases" ; then
-		zfs create ${POT_FS_ROOT}/bases
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/bases" ; then
+		zfs create ${POT_ZFS_ROOT}/bases
 	fi
-	if ! _zfs_is_dataset "${POT_FS_ROOT}/jails" ; then
-		zfs create ${POT_FS_ROOT}/jails
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails" ; then
+		zfs create ${POT_ZFS_ROOT}/jails
 	fi
-	if ! _zfs_is_dataset "${POT_FS_ROOT}/fscomp" ; then
-		zfs create ${POT_FS_ROOT}/fscomp
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/fscomp" ; then
+		zfs create ${POT_ZFS_ROOT}/fscomp
 	fi
 }
 

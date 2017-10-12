@@ -23,10 +23,15 @@ pot-init()
 	fi
 
 	# create mandatory datasets
-
-	echo zfs create ${POT_FS_ROOT}/bases
-	echo fzs create ${POT_FS_ROOT}/jails
-	echo zfs create ${POT_FS_ROOT}/fscomp
+	if ! _zfs_is_dataset "${POT_FS_ROOT}/bases" ; then
+		echo zfs create ${POT_FS_ROOT}/bases
+	fi
+	if ! _zfs_is_dataset "${POT_FS_ROOT}/jails" ; then
+		echo zfs create ${POT_FS_ROOT}/jails
+	fi
+	if ! _zfs_is_dataset "${POT_FS_ROOT}/fscomp" ; then
+		echo zfs create ${POT_FS_ROOT}/fscomp
+	fi
 }
 # create the pot root
 

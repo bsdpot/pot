@@ -1,5 +1,6 @@
 #!/bin/sh
 
-pot-create-branch()
+pot-create-base()
 {
+	echo "Create-base"
 }

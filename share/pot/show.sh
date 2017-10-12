@@ -1,4 +1,7 @@
 #!/bin/sh
 
-echo "Show"
-exit 0
+pot-show()
+{
+	echo "Show"
+	exit 0
+}

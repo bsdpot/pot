@@ -33,7 +33,7 @@
 _POT_PATHNAME="$(realpath $0)"
 _POT_PREFIX="$(dirname ${_POT_PATHNAME})"
 _POT_INCLUDE="$( realpath ${_POT_PREFIX}/../share/pot)"
-_POT_ETC="${_POT_PREFIX}/etc"
+_POT_ETC="$( realpath ${_POT_PREFIX}/../etc)"
 
 if [ ! -d ${_POT_INCLUDE} ]; then
 	echo "Fatal error! Not able to find the subroutines dir on ${_POT_PREFIX}!"
@@ -51,6 +51,9 @@ fi
 # loading configuration
 if [ -r $_POT_ETC/pot.default.conf ]; then
 	. $_POT_ETC/pot.default.conf
+else
+	echo "Fatal error! Not able to find default configuration file on $_POT_ETC"
+	exit 1
 fi
 
 if [ -r $_POT_ETC/pot.conf ]; then
@@ -64,6 +67,7 @@ Usage: pot command [options]
 Commands:
 	help	-- Show help
 	show
+	init
 EOF
 }
 
@@ -82,6 +86,10 @@ case "${CMD}" in
 		;;
 	show)
 		pot-cmd show $@
+		exit 0
+		;;
+	init)
+		pot-cmd init $@
 		exit 0
 		;;
 	*)

@@ -79,14 +79,14 @@ _cj_conf()
 		mkdir -p $_jdir/conf
 	fi
 	(
-		if [ $lvl -eq 0 ]; then
-			echo "$_bdir ${jdir}/m"
-			echo "$_bdir/usr.local ${jdir}/m/usr/local"
-			echo "$_bdir/custom ${jdir}/m/opt/custom"
+		if [ $_lvl -eq 0 ]; then
+			echo "$_bdir ${_jdir}/m"
+			echo "$_bdir/usr.local ${_jdir}/m/usr/local"
+			echo "$_bdir/custom ${_jdir}/m/opt/custom"
 		else
-			echo "$_bdir ${jdir}/m ro"
-			echo "$_jdir/usr.local ${jdir}/m/usr/local"
-			echo "$_jdir/custom ${jdir}/m/opt/custom"
+			echo "$_bdir ${_jdir}/m ro"
+			echo "$_jdir/usr.local ${_jdir}/m/usr/local"
+			echo "$_jdir/custom ${_jdir}/m/opt/custom"
 		fi
 	) > $_jdir/conf/fs.conf
 	(
@@ -156,6 +156,9 @@ pot-create-jail()
 		exit 1
 	fi
 	if ! _cj_zfs $_jname 11.1 $_lvl ; then
+		exit 1
+	fi
+	if ! _cj_conf $_jname 11.1 $_ipaddr $_lvl ; then
 		exit 1
 	fi
 }

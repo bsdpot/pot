@@ -67,7 +67,8 @@ Usage: pot command [options]
 Commands:
 	help	-- Show help
 	show
-	init
+	init	-- Initialize the ZFS layout
+	create-base	-- Create a new base image
 EOF
 }
 
@@ -84,12 +85,10 @@ case "${CMD}" in
 		usage
 		exit 0
 		;;
-	show)
-		pot-cmd show $@
-		exit 0
-		;;
-	init)
-		pot-cmd init $@
+	show|\
+	init|\
+	create-base)
+		pot-cmd "${CMD}" $@
 		exit 0
 		;;
 	*)

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # supported releases
-jstart--help()
+jstart-help()
 {
 	echo "pot jstart [-h] [jailname]"
 	echo '  -h print this help'

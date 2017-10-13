@@ -61,7 +61,11 @@ _js_resolv()
 	if [ -d $_jdir/custom/etc ]; then
 		cp /etc/resolv.conf $_jdir/custom/etc
 	else
-		echo "No custom etc directory found, resolv.conf not loaded"
+		if [ -d $_jdir/m/etc ]; then
+			cp /etc/resolv.conf $_jdir/m/etc
+		else
+			echo "No custom etc directory found, resolv.conf not loaded"
+		fi
 	fi
 }
 

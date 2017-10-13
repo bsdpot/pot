@@ -72,6 +72,7 @@ Commands:
 	create-fscomp -- Create a new fs component
 	create-jail -- Create a new jail (pot)
 	jstart -- Start a jail (pot)
+	jstop -- Stop a jail (pot)
 EOF
 }
 
@@ -93,7 +94,8 @@ case "${CMD}" in
 	create-base|\
 	create-fscomp|\
 	create-jail|\
-	jstart)
+	jstart|\
+	jstop)
 		pot-cmd "${CMD}" $@
 		exit 0
 		;;

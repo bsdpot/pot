@@ -81,8 +81,8 @@ _cj_conf()
 	(
 		if [ $_lvl -eq 0 ]; then
 			echo "$_bdir ${_jdir}/m"
-			echo "$_bdir/usr.local ${_jdir}/m/usr/local"
-			echo "$_bdir/custom ${_jdir}/m/opt/custom"
+			echo "$_bdir/usr/local ${_jdir}/m/usr/local"
+			echo "$_bdir/opt/custom ${_jdir}/m/opt/custom"
 		else
 			echo "$_bdir ${_jdir}/m ro"
 			echo "$_jdir/usr.local ${_jdir}/m/usr/local"

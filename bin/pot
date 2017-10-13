@@ -71,6 +71,7 @@ Commands:
 	create-base	-- Create a new base image
 	create-fscomp -- Create a new fs component
 	create-jail -- Create a new jail (pot)
+	jstart -- Start a jail (pot)
 EOF
 }
 

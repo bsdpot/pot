@@ -14,8 +14,11 @@ _js_is_jail()
 	local _jname _jdir
 	_jname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_jname"
-	if [ ! -d $_jdir -o \
-		 _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_jname" ]; then
+	if [ ! -d $_jdir ]; then
+		echo "Jail $_jname not found"
+		return 1 # false
+	fi
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_jname" ]; then
 		echo "Jail $_jname not found"
 		return 1 # false
 	fi
@@ -101,8 +104,8 @@ pot-jstart()
 	if ! _js_is_jail $_jname ; then
 		exit 1
 	fi
-	_js_mount
-	_js_resolv
-	_js_start
+	_js_mount $_jname
+	_js_resolv $_jname
+	_js_start $_jname
 	echo "Start the jail "${_jname}" "
 }

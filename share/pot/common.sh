@@ -44,7 +44,7 @@ _zfs_last_snap()
 _is_in_list()
 {
 	local _e
-	if [ $# -lt 3 ]; then
+	if [ $# -lt 2 ]; then
 		return 1 # false
 	fi
 	_e="$1"
@@ -55,6 +55,33 @@ _is_in_list()
 		fi
 	done
 	return 1 # false
+}
+
+# $1 mountpoint
+_is_mounted()
+{
+	local _mnt_p _mounted
+	_mnt_p=$1
+	if [ -z "$_mnt_p" ]; then
+		return 1 # false
+	fi
+	_mounted=$( mount | grep -F $_mnt_p | awk '{print $3}')
+	for m in $_mounted ; do
+		if [ "$m" = "$_mounted" ]; then
+			return 0 # true
+		fi
+	done
+	return 1 # false
+}
+
+# $1 mountpoint
+_umount()
+{
+	local _mnt_p
+	_mnt_p=$1
+	if _is_mounted "$_mnt_p" ; then
+		umount -f $_mnt_p
+	fi
 }
 
 pot-cmd()

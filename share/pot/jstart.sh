@@ -130,9 +130,11 @@ pot-jstart()
 			;;
 		-s)
 			_snap=normal
+			shift
 			;;
 		-S)
 			_snap=full
+			shift
 			;;
 		--)
 			shift
@@ -152,12 +154,12 @@ pot-jstart()
 	if ! _js_is_jail $_jname ; then
 		exit 1
 	fi
-	case _snap in
+	case $_snap in
 		normal)
-			_js_snap
+			_js_snap $_jname
 			;;
 		full)
-			_js_full
+			_js_snap_full $_jname
 			;;
 		none|*)
 			;;

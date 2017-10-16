@@ -1,7 +1,18 @@
 #!/bin/sh
 
+init-help()
+{
+	echo 'pot init [-h]'
+	echo '  -h -- print this help'
+}
+
+
 pot-init()
 {
+	if [ "$1" = "-h" ]; then
+		init-help
+		exit 0
+	fi
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
 		if _zfs_is_dataset "${POT_ZFS_ROOT}" ; then
 			echo "${POT_ZFS_ROOT} is an invalid POT root"

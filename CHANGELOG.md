@@ -12,7 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a central configuration file
 - Add a init command, to initialize the zfs layout
 - Add a create-base command, to create a new base
-
+- Add a create-fscomp command, to create a new base
+- Add a create-jail command, to create a new base
+- Add a jstart command, to start a pot
+- Add a jstop command, to stop a pot
+- Add an to jstart, to take a snapshot of the pot before the start
 
 ### Changed
 - After long time spent on thinking, the project has a new nice name, pot.

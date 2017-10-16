@@ -5,6 +5,12 @@ jstart-help()
 {
 	echo "pot jstart [-h] [jailname]"
 	echo '  -h print this help'
+	echo '  -s take a snapshot before to start'
+	echo '     snapshots are identified by the epoch'
+	echo '     all zfs datasets under the jail dataset are considered'
+	echo '  -S take a snapshot before to start'
+	echo '     snapshots are identified by the epoch'
+	echo '     all zfs datasets mounted in rw are considered (full)'
 	echo '  jailname : the jail that has to start'
 }
 
@@ -30,6 +36,37 @@ _js_is_jail()
 		return 1 # false
 	fi
 	return 0
+}
+
+# $1 jail name
+_js_snap()
+{
+	local _jname _node _opt _snaptag _dset
+	_jname=$1
+	_snaptag="$(date +%s)"
+	echo "Take snapshot of $_jname"
+	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_jname}@${_snaptag}
+}
+
+# $1 jail name
+_js_snap_full()
+{
+	local _jname _node _opt _snaptag _dset
+	_jname=$1
+	_snaptag="$(date +%s)"
+	echo "Take snapshot of the full $_jname"
+	while read -r line ; do
+		_node=$( echo $line | awk '{print $1}' )
+		_opt=$( echo $line | awk '{print $3}' )
+		if [ "$_opt" = "ro" ]; then
+			continue
+		fi
+		_dset=$( zfs list -H $_node | awk '{print $1}' )
+		if [ -n "$_dset" ]; then
+			echo "==> snapshot of $_dset"
+			zfs snapshot ${_dset}@${_snaptag}
+		fi
+	done < ${POT_FS_ROOT}/jails/$_jname/conf/fs.conf
 }
 
 # $1 jail name
@@ -80,8 +117,9 @@ _js_start()
 
 pot-jstart()
 {
-	local _jname
-	args=$(getopt h $*)
+	local _jname _snap
+	_snap=none
+	args=$(getopt hsS $*)
 
 	set -- $args
 	while true; do
@@ -89,6 +127,12 @@ pot-jstart()
 		-h)
 			jstart-help
 			exit 0
+			;;
+		-s)
+			_snap=normal
+			;;
+		-S)
+			_snap=full
 			;;
 		--)
 			shift
@@ -108,6 +152,16 @@ pot-jstart()
 	if ! _js_is_jail $_jname ; then
 		exit 1
 	fi
+	case _snap in
+		normal)
+			_js_snap
+			;;
+		full)
+			_js_full
+			;;
+		none|*)
+			;;
+	esac
 	_js_mount $_jname
 	_js_resolv $_jname
 	_js_start $_jname

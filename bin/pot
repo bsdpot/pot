@@ -86,7 +86,7 @@ shift
 
 case "${CMD}" in
 	help)
-		if [ -n "$@" ]; then
+		if [ -n "$1" ]; then
 			pot-cmd "${CMD}" $@
 			exit 0
 		else

@@ -86,8 +86,13 @@ shift
 
 case "${CMD}" in
 	help)
-		usage
-		exit 0
+		if [ -n "$@" ]; then
+			pot-cmd "${CMD}" $@
+			exit 0
+		else
+			usage
+			exit 0
+		fi
 		;;
 	show|\
 	init|\

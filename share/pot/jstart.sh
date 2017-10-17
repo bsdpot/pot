@@ -93,7 +93,7 @@ _js_resolv()
 	_jdir="${POT_FS_ROOT}/jails/$_jname"
 	if [ ! -r /etc/resolv.conf ]; then
 		echo "No resolv.conf found in /etc"
-		return
+		return 1 # false
 	fi
 	if [ -d $_jdir/custom/etc ]; then
 		cp /etc/resolv.conf $_jdir/custom/etc
@@ -104,6 +104,7 @@ _js_resolv()
 			echo "No custom etc directory found, resolv.conf not loaded"
 		fi
 	fi
+	return 0
 }
 
 # $1 jail name
@@ -164,8 +165,16 @@ pot-jstart()
 		none|*)
 			;;
 	esac
-	_js_mount $_jname
+	if ! _js_mount $_jname ; then
+		echo "Mount failed"
+		exit 1
+	fi
 	_js_resolv $_jname
-	_js_start $_jname
-	echo "Start the jail "${_jname}" "
+	if ! _js_start $_jname ; then
+		echo "$_jname failed to start"
+		exit 1
+	else
+		echo "Start the jail "${_jname}" "
+		exit 0
+	fi
 }

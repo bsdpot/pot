@@ -1,5 +1,47 @@
 #!/bin/sh
 
+__POT_MSG_ERR=0
+__POT_MSG_INFO=1
+__POT_MSG_DBG=2
+# $1 severity
+_msg()
+{
+	local _sev
+	_sev=$1
+	shift
+	if [ $_sev -gt $_POT_VERBOSITY ]; then
+		return
+	fi
+	case $_sev in
+		$__POT_MSG_ERR)
+			echo "###> " $*
+			;;
+		$__POT_MSG_INFO)
+			echo "===> " $*
+			;;
+		$__POT_MSG_DBG)
+			echo "=====> " $*
+			;;
+		*)
+			;;
+	esac
+}
+
+_error()
+{
+	_msg $__POT_MSG_ERR $*
+}
+
+_info()
+{
+	_msg $__POT_MSG_INFO $*
+}
+
+_debug()
+{
+	_msg $__POT_MSG_DBG $*
+}
+
 # check if the dataset $1 exists
 # $1 the dataset NAME
 _zfs_is_dataset()
@@ -32,7 +74,7 @@ _pot_zfs_snap()
 	local _pname _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
-	echo "Take snapshot of $_pname"
+	_info "Take snapshot of $_pname"
 	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}
 }
 
@@ -43,7 +85,7 @@ _pot_zfs_snap_full()
 	local _pname _node _opt _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
-	echo "Take snapshot of the full $_pname"
+	_info "Take snapshot of the full $_pname"
 	while read -r line ; do
 		_node=$( echo $line | awk '{print $1}' )
 		_opt=$( echo $line | awk '{print $3}' )
@@ -52,7 +94,7 @@ _pot_zfs_snap_full()
 		fi
 		_dset=$( zfs list -H $_node | awk '{print $1}' )
 		if [ -n "$_dset" ]; then
-			echo "==> snapshot of $_dset"
+			_debug "snapshot of $_dset"
 			zfs snapshot ${_dset}@${_snaptag}
 		fi
 	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
@@ -125,7 +167,7 @@ pot-cmd()
 	_cmd=$1
 	shift
 	if [ ! -r "${_POT_INCLUDE}/${_cmd}.sh" ]; then
-		echo "Fatal error! $_cmd implementation not found!"
+		_error "Fatal error! $_cmd implementation not found!"
 		exit 1
 	fi
 	. ${_POT_INCLUDE}/${_cmd}.sh

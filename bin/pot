@@ -77,7 +77,7 @@ EOF
 }
 
 # variable initialization
-_POT_VERBOSITY=0
+_POT_VERBOSITY=1
 
 # parsing command line subcommand
 if [ $# -lt 1 ]; then
@@ -112,7 +112,4 @@ case "${CMD}" in
 		exit 1
 		;;
 esac
-
-	
-
 

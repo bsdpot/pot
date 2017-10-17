@@ -52,7 +52,7 @@ fi
 if [ -r $_POT_ETC/pot.default.conf ]; then
 	. $_POT_ETC/pot.default.conf
 else
-	echo "Fatal error! Not able to find default configuration file on $_POT_ETC"
+	_error "Fatal error! Not able to find default configuration file on $_POT_ETC"
 	exit 1
 fi
 
@@ -75,6 +75,9 @@ Commands:
 	jstop -- Stop a jail (pot)
 EOF
 }
+
+# variable initialization
+_POT_VERBOSITY=0
 
 # parsing command line subcommand
 if [ $# -lt 1 ]; then

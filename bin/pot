@@ -73,6 +73,7 @@ Commands:
 	create-jail -- Create a new jail (pot)
 	jstart -- Start a jail (pot)
 	jstop -- Stop a jail (pot)
+	snapshot -- Take a snapshot of a pot
 EOF
 }
 

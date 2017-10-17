@@ -5,6 +5,7 @@ jstop-help()
 {
 	echo "pot jstop [-h] [jailname]"
 	echo '  -h print this help'
+	echo '  -v verbose'
 	echo '  jailname : the jail that has to start'
 }
 
@@ -39,7 +40,7 @@ _js_umount()
 	_jname=$1
 	_tmpfile=$(mktemp -t ${_jname}.XXXXXX)
 	if [ $? -ne 0 ]; then
-		echo "not able to create temporary file - umount failed"
+		_error "not able to create temporary file - umount failed"
 		return 1 # false
 	fi
 	_jdir="${POT_FS_ROOT}/jails/$_jname"
@@ -78,6 +79,10 @@ pot-jstop()
 			jstop-help
 			exit 0
 			;;
+		-v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
+			;;
 		--)
 			shift
 			break
@@ -89,12 +94,12 @@ pot-jstop()
 	done
 	_jname=$1
 	if [ -z "$_jname" ]; then
-		echo "A jail name is mandatory"
+		_error "A jail name is mandatory"
 		jstop-help
 		exit 1
 	fi
 	if ! _js_stop $_jname ; then
-		echo "Stop the jail $_jname failed"
+		_error "Stop the jail $_jname failed"
 		exit 1
 	fi
 	_js_rm_resolv $_jname

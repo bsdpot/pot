@@ -5,6 +5,7 @@ jstart-help()
 {
 	echo "pot jstart [-h] [jailname]"
 	echo '  -h print this help'
+	echo '  -v verbose'
 	echo '  -s take a snapshot before to start'
 	echo '     snapshots are identified by the epoch'
 	echo '     all zfs datasets under the jail dataset are considered'
@@ -21,18 +22,18 @@ _js_is_jail()
 	_jname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_jname"
 	if [ ! -d $_jdir ]; then
-		echo "Jail $_jname not found"
+		_error "Jail $_jname not found"
 		return 1 # false
 	fi
 	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_jname" ]; then
-		echo "Jail $_jname not found"
+		_error "Jail $_jname not found"
 		return 1 # false
 	fi
 
 	if [ ! -d $_jdir/m -o \
 		 ! -r $_jdir/conf/jail.conf -o \
 		 ! -r $_jdir/conf/fs.conf ]; then
-		echo "Some component of the jail $_jname is missing"
+		_error "Some component of the jail $_jname is missing"
 		return 1 # false
 	fi
 	return 0
@@ -92,7 +93,7 @@ _js_resolv()
 	_jname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_jname"
 	if [ ! -r /etc/resolv.conf ]; then
-		echo "No resolv.conf found in /etc"
+		_error "No resolv.conf found in /etc"
 		return 1 # false
 	fi
 	if [ -d $_jdir/custom/etc ]; then
@@ -101,7 +102,7 @@ _js_resolv()
 		if [ -d $_jdir/m/etc ]; then
 			cp /etc/resolv.conf $_jdir/m/etc
 		else
-			echo "No custom etc directory found, resolv.conf not loaded"
+			_info "No custom etc directory found, resolv.conf not loaded"
 		fi
 	fi
 	return 0
@@ -129,6 +130,10 @@ pot-jstart()
 			jstart-help
 			exit 0
 			;;
+		-v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
+			;;
 		-s)
 			_snap=normal
 			shift
@@ -148,7 +153,7 @@ pot-jstart()
 	done
 	_jname=$1
 	if [ -z "$_jname" ]; then
-		echo "A jail name is mandatory"
+		_error "A jail name is mandatory"
 		jstart-help
 		exit 1
 	fi
@@ -166,15 +171,15 @@ pot-jstart()
 			;;
 	esac
 	if ! _js_mount $_jname ; then
-		echo "Mount failed"
+		_error "Mount failed"
 		exit 1
 	fi
 	_js_resolv $_jname
 	if ! _js_start $_jname ; then
-		echo "$_jname failed to start"
+		_error "$_jname failed to start"
 		exit 1
 	else
-		echo "Start the jail "${_jname}" "
+		_info "Start the jail "${_jname}" "
 		exit 0
 	fi
 }

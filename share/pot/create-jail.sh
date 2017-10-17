@@ -4,6 +4,7 @@ create-jail-help()
 {
 	echo "pot create-jail [-h] -j jailname [-i ipaddr] [-l lvl]"
 	echo '  -h print this help'
+	echo '  -v verbose'
 	echo '  -j jailname : the jail name (mandatory)'
 	echo '  -i ipaddr : an ip address'
 	echo '  -l lvl : jail level'
@@ -23,7 +24,7 @@ _cj_zfs()
 	if ! _zfs_is_dataset $_jdset ; then
 		zfs create $_jdset
 	else
-		echo "$_jdset exists already"
+		_info "$_jdset exists already"
 	fi
 	# Create the root mountpoint
 	if [ ! -d "${POT_FS_ROOT}/jails/$_jname/m" ]; then
@@ -37,27 +38,27 @@ _cj_zfs()
 	if ! _zfs_is_dataset $_jdset/usr.local ; then
 		_snap=$(_zfs_last_snap ${POT_ZFS_ROOT}/bases/$_base/usr.local)
 		if [ -n "$_snap" ]; then
-			echo "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap"
+			_debug "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap"
 			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_jname/usr.local ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap $_jdset/usr.local
 		else
-			echo "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/usr.local"
+			_error "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/usr.local"
 			return 1 # false
 		fi
 	else
-		echo "$_jdset/usr.local exists already"
+		_info "$_jdset/usr.local exists already"
 	fi
 	# Clone the custom dataset
 	if ! _zfs_is_dataset $_jdset/custom ; then
 		_snap=$(_zfs_last_snap ${POT_ZFS_ROOT}/bases/$_base/custom)
 		if [ -n "$_snap" ]; then
-			echo "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/custom@$_snap"
+			_debug "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/custom@$_snap"
 			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_jname/custom ${POT_ZFS_ROOT}/bases/$_base/custom@$_snap $_jdset/custom
 		else
-			echo "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/custom"
+			_error "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/custom"
 			return 1 # false
 		fi
 	else
-		echo "$_jdset/custom exists already"
+		_info "$_jdset/custom exists already"
 	fi
 	return 0 # true
 }
@@ -128,6 +129,10 @@ pot-create-jail()
 			create-jail-help
 			exit 0
 			;;
+		-v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
+			;;
 		-j)
 			_jname=$2
 			shift 2
@@ -151,7 +156,7 @@ pot-create-jail()
 	done
 
 	if [ -z "$_jname" ]; then
-		echo "jail name is missing"
+		_error "jail name is missing"
 		create-jail-help
 		exit 1
 	fi

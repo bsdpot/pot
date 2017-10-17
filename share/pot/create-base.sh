@@ -6,6 +6,7 @@ create-base-help()
 {
 	echo "pot create-base [-h] [-r RELEASE]"
 	echo '  -h print this help'
+	echo '  -v verbose'
 	echo '  -r RELEASE : supported release are:'"${_POT_RELEASES}"
 }
 
@@ -26,7 +27,7 @@ _cb_zfs()
 	_rel=$1
 	_dset="${POT_ZFS_ROOT}/bases/${_rel}"
 	_mnt="${POT_FS_ROOT}/bases/${_rel}"
-	echo "Create the zfs datasets for base release $_dset"
+	_info "Create the zfs datasets for base release $_dset"
 	if ! _zfs_exist "${_dset}" "${_mnt}" ; then
 		zfs create "$_dset"
 		[ $? != 0 ] && return 1
@@ -41,7 +42,6 @@ _cb_zfs()
 		zfs create -o mountpoint="${_mnt}/opt/custom" "$_dset/custom"
 		[ $? != 0 ] && return 1
 	fi
-	set -x
 	return 0
 }
 
@@ -79,7 +79,7 @@ _cb_tar_dir()
 
 pot-create-base()
 {
-	args=$(getopt hr: $*)
+	args=$(getopt hr:v $*)
 
 	set -- $args
 	while true; do
@@ -90,11 +90,15 @@ pot-create-base()
 			;;
 		-r)
 			if ! _is_in_list $2 $_POT_RELEASES ; then
-				echo "$2 is not a supported release"
+				_error "$2 is not a supported release"
 				exit 1
 			fi
 			_FBSD_RELEASE=$2
 			shift 2
+			;;
+		-v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
 			;;
 		--)
 			shift
@@ -106,15 +110,15 @@ pot-create-base()
 		esac
 	done
 
-	echo "Create a base with release "${_FBSD_RELEASE}" "
+	_info "Create a base with release "${_FBSD_RELEASE}" "
 	# fetch binaries
 	if ! _cb_fetch "${_FBSD_RELEASE}" ; then
-		echo "fetch of ${_FBSD_RELEASE}-RELEASE failed"
+		_error "fetch of ${_FBSD_RELEASE}-RELEASE failed"
 		exit 1
 	fi
 	# create zfs dataset
 	if ! _cb_zfs "${_FBSD_RELEASE}" ; then
-		echo "zfs dataset of ${_FBSD_RELEASE}-RELEASE failed"
+		_error "zfs dataset of ${_FBSD_RELEASE}-RELEASE failed"
 		exit 1
 	fi
 	# move binaries to the dataset and create linkx

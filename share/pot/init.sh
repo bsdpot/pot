@@ -4,24 +4,43 @@ init-help()
 {
 	echo 'pot init [-h]'
 	echo '  -h -- print this help'
+	echo '  -v verbose'
 }
 
 
 pot-init()
 {
-	if [ "$1" = "-h" ]; then
-		init-help
-		exit 0
-	fi
+	args=$(getopt hr:v $*)
+	set -- $args
+	while true; do
+		case "$1" in
+		-h)
+			init-help
+			exit 0
+			;;
+		-v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		*)
+			init-help
+			exit 1
+		esac
+	done
+
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
 		if _zfs_is_dataset "${POT_ZFS_ROOT}" ; then
-			echo "${POT_ZFS_ROOT} is an invalid POT root"
+			_error "${POT_ZFS_ROOT} is an invalid POT root"
 			return 1 # false
 		fi
 		# create the pot root
 		zfs create -o mountpoint=${POT_FS_ROOT} -o canmount=off -o compression=lz4 -o atime=off ${POT_ZFS_ROOT}
 	else
-		echo "${POT_ZFS_ROOT} already present"
+		_info "${POT_ZFS_ROOT} already present"
 	fi
 
 	set -x
@@ -29,7 +48,7 @@ pot-init()
 	if [ ! -d ${POT_FS_ROOT} ]; then
 		mkdir -p ${POT_FS_ROOT}
 		if [ ! -d ${POT_FS_ROOT} ]; then
-			echo "Not able to create the dir ${POT_FS_ROOT}"
+			_error "Not able to create the dir ${POT_FS_ROOT}"
 			return 1 # false
 		fi
 	fi

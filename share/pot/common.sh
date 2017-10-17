@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# check if the dataset $1 exists
 # $1 the dataset NAME
 _zfs_is_dataset()
 {
@@ -8,6 +9,7 @@ _zfs_is_dataset()
 	return $?
 }
 
+# check if the dataset $1 with the mountpoint $2 exists
 # $1 the dataset NAME
 # $2 the mountpoint
 _zfs_exist()
@@ -21,6 +23,39 @@ _zfs_exist()
 		return 1 ## false
 	fi
 	return 0 ## true
+}
+
+# take a zfs recursive snapshot of a pot
+# $1 pot name
+_pot_zfs_snap()
+{
+	local _pname _snaptag _dset
+	_pname=$1
+	_snaptag="$(date +%s)"
+	echo "Take snapshot of $_pname"
+	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}
+}
+
+# take a zfs snapshot of all rw dataset found in the fs.conf of a pot
+# $1 jail name
+_pot_zfs_snap_full()
+{
+	local _pname _node _opt _snaptag _dset
+	_pname=$1
+	_snaptag="$(date +%s)"
+	echo "Take snapshot of the full $_pname"
+	while read -r line ; do
+		_node=$( echo $line | awk '{print $1}' )
+		_opt=$( echo $line | awk '{print $3}' )
+		if [ "$_opt" = "ro" ]; then
+			continue
+		fi
+		_dset=$( zfs list -H $_node | awk '{print $1}' )
+		if [ -n "$_dset" ]; then
+			echo "==> snapshot of $_dset"
+			zfs snapshot ${_dset}@${_snaptag}
+		fi
+	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
 }
 
 # $1 the dataset name

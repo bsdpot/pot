@@ -2,10 +2,11 @@
 
 create-jail-help()
 {
-	echo "pot create-jail [-h] -j jailname [-i ipaddr] [-l lvl]"
+	echo "pot create-jail [-h] -j jailname -b base [-i ipaddr] [-l lvl]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -j jailname : the jail name (mandatory)'
+	echo '  -b base : the base pot (mandatory)'
 	echo '  -i ipaddr : an ip address'
 	echo '  -l lvl : jail level'
 }
@@ -117,11 +118,12 @@ _cj_conf()
 
 pot-create-jail()
 {
-	local _jname _ipaddr _lvl
+	local _jname _ipaddr _lvl _base
 	_jname=
+	_base=
 	_ipaddr=inherit
 	_lvl=1
-	args=$(getopt hj:i:l: $*)
+	args=$(getopt hvj:i:l:b: $*)
 	set -- $args
 	while true; do
 		case "$1" in
@@ -145,6 +147,11 @@ pot-create-jail()
 			_lvl=$2
 			shift 2
 			;;
+		-b)
+			_base=$2
+			# TODO: parameter validtion
+			shift 2
+			;;
 		--)
 			shift
 			break
@@ -160,10 +167,10 @@ pot-create-jail()
 		create-jail-help
 		exit 1
 	fi
-	if ! _cj_zfs $_jname 11.1 $_lvl ; then
+	if ! _cj_zfs $_jname $_base $_lvl ; then
 		exit 1
 	fi
-	if ! _cj_conf $_jname 11.1 $_ipaddr $_lvl ; then
+	if ! _cj_conf $_jname $_base $_ipaddr $_lvl ; then
 		exit 1
 	fi
 }

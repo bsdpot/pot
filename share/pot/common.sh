@@ -108,8 +108,8 @@ _zfs_last_snap()
 	if [ -z "$_dset" ]; then
 		return 1 # false
 	fi
-	_output="$(zfs list -d 1 -H -t snapshot $_dataset | sort -r | cut -d'@' -f2 | cut -f1)"
-	if [ -z "$d_set" ]; then
+	_output="$(zfs list -d 1 -H -t snapshot $_dset | sort -r | cut -d'@' -f2 | cut -f1 | head -n1)"
+	if [ -z "$_output" ]; then
 		return 1 # false
 	fi
 	echo "${_output}"

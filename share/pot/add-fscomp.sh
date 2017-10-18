@@ -20,9 +20,8 @@ _add_f_to_p()
 	_fscomp="$1"
 	_pname="$2"
 	_mnt_p="$3"
-	_pdir=$_POT_FS_ROOT/jails/$_pname
-	echo "$_POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
-
+	_pdir=$POT_FS_ROOT/jails/$_pname
+	echo "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
 }
 
 pot-add-fscomp()
@@ -74,8 +73,8 @@ pot-add-fscomp()
 		add-fscomp-help
 		exit 1
 	fi
-	if ! _zfs_is_dataset $_POT_FS_ROOT/fscomp/$_fscomp ; then
-		_error "fscompt $_fscomp is not valid"
+	if ! _zfs_is_dataset $POT_ZFS_ROOT/fscomp/$_fscomp ; then
+		_error "fscomp $_fscomp is not valid"
 		add-fscomp-help
 		exit 1
 	fi

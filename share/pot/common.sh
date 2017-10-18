@@ -116,6 +116,30 @@ _zfs_last_snap()
 	return 0 # true
 }
 
+# $1 pot name
+_is_pot()
+{
+	local _pname _pdir
+	_pname="$1"
+	_pdir="${POT_FS_ROOT}/jails/$_pname"
+	if [ ! -d $_pdir ]; then
+		_error "Jail $_pname not found"
+		return 1 # false
+	fi
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ]; then
+		_error "Jail $_pname not found"
+		return 1 # false
+	fi
+
+	if [ ! -d $_pdir/m -o \
+		 ! -r $_pdir/conf/jail.conf -o \
+		 ! -r $_pdir/conf/fs.conf ]; then
+		_error "Some component of the jail $_pname is missing"
+		return 1 # false
+	fi
+	return 0
+}
+
 # $1 the element to search
 # $2.. the list
 _is_in_list()

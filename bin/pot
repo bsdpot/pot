@@ -67,6 +67,7 @@ Usage: pot command [options]
 Commands:
 	help	-- Show help
 	show
+	list	-- List of the installed pots
 	init	-- Initialize the ZFS layout
 	create-base	-- Create a new base image
 	create-fscomp -- Create a new fs component
@@ -100,6 +101,7 @@ case "${CMD}" in
 		fi
 		;;
 	show|\
+	list|\
 	init|\
 	create-base|\
 	create-fscomp|\

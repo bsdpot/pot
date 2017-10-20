@@ -3,9 +3,10 @@
 # supported releases
 list-help()
 {
-	echo "pot list [-hv]"
+	echo "pot list [-hvb]"
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -b list bases instead of pots'
 }
 
 # $1 jail name
@@ -35,21 +36,35 @@ _ls_info_pot()
 	echo
 }
 
-# $1 pot name
 _ls_pots()
 {
 	local _jdir _pots
 	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( find /opt/pot/jails -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$( find $_jdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
 		_ls_info_pot $_p
 	done
 }
 
+_ls_bases()
+{
+	local _bdir _bases
+	_bdir="${POT_FS_ROOT}/bases/"
+	_bases=$( find $_bdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	for _b in $_bases; do
+		 echo "bases: $_b"
+	done
+}
+
 pot-list()
 {
-	args=$(getopt hv $*)
-
+	local _obj
+	_obj="pots"
+	args=$(getopt hvb $*)
+	if [ $? -ne 0 ]; then
+		list-help
+		exit 1
+	fi
 	set -- $args
 	while true; do
 		case "$1" in
@@ -61,14 +76,22 @@ pot-list()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
+		-b)
+			_obj="bases"
+			shift
+			;;
 		--)
 			shift
 			break
 			;;
-		*)
-			list-help
-			exit 1
 		esac
 	done
-	_ls_pots
+	case $_obj in
+		"pots")
+			_ls_pots
+			;;
+		"bases")
+			_ls_bases
+			;;
+	esac
 }

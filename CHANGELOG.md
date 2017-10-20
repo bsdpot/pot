@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unrelease]
+### Added
+- Add option -b to list, to list available bases
 
 ### Changed
 - Remove jail references and use pot instead (not in zfs)

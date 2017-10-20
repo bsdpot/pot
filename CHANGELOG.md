@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a jstop command, to stop a pot
 - Add an to jstart, to take a snapshot of the pot before the start
 - Add a help command, to show subcommand helps
+- Add a list command, to list of pots
 
 ### Changed
 - After long time spent on thinking, the project has a new nice name, pot.

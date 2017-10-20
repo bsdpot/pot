@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unrelease]
 
+## [0.0.1-alpha] -2017-10-20
 ### Added
 - Add the central utility called 'pot'
 - Add a central configuration file

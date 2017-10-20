@@ -1,21 +1,21 @@
 #!/bin/sh
 
 # supported releases
-jstop-help()
+stop-help()
 {
-	echo "pot jstop [-h] [jailname]"
+	echo "pot stop [-h] [potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  jailname : the jail that has to start'
+	echo '  potname : the jail that has to start'
 }
 
 # $1 jail name
 _js_is_running()
 {
-	local _jname _jlist
-	_jname="$1"
+	local _pname _jlist
+	_pname="$1"
 	_jlist="$(jls -N | sed 1d | awk '{print $1}')"
-	if _is_in_list $_jname $_jlist ; then
+	if _is_in_list $_pname $_jlist ; then
 		return 0 # true
 	fi
 	return 1 # false
@@ -24,10 +24,10 @@ _js_is_running()
 # $1 jail name
 _js_stop()
 {
-	local _jname
-	_jname="$1"
-	if _js_is_running $_jname ; then
-		jail -r $_jname
+	local _pname
+	_pname="$1"
+	if _js_is_running $_pname ; then
+		jail -r $_pname
 		return $?
 	fi
 	return 0 # true
@@ -36,14 +36,14 @@ _js_stop()
 # $1 jail name
 _js_umount()
 {
-	local _jname _tmpfile _jdir _mnt_p
-	_jname=$1
-	_tmpfile=$(mktemp -t ${_jname}.XXXXXX)
+	local _pname _tmpfile _jdir _mnt_p
+	_pname=$1
+	_tmpfile=$(mktemp -t ${_pname}.XXXXXX)
 	if [ $? -ne 0 ]; then
 		_error "not able to create temporary file - umount failed"
 		return 1 # false
 	fi
-	_jdir="${POT_FS_ROOT}/jails/$_jname"
+	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	tail -r $_jdir/conf/fs.conf > $_tmpfile
 
 	_umount $_jdir/m/tmp
@@ -59,24 +59,24 @@ _js_umount()
 # $1 jail name
 _js_rm_resolv()
 {
-	local _jname _jdir
-	_jname="$1"
-	_jdir="${POT_FS_ROOT}/jails/$_jname"
+	local _pname _jdir
+	_pname="$1"
+	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	if [ -f $_jdir/m/etc/resolv.conf ]; then
 		rm -f $_jdir/m/etc/resolv.conf
 	fi
 }
 
-pot-jstop()
+pot-stop()
 {
-	local _jname
+	local _pname
 	args=$(getopt h $*)
 
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
-			jstop-help
+			stop-help
 			exit 0
 			;;
 		-v)
@@ -88,21 +88,21 @@ pot-jstop()
 			break
 			;;
 		*)
-			jstop-help
+			stop-help
 			exit 1
 		esac
 	done
-	_jname=$1
-	if [ -z "$_jname" ]; then
+	_pname=$1
+	if [ -z "$_pname" ]; then
 		_error "A jail name is mandatory"
-		jstop-help
+		stop-help
 		exit 1
 	fi
-	if ! _js_stop $_jname ; then
-		_error "Stop the jail $_jname failed"
+	if ! _js_stop $_pname ; then
+		_error "Stop the jail $_pname failed"
 		exit 1
 	fi
-	_js_rm_resolv $_jname
-	_js_umount $_jname
+	_js_rm_resolv $_pname
+	_js_umount $_pname
 
 }

@@ -1,11 +1,11 @@
 #!/bin/sh
 
-create-jail-help()
+create-help()
 {
-	echo "pot create-jail [-h] -j jailname -b base [-i ipaddr] [-l lvl]"
+	echo "pot create [-hv] -p potname -b base [-i ipaddr] [-l lvl]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -j jailname : the jail name (mandatory)'
+	echo '  -p potlname : the pot name (mandatory)'
 	echo '  -b base : the base pot (mandatory)'
 	echo '  -i ipaddr : an ip address'
 	echo '  -l lvl : jail level'
@@ -16,11 +16,11 @@ create-jail-help()
 # $3 level
 _cj_zfs()
 {
-	local _jname _base _jdset _snap
-	_jname=$1
+	local _pname _base _jdset _snap
+	_pname=$1
 	_base=$2
 	_lvl=$3
-	_jdset=${POT_ZFS_ROOT}/jails/$_jname
+	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	# Create the main jail zfs dataset
 	if ! _zfs_is_dataset $_jdset ; then
 		zfs create $_jdset
@@ -28,8 +28,8 @@ _cj_zfs()
 		_info "$_jdset exists already"
 	fi
 	# Create the root mountpoint
-	if [ ! -d "${POT_FS_ROOT}/jails/$_jname/m" ]; then
-		mkdir -p ${POT_FS_ROOT}/jails/$_jname/m
+	if [ ! -d "${POT_FS_ROOT}/jails/$_pname/m" ]; then
+		mkdir -p ${POT_FS_ROOT}/jails/$_pname/m
 	fi
 	# lvl 0 images mount directly usr.local and custom
 	if [ $_lvl -eq 0 ]; then
@@ -40,7 +40,7 @@ _cj_zfs()
 		_snap=$(_zfs_last_snap ${POT_ZFS_ROOT}/bases/$_base/usr.local)
 		if [ -n "$_snap" ]; then
 			_debug "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap"
-			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_jname/usr.local ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap $_jdset/usr.local
+			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_pname/usr.local ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap $_jdset/usr.local
 		else
 			_error "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/usr.local"
 			return 1 # false
@@ -53,7 +53,7 @@ _cj_zfs()
 		_snap=$(_zfs_last_snap ${POT_ZFS_ROOT}/bases/$_base/custom)
 		if [ -n "$_snap" ]; then
 			_debug "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/custom@$_snap"
-			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_jname/custom ${POT_ZFS_ROOT}/bases/$_base/custom@$_snap $_jdset/custom
+			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_pname/custom ${POT_ZFS_ROOT}/bases/$_base/custom@$_snap $_jdset/custom
 		else
 			_error "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/custom"
 			return 1 # false
@@ -70,12 +70,12 @@ _cj_zfs()
 # $4 level
 _cj_conf()
 {
-	local _jname _base _ip _lvl _jdir _bdir
-	_jname=$1
+	local _pname _base _ip _lvl _jdir _bdir
+	_pname=$1
 	_base=$2
 	_ip=$3
 	_lvl=$4
-	_jdir=${POT_FS_ROOT}/jails/$_jname
+	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 	if [ ! -d $_jdir/conf ]; then
 		mkdir -p $_jdir/conf
@@ -92,8 +92,8 @@ _cj_conf()
 		fi
 	) > $_jdir/conf/fs.conf
 	(
-		echo "${_jname} {"
-		echo "  host.hostname = \"${_jname}.$( hostname )\";"
+		echo "${_pname} {"
+		echo "  host.hostname = \"${_pname}.$( hostname )\";"
 		echo "  path = ${_jdir}/m ;"
 		echo "  osrelease = \"${_base}-RELEASE\";"
 		echo "  mount.devfs;"
@@ -116,27 +116,27 @@ _cj_conf()
 	) > $_jdir/conf/jail.conf
 }
 
-pot-create-jail()
+pot-create()
 {
-	local _jname _ipaddr _lvl _base
-	_jname=
+	local _pname _ipaddr _lvl _base
+	_pname=
 	_base=
 	_ipaddr=inherit
 	_lvl=1
-	args=$(getopt hvj:i:l:b: $*)
+	args=$(getopt hvp:i:l:b: $*)
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
-			create-jail-help
+			create-help
 			exit 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
-		-j)
-			_jname=$2
+		-p)
+			_pname=$2
 			shift 2
 			;;
 		-i)
@@ -157,20 +157,20 @@ pot-create-jail()
 			break
 			;;
 		*)
-			create-jail-help
+			create-help
 			exit 1
 		esac
 	done
 
-	if [ -z "$_jname" ]; then
+	if [ -z "$_pname" ]; then
 		_error "jail name is missing"
-		create-jail-help
+		create-help
 		exit 1
 	fi
-	if ! _cj_zfs $_jname $_base $_lvl ; then
+	if ! _cj_zfs $_pname $_base $_lvl ; then
 		exit 1
 	fi
-	if ! _cj_conf $_jname $_base $_ipaddr $_lvl ; then
+	if ! _cj_conf $_pname $_base $_ipaddr $_lvl ; then
 		exit 1
 	fi
 }

@@ -105,10 +105,10 @@ case "${CMD}" in
 	init|\
 	create-base|\
 	create-fscomp|\
-	create-jail|\
+	create|\
 	add-fscomp|\
-	jstart|\
-	jstop|\
+	start|\
+	stop|\
 	snapshot)
 		pot-cmd "${CMD}" $@
 		exit 0

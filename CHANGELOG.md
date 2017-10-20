@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unrelease]
 
+### Changed
+- Remove jail references and use pot instead (not in zfs)
+- jstart command is now start
+- jstop command is now stop
+- create-jail command is not create
+
 ## [0.0.1-alpha] -2017-10-20
 ### Added
 - Add the central utility called 'pot'

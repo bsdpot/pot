@@ -70,7 +70,11 @@ _js_rm_resolv()
 pot-stop()
 {
 	local _pname
-	args=$(getopt h $*)
+	args=$(getopt hv $*)
+	if [ $? -ne 0 ]; then
+		stop-help
+		exit 1
+	fi
 
 	set -- $args
 	while true; do
@@ -87,9 +91,6 @@ pot-stop()
 			shift
 			break
 			;;
-		*)
-			stop-help
-			exit 1
 		esac
 	done
 	_pname=$1
@@ -104,5 +105,4 @@ pot-stop()
 	fi
 	_js_rm_resolv $_pname
 	_js_umount $_pname
-
 }

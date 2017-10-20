@@ -2,7 +2,7 @@
 
 init-help()
 {
-	echo 'pot init [-h]'
+	echo 'pot init [-h][-v]'
 	echo '  -h -- print this help'
 	echo '  -v verbose'
 }
@@ -11,6 +11,10 @@ init-help()
 pot-init()
 {
 	args=$(getopt hr:v $*)
+	if [ $? -ne 0 ]; then
+		init-help
+		exit 1
+	fi
 	set -- $args
 	while true; do
 		case "$1" in
@@ -26,9 +30,6 @@ pot-init()
 			shift
 			break
 			;;
-		*)
-			init-help
-			exit 1
 		esac
 	done
 

@@ -80,13 +80,20 @@ _cb_tar_dir()
 pot-create-base()
 {
 	args=$(getopt hr:v $*)
-
+	if [ $? -ne 0 ]; then
+		create-base-help
+		exit 1
+	fi
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
 			create-base-help
 			exit 0
+			;;
+		-v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
 			;;
 		-r)
 			if ! _is_in_list $2 $_POT_RELEASES ; then
@@ -96,17 +103,10 @@ pot-create-base()
 			_FBSD_RELEASE=$2
 			shift 2
 			;;
-		-v)
-			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
-			;;
 		--)
 			shift
 			break
 			;;
-		*)
-			create-base-help
-			exit 1
 		esac
 	done
 

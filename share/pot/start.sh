@@ -121,7 +121,11 @@ pot-start()
 {
 	local _pname _snap
 	_snap=none
-	args=$(getopt hsS $*)
+	args=$(getopt hvsS $*)
+	if [ $? -ne 0 ]; then
+		start-help
+		exit 1
+	fi
 
 	set -- $args
 	while true; do
@@ -146,9 +150,6 @@ pot-start()
 			shift
 			break
 			;;
-		*)
-			start-help
-			exit 1
 		esac
 	done
 	_pname=$1

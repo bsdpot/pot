@@ -14,6 +14,10 @@ pot-snapshot()
 {
 	local _pname _full
 	args=$(getopt hvf $*)
+	if [ $? -ne 0 ]; then
+		snapshot-help
+		exit 1
+	fi
 	_full="NO"
 	set -- $args
 	while true; do
@@ -34,9 +38,6 @@ pot-snapshot()
 			shift
 			break
 			;;
-		*)
-			snapshot-help
-			exit 1
 		esac
 	done
 	_pname=$1

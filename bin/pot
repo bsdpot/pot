@@ -71,10 +71,10 @@ Commands:
 	init	-- Initialize the ZFS layout
 	create-base	-- Create a new base image
 	create-fscomp -- Create a new fs component
-	create-jail -- Create a new jail (pot)
+	create -- Create a new jail (pot)
 	add-fscomp -- Add a fs component to a pot
-	jstart -- Start a jail (pot)
-	jstop -- Stop a jail (pot)
+	start -- Start a jail (pot)
+	stop -- Stop a jail (pot)
 	snapshot -- Take a snapshot of a pot
 EOF
 }
@@ -103,12 +103,9 @@ case "${CMD}" in
 	show|\
 	list|\
 	init|\
-	create-base|\
-	create-fscomp|\
-	create|\
+	create-base|create-fscomp|create|\
 	add-fscomp|\
-	start|\
-	stop|\
+	start|stop|\
 	snapshot)
 		pot-cmd "${CMD}" $@
 		exit 0

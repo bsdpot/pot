@@ -28,6 +28,10 @@ pot-add-fscomp()
 {
 	local _pname _fscomp _mnt_p
 	args=$(getopt hvf:j:m: $*)
+	if [ $? -ne 0 ]; then
+		add-fscomp-help
+		exit 1
+	fi
 	_fscomp=
 	_pname=
 	_mnt_p=
@@ -58,9 +62,6 @@ pot-add-fscomp()
 			shift
 			break
 			;;
-		*)
-			add-fscomp-help
-			exit 1
 		esac
 	done
 	if [ -z "$_pname" ]; then

@@ -124,6 +124,10 @@ pot-create()
 	_ipaddr=inherit
 	_lvl=1
 	args=$(getopt hvp:i:l:b: $*)
+	if [ $? -ne 0 ]; then
+		create-help
+		exit 1
+	fi
 	set -- $args
 	while true; do
 		case "$1" in
@@ -156,9 +160,6 @@ pot-create()
 			shift
 			break
 			;;
-		*)
-			create-help
-			exit 1
 		esac
 	done
 

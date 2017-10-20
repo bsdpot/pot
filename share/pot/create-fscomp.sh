@@ -2,7 +2,7 @@
 
 create-fscomp-help()
 {
-	echo "pot create-fscomp [-h] -z dataset"
+	echo "pot create-fscomp [-h][-v] -z dataset"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -z dataset : the dataset name (mandatory)'
@@ -13,6 +13,10 @@ pot-create-fscomp()
 	local _dset
 	_dset=
 	args=$(getopt hz: $*)
+	if [ $? -ne 0 ]; then
+		create-fscomp-help
+		exit 1
+	fi
 	set -- $args
 	while true; do
 		case "$1" in
@@ -20,21 +24,18 @@ pot-create-fscomp()
 			create-fscomp-help
 			exit 0
 			;;
-		-z)
-			_dset="${POT_ZFS_ROOT}/fscomp/$2"
-			shift 2
-			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
+			;;
+		-z)
+			_dset="${POT_ZFS_ROOT}/fscomp/$2"
+			shift 2
 			;;
 		--)
 			shift
 			break
 			;;
-		*)
-			create-fscomp-help
-			exit 1
 		esac
 	done
 

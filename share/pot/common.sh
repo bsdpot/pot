@@ -123,7 +123,7 @@ _is_pot()
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	if [ ! -d $_pdir ]; then
-		_error "Jail $_pname not found"
+		_error "Pot $_pname not found"
 		return 1 # false
 	fi
 	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ]; then
@@ -134,10 +134,22 @@ _is_pot()
 	if [ ! -d $_pdir/m -o \
 		 ! -r $_pdir/conf/jail.conf -o \
 		 ! -r $_pdir/conf/fs.conf ]; then
-		_error "Some component of the jail $_pname is missing"
+		_error "Some component of the pot $_pname is missing"
 		return 1 # false
 	fi
 	return 0
+}
+
+# $1 jail name
+_is_pot_running()
+{
+	local _pname _jlist
+	_pname="$1"
+	_jlist="$(jls -N | sed 1d | awk '{print $1}')"
+	if _is_in_list $_pname $_jlist ; then
+		return 0 # true
+	fi
+	return 1 # false
 }
 
 # $1 the element to search

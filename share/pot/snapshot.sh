@@ -42,8 +42,12 @@ pot-snapshot()
 	done
 	_pname=$1
 	if [ -z "$_pname" ]; then
-		_error "A jail name is mandatory"
+		_error "A pot name is mandatory"
 		snapshot-help
+		exit 1
+	fi
+	if _is_pot_running $_pname ; then
+		_error "The pot $_pname is still running. Snapshot is possible only for stopped pots"
 		exit 1
 	fi
 	if [ "$_full" = "YES" ]; then

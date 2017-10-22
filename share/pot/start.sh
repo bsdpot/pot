@@ -16,61 +16,6 @@ start-help()
 }
 
 # $1 jail name
-_js_is_jail()
-{
-	local _pname _jdir
-	_pname="$1"
-	_jdir="${POT_FS_ROOT}/jails/$_pname"
-	if [ ! -d $_jdir ]; then
-		_error "Jail $_pname not found"
-		return 1 # false
-	fi
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ]; then
-		_error "Jail $_pname not found"
-		return 1 # false
-	fi
-
-	if [ ! -d $_jdir/m -o \
-		 ! -r $_jdir/conf/jail.conf -o \
-		 ! -r $_jdir/conf/fs.conf ]; then
-		_error "Some component of the jail $_pname is missing"
-		return 1 # false
-	fi
-	return 0
-}
-
-# $1 jail name
-_js_snap()
-{
-	local _pname _node _opt _snaptag _dset
-	_pname=$1
-	_snaptag="$(date +%s)"
-	echo "Take snapshot of $_pname"
-	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}
-}
-
-# $1 jail name
-_js_snap_full()
-{
-	local _pname _node _opt _snaptag _dset
-	_pname=$1
-	_snaptag="$(date +%s)"
-	echo "Take snapshot of the full $_pname"
-	while read -r line ; do
-		_node=$( echo $line | awk '{print $1}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		if [ "$_opt" = "ro" ]; then
-			continue
-		fi
-		_dset=$( zfs list -H $_node | awk '{print $1}' )
-		if [ -n "$_dset" ]; then
-			echo "==> snapshot of $_dset"
-			zfs snapshot ${_dset}@${_snaptag}
-		fi
-	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
-}
-
-# $1 jail name
 _js_mount()
 {
 	local _pname _node _mnt_p _opt
@@ -158,15 +103,15 @@ pot-start()
 		start-help
 		exit 1
 	fi
-	if ! _js_is_jail $_pname ; then
+	if ! _is_pot $_pname ; then
 		exit 1
 	fi
 	case $_snap in
 		normal)
-			_js_snap $_pname
+			_pot_zfs_snap $_pname
 			;;
 		full)
-			_js_snap_full $_pname
+			_pot_zfs_snap_full $_pname
 			;;
 		none|*)
 			;;

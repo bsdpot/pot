@@ -10,23 +10,11 @@ stop-help()
 }
 
 # $1 jail name
-_js_is_running()
-{
-	local _pname _jlist
-	_pname="$1"
-	_jlist="$(jls -N | sed 1d | awk '{print $1}')"
-	if _is_in_list $_pname $_jlist ; then
-		return 0 # true
-	fi
-	return 1 # false
-}
-
-# $1 jail name
 _js_stop()
 {
 	local _pname
 	_pname="$1"
-	if _js_is_running $_pname ; then
+	if _is_pot_running $_pname ; then
 		jail -r $_pname
 		return $?
 	fi

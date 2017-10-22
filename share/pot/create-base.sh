@@ -16,7 +16,6 @@ _cb_fetch()
 	local _rel
 	_rel=$1
 	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/${_rel}-RELEASE/base.txz -o /tmp/${_rel}_base.txz
-
 	return $?
 }
 

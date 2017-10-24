@@ -8,12 +8,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unrelease]
 ### Added
 - Add option -b to list, to list available bases
+- Add option -f to list, to list available fs components
+- Add a destroy command, to destroy a pot
+- Add a term command, to start a pot
 
 ### Changed
 - Remove jail references and use pot instead (not in zfs)
 - jstart command is now start
 - jstop command is now stop
 - create-jail command is not create
+
+### Fixed
+- Fixed add-fscomp that can introduce valid, but imprecise mount-point
 
 ## [0.0.1-alpha] -2017-10-20
 ### Added

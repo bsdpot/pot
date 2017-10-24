@@ -19,7 +19,9 @@ _add_f_to_p()
 	local _fscomp _pname _mnt_p _pdir
 	_fscomp="$1"
 	_pname="$2"
-	_mnt_p="$3"
+	# Removing the trailing /
+	# _mnt_p="$(echo $3 | sed 's%^/%%')" # or, more efficiently
+	_mnt_p="${3#/}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	echo "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
 }

@@ -3,11 +3,11 @@
 # supported releases
 add-fscomp-help()
 {
-	echo "pot add-fscomp [-h][-v] -f fscomp -j jailname -m mnt"
+	echo "pot add-fscomp [-h][-v] -f fscomp -p pot -m mnt"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -f fscomp : the fs component to be added'
-	echo '  -j jailname : the working pot'
+	echo '  -p pot : the working pot'
 	echo '  -m mnt : the mount point inside the pot'
 }
 
@@ -27,7 +27,7 @@ _add_f_to_p()
 pot-add-fscomp()
 {
 	local _pname _fscomp _mnt_p
-	args=$(getopt hvf:j:m: $*)
+	args=$(getopt hvf:p:m: $*)
 	if [ $? -ne 0 ]; then
 		add-fscomp-help
 		exit 1
@@ -50,7 +50,7 @@ pot-add-fscomp()
 			_fscomp="$2"
 			shift 2
 			;;
-		-j)
+		-p)
 			_pname="$2"
 			shift 2
 			;;

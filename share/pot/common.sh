@@ -193,7 +193,10 @@ _umount()
 	local _mnt_p
 	_mnt_p=$1
 	if _is_mounted "$_mnt_p" ; then
+		_debug "unmount $_mnt_p"
 		umount -f $_mnt_p
+	else
+		_debug "$_mnt_p is already unmounted"
 	fi
 }
 

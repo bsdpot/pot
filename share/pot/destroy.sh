@@ -18,7 +18,7 @@ _pot_zfs_destroy()
 		_error "$_pname not found"
 		return 1 # false
 	fi
-	if [ $_POT_VERBOSITY -ge $__POT_MSG_DEBUG ]; then
+	if [ $_POT_VERBOSITY -ge $__POT_MSG_DBG ]; then
 		_zopt="-v"
 	else
 		_zopt=""

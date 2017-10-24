@@ -30,7 +30,7 @@ pot-destroy()
 {
 	local _pname 
 	_pname=
-	args=$(getopt hvp:: $*)
+	args=$(getopt hvp: $*)
 	if [ $? -ne 0 ]; then
 		destroy-help
 		exit 1
@@ -62,7 +62,7 @@ pot-destroy()
 		destroy-help
 		exit 1
 	fi
-	if ! _is_pot_running $_pname ; then
+	if _is_pot_running $_pname ; then
 		_error "pot $_pname is running"
 		exit 1
 		# TODO stop it or add a --force option and stop it

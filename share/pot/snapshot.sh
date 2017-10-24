@@ -3,11 +3,11 @@
 # supported releases
 snapshot-help()
 {
-	echo "pot jstop [-h][-v][-f] [jailname]"
+	echo "pot snapshot [-h][-v][-f] [jailname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -f full'
-	echo '  jailname : the jail that has to start'
+	echo '  potname : the pot target of the snapshot'
 }
 
 pot-snapshot()

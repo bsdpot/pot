@@ -7,6 +7,7 @@ list-help()
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -b list bases instead of pots'
+	echo '  -f list fs components instead of pots'
 }
 
 # $1 jail name
@@ -56,11 +57,21 @@ _ls_bases()
 	done
 }
 
+_ls_fscomp()
+{
+	local _fdir _fscomps
+	_fdir="${POT_FS_ROOT}/fscomp/"
+	_fscomps=$( ls -l $_fdir | grep ^d | awk '{print $9}' )
+	for _f in $_fscomps; do
+		 echo "fscomp: $_f"
+	done
+}
+
 pot-list()
 {
 	local _obj
 	_obj="pots"
-	args=$(getopt hvb $*)
+	args=$(getopt hvbf $*)
 	if [ $? -ne 0 ]; then
 		list-help
 		exit 1
@@ -80,6 +91,10 @@ pot-list()
 			_obj="bases"
 			shift
 			;;
+		-f)
+			_obj="fscomp"
+			shift
+			;;
 		--)
 			shift
 			break
@@ -92,6 +107,9 @@ pot-list()
 			;;
 		"bases")
 			_ls_bases
+			;;
+		"fscomp")
+			_ls_fscomp
 			;;
 	esac
 }

@@ -76,6 +76,7 @@ Commands:
 	add-fscomp -- Add a fs component to a pot
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)
+	term -- Start a terminal in a pot
 	snapshot -- Take a snapshot of a pot
 EOF
 }
@@ -106,7 +107,7 @@ case "${CMD}" in
 	init|\
 	create-base|create-fscomp|create|\
 	add-fscomp|destroy|\
-	start|stop|\
+	start|stop|term\
 	snapshot)
 		pot-cmd "${CMD}" $@
 		exit 0

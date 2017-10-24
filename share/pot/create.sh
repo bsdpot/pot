@@ -5,13 +5,13 @@ create-help()
 	echo "pot create [-hv] -p potname -b base [-i ipaddr] [-l lvl]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -p potlname : the pot name (mandatory)'
+	echo '  -p potname : the pot name (mandatory)'
 	echo '  -b base : the base pot (mandatory)'
 	echo '  -i ipaddr : an ip address'
-	echo '  -l lvl : jail level'
+	echo '  -l lvl : pot level'
 }
 
-# $1 jail name
+# $1 pot name
 # $2 base name
 # $3 level
 _cj_zfs()
@@ -64,7 +64,7 @@ _cj_zfs()
 	return 0 # true
 }
 
-# $1 jail name
+# $1 pot name
 # $2 base name
 # $3 ip
 # $4 level
@@ -164,7 +164,7 @@ pot-create()
 	done
 
 	if [ -z "$_pname" ]; then
-		_error "jail name is missing"
+		_error "pot name is missing"
 		create-help
 		exit 1
 	fi

@@ -34,6 +34,11 @@ _POT_PATHNAME="$(realpath $0)"
 _POT_PREFIX="$(dirname ${_POT_PATHNAME})"
 _POT_INCLUDE="$( realpath ${_POT_PREFIX}/../share/pot)"
 _POT_ETC="$( realpath ${_POT_PREFIX}/../etc)"
+if [ -d "${_POT_ETC}/pot" ]; then
+	_POT_FLAVOUR_DIR="$( realpath ${_POT_ETC}/pot)"
+else
+	_POT_FLAVOUR_DIR=
+fi
 
 if [ ! -d ${_POT_INCLUDE} ]; then
 	echo "Fatal error! Not able to find the subroutines dir on ${_POT_PREFIX}!"

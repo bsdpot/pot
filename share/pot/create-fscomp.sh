@@ -12,7 +12,7 @@ pot-create-fscomp()
 {
 	local _dset
 	_dset=
-	args=$(getopt hz: $*)
+	args=$(getopt hvz: $*)
 	if [ $? -ne 0 ]; then
 		create-fscomp-help
 		exit 1

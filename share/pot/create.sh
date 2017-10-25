@@ -125,8 +125,8 @@ _cj_flv()
 	_pname=$1
 	_flv=$2
 	while read -r line ; do
-		pot-cmd $line
-	done
+		pot-cmd $line -p $_pname
+	done < ${_POT_FLAVOUR_DIR}/${_flv}
 	if [ -r ${_POT_FLAVOUR_DIR}/${_flv}-shell ]; then
 		# pot start
 		# copy it

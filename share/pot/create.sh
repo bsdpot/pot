@@ -2,13 +2,14 @@
 
 create-help()
 {
-	echo "pot create [-hv] -p potname -b base [-i ipaddr] [-l lvl]"
+	echo "pot create [-hv] -p potname -b base [-i ipaddr] [-l lvl] [-f flavour]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p potname : the pot name (mandatory)'
 	echo '  -b base : the base pot (mandatory)'
 	echo '  -i ipaddr : an ip address'
 	echo '  -l lvl : pot level'
+	echo '  -f flavour : flavour to be used'
 }
 
 # $1 pot name
@@ -116,14 +117,34 @@ _cj_conf()
 	) > $_jdir/conf/jail.conf
 }
 
+# $1 pot name
+# $2 flavour name
+_cj_flv()
+{
+	local _pname _flv
+	_pname=$1
+	_flv=$2
+	while read -r line ; do
+		pot-cmd $line
+	done
+	if [ -r ${_POT_FLAVOUR_DIR}/${_flv}-shell ]; then
+		# pot start
+		# copy it
+		# execute it in the jail
+	else
+		_debug "No shell script available for the flavour $_flv"
+	fi
+}
+
 pot-create()
 {
-	local _pname _ipaddr _lvl _base
+	local _pname _ipaddr _lvl _base _flv
 	_pname=
 	_base=
 	_ipaddr=inherit
 	_lvl=1
-	args=$(getopt hvp:i:l:b: $*)
+	_flv=
+	args=$(getopt hvp:i:l:b:f: $*)
 	if [ $? -ne 0 ]; then
 		create-help
 		exit 1
@@ -156,6 +177,20 @@ pot-create()
 			# TODO: parameter validtion
 			shift 2
 			;;
+		-f)
+			if [ -z "${_POT_FLAVOUR_DIR}" -o ! -d "${_POT_FLAVOUR_DIR}" ]; then
+				_error "The flavour dir is missing"
+				exit 1
+			fi
+			if [ -r "${_POT_FLAVOUR_DIR}/$2" ]; then
+				_flv=$2
+			else
+				_error "The flavour $2 not found"
+				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
+				exit 1
+			fi
+			shift 2
+			;;
 		--)
 			shift
 			break
@@ -173,5 +208,8 @@ pot-create()
 	fi
 	if ! _cj_conf $_pname $_base $_ipaddr $_lvl ; then
 		exit 1
+	fi
+	if [ -n "$_flv" ]; then
+		_cj_flv $_pname $_flv
 	fi
 }

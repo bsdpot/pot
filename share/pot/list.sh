@@ -10,18 +10,6 @@ list-help()
 	echo '  -f list fs components instead of pots'
 }
 
-# $1 jail name
-_js_is_running()
-{
-	local _jname _jlist
-	_jname="$1"
-	_jlist="$(jls -N | sed 1d | awk '{print $1}')"
-	if _is_in_list $_jname $_jlist ; then
-		return 0 # true
-	fi
-	return 1 # false
-}
-
 # $1 pot name
 _ls_info_pot()
 {
@@ -33,6 +21,11 @@ _ls_info_pot()
 		printf "\t\tip4 : inherited\n"
 	else
 		printf "\t\tip4 : %s\n" $(awk '/ip4.addr/ { print $3 }' $_cdir/jail.conf | sed 's/;//')
+	fi
+	if _is_pot_running $_pname ; then
+		printf "\t\tactive : true\n"
+	else
+		printf "\t\tactive : false\n"
 	fi
 	echo
 }

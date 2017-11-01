@@ -126,6 +126,5 @@ pot-start()
 		exit 1
 	else
 		_info "Start the jail "${_pname}" "
-		exit 0
 	fi
 }

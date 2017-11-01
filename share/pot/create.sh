@@ -121,19 +121,26 @@ _cj_conf()
 # $2 flavour name
 _cj_flv()
 {
-	local _pname _flv
+	local _pname _flv _pdir
 	_pname=$1
 	_flv=$2
-	while read -r line ; do
-		pot-cmd $line -p $_pname
-	done < ${_POT_FLAVOUR_DIR}/${_flv}
-	if [ -r ${_POT_FLAVOUR_DIR}/${_flv}-shell ]; then
-		# pot start
-		# copy it
-		# execute it in the jail
+	_pdir=${POT_FS_ROOT}/jails/$_pname
+	_debug "Flavour: $_flv"
+	if [ -r ${_POT_FLAVOUR_DIR}/${_flv} ]; then
+		_debug "Adopt $_flv for $_pname"
+		while read -r line ; do
+			pot-cmd $line -p $_pname
+		done < ${_POT_FLAVOUR_DIR}/${_flv}
+	fi
+	_debug "Start $_pname pot for the initial bootstrap"
+	pot-cmd start $_pname
+	if [ -x ${_POT_FLAVOUR_DIR}/${_flv}.sh ]; then
+		cp -v ${_POT_FLAVOUR_DIR}/${_flv}.sh $_pdir/m/tmp
+		jexec $_pname /tmp/${_flv}.sh
 	else
 		_debug "No shell script available for the flavour $_flv"
 	fi
+	pot-cmd stop $_pname
 }
 
 pot-create()
@@ -209,6 +216,7 @@ pot-create()
 	if ! _cj_conf $_pname $_base $_ipaddr $_lvl ; then
 		exit 1
 	fi
+	_cj_flv $_pname default
 	if [ -n "$_flv" ]; then
 		_cj_flv $_pname $_flv
 	fi

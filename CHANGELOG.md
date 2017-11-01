@@ -11,12 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add option -f to list, to list available fs components
 - Add a destroy command, to destroy a pot
 - Add a term command, to start a pot
+- First implementation of show, that shows memory used by running pots
+- Initial support to flavour, to automatically add 
 
 ### Changed
 - Remove jail references and use pot instead (not in zfs)
 - jstart command is now start
 - jstop command is now stop
 - create-jail command is not create
+- create-base creates the related level 0 pot automatically
 
 ### Fixed
 - Fixed add-fscomp that can introduce valid, but imprecise mount-point
@@ -31,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a create-jail command, to create a new base
 - Add a jstart command, to start a pot
 - Add a jstop command, to stop a pot
-- Add an to jstart, to take a snapshot of the pot before the start
+- Add an option to jstart, to take a snapshot of the pot before the start
 - Add a help command, to show subcommand helps
 - Add a list command, to list of pots
 - Add a add-fscomp command, to add fscomponents to pots

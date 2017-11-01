@@ -76,6 +76,15 @@ _cb_tar_dir()
 	)
 }
 
+# $1 release
+_cb_base_pot()
+{
+	local _rel
+	_rel=$1
+	_rel_2=$(echo $_rel | sed 's/\./_/')
+	pot-cmd create -l 0 -b $_rel -p base-$_rel_2
+}
+
 pot-create-base()
 {
 	args=$(getopt hr:v $*)
@@ -123,4 +132,5 @@ pot-create-base()
 	# move binaries to the dataset and create linkx
 	_cb_tar_dir "${_FBSD_RELEASE}"
 	# create jail level 0
+	_cb_base_pot ${_FBSD_RELEASE}
 }

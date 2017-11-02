@@ -72,7 +72,7 @@ _cb_tar_dir()
 		cd usr
 		ln -s ../opt/custom/usr.home home
 		cd local
-		ln -s ../../opt/custom/usr.local.etc
+		ln -s ../../opt/custom/usr.local.etc etc
 	)
 }
 

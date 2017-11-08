@@ -125,6 +125,22 @@ _zfs_last_snap()
 	return 0 # true
 }
 
+_pot_bridge()
+{
+	local _bridges
+	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	if [ -z "$_bridges" ]; then
+		return
+	fi
+	for _b in $_bridges ; do
+		_ip=$( ifconfig $_b inet | awk '/inet/ { print $2 }' )
+		if [ "$_ip" = $POT_GATEWAY ]; then
+			echo $_b
+			return
+		fi
+	done
+}
+
 # $1 pot name
 _is_pot()
 {

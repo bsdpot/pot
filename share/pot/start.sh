@@ -55,8 +55,13 @@ _js_resolv()
 
 _js_vnet()
 {
-	local _pname _epair _epairb _ip
+	local _pname _bridge _epair _epairb _ip
 	_pname=$1
+	_bridge=$(_pot_bridge)
+	if [ -z "$_bridge" ]; then
+		_error "No pot bridge found! pot vnet-start can fix the issue"
+		exit 1
+	fi
 	_epair=$(ifconfig epair create)
 	_epairb="${_epair%a}b"
 	if [ -z "${_epair}" ]; then

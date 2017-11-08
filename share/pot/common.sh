@@ -44,7 +44,7 @@ _debug()
 
 _is_verbose()
 {
-	if [ $_POT_VERBOSITY -gt $__POT_MGS_INFO ]; then
+	if [ $_POT_VERBOSITY -gt $__POT_MSG_INFO ]; then
 		return 0 # true
 	else
 		return 1 # false

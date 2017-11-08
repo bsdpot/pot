@@ -109,11 +109,12 @@ _cj_conf()
 		echo "  persist;"
 		if [ "$_ip" = "inherit" ]; then
 			echo "  ip4 = inherit;"
+			echo "}"
 		else
-			echo "  interface = lo1;"
-			echo "  ip4.addr = ${_ipaddr};"
+			echo "  vnet;"
+			echo "}"
+			echo "# ip4.addr ${_ipaddr}"
 		fi
-		echo "}"
 	) > $_jdir/conf/jail.conf
 }
 

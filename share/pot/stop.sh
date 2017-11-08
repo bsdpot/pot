@@ -12,10 +12,18 @@ stop-help()
 # $1 jail name
 _js_stop()
 {
-	local _pname
+	local _pname _jdir _epair
 	_pname="$1"
+	_jdir="${POT_FS_ROOT}/jails/$_pname"
+	_epair=
 	if _is_pot_running $_pname ; then
+		if grep -q vnet $_jdir/conf/jail.conf ; then
+			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
+		fi
 		jail -r $_pname
+		if [ -n "$_epair" ]; then
+			ifconfig ${_epair%b}a destroy
+		fi
 		return $?
 	fi
 	return 0 # true

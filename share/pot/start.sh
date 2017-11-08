@@ -53,6 +53,25 @@ _js_resolv()
 	return 0
 }
 
+_js_vnet()
+{
+	local _pname _epair _epairb _ip
+	_pname=$1
+	_epair=$(ifconfig epair create)
+	_epairb="${_epair%a}b"
+	if [ -z "${_epair}" ]; then
+		return 1 # false
+	fi
+    _ip="$( awk '/^# ip4.addr/ {print $3}' ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf )"
+	ifconfig ${_epair} up
+	ifconfig bridge0 addm ${_epair}
+	ifconfig ${_epairb} vnet $_pname
+	_debug "Using epair interface $_epairb"
+	jexec $_pname ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK
+	_debug "Assigning the ip address $_ip"
+	jexec $_pname route add default $POT_GATEWAY
+}
+
 # $1 jail name
 _js_start()
 {
@@ -60,6 +79,9 @@ _js_start()
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	jail -c -f $_jdir/conf/jail.conf
+	if grep -q vnet $_jdir/conf/jail.conf ; then
+		_js_vnet $_pname
+	fi
 }
 
 pot-start()

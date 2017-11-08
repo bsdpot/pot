@@ -10,6 +10,7 @@ vnet-start-help()
 
 pot-vnet-start()
 {
+	local _bridge
 	args=$(getopt hr:v $*)
 	if [ $? -ne 0 ]; then
 		vnet-start-help
@@ -53,5 +54,8 @@ pot-vnet-start()
 
 	pfctl -F all -f /tmp/pot_pfrules
 	## TODO if verbose, pfctl -s nat
+	# if bridge0 doesn't exist yet
+	_bridge=$(ifconfig bridge create)
+	ifconfig $_bridge inet $POT_GATEWAY netmask $POT_NETMASK
 }
 

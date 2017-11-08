@@ -42,6 +42,15 @@ _debug()
 	_msg $__POT_MSG_DBG $*
 }
 
+_is_verbose()
+{
+	if [ $_POT_VERBOSITY -gt $__POT_MGS_INFO ]; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 # check if the dataset $1 exists
 # $1 the dataset NAME
 _zfs_is_dataset()

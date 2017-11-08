@@ -72,7 +72,7 @@ Usage: pot command [options]
 Commands:
 	help	-- Show help
 	show
-	list	-- List of the installed pots
+	ls/list	-- List of the installed pots
 	init	-- Initialize the ZFS layout
 	vnet-start -- Start the vnet configuration
 	create-base	-- Create a new base image
@@ -97,6 +97,12 @@ if [ $# -lt 1 ]; then
 fi
 CMD="$1"
 shift
+
+case "${CMD}" in
+	ls)
+		CMD=list
+		;;
+esac
 
 case "${CMD}" in
 	help)

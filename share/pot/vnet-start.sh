@@ -46,17 +46,22 @@ pot-vnet-start()
 
 	# bridge creation
 	# if bridge0 doesn't exist yet
-	_bridge=$(ifconfig bridge create)
-	if [ $? -ne 0 ]; then
-		_error "Bridge not created"
+	_bridge=$(_pot_bridge)
+	if [ -z "$_bridge" ]; then
+		_bridge=$(ifconfig bridge create)
+		if [ $? -ne 0 ]; then
+			_error "Bridge not created"
+		else
+			_debug "Bridge created $_bridge"
+		fi
+		ifconfig $_bridge inet $POT_GATEWAY netmask $POT_NETMASK
+		if [ $? -ne 0 ]; then
+			_error "Error during bridge configuration ($_bridge)"
+		else
+			_debug "Bridge $_bridge configured with IP $POT_GATEWAY netmask $POT_NETMASK"
+		fi
 	else
-		_debug "Bridge created $_bridge"
-	fi
-	ifconfig $_bridge inet $POT_GATEWAY netmask $POT_NETMASK
-	if [ $? -ne 0 ]; then
-		_error "Error during bridge configuration ($_bridge)"
-	else
-		_debug "Bridge $_bridge configured with IP $POT_GATEWAY netmask $POT_NETMASK"
+		_debug "Bridge $_bridge already present"
 	fi
 
 	# firewall rules

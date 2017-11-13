@@ -3,62 +3,14 @@
 # supported releases
 show-help()
 {
-	echo "pot show [-hv] -p potname"
+	echo "pot show [-hv] [-a|-p potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -a all pots'
 	echo '  -p potname select the pot by name'
 }
 
 # $1 pot name
-_ls_info_pot()
-{
-	local _pname _cdir
-	_pname=$1
-	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	printf "pot name\t%s\n" $_pname
-	if grep -q 'ip4 = inherit' $_cdir/jail.conf ; then
-		printf "\t\tip4 : inherited\n"
-	else
-		printf "\t\tip4 : %s\n" $(awk '/ip4.addr/ { print $3 }' $_cdir/jail.conf | sed 's/;//')
-	fi
-	if _is_pot_running $_pname ; then
-		printf "\t\tactive : true\n"
-	else
-		printf "\t\tactive : false\n"
-	fi
-	echo
-}
-
-_ls_pots()
-{
-	local _jdir _pots
-	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( find $_jdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
-	for _p in $_pots; do
-		_ls_info_pot $_p
-	done
-}
-
-_ls_bases()
-{
-	local _bdir _bases
-	_bdir="${POT_FS_ROOT}/bases/"
-	_bases=$( find $_bdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
-	for _b in $_bases; do
-		 echo "bases: $_b"
-	done
-}
-
-_ls_fscomp()
-{
-	local _fdir _fscomps
-	_fdir="${POT_FS_ROOT}/fscomp/"
-	_fscomps=$( ls -l $_fdir | grep ^d | awk '{print $9}' )
-	for _f in $_fscomps; do
-		 echo "fscomp: $_f"
-	done
-}
-
 _show_pot()
 {
 	local _pname _res
@@ -72,11 +24,24 @@ _show_pot()
 	printf "\tphysical memory : %s\n" $_pm
 }
 
+_show_all_pots()
+{
+	local _jdir _pots
+	_jdir="${POT_FS_ROOT}/jails/"
+	_pots=$( find $_jdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	for _p in $_pots; do
+		if _is_pot_running $_p ; then
+			_show_pot $_p
+		fi
+	done
+}
+
 pot-show()
 {
 	local _obj
 	_pname=
-	args=$(getopt hvp: $*)
+	_all=
+	args=$(getopt hvp:a $*)
 	if [ $? -ne 0 ]; then
 		show-help
 		exit 1
@@ -96,24 +61,30 @@ pot-show()
 			_pname="$2"
 			shift 2
 			;;
+		-a)
+			_all="YES"
+			shift
+			;;
 		--)
 			shift
 			break
 			;;
 		esac
 	done
-	if [ -z "$_pname" ]; then
-		_error "A pot name is mandatory"
-		show-help
-		exit 1
+	if [ -z "$_pname" -a -z "$_all" ]; then
+		_all="YES"
 	fi
-	if ! _is_pot $_pname ; then
-		_error "$_pname is not a valid pot"
-		exit 1
+	if [ -n "$_all" ]; then
+		_show_all_pots
+	else
+		if ! _is_pot $_pname ; then
+			_error "$_pname is not a valid pot"
+			exit 1
+		fi
+		if ! _is_pot_running $_pname ; then
+			_error "$_pname is not running - no runtime information available"
+			exit 0
+		fi
+		_show_pot $_pname
 	fi
-	if ! _is_pot_running $_pname ; then
-		_error "$_pname is not running - no runtime information available"
-		exit 0
-	fi
-	_show_pot $_pname
 }

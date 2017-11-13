@@ -190,7 +190,7 @@ pot-create()
 				_error "The flavour dir is missing"
 				exit 1
 			fi
-			if [ -r "${_POT_FLAVOUR_DIR}/$2" ]; then
+			if [ -r "${_POT_FLAVOUR_DIR}/$2" -o -x "${_POT_FLAVOUR_DIR}/$2.sh" ]; then
 				_flv=$2
 			else
 				_error "The flavour $2 not found"

@@ -211,6 +211,12 @@ pot-create()
 		create-help
 		exit 1
 	fi
+	if [ "$_ipaddr" != "inherit" ]; then
+		if ! _is_vnet_up ; then
+			_info "No pot bridge found! Calling vnet-start to fix the issue"
+			pot-cmd vnet-start
+		fi
+	fi
 	if ! _cj_zfs $_pname $_base $_lvl ; then
 		exit 1
 	fi

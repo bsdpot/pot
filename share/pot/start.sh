@@ -57,11 +57,11 @@ _js_vnet()
 {
 	local _pname _bridge _epair _epairb _ip
 	_pname=$1
-	_bridge=$(_pot_bridge)
-	if [ -z "$_bridge" ]; then
-		_error "No pot bridge found! pot vnet-start can fix the issue"
-		exit 1
+	if ! _is_vnet_up ; then
+		_info "No pot bridge found! Calling vnet-start to fix the issue"
+		pot-cmd vnet-start
 	fi
+	_bridge=$(_pot_bridge)
 	_epair=$(ifconfig epair create)
 	_epairb="${_epair%a}b"
 	if [ -z "${_epair}" ]; then
@@ -69,7 +69,7 @@ _js_vnet()
 	fi
     _ip="$( awk '/^# ip4.addr/ {print $3}' ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf )"
 	ifconfig ${_epair} up
-	ifconfig bridge0 addm ${_epair}
+	ifconfig $_bridge addm ${_epair}
 	ifconfig ${_epairb} vnet $_pname
 	_debug "Using epair interface $_epairb"
 	jexec $_pname ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK

@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unrelease]
 ### Added
 - Add a vnet-start command, to properly init the vnet network configuration (bridge+pf)
+- Add an option to show, to show all pot resource usage
+- Add some command alias: ls is an alias of list
+- Auto-start of vnet, when needed
 
 ### Changed
 - Pots with an ip are now based on epair/vnet/VIMAGE technology
+- Command show now shows resource usage of all pots by default
 
 ## [0.0.1-beta] 2017-11-07
 ### Added

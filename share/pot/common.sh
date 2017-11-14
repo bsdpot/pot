@@ -141,6 +141,17 @@ _pot_bridge()
 	done
 }
 
+_is_vnet_up()
+{
+	local _bridge
+	_bridge=$(_pot_bridge)
+	if [ -z "$_bridge" ]; then
+		return 1 # false
+	else
+		return 0 # true
+	fi
+}
+
 # $1 pot name
 _is_pot()
 {

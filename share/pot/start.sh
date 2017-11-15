@@ -67,25 +67,28 @@ _js_vnet()
 	if [ -z "${_epair}" ]; then
 		return 1 # false
 	fi
-    _ip="$( awk '/^# ip4.addr/ {print $3}' ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf )"
 	ifconfig ${_epair} up
 	ifconfig $_bridge addm ${_epair}
-	ifconfig ${_epairb} vnet $_pname
-	_debug "Using epair interface $_epairb"
-	jexec $_pname ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK
-	_debug "Assigning the ip address $_ip"
-	jexec $_pname route add default $POT_GATEWAY
+    _ip="$( awk '/^# ip4.addr/ {print $3}' ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf )"
+	#ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK
+	#ifconfig ${_epairb} vnet $_pname
+	sed -i '.orig' "s/vnet;/vnet; vnet.interface=${_epairb};/" ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf
+	sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
+	echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
+	sysrc -f ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf defaultrouter="$POT_GATEWAY"
 }
 
 # $1 jail name
 _js_start()
 {
-	local _pname _jdir
+	local _pname _jdir _iface
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
-	jail -c -f $_jdir/conf/jail.conf
 	if grep -q vnet $_jdir/conf/jail.conf ; then
 		_js_vnet $_pname
+		jail -c -f $_jdir/conf/jail.conf
+	else
+		jail -c -f $_jdir/conf/jail.conf
 	fi
 }
 

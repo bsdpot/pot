@@ -17,9 +17,8 @@ _js_stop()
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
 	if _is_pot_running $_pname ; then
-		if grep -q vnet $_jdir/conf/jail.conf ; then
+		if _is_pot_vnet $_pname ; then
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
-			cp -v $_jdir/conf/jail.conf.orig $_jdir/conf/jail.conf
 		fi
 		jail -r $_pname
 		if [ -n "$_epair" ]; then

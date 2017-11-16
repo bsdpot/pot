@@ -17,11 +17,7 @@ _ls_info_pot()
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	printf "pot name\t%s\n" $_pname
-	if grep -q 'ip4 = inherit' $_cdir/jail.conf ; then
-		printf "\t\tip4 : inherited\n"
-	else
-		printf "\t\tip4 : %s\n" $(awk '/ip4.addr/ { print $3 }' $_cdir/jail.conf | sed 's/;//')
-	fi
+	printf "\t\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
 	if _is_pot_running $_pname ; then
 		printf "\t\tactive : true\n"
 	else

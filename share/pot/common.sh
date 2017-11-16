@@ -88,7 +88,7 @@ _pot_zfs_snap()
 }
 
 # take a zfs snapshot of all rw dataset found in the fs.conf of a pot
-# $1 jail name
+# $1 pot name
 _pot_zfs_snap_full()
 {
 	local _pname _node _opt _snaptag _dset
@@ -141,6 +141,44 @@ _pot_bridge()
 	done
 }
 
+# $1 pot name
+# $2 var name
+_get_conf_var()
+{
+	local _pname _cdir _var _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_var="$2"
+	_value="$( grep "$_var" $_cdir/pot.conf | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo $_value
+}
+
+# $1 pot name
+_is_ip_inherit()
+{
+	local _pname _val
+	_pname="$1"
+	_val="$( _get_conf_var $_pname ip4 )"
+	if [ "$_val" = "inherit" ]; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
+# $1 pot name
+_is_pot_vnet()
+{
+	local _pname _val
+	_pname="$1"
+	_val="$( _get_conf_var $_pname vnet )"
+	if [ "$_val" = "true" ]; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 _is_vnet_up()
 {
 	local _bridge
@@ -168,7 +206,7 @@ _is_pot()
 	fi
 
 	if [ ! -d $_pdir/m -o \
-		 ! -r $_pdir/conf/jail.conf -o \
+		 ! -r $_pdir/conf/pot.conf -o \
 		 ! -r $_pdir/conf/fs.conf ]; then
 		_error "Some component of the pot $_pname is missing"
 		return 1 # false

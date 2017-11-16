@@ -93,29 +93,16 @@ _cj_conf()
 		fi
 	) > $_jdir/conf/fs.conf
 	(
-		echo "${_pname} {"
-		echo "  host.hostname = \"${_pname}.$( hostname )\";"
-		echo "  path = ${_jdir}/m ;"
-		echo "  osrelease = \"${_base}-RELEASE\";"
-		echo "  mount.devfs;"
-		echo "  allow.set_hostname;"
-		echo "  allow.mount;"
-		echo "  allow.mount.fdescfs;"
-		echo "  allow.raw_sockets;"
-		echo "  allow.socket_af;"
-		echo "  allow.sysvipc;"
-		echo "  exec.start = \"sh /etc/rc\";"
-		echo "  exec.stop = \"sh /etc/rc.shutdown\";"
-		echo "  persist;"
+		echo "host.hostname=\"${_pname}.$( hostname )\""
+		echo "osrelease=\"${_base}-RELEASE\""
 		if [ "$_ip" = "inherit" ]; then
-			echo "  ip4 = inherit;"
-			echo "}"
+			echo "ip4=inherit"
+			echo "vnet=false"
 		else
-			echo "  vnet;"
-			echo "}"
-			echo "# ip4.addr ${_ipaddr}"
+			echo "ip4=${_ipaddr}"
+			echo "vnet=true"
 		fi
-	) > $_jdir/conf/jail.conf
+	) > $_jdir/conf/pot.conf
 }
 
 # $1 pot name

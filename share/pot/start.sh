@@ -53,6 +53,17 @@ _js_resolv()
 	return 0
 }
 
+_js_create_epair()
+{
+	local _epair
+	_epair=$(ifconfig epair create)
+	if [ -z "${_epair}" ]; then
+		_error "ifconfig epair failed"
+		exit 1 # false
+	fi
+	echo ${_epair%a}
+}
+
 _js_vnet()
 {
 	local _pname _bridge _epair _epairb _ip
@@ -62,17 +73,12 @@ _js_vnet()
 		pot-cmd vnet-start
 	fi
 	_bridge=$(_pot_bridge)
-	_epair=$(ifconfig epair create)
-	_epairb="${_epair%a}b"
-	if [ -z "${_epair}" ]; then
-		return 1 # false
-	fi
+	_epair=${2}a
+	_epairb="${2}b"
 	ifconfig ${_epair} up
 	ifconfig $_bridge addm ${_epair}
-    _ip="$( awk '/^# ip4.addr/ {print $3}' ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf )"
-	#ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK
-	#ifconfig ${_epairb} vnet $_pname
-	sed -i '.orig' "s/vnet;/vnet; vnet.interface=${_epairb};/" ${POT_FS_ROOT}/jails/$_pname/conf/jail.conf
+	_ip=$( _get_conf_var $_pname ip4 )
+	# set the network configuration in the pot's rc.conf
 	sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
 	echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
 	sysrc -f ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf defaultrouter="$POT_GATEWAY"
@@ -81,14 +87,23 @@ _js_vnet()
 # $1 jail name
 _js_start()
 {
-	local _pname _jdir _iface
+	local _pname _jdir _iface _hostname _osrelease _param
+	_param="allow.set_hostname allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
+	_param="$_param mount.devfs persist exec.stop=sh,/etc/rc.shutdown"
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
-	if grep -q vnet $_jdir/conf/jail.conf ; then
-		_js_vnet $_pname
-		jail -c -f $_jdir/conf/jail.conf
+	_hostname="$( _get_conf_var $_pname host.hostname )"
+	_osrelease="$( _get_conf_var $_pname osrelease )"
+	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
+	_param="$_param path=${_jdir}/m"
+	if _is_pot_vnet $_pname ; then
+		_iface="$( _js_create_epair )"
+		_js_vnet $_pname $_iface
+		_param="$_param vnet vnet.interface=${_iface}b"
+		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc.conf
 	else
-		jail -c -f $_jdir/conf/jail.conf
+		_param="$_param ip4=inherit"
+		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc.conf
 	fi
 }
 

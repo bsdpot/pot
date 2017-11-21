@@ -100,10 +100,10 @@ _js_start()
 		_iface="$( _js_create_epair )"
 		_js_vnet $_pname $_iface
 		_param="$_param vnet vnet.interface=${_iface}b"
-		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc.conf
+		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
 	else
 		_param="$_param ip4=inherit"
-		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc.conf
+		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
 	fi
 }
 

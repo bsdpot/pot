@@ -89,6 +89,7 @@ _js_start()
 {
 	local _pname _jdir _iface _hostname _osrelease _param
 	_param="allow.set_hostname allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
+	_param="$_param allow.chflags"
 	_param="$_param mount.devfs persist exec.stop=sh,/etc/rc.shutdown"
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"

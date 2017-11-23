@@ -215,7 +215,7 @@ pot-create()
 			create-help
 			exit 1
 		fi
-		if ! is_pot $_potbase ; then
+		if ! _is_pot $_potbase ; then
 			_error "-P $_potbase : is not a pot"
 			create-help
 			exit 1

@@ -154,6 +154,14 @@ _get_conf_var()
 }
 
 # $1 pot name
+_get_pot_base()
+{
+	local _pname
+	_pname="$1"
+	_get_conf_var $_pname pot.base
+}
+
+# $1 pot name
 _is_ip_inherit()
 {
 	local _pname _val

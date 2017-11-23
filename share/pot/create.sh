@@ -2,26 +2,30 @@
 
 create-help()
 {
-	echo "pot create [-hv] -p potname -b base [-i ipaddr] [-l lvl] [-f flavour]"
+	echo "pot create [-hv] -p potname [-i ipaddr] [-l lvl] [-f flavour]"
+	echo '  [-b base | -P basepot ] [-S] '
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p potname : the pot name (mandatory)'
-	echo '  -b base : the base pot (mandatory)'
-	echo '  -i ipaddr : an ip address'
 	echo '  -l lvl : pot level'
-	echo '  -f flavour : flavour to be used'
+	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference with lvl 2'
+	echo '  -i ipaddr : an ip address'
+	echo '  -f flavour : flavour to be used'
+	echo '  -S : use snapshot for lvl>=1 fs component'
 }
 
 # $1 pot name
 # $2 base name
 # $3 level
+# $4 pot-base name
 _cj_zfs()
 {
-	local _pname _base _jdset _snap
+	local _pname _base _potbase _jdset _snap
 	_pname=$1
 	_base=$2
 	_lvl=$3
+	_potbase=$4
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	# Create the main jail zfs dataset
 	if ! _zfs_is_dataset $_jdset ; then
@@ -105,6 +109,9 @@ _cj_conf()
 		fi
 	) > $_jdir/conf/fs.conf
 	(
+		echo "pot.level=${_lvl}"
+		echo "pot.base=${_base}"
+		echo "pot.potbase=${_potbase}"
 		echo "host.hostname=\"${_pname}.$( hostname )\""
 		echo "osrelease=\"${_base}-RELEASE\""
 		if [ "$_ip" = "inherit" ]; then
@@ -152,6 +159,7 @@ pot-create()
 	_lvl=1
 	_flv=
 	_potbase=
+	_usesnap=0
 	args=$(getopt hvp:i:l:b:f:P: $*)
 	if [ $? -ne 0 ]; then
 		create-help

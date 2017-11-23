@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add an option to show, to show all pot resource usage
 - Add some command alias: ls is an alias of list
 - Auto-start of vnet, when needed
+- Add level 2 pot support, adding special option -P and -S in create command
 
 ### Changed
 - Changed pot configuration. No jail.conf anymore, but pot.conf

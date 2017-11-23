@@ -323,7 +323,7 @@ pot-create()
 			pot-cmd vnet-start
 		fi
 	fi
-	if ! _cj_zfs $_pname $_base $_lvl $_usesnap ; then
+	if ! _cj_zfs $_pname $_base $_lvl $_potbase $_usesnap ; then
 		exit 1
 	fi
 	if ! _cj_conf $_pname $_base $_ipaddr $_lvl $_potbase $_usesnap ; then

@@ -217,18 +217,58 @@ pot-create()
 		esac
 	done
 
-	if [ $_lvl -ge 2 ]; then
-		if [ -z "$_potbase" ]; then
-			_error "level $_lvl pots need another pot as reference"
-			create-help
+	# check options consitency
+	case $_lvl in
+		0)
+			if [ -z "$_base" ]; then
+				_error "level $_lvl needs option -b"
+				create-help
+				exit 1
+			fi
+			;;
+		1)
+			if [ -z "$_base" -a -z "$_potbase" ]; then
+				_error "at least one of -b and -P has to be used"
+				create-help
+				exit 1
+			fi
+			if [ -z "$_base" ]; then
+				if ! _is_pot $_potbase ; then
+					_error "-P $_potbase : is not a pot"
+					create-help
+					exit 1
+				fi
+				_base=$( _get_pot_base $_potbase )
+				if [ -z "$_base" ]; then
+					_error "-P $potbase has no base??"
+					exit 1
+				fi
+				_debug "-P $_potbase induced -b $_base"
+			fi
+			;;
+		2)
+			if [ -z "$_potbase" ]; then
+				_error "level $_lvl pots need another pot as reference"
+				create-help
+				exit 1
+			fi
+			if ! _is_pot $_potbase ; then
+				_error "-P $_potbase : is not a pot"
+				create-help
+				exit 1
+			fi
+			if [ -n "$_base" ]; then
+				if [ "$( _get_pot_base $_potbase )" != "$_base" ]; then
+					_error "-b $_base and -P $_potbase are not compatible"
+					exit 1
+				fi
+			fi
+			;;
+		*)
+			_error "level $_lvl is not supported"
 			exit 1
-		fi
-		if ! _is_pot $_potbase ; then
-			_error "-P $_potbase : is not a pot"
-			create-help
-			exit 1
-		fi
-	fi
+			;;
+	esac
 	if [ -z "$_pname" ]; then
 		_error "pot name is missing"
 		create-help

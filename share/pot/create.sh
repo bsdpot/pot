@@ -10,6 +10,7 @@ create-help()
 	echo '  -i ipaddr : an ip address'
 	echo '  -l lvl : pot level'
 	echo '  -f flavour : flavour to be used'
+	echo '  -P pot : the pot to be used as reference with lvl 2'
 }
 
 # $1 pot name
@@ -32,22 +33,27 @@ _cj_zfs()
 	if [ ! -d "${POT_FS_ROOT}/jails/$_pname/m" ]; then
 		mkdir -p ${POT_FS_ROOT}/jails/$_pname/m
 	fi
+
 	# lvl 0 images mount directly usr.local and custom
 	if [ $_lvl -eq 0 ]; then
 		return 0 # true
 	fi
-	# Clone the usr.local dataset
-	if ! _zfs_is_dataset $_jdset/usr.local ; then
-		_snap=$(_zfs_last_snap ${POT_ZFS_ROOT}/bases/$_base/usr.local)
-		if [ -n "$_snap" ]; then
-			_debug "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap"
-			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_pname/usr.local ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap $_jdset/usr.local
+
+	# lvl 1 images clone usr.local
+	if [ $_lvl -eq 1 ]; then
+		# Clone the usr.local dataset
+		if ! _zfs_is_dataset $_jdset/usr.local ; then
+			_snap=$(_zfs_last_snap ${POT_ZFS_ROOT}/bases/$_base/usr.local)
+			if [ -n "$_snap" ]; then
+				_debug "Clone zfs snapshot ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap"
+				zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_pname/usr.local ${POT_ZFS_ROOT}/bases/$_base/usr.local@$_snap $_jdset/usr.local
+			else
+				_error "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/usr.local"
+				return 1 # false
+			fi
 		else
-			_error "no snapshot found for ${POT_ZFS_ROOT}/bases/$_base/usr.local"
-			return 1 # false
+			_info "$_jdset/usr.local exists already"
 		fi
-	else
-		_info "$_jdset/usr.local exists already"
 	fi
 	# Clone the custom dataset
 	if ! _zfs_is_dataset $_jdset/custom ; then
@@ -69,13 +75,15 @@ _cj_zfs()
 # $2 base name
 # $3 ip
 # $4 level
+# $5 pot-base name
 _cj_conf()
 {
-	local _pname _base _ip _lvl _jdir _bdir
+	local _pname _base _ip _lvl _jdir _bdir _potbase
 	_pname=$1
 	_base=$2
 	_ip=$3
 	_lvl=$4
+	_potbase=$5
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 	if [ ! -d $_jdir/conf ]; then
@@ -86,9 +94,13 @@ _cj_conf()
 			echo "$_bdir ${_jdir}/m"
 			echo "$_bdir/usr/local ${_jdir}/m/usr/local"
 			echo "$_bdir/opt/custom ${_jdir}/m/opt/custom"
-		else
+		elif [ $_lvl -eq 1 ]; then
 			echo "$_bdir ${_jdir}/m ro"
 			echo "$_jdir/usr.local ${_jdir}/m/usr/local"
+			echo "$_jdir/custom ${_jdir}/m/opt/custom"
+		elif [ $_lvl -eq 2 ]; then
+			echo "$_bdir ${_jdir}/m ro"
+			echo "${POT_FS_ROOT}/jails/$_potbase/usr.local ${_jdir}/m/usr/local ro"
 			echo "$_jdir/custom ${_jdir}/m/opt/custom"
 		fi
 	) > $_jdir/conf/fs.conf
@@ -133,13 +145,14 @@ _cj_flv()
 
 pot-create()
 {
-	local _pname _ipaddr _lvl _base _flv
+	local _pname _ipaddr _lvl _base _flv _potbase
 	_pname=
 	_base=
 	_ipaddr=inherit
 	_lvl=1
 	_flv=
-	args=$(getopt hvp:i:l:b:f: $*)
+	_potbase=
+	args=$(getopt hvp:i:l:b:f:P: $*)
 	if [ $? -ne 0 ]; then
 		create-help
 		exit 1
@@ -169,7 +182,10 @@ pot-create()
 			;;
 		-b)
 			_base=$2
-			# TODO: parameter validtion
+			shift 2
+			;;
+		-P)
+			_potbase=$2
 			shift 2
 			;;
 		-f)
@@ -193,6 +209,18 @@ pot-create()
 		esac
 	done
 
+	if [ $_lvl -ge 2 ]; then
+		if [ -z "$_potbase" ]; then
+			_error "level $_lvl pots need another pot as reference"
+			create-help
+			exit 1
+		fi
+		if ! is_pot $_potbase ; then
+			_error "-P $_potbase : is not a pot"
+			create-help
+			exit 1
+		fi
+	fi
 	if [ -z "$_pname" ]; then
 		_error "pot name is missing"
 		create-help
@@ -207,7 +235,7 @@ pot-create()
 	if ! _cj_zfs $_pname $_base $_lvl ; then
 		exit 1
 	fi
-	if ! _cj_conf $_pname $_base $_ipaddr $_lvl ; then
+	if ! _cj_conf $_pname $_base $_ipaddr $_lvl $_potbase ; then
 		exit 1
 	fi
 	_cj_flv $_pname default

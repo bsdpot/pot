@@ -24,7 +24,7 @@ _js_mount()
 		_node=$( echo $line | awk '{print $1}' )
 		_mnt_p=$( echo $line | awk '{print $2}' )
 		_opt=$( echo $line | awk '{print $3}' )
-		mount_nullfs -o {_opt:-rw} $_node $_mnt_p
+		mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
 		# TODO - check the return value
 	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
 

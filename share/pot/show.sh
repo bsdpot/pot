@@ -10,8 +10,18 @@ show-help()
 	echo '  -p potname select the pot by name'
 }
 
-# $1 pot name
+# show pot static information
 _show_pot()
+{
+	local _pname
+	_pname=$1
+	printf "pot %s\n" $_pname
+	printf "\tdisk usage      : %s\n" $( zfs list -o used -H ${POT_ZFS_ROOT}/jails/$_pname)
+}
+
+# show pot runtime information
+# $1 pot name
+_show_pot_run()
 {
 	local _pname _res
 	local _vm _pm
@@ -19,7 +29,6 @@ _show_pot()
 	_res="$(rctl -hu jail:$_pname )"
 	_vm="$(echo $_res | tr ' ' '\n' | grep ^vmemoryuse | cut -d'=' -f2)"
 	_pm="$(echo $_res | tr ' ' '\n' | grep ^memoryuse | cut -d'=' -f2)"
-	printf "pot %s\n" $_pname
 	printf "\tvirtual memory  : %s\n" $_vm
 	printf "\tphysical memory : %s\n" $_pm
 }
@@ -30,8 +39,9 @@ _show_all_pots()
 	_jdir="${POT_FS_ROOT}/jails/"
 	_pots=$( find $_jdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
+		_show_pot $_p
 		if _is_pot_running $_p ; then
-			_show_pot $_p
+			_show_pot_run $_p
 		fi
 	done
 }
@@ -81,10 +91,9 @@ pot-show()
 			_error "$_pname is not a valid pot"
 			exit 1
 		fi
-		if ! _is_pot_running $_pname ; then
-			_error "$_pname is not running - no runtime information available"
-			exit 0
-		fi
 		_show_pot $_pname
+		if _is_pot_running $_pname ; then
+			_show_pot_run $_pname
+		fi
 	fi
 }

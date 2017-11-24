@@ -6,6 +6,7 @@ destroy-help()
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p potname : the pot name (mandatory)'
+	echo '  -f : force the stop and destroy'
 }
 
 # $1 pot name
@@ -28,9 +29,10 @@ _pot_zfs_destroy()
 
 pot-destroy()
 {
-	local _pname 
+	local _pname _force
 	_pname=
-	args=$(getopt hvp: $*)
+	_force=
+	args=$(getopt hvfp: $*)
 	if [ $? -ne 0 ]; then
 		destroy-help
 		exit 1
@@ -44,6 +46,10 @@ pot-destroy()
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			shift
+			;;
+		-f)
+			_force="YES"
 			shift
 			;;
 		-p)
@@ -63,9 +69,12 @@ pot-destroy()
 		exit 1
 	fi
 	if _is_pot_running $_pname ; then
-		_error "pot $_pname is running"
-		exit 1
-		# TODO stop it or add a --force option and stop it
+		if [ "$_force" = "YES" ]; then
+			pot-cmd stop $_pname
+		else
+			_error "pot $_pname is running"
+			exit 1
+		fi
 	fi
 	_pot_zfs_destroy $_pname
 }

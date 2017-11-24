@@ -124,6 +124,10 @@ case "${CMD}" in
 		pot-cmd "${CMD}" $@
 		exit 0
 		;;
+	run)
+		pot-cmd term -f $@
+		exit 0
+		;;
 	*)
 		usage
 		exit 1

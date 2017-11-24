@@ -37,12 +37,34 @@ _show_all_pots()
 {
 	local _jdir _pots
 	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( find $_jdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
 		_show_pot $_p
 		if _is_pot_running $_p ; then
 			_show_pot_run $_p
 		fi
+	done
+}
+
+_show_all_bases()
+{
+	local _bdir _bases
+	_bdir="${POT_FS_ROOT}/bases/"
+	_bases=$( ls -d $_bdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	for _b in $_bases; do
+		printf "base %s\n" $_b
+		printf "\tdisk usage      : %s\n" $( zfs list -o used -H ${POT_ZFS_ROOT}/bases/$_b)
+	done
+}
+
+_show_all_fscomps()
+{
+	local _fdir _fscomps
+	_fdir="${POT_FS_ROOT}/fscomp/"
+	_fscomps=$( ls -d $_fdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	for _f in $_fscomps; do
+		printf "fscomp %s\n" $_f
+		printf "\tdisk usage      : %s\n" $( zfs list -o used -H ${POT_ZFS_ROOT}/fscomp/$_f)
 	done
 }
 
@@ -86,6 +108,10 @@ pot-show()
 	fi
 	if [ -n "$_all" ]; then
 		_show_all_pots
+		echo
+		_show_all_bases
+		echo
+		_show_all_fscomps
 	else
 		if ! _is_pot $_pname ; then
 			_error "$_pname is not a valid pot"

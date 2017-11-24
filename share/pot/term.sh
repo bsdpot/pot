@@ -6,6 +6,7 @@ term-help()
 	echo "pot term [-h] [potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -f force: it start the pot, if it'\''s not running'
 	echo '  potname : the desired pot'
 }
 
@@ -20,8 +21,10 @@ _term()
 
 pot-term()
 {
-	local _pname
-	args=$(getopt hv $*)
+	local _pname _force
+	_pname=
+	_force=
+	args=$(getopt hvf $*)
 	if [ $? -ne 0 ]; then
 		term-help
 		exit 1
@@ -38,6 +41,10 @@ pot-term()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
+		-f)
+			_force="YES"
+			shift
+			;;
 		--)
 			shift
 			break
@@ -51,8 +58,16 @@ pot-term()
 		exit 1
 	fi
 	if ! _is_pot_running $_pname ; then
-		_error "The pot $_pname is not running"
-		exit 1
+		if [ "$_force" = "YES" ]; then
+			pot-cmd start $_pname
+			if ! _is_pot_running $_pname ; then
+				_error "The pot $_pname doesn't start"
+				exit 1
+			fi
+		else
+			_error "The pot $_pname is not running"
+			exit 1
+		fi
 	fi
 	_term $_pname
 }

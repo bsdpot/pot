@@ -10,6 +10,16 @@ list-help()
 	echo '  -f list fs components instead of pots'
 }
 
+_ls_info_pot_fs()
+{
+	local _node _mnt_p
+	while read -r line ; do
+		_node=$( echo $line | awk '{print $1}' )
+		_mnt_p=$( echo $line | awk '{print $2}' )
+		printf "\t\t${_mnt_p##${POT_FS_ROOT}/jails/} => ${_node##${POT_FS_ROOT}/}\n"
+	done < $1
+}
+
 # $1 pot name
 _ls_info_pot()
 {
@@ -17,17 +27,21 @@ _ls_info_pot()
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_lvl=$( _get_conf_var $_pname pot.level)
-	printf "pot name\t%s\n" $_pname
-	printf "\t\tbase : %s\n" "$( _get_conf_var $_pname pot.base)"
-	printf "\t\tlevel : %s\n" "$_lvl"
+	printf "pot name : %s\n" $_pname
+	printf "\tbase : %s\n" "$( _get_conf_var $_pname pot.base)"
+	printf "\tlevel : %s\n" "$_lvl"
 	if [ $_lvl -eq 2 ]; then
-		printf "\t\tbase pot : %s\n" "$( _get_conf_var $_pname pot.potbase)"
+		printf "\tbase pot : %s\n" "$( _get_conf_var $_pname pot.potbase)"
 	fi
-	printf "\t\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
+	printf "\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
 	if _is_pot_running $_pname ; then
-		printf "\t\tactive : true\n"
+		printf "\tactive : true\n"
 	else
-		printf "\t\tactive : false\n"
+		printf "\tactive : false\n"
+	fi
+	if _is_verbose ; then
+		printf "\tdatasets:\n"
+		_ls_info_pot_fs $_cdir/fs.conf
 	fi
 	echo
 }
@@ -36,7 +50,7 @@ _ls_pots()
 {
 	local _jdir _pots
 	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( find $_jdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$(  ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
 		_ls_info_pot $_p
 	done
@@ -46,7 +60,7 @@ _ls_bases()
 {
 	local _bdir _bases
 	_bdir="${POT_FS_ROOT}/bases/"
-	_bases=$( find $_bdir -type d -depth 1 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_bases=$(  ls -d $_bdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _b in $_bases; do
 		 echo "bases: $_b"
 	done
@@ -56,7 +70,7 @@ _ls_fscomp()
 {
 	local _fdir _fscomps
 	_fdir="${POT_FS_ROOT}/fscomp/"
-	_fscomps=$( ls -l $_fdir | grep ^d | awk '{print $9}' )
+	_fscomps=$( ls -d $_fdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _f in $_fscomps; do
 		 echo "fscomp: $_f"
 	done

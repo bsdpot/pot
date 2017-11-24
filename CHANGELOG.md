@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Changed pot configuration. No jail.conf anymore, but pot.conf
 - Pots with an ip are now based on epair/vnet/VIMAGE technology
 - Command show now shows resource usage of all pots by default
+- Add more information in show and list command
 
 ### Deprecated
 - jail.conf files are currently ignored, please recreate pots

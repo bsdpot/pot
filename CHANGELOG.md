@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add some command alias: ls is an alias of list
 - Auto-start of vnet, when needed
 - Add level 2 pot support, adding special option -P and -S in create command
+- Add a run command, to start and enter in a pot
+- Add a -f option to destroy and term, to fix/force the operation
 
 ### Changed
 - Changed pot configuration. No jail.conf anymore, but pot.conf

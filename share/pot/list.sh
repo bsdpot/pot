@@ -13,10 +13,16 @@ list-help()
 # $1 pot name
 _ls_info_pot()
 {
-	local _pname _cdir
+	local _pname _cdir _lvl
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_lvl=$( _get_conf_var $_pname pot.level)
 	printf "pot name\t%s\n" $_pname
+	printf "\t\tbase : %s\n" "$( _get_conf_var $_pname pot.base)"
+	printf "\t\tlevel : %s\n" "$_lvl"
+	if [ $_lvl -eq 2 ]; then
+		printf "\t\tbase pot : %s\n" "$( _get_conf_var $_pname pot.potbase)"
+	fi
 	printf "\t\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
 	if _is_pot_running $_pname ; then
 		printf "\t\tactive : true\n"

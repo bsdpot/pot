@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add level 2 pot support, adding special option -P and -S in create command
 - Add a run command, to start and enter in a pot
 - Add a -f option to destroy and term, to fix/force the operation
+- Add -F for flavor and -a for all in list command
 
 ### Changed
 - Changed pot configuration. No jail.conf anymore, but pot.conf
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add more information in show and list command
 
 ### Deprecated
-- jail.conf files are currently ignored, please recreate pots
+- jail.conf files are currently ignored, please destroy and recreate pots
 
 ## [0.0.1-beta] 2017-11-07
 ### Added

@@ -8,6 +8,8 @@ list-help()
 	echo '  -v verbose'
 	echo '  -b list bases instead of pots'
 	echo '  -f list fs components instead of pots'
+	echo '  -F list available flavours'
+	echo '  -a list everything'
 }
 
 _ls_info_pot_fs()
@@ -64,6 +66,7 @@ _ls_bases()
 	for _b in $_bases; do
 		 echo "bases: $_b"
 	done
+	echo
 }
 
 _ls_fscomp()
@@ -74,13 +77,25 @@ _ls_fscomp()
 	for _f in $_fscomps; do
 		 echo "fscomp: $_f"
 	done
+	echo
+}
+
+_ls_flavour()
+{
+	local _flv1 _flv2 _flv
+	_flv1=$( ls ${_POT_FLAVOUR_DIR} | grep -v .sh$ | xargs -I {} basename {} )
+	_flv2=$( ls ${_POT_FLAVOUR_DIR}/*.sh | xargs -I {} basename {} | sed 's/\.sh//' )
+	_flv=$( printf "%s\n%s\n" $_flv1 $_flv2 | sort -u | tr '\n' ' ' )
+	for _f in $_flv ; do
+		echo "flavour: $_f"
+	done
 }
 
 pot-list()
 {
 	local _obj
 	_obj="pots"
-	args=$(getopt hvbf $*)
+	args=$(getopt hvbfFa $*)
 	if [ $? -ne 0 ]; then
 		list-help
 		exit 1
@@ -104,6 +119,14 @@ pot-list()
 			_obj="fscomp"
 			shift
 			;;
+		-F)
+			_obj="flavour"
+			shift
+			;;
+		-a)
+			_obj="all"
+			shift
+			;;
 		--)
 			shift
 			break
@@ -119,6 +142,15 @@ pot-list()
 			;;
 		"fscomp")
 			_ls_fscomp
+			;;
+		"flavour")
+			_ls_flavour
+			;;
+		"all")
+			_ls_bases
+			_ls_pots
+			_ls_fscomp
+			_ls_flavour
 			;;
 	esac
 }

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.0.1-rc.1] 2017-11-28
 ### Added
 - Add a vnet-start command, to properly init the vnet network configuration (bridge+pf)
 - Add an option to show, to show all pot resource usage
@@ -25,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 - jail.conf files are currently ignored, please destroy and recreate pots
 
+### Removed
+- scripts directory and j\* commands in bin. None of them could really works
 ## [0.0.1-beta] 2017-11-07
 ### Added
 - Add option -b to list, to list available bases

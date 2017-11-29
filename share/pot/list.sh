@@ -10,6 +10,7 @@ list-help()
 	echo '  -f list fs components instead of pots'
 	echo '  -F list available flavours'
 	echo '  -a list everything'
+	echo '  -s list snaphots'
 }
 
 _ls_info_pot_fs()
@@ -20,6 +21,15 @@ _ls_info_pot_fs()
 		_mnt_p=$( echo $line | awk '{print $2}' )
 		printf "\t\t${_mnt_p##${POT_FS_ROOT}/jails/} => ${_node##${POT_FS_ROOT}/}\n"
 	done < $1
+}
+
+_ls_info_pot_snap()
+{
+	local _pname
+	_pname=$1
+	for _s in $( zfs list -t snapshot -o name -Hr ${POT_ZFS_ROOT}/jails/$_pname | tr '\n' ' ' ) ; do
+		printf "\t\t%s\n" $_s
+	done
 }
 
 # $1 pot name
@@ -44,6 +54,8 @@ _ls_info_pot()
 	if _is_verbose ; then
 		printf "\tdatasets:\n"
 		_ls_info_pot_fs $_cdir/fs.conf
+		printf "\tsnapshot:\n"
+		_ls_info_pot_snap $_pname
 	fi
 	echo
 }

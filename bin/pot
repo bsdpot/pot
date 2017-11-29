@@ -84,6 +84,7 @@ Commands:
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
 	snapshot -- Take a snapshot of a pot
+	revert -- Restore the last snapshot
 EOF
 }
 
@@ -120,7 +121,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|\
 	add-fscomp|destroy|\
 	start|stop|term|\
-	snapshot)
+	snapshot|revert)
 		pot-cmd "${CMD}" $@
 		exit 0
 		;;

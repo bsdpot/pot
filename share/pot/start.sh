@@ -15,6 +15,21 @@ start-help()
 	echo '  potname : the jail that has to start'
 }
 
+# $1 pot name
+# $2 the network interface, if created
+start-cleanup()
+{
+	local _pname
+	_pname=$1
+	if [ -z "$_pname" ]; then
+		return
+	fi
+	if [ -z $2 ]; then
+		ifconfig $2 destroy
+	fi
+	pot-cmd stop $_pname
+}
+
 # $1 jail name
 _js_mount()
 {
@@ -25,10 +40,21 @@ _js_mount()
 		_mnt_p=$( echo $line | awk '{print $2}' )
 		_opt=$( echo $line | awk '{print $3}' )
 		mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
-		# TODO - check the return value
+		if [ "$?" -ne 0 ]; then
+			_error "Error mouning $_node"
+			start-cleanup $_pname
+		else
+			_debug "mount $_mnt_p"
+		fi
 	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
 
 	mount -t tmpfs tmpfs ${POT_FS_ROOT}/jails/$_pname/m/tmp
+	if [ "$?" -ne 0 ]; then
+		_error "Error mouning tmpfs"
+		start-cleanup $_pname
+	else
+		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
+	fi
 }
 
 # $1 jail name
@@ -39,6 +65,7 @@ _js_resolv()
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	if [ ! -r /etc/resolv.conf ]; then
 		_error "No resolv.conf found in /etc"
+		start-cleanup $_pname
 		return 1 # false
 	fi
 	if [ -d $_jdir/custom/etc ]; then
@@ -59,6 +86,7 @@ _js_create_epair()
 	_epair=$(ifconfig epair create)
 	if [ -z "${_epair}" ]; then
 		_error "ifconfig epair failed"
+		start-cleanup $_pname
 		exit 1 # false
 	fi
 	echo ${_epair%a}
@@ -88,6 +116,7 @@ _js_vnet()
 _js_start()
 {
 	local _pname _jdir _iface _hostname _osrelease _param
+	_iface=
 	_param="allow.set_hostname allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags"
 	_param="$_param mount.devfs persist exec.stop=sh,/etc/rc.shutdown"
@@ -105,6 +134,9 @@ _js_start()
 	else
 		_param="$_param ip4=inherit"
 		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
+	fi
+	if ! _is_pot_runnning $_pname ; then
+		start-cleanup $_pname ${_iface}a
 	fi
 }
 

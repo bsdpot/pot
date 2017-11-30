@@ -1,0 +1,26 @@
+language: bash
+
+env:
+  - SHUNIT_COLOR='always'
+
+script:
+  # Execute the unit tests.
+  - ./test_runner
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+      - ksh
+      - zsh
+
+matrix:
+  include:
+    - os: linux
+      script:
+        # Run the source through ShellCheck (http://www.shellcheck.net).
+        - shellcheck gen_test_report.sh shunit2 *_test.sh
+        - shellcheck -s sh shunit2_test_helpers

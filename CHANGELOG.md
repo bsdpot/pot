@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a revert command, to rollback a pot snapshot
 - Add snaposhot information in list command
 
+### Fixed
+- If a start fails, it tries to clean up (umount)
+
 ## [0.0.1-rc.1] 2017-11-28
 ### Added
 - Add a vnet-start command, to properly init the vnet network configuration (bridge+pf)

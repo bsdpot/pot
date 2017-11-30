@@ -2,17 +2,17 @@
 
 create-fscomp-help()
 {
-	echo "pot create-fscomp [-h][-v] -z dataset"
+	echo "pot create-fscomp [-h][-v] -f name"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -z dataset : the dataset name (mandatory)'
+	echo '  -f name : the fs component name (mandatory)'
 }
 
 pot-create-fscomp()
 {
 	local _dset
 	_dset=
-	args=$(getopt hvz: $*)
+	args=$(getopt hvf: $*)
 	if [ $? -ne 0 ]; then
 		create-fscomp-help
 		exit 1
@@ -28,7 +28,7 @@ pot-create-fscomp()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
-		-z)
+		-f)
 			_dset="${POT_ZFS_ROOT}/fscomp/$2"
 			shift 2
 			;;
@@ -40,7 +40,7 @@ pot-create-fscomp()
 	done
 
 	if [ -z "$_dset" ]; then
-		_error "zfs dataset is missing"
+		_error "fs component name is missing"
 		create-fscomp-help
 		exit 1
 	fi
@@ -48,10 +48,10 @@ pot-create-fscomp()
 	if ! _zfs_is_dataset "$_dset" ; then
 		zfs create "$_dset"
 		if [ $? -ne 0 ]; then
-			_error "zfs dataset $_dset failed"
+			_error "fs component $_dset creation failed"
 			exit 1
 		fi
 	else
-		_info "zfs dataset $_dset already exists"
+		_info "fs component $_dset already exists"
 	fi
 }

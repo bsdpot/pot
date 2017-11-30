@@ -2,7 +2,7 @@
 
 destroy-help()
 {
-	echo "pot destroy [-hv] -p potname"
+	echo "pot destroy [-hvf] -p potname"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p potname : the pot name (mandatory)'

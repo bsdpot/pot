@@ -10,7 +10,7 @@ init-help()
 
 pot-init()
 {
-	args=$(getopt hr:v $*)
+	args=$(getopt hv $*)
 	if [ $? -ne 0 ]; then
 		init-help
 		exit 1
@@ -44,7 +44,6 @@ pot-init()
 		_info "${POT_ZFS_ROOT} already present"
 	fi
 
-	set -x
 	# create the root directory
 	if [ ! -d ${POT_FS_ROOT} ]; then
 		mkdir -p ${POT_FS_ROOT}

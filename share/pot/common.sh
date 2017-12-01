@@ -42,6 +42,7 @@ _debug()
 	_msg $__POT_MSG_DBG $*
 }
 
+# tested
 _is_verbose()
 {
 	if [ $_POT_VERBOSITY -gt $__POT_MSG_INFO ]; then
@@ -236,6 +237,7 @@ _is_pot_running()
 
 # $1 the element to search
 # $2.. the list
+# tested
 _is_in_list()
 {
 	local _e
@@ -253,6 +255,7 @@ _is_in_list()
 }
 
 # $1 mountpoint
+# tested
 _is_mounted()
 {
 	local _mnt_p _mounted
@@ -262,7 +265,7 @@ _is_mounted()
 	fi
 	_mounted=$( mount | grep -F $_mnt_p | awk '{print $3}')
 	for m in $_mounted ; do
-		if [ "$m" = "$_mounted" ]; then
+		if [ "$m" = "$_mnt_p" ]; then
 			return 0 # true
 		fi
 	done
@@ -270,6 +273,7 @@ _is_mounted()
 }
 
 # $1 mountpoint
+# tested
 _umount()
 {
 	local _mnt_p

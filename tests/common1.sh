@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # system utilities stubs
 mount()
@@ -107,8 +107,4 @@ setUp()
 	UMOUNT_CALLS=0
 }
 
-if [ -r shunit/shunit2 ]; then
-	. shunit/shunit2 
-else
-	echo "shunit2 not found :("
-fi
+. shunit/shunit2

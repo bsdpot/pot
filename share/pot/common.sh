@@ -1,5 +1,7 @@
 #!/bin/sh
 
+: ${EXIT:=exit}
+
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1
 __POT_MSG_DBG=2
@@ -66,10 +68,12 @@ _zfs_is_dataset()
 # $2 the mountpoint
 _zfs_exist()
 {
+	local _mnt_
+	#[ -z "$2" ] && return 1 ## return false # it should work as well
 	[ -z "$1" -o -z "$2" ] && return 1 ## return false
 	zfs list "$1" 2> /dev/null > /dev/null
 	[ $? -ne 0 ] && return 1 ## false
-	local _mnt_
+	#_mnt_=$(zfs list -H -o mountpoint $1 2> /dev/null) # it should work as well
 	_mnt_=$(zfs get -H mountpoint $1 2> /dev/null | awk '{ print $3 }')
 	if [ "$_mnt_" != "$2" ]; then
 		return 1 ## false
@@ -108,6 +112,17 @@ _pot_zfs_snap_full()
 			zfs snapshot ${_dset}@${_snaptag}
 		fi
 	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
+}
+
+# take a zfs snapshot of a fscomp
+# $1 pot name
+_fscomp_zfs_snap()
+{
+	local _fscomp _snaptag _dset
+	_fscomp=$1
+	_snaptag="$(date +%s)"
+	_info "Take snapshot of $_fscomp"
+	zfs snapshot ${POT_ZFS_ROOT}/fscomp/${_pname}@${_snaptag}
 }
 
 # $1 the dataset name

@@ -8,10 +8,13 @@ if [ "$(uname)" = "Linux" ]; then
 fi
 
 suites=$(ls *.sh)
+rc=0
 for s in $suites ; do
 	if [ "$s" = "test-suite.sh" ]; then
 		continue
 	else
-		$DOIT ./$s
+		echo "Running $s ..."
+		$DOIT ./$s || rc=1
 	fi
 done
+exit $rc

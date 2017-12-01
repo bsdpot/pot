@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/sh -x
 
 ./common1.sh

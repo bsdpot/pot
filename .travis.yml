@@ -1,2 +1,2 @@
-language: c
+language: bash
 script: cd tests && ./test-suite.sh

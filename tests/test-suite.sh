@@ -12,6 +12,7 @@ rc=0
 for s in $suites ; do
 	if [ "$s" = "test-suite.sh" ]; then
 		continue
+	elif [ "$s" = "common-stub.sh" ]; then
 	else
 		echo "Running $s ..."
 		$DOIT ./$s || rc=1

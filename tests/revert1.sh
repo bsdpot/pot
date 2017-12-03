@@ -7,48 +7,13 @@ EXIT="return"
 # UUT
 . ../share/pot/revert.sh
 
+# common stubs
+. common-stub.sh
+
 # app specific stubs
 revert-help()
 {
 	HELP_CALLS=$(( HELP_CALLS + 1 ))
-}
-
-_error()
-{
-	ERROR_CALLS=$(( ERROR_CALLS + 1 ))
-	#echo "_error: $*"
-}
-
-_info()
-{
-	INFO_CALLS=$(( INFO_CALLS + 1 ))
-}
-
-_is_pot()
-{
-	ISPOT_CALLS=$(( ISPOT_CALLS + 1 ))
-	if [ "$1" = "test-pot" -o "$1" = "test-pot-run" ]; then
-		return 0 # true
-	fi
-	return 1 # false
-}
-
-_is_pot_running()
-{
-	ISPOTRUN_CALLS=$(( ISPOTRUN_CALLS + 1 ))
-	if [ "$1" = "test-pot-run" ]; then
-		return 0 # true
-	fi
-	return 1 # false
-}
-
-_zfs_exist()
-{
-	ZFSEXIST_CALLS=$(( ZFSEXIST_CALLS + 1 ))
-	if [ "$1" = "/fscomp/test-fscomp" ]; then
-		return 0 # true
-	fi
-	return 1 # false
 }
 
 _pot_zfs_rollback()
@@ -254,15 +219,10 @@ test_pot_revert_042()
 
 setUp()
 {
-	_POT_VERBOSITY=1
+	common_setUp
 	HELP_CALLS=0
-	ERROR_CALLS=0
-	INFO_CALLS=0
-	ISPOT_CALLS=0
-	ISPOTRUN_CALLS=0
 	POTZFSROLL_CALLS=0
 	POTZFSROLLFULL_CALLS=0
-	ZFSEXIST_CALLS=0
 	FSCOMPZFSROLL_CALLS=0
 }
 

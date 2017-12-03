@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.2] 2017-12-03
+### Fixed
+- Fixed start, a typo prevents the correct behavior
+
 ## [0.0.1] 2017-12-03
 ### Added
 - Add a revert command, to rollback a pot snapshot

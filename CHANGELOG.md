@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a test framework
 - Add travis-ci support
 
+### Changed
+- snapshot options has changed to be more consistent and to support fscomp
+- revert options has changed to be more consistent and to support fscomp
+
 ### Fixed
 - If a start fails, it tries to clean up (umount)
 

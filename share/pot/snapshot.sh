@@ -3,36 +3,60 @@
 # supported releases
 snapshot-help()
 {
-	echo "pot snapshot [-h][-v][-f] [jailname]"
+	echo "pot snapshot [-h][-v][-a] [-p potname|-f fscomp]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -f full'
-	echo '  potname : the pot target of the snapshot'
+	echo '  -a all components of a pot'
+	echo '  -p potname : the pot target of the snapshot'
+	echo '  -f fscomp : the fs component target of the snapshot'
 }
 
 pot-snapshot()
 {
-	local _pname _full
-	args=$(getopt hvf $*)
+	local _full_pot _obj _objname
+	args=$(getopt hvap:f: $*)
 	if [ $? -ne 0 ]; then
 		snapshot-help
-		exit 1
+		${EXIT} 1
 	fi
-	_full="NO"
+	_full_pot="NO"
+	_obj=""
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
 			snapshot-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
-		-f)
-			_full="YES"
+		-a)
+			_full_pot="YES"
 			shift
+			;;
+		-p)
+			if [ -z "$_obj" ]; then
+				_obj="pot"
+				_objname="$2"
+			else
+				_error "-p|-f are exclusive"
+				snapshot-help
+				${EXIT} 1
+			fi
+			shift 2
+			;;
+		-f)
+			if [ -z "$_obj" ]; then
+				_obj="fscomp"
+				_objname="$2"
+			else
+				_error "-p|-f are exclusive"
+				snapshot-help
+				${EXIT} 1
+			fi
+			shift 2
 			;;
 		--)
 			shift
@@ -40,19 +64,44 @@ pot-snapshot()
 			;;
 		esac
 	done
-	_pname=$1
-	if [ -z "$_pname" ]; then
-		_error "A pot name is mandatory"
+	if [ -z "$_obj" ]; then
+		_error "one of -p|-f has to be used"
 		snapshot-help
-		exit 1
+		$EXIT 1
 	fi
-	if _is_pot_running $_pname ; then
-		_error "The pot $_pname is still running. Snapshot is possible only for stopped pots"
-		exit 1
+	if [ -z "$_objname" ]; then
+		_error "-p|-f options need an argument"
+		snapshot-help
+		${EXIT} 1
 	fi
-	if [ "$_full" = "YES" ]; then
-		_pot_zfs_snap_full $_pname
-	else
-		_pot_zfs_snap $_pname
-	fi
+	case $_obj in
+	"pot")
+		if ! _is_pot $_objname ; then
+			_error "$_objname is not a pot!"
+			snapshot-help
+			${EXIT} 1
+		fi
+		if _is_pot_running $_objname ; then
+			_error "The pot $_objname is still running. Snapshot is possible only for stopped pots"
+			${EXIT} 1
+		fi
+		if [ "$_full_pot" = "YES" ]; then
+			_pot_zfs_snap_full $_objname
+		else
+			_pot_zfs_snap $_objname
+		fi
+		;;
+	"fscomp")
+		if ! _zfs_exist ${POT_ZFS_ROOT}/fscomp/$_objname ${POT_FS_ROOT}/fscomp/$_objname ; then
+			_error "$_objname is not a valid fscomp"
+			snapshot-help
+			${EXIT} 1
+		fi
+		if [ "$_full_pot" = "YES" ]; then
+			_info "-a option is incompatible with -f. Ignored"
+		fi
+		_fscomp_zfs_snap $_objname
+		;;
+	esac
+	return 0
 }

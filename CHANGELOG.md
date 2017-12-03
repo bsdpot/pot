@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add a revert command, to rollback a pot snapshot
 - Add snaposhot information in list command
+- Add a test framework
+- Add travis-ci support
 
 ### Fixed
 - If a start fails, it tries to clean up (umount)

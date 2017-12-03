@@ -135,7 +135,7 @@ _js_start()
 		_param="$_param ip4=inherit"
 		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
 	fi
-	if ! _is_pot_runnning $_pname ; then
+	if ! _is_pot_running $_pname ; then
 		start-cleanup $_pname ${_iface}a
 	fi
 }

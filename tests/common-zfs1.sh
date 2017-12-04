@@ -56,8 +56,4 @@ test_ufs_exist_001()
 	assertEquals "0" "$?"
 }
 
-setUp()
-{
-}
-
 . shunit/shunit2

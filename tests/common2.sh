@@ -35,7 +35,7 @@ POT_ZFS_ROOT=
 
 _error()
 {
-#	echo $*
+	:
 }
 
 _zfs_is_dataset()
@@ -47,7 +47,6 @@ _zfs_is_dataset()
 	fi
 	return 1 # false
 }
-
 
 test_is_pot()
 {
@@ -65,10 +64,6 @@ test_is_pot()
 
 	_is_pot pot-test
 	assertEquals "0" "$?"
-}
-
-setUp()
-{
 }
 
 . shunit/shunit2

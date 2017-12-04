@@ -46,9 +46,9 @@ _error()
 
 _zfs_is_dataset()
 {
-	if /bin/[ "$1" = "/jails/pot-test" ]; then
+	if ${TEST} "$1" = "/jails/pot-test" ]; then
 		return 0 # true
-	elif /bin/[ "$1" = "/jails/pot-test-noconf" ]; then
+	elif ${TEST} "$1" = "/jails/pot-test-noconf" ]; then
 		return 0 # true
 	fi
 	return 1 # false

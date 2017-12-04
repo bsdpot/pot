@@ -55,11 +55,11 @@ _cb_tar_dir()
 		cp -a root opt/custom/
 		cp -a etc opt/custom/
 		cp -a var opt/custom/
-		mkdir opt/custom/usr.local.etc
-		mkdir opt/custom/usr.home
+		mkdir -p opt/custom/usr.local.etc
+		mkdir -p opt/custom/usr.home
 		# they could be part of flavor
-		mkdir usr/ports
-		mkdir appdata
+		mkdir -p usr/ports
+		mkdir -p appdata
 
 		# remove duplicated dirs
 		chflags -R noschg var/empty
@@ -73,6 +73,10 @@ _cb_tar_dir()
 		ln -s ../opt/custom/usr.home home
 		cd local
 		ln -s ../../opt/custom/usr.local.etc etc
+		mkdir -p var.db.pkg
+		cd ../../opt/custom/var/db
+		rm -rf pkg
+		ln -s ../../../../usr/local/var.db.pkg
 	)
 }
 
@@ -82,7 +86,7 @@ _cb_base_pot()
 	local _rel
 	_rel=$1
 	_rel_2=$(echo $_rel | sed 's/\./_/')
-	pot-cmd create -l 0 -b $_rel -p base-$_rel_2
+	pot-cmd create -F -l 0 -b $_rel -p base-$_rel_2
 }
 
 pot-create-base()

@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Add -F option to create, to disable the default flavour
 - More tests
+
+### Changed
+- Move packages db to the usr.local dataset - it's a breaking change
 
 ## [0.0.2] 2017-12-03
 ### Fixed

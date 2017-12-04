@@ -2,7 +2,7 @@
 
 create-help()
 {
-	echo "pot create [-hv] -p potname [-i ipaddr] [-l lvl] [-f flavour]"
+	echo "pot create [-hv] -p potname [-i ipaddr] [-l lvl] [-f flavour|-F]"
 	echo '  [-b base | -P basepot ] [-S] '
 	echo '  -h print this help'
 	echo '  -v verbose'
@@ -12,6 +12,7 @@ create-help()
 	echo '  -P pot : the pot to be used as reference with lvl 2'
 	echo '  -i ipaddr : an ip address'
 	echo '  -f flavour : flavour to be used'
+	echo '  -F : no default flavour is used'
 	echo '  -S : use snapshots for lvl 2 fs component'
 }
 
@@ -183,14 +184,16 @@ _cj_flv()
 pot-create()
 {
 	local _pname _ipaddr _lvl _base _flv _potbase
+	local _flv_default _usesnap
 	_pname=
 	_base=
 	_ipaddr=inherit
 	_lvl=1
 	_flv=
 	_potbase=
+	_flv_default="YES"
 	_usesnap="NO"
-	args=$(getopt hvp:i:l:b:f:P:S $*)
+	args=$(getopt hvp:i:l:b:f:P:SF $*)
 	if [ $? -ne 0 ]; then
 		create-help
 		exit 1
@@ -243,6 +246,10 @@ pot-create()
 				exit 1
 			fi
 			shift 2
+			;;
+		-F)
+			_flv_default="NO"
+			shift
 			;;
 		--)
 			shift
@@ -329,7 +336,9 @@ pot-create()
 	if ! _cj_conf $_pname $_base $_ipaddr $_lvl $_potbase $_usesnap ; then
 		exit 1
 	fi
-	_cj_flv $_pname default
+	if [ $_flv_default = "YES" ]; then
+		_cj_flv $_pname default
+	fi
 	if [ -n "$_flv" ]; then
 		_cj_flv $_pname $_flv
 	fi

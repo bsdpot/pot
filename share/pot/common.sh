@@ -56,6 +56,7 @@ _is_verbose()
 
 # check if the dataset $1 exists
 # $1 the dataset NAME
+# tested
 _zfs_is_dataset()
 {
 	[ -z "$1" ] && return 1 ## return false
@@ -66,19 +67,18 @@ _zfs_is_dataset()
 # check if the dataset $1 with the mountpoint $2 exists
 # $1 the dataset NAME
 # $2 the mountpoint
+# tested
 _zfs_exist()
 {
 	local _mnt_
-	#[ -z "$2" ] && return 1 ## return false # it should work as well
-	[ -z "$1" -o -z "$2" ] && return 1 ## return false
+	[ -z "$2" ] && return 1 # false
 	zfs list "$1" 2> /dev/null > /dev/null
-	[ $? -ne 0 ] && return 1 ## false
-	#_mnt_=$(zfs list -H -o mountpoint $1 2> /dev/null) # it should work as well
-	_mnt_=$(zfs get -H mountpoint $1 2> /dev/null | awk '{ print $3 }')
+	[ $? -ne 0 ] && return 1 # false
+	_mnt_=$(zfs list -H -o mountpoint $1 2> /dev/null)
 	if [ "$_mnt_" != "$2" ]; then
-		return 1 ## false
+		return 1 # false
 	fi
-	return 0 ## true
+	return 0 # true
 }
 
 # take a zfs recursive snapshot of a pot
@@ -88,7 +88,7 @@ _pot_zfs_snap()
 	local _pname _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
-	_info "Take snapshot of $_pname"
+	_debug "Take snapshot of $_pname"
 	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}
 }
 
@@ -99,7 +99,7 @@ _pot_zfs_snap_full()
 	local _pname _node _opt _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
-	_info "Take snapshot of the full $_pname"
+	_debug "Take snapshot of the full $_pname"
 	while read -r line ; do
 		_node=$( echo $line | awk '{print $1}' )
 		_opt=$( echo $line | awk '{print $3}' )
@@ -121,7 +121,7 @@ _fscomp_zfs_snap()
 	local _fscomp _snaptag _dset
 	_fscomp=$1
 	_snaptag="$(date +%s)"
-	_info "Take snapshot of $_fscomp"
+	_debug "Take snapshot of $_fscomp"
 	zfs snapshot ${POT_ZFS_ROOT}/fscomp/${_pname}@${_snaptag}
 }
 
@@ -215,6 +215,7 @@ _is_vnet_up()
 }
 
 # $1 pot name
+# tested
 _is_pot()
 {
 	local _pname _pdir
@@ -225,29 +226,28 @@ _is_pot()
 		return 1 # false
 	fi
 	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ]; then
-		_error "Jail $_pname not found"
-		return 1 # false
+		_error "zfs dataset $_pname not found"
+		return 2 # false
 	fi
 
 	if [ ! -d $_pdir/m -o \
 		 ! -r $_pdir/conf/pot.conf -o \
 		 ! -r $_pdir/conf/fs.conf ]; then
 		_error "Some component of the pot $_pname is missing"
-		return 1 # false
+		return 3 # false
 	fi
 	return 0
 }
 
-# $1 jail name
+# $1 pot name
+# tested
 _is_pot_running()
 {
-	local _pname _jlist
-	_pname="$1"
-	_jlist="$(jls -N | sed 1d | awk '{print $1}')"
-	if _is_in_list $_pname $_jlist ; then
-		return 0 # true
+	if [ -z "$1" ]; then
+		return 1 ## false
 	fi
-	return 1 # false
+	jls -j "$1" >/dev/null 2>/dev/null
+	return $?
 }
 
 # $1 the element to search

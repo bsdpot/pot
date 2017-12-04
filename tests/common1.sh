@@ -31,6 +31,23 @@ umount()
 	UMOUNT_CALL1_ARG3="$3"
 }
 
+jls()
+{
+	if [ "$1" = "-j" ]; then
+		case "$2" in
+		"pot-test"|\
+		"pot-test-2")
+			return 0 ## return true
+		esac
+		return 1
+	fi
+	cat << EOF--
+ JID             IP Address      Hostname                      Path
+ pot-test                  pot-test.pot-net       /opt/pot/jails/pot-test/m
+ pot-test-2                pot-test-2.pot-net     /opt/pot/jails/pot-test-2/m
+EOF--
+}
+
 # UUT
 . ../share/pot/common.sh
 
@@ -44,6 +61,21 @@ test_is_verbose()
 	_POT_VERBOSITY=2
 	_is_verbose
 	assertEquals "0" "$?"
+}
+
+test_is_pot_running()
+{
+	_is_pot_running
+	assertNotEquals "0" "$?"
+
+	_is_pot_running pot
+	assertNotEquals "0" "$?"
+
+	_is_pot_running pot-test
+	assertNotEquals "1" "$?"
+
+	_is_pot_running pot-test-2
+	assertNotEquals "1" "$?"
 }
 
 test_is_in_list()

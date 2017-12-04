@@ -76,7 +76,7 @@ _cb_tar_dir()
 		mkdir -p var.db.pkg
 		cd ../../opt/custom/var/db
 		rm -rf pkg
-		ln -s ../../../../usr/local/var.db.pkg
+		ln -s ../../../../usr/local/var.db.pkg pkg
 	)
 }
 

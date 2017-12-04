@@ -2,18 +2,24 @@
 
 # system utilities stubs
 
+if [ "$(uname)" = "Linux" ]; then
+	TEST=/usr/bin/{
+else
+	TEST=/bin/[
+fi
+
 [()
 {
-	if /bin/[ "$1" = "!" ]; then
-		if /bin/[ "$2" = "-d" ]; then
-			if /bin/[ "$3" = "/jails/pot-test" ]; then
+	if ${TEST} "$1" = "!" ]; then
+		if ${TEST} "$2" = "-d" ]; then
+			if ${TEST} "$3" = "/jails/pot-test" ]; then
 				return 1 # false
-			elif /bin/[ "$3" = "/jails/pot-test-nodset" ]; then
+			elif ${TEST} "$3" = "/jails/pot-test-nodset" ]; then
 				return 1 # false
-			elif /bin/[ "$3" = "/jails/pot-test-noconf" ]; then
+			elif ${TEST} "$3" = "/jails/pot-test-noconf" ]; then
 				return 1 # false
-			elif /bin/[ "$3" = "/jails/pot-test/m" ]; then
-				if /bin/[ "$4" = "-o" ]; then
+			elif ${TEST} "$3" = "/jails/pot-test/m" ]; then
+				if ${TEST} "$4" = "-o" ]; then
 					return 1 # false
 				fi
 			else
@@ -21,7 +27,7 @@
 			fi
 		fi
 	fi
-	/bin/[ "$@"
+	${TEST} "$@"
 	return $?
 }
 

@@ -3,7 +3,7 @@
 # system utilities stubs
 
 if [ "$(uname)" = "Linux" ]; then
-	TEST=/usr/bin/{
+	TEST=/usr/bin/[
 else
 	TEST=/bin/[
 fi

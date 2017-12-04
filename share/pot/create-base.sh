@@ -59,7 +59,6 @@ _cb_tar_dir()
 		mkdir -p opt/custom/usr.home
 		# they could be part of flavor
 		mkdir -p usr/ports
-		mkdir -p appdata
 
 		# remove duplicated dirs
 		chflags -R noschg var/empty
@@ -86,7 +85,11 @@ _cb_base_pot()
 	local _rel
 	_rel=$1
 	_rel_2=$(echo $_rel | sed 's/\./_/')
-	pot-cmd create -F -l 0 -b $_rel -p base-$_rel_2
+	if [ -x ${_POT_FLAVOUR_DIR}/default-base.sh ]; then
+		pot-cmd create -F -f default-base -l 0 -b $_rel -p base-$_rel_2
+	else
+		pot-cmd create -F -l 0 -b $_rel -p base-$_rel_2
+	fi
 }
 
 pot-create-base()

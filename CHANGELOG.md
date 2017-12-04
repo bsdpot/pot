@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Add support to default flavour with create-base
 - Add -F option to create, to disable the default flavour
 - More tests
 

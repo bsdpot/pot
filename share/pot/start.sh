@@ -30,6 +30,19 @@ start-cleanup()
 	pot-cmd stop $_pname
 }
 
+# $1 pot name
+_js_dep()
+{
+	local _pname _depPot
+	_pname=$1
+	_depPot="$( _get_conf_var $_pname pot.depend )"
+	if [ -z "$_depPot" ]; then
+		return 0 # true
+	fi
+	pot-start $_depPot
+	return 0 # true
+}
+
 # $1 jail name
 _js_mount()
 {
@@ -183,6 +196,9 @@ pot-start()
 	fi
 	if ! _is_pot $_pname ; then
 		exit 1
+	fi
+	if ! _js_dep $_pname ; then
+		_error "dependecy failed to start"
 	fi
 	case $_snap in
 		normal)

@@ -80,6 +80,7 @@ Commands:
 	create -- Create a new pot (jail)
 	destroy -- Destroy a new pot (jail)
 	add-fscomp -- Add a fs component to a pot
+	add-dep -- Add a dependency
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
@@ -119,7 +120,7 @@ case "${CMD}" in
 	list|\
 	init|vnet-start|\
 	create-base|create-fscomp|create|\
-	add-fscomp|destroy|\
+	add-fscomp|destroy|add-dep|\
 	start|stop|term|\
 	snapshot|revert)
 		pot-cmd "${CMD}" $@

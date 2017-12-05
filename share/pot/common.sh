@@ -141,6 +141,7 @@ _zfs_last_snap()
 	return 0 # true
 }
 
+# tested
 _pot_bridge()
 {
 	local _bridges

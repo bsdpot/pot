@@ -39,7 +39,9 @@ _js_dep()
 	if [ -z "$_depPot" ]; then
 		return 0 # true
 	fi
-	pot-start $_depPot
+	for _d in $_depPot ; do
+		pot-start $_depPot
+	done
 	return 0 # true
 }
 
@@ -190,7 +192,7 @@ pot-start()
 	done
 	_pname=$1
 	if [ -z "$_pname" ]; then
-		_error "A jail name is mandatory"
+		_error "A pot name is mandatory"
 		start-help
 		exit 1
 	fi

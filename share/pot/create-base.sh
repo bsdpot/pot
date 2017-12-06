@@ -90,6 +90,7 @@ _cb_base_pot()
 	else
 		pot-cmd create -F -l 0 -b $_rel -p base-$_rel_2
 	fi
+	pot-cmd snapshot -a -p base-$_rel_2
 }
 
 pot-create-base()

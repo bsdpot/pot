@@ -1,3 +1,5 @@
 /doc
 *.swp
-/etc/pot/*
+/etc/pot/flavours/*
+!/etc/pot/flavours/dns.sh
+

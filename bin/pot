@@ -40,7 +40,6 @@ else
 	_POT_FLAVOUR_DIR=
 fi
 
-echo _POT_FLAVOUR_DIR = $_POT_FLAVOUR_DIR
 if [ ! -d ${_POT_INCLUDE} ]; then
 	echo "Fatal error! Not able to find the subroutines dir on ${_POT_PREFIX}!"
 	exit 1

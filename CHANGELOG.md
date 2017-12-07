@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Add rename command, to rename a pot completely
 - Add dependency support, and related command add-dep
 - Add support to destroy bases and their related level 0 pot
 - Add support to recursive destroy

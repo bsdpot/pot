@@ -86,6 +86,7 @@ Commands:
 	term -- Start a terminal in a pot
 	snapshot -- Take a snapshot of a pot
 	revert -- Restore the last snapshot
+	rename -- Rename a pot
 EOF
 }
 
@@ -122,6 +123,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|\
 	add-fscomp|destroy|add-dep|\
 	start|stop|term|\
+	rename|\
 	snapshot|revert)
 		pot-cmd "${CMD}" $@
 		exit 0

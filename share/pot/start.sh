@@ -122,7 +122,9 @@ _js_vnet()
 	ifconfig $_bridge addm ${_epair}
 	_ip=$( _get_conf_var $_pname ip4 )
 	# set the network configuration in the pot's rc.conf
-	sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
+	if [ -w ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf ]; then
+		sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
+	fi
 	echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf
 	sysrc -f ${POT_FS_ROOT}/jails/$_pname/custom/etc/rc.conf defaultrouter="$POT_GATEWAY"
 }

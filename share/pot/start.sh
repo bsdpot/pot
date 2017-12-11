@@ -130,6 +130,22 @@ _js_vnet()
 }
 
 # $1 jail name
+_js_rss()
+{
+	local _pname _jid _cpuset _memory
+	_pname=$1
+	_cpuset="$( _get_conf_var $_pname pot.rss.cpuset)"
+	_memory="$( _get_conf_var $_pname pot.rss.memory)"
+	if [ -n "$_cpuset" ]; then
+		_jid="$( jls -j $_pname | sed 1d | awk '{ print $1 }' )"
+		cpuset -l $_cpuset -j $_jid
+	fi
+	if [ -n "$_memory" ]; then
+		rctl -a jail:$_pname:memoryuse:deny=$_memory
+	fi
+}
+
+# $1 jail name
 _js_start()
 {
 	local _pname _jdir _iface _hostname _osrelease _param
@@ -155,6 +171,7 @@ _js_start()
 	if ! _is_pot_running $_pname ; then
 		start-cleanup $_pname ${_iface}a
 	fi
+	_js_rss
 }
 
 pot-start()

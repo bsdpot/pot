@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- Add resource constraints, via add-rss command
 - Add clone-fscomp command, to clone a fscomp
 - Add clone command, to clone a pot
 - Add rename command, to completely rename a pot

@@ -35,19 +35,21 @@ _cj_zfs()
 	if [ ! -d $_pdir/conf ]; then
 		mkdir -p $_pdir/conf
 	fi
+	if [ -e "$_pdir/conf/fs.conf" ]; then
+		rm -f $_pdir/conf/fs.conf
+	fi
 	# Create the root mountpoint
 	if [ ! -d "$_pdir/m" ]; then
 		mkdir -p $_pdir/m
 	fi
- 
 	while read -r line ; do
 		_node=$( echo $line | awk '{print $1}' )
 		_mnt_p=$( echo $line | awk '{print $2}' )
 		_opt=$( echo $line | awk '{print $3}' )
 		# ro components are replicated "as is"
 		if [ "$_opt" = ro ] ; then
-			_debug $_node $_mnt_p $_opt
-			echo $_node $_mnt_p $_opt >> $_pdir/conf/fs.conf
+			_debug $_node ${_pdir}/${_mnt_p##${_pbdir}/} $_opt
+			echo $_node ${_pdir}/${_mnt_p##${_pbdir}/} $_opt >> $_pdir/conf/fs.conf
 		else
 			# managing potbase datasets
 			if [ "$_node" != "${_node##${_pbdir}}" ]; then

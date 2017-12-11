@@ -16,7 +16,7 @@ _rn_conf()
 	_pname=$1
 	_newname=$2
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
-	sed -i \'\' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
+	sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
 	sed -i '' -e "s%host.hostname=\"${_pname}%host.hostname=\"${_newname}%g" $_cdir/pot.conf
 }
 
@@ -33,20 +33,25 @@ _rn_zfs()
 #sudo zfs set mountpoint=/opt/pot/jails/dns2/custom zroot/pot/jails/dns2/custom
 #sudo zfs umount zroot/pot/jails/dns1       
 	if _zfs_is_dataset $_dset/usr.local ; then
+		_debug "Preparing $_dset/usr.local"
 		zfs umount -f $_dset/usr.local
-		zfs set mountpoint=${POT_ZF_ROOT}/jails/$_newname/usr.local $_dset/usr.local
+		zfs set mountpoint=${POT_FS_ROOT}/jails/$_newname/usr.local $_dset/usr.local
 	fi
 	if _zfs_is_dataset $_dset/custom ; then
+		_debug "Preparing $_dset/custom"
 		zfs umount -f $_dset/custom
-		zfs set mountpoint=${POT_ZF_ROOT}/jails/$_newname/custom $_dset/custom
+		zfs set mountpoint=${POT_FS_ROOT}/jails/$_newname/custom $_dset/custom
 	fi
 	if _zfs_is_dataset $_dset; then
+		_debug "Preparing $_dset"
 		zfs umount -f $_dset
 	fi
 #sudo zfs rename zroot/pot/jails/dns1 zroot/pot/jails/dns2
+	_debug "Renaming $_dset in $_nset"
 	zfs rename $_dset $_nset
 
 #sudo zfs mount zroot/pot/jails/dns2
+	_debug "Mount $_nset"
 	zfs mount $_nset
 #sudo zfs mount zroot/pot/jails/dns2/custom
 #sudo zfs mount zroot/pot/jails/dns2/usr.local

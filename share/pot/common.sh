@@ -81,6 +81,14 @@ _zfs_exist()
 	return 0 # true
 }
 
+_get_zfs_dataset()
+{
+	local _mnt_p _dset
+	_mnt_p=$1
+	_dset="$( zfs list -o name -H $_mnt_p )"
+	echo $_dset
+}
+
 # take a zfs recursive snapshot of a pot
 # $1 pot name
 _pot_zfs_snap()

@@ -78,6 +78,7 @@ Commands:
 	create-base	-- Create a new base image
 	create-fscomp -- Create a new fs component
 	create -- Create a new pot (jail)
+	clone -- Clone a pot creating a new one
 	destroy -- Destroy a new pot (jail)
 	add-fscomp -- Add a fs component to a pot
 	add-dep -- Add a dependency
@@ -123,7 +124,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|\
 	add-fscomp|destroy|add-dep|\
 	start|stop|term|\
-	rename|\
+	rename|clone|\
 	snapshot|revert)
 		pot-cmd "${CMD}" $@
 		exit 0

@@ -21,7 +21,7 @@ _add_rss()
 	_rssname="$2"
 	_rsslimit="$3"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
-	sed -i '' -e "s/pot.rss.$_rssname=.*$i/g" $_cdir/pot.conf
+	sed -i '' -e "s/pot.rss.$_rssname=.*$i//g" $_cdir/pot.conf
 	echo "pot.rss.$_rssname=$_rsslimit" >> $_cdir/pot.conf
 }
 

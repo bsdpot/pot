@@ -171,7 +171,7 @@ _js_start()
 	if ! _is_pot_running $_pname ; then
 		start-cleanup $_pname ${_iface}a
 	fi
-	_js_rss
+	_js_rss $_pname
 }
 
 pot-start()

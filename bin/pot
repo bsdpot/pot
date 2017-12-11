@@ -84,6 +84,7 @@ Commands:
 	destroy -- Destroy a pot
 	add-fscomp -- Add a fs component to a pot
 	add-dep -- Add a dependency
+	add-rss -- Add a resource constraint
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
@@ -123,7 +124,7 @@ case "${CMD}" in
 	list|\
 	init|vnet-start|\
 	create-base|create-fscomp|create|\
-	add-fscomp|destroy|add-dep|\
+	add-fscomp|destroy|add-dep|add-rss|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|\
 	snapshot|revert)

@@ -14,6 +14,8 @@ for s in $suites ; do
 		continue
 	elif [ "$s" = "common-stub.sh" ]; then
 		continue
+	elif [ "$s" = "monitor.sh" ]; then
+		continue
 	else
 		echo "Running $s ..."
 		$DOIT ./$s || rc=1

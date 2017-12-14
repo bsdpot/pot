@@ -47,9 +47,9 @@ _add_cpu()
 	_cpuset=$2
 	if _cpuset_validation $_cpuset ; then
 		_add_rss $_pname cpuset $_cpuset
-	else
-		"cpuset $_cpuset ignored"
+		return 0 # true
 	fi
+	return 1 # false
 }
 
 _add_memory()
@@ -69,14 +69,14 @@ pot-add-rss()
 	args=$(getopt hvp:C:M: $*)
 	if [ $? -ne 0 ]; then
 		add-rss-help
-		exit 1
+		${EXIT} 1
 	fi
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
 			add-rss-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -103,15 +103,23 @@ pot-add-rss()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		add-rss-help
-		exit 1
+		${EXIT} 1
+	fi
+	if ! _is_pot "$_pname" ; then
+		_error "$_pot is not a valid pot name"
+		add-rss-help
+		${EXIT} 1
 	fi
 	if [ -z "${_cpuset}${_memory}" ]; then
 		_error "One resource has to be specified (-C or -M)"
 		add-rss-help
-		exit 1
+		${EXIT} 1
 	fi
 	if [ -n "$_cpuset" ]; then
-		_add_cpu $_pname $_cpuset
+		if ! _add_cpu $_pname $_cpuset ; then
+			_error "cpuset $_cpuset not valid!"
+			${EXIT} 1
+		fi
 	fi
 	if [ -n "$_memory" ]; then
 		_add_memory $_pname $_memory

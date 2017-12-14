@@ -27,7 +27,7 @@ pot-add-dep()
 	args=$(getopt hvP:p: $*)
 	if [ $? -ne 0 ]; then
 		add-dep-help
-		exit 1
+		${EXIT} 1
 	fi
 	_depPot=
 	_pname=
@@ -36,7 +36,7 @@ pot-add-dep()
 		case "$1" in
 		-h)
 			add-dep-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -59,22 +59,27 @@ pot-add-dep()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		add-dep-help
-		exit 1
+		${EXIT} 1
 	fi
 	if [ -z "$_depPot" ]; then
 		_error "A dependency pot is mandatory"
 		add-dep-help
-		exit 1
+		${EXIT} 1
+	fi
+	if [ "$_pname" = "$_depPot" ]; then
+		_error "a pot cannot be run time dependecy of itself"
+		add-dep-help
+		${EXIT} 1
 	fi
 	if ! _is_pot $_pname ; then
 		_error "pot $_pname is not valid"
 		add-dep-help
-		exit 1
+		${EXIT} 1
 	fi
 	if ! _is_pot $_depPot ; then
 		_error "dependency pot $_depPot is not valid"
 		add-dep-help
-		exit 1
+		${EXIT} 1
 	fi
 	
 	_add_dependency $_pname $_depPot

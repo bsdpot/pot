@@ -58,6 +58,7 @@ _js_mount()
 		if [ "$?" -ne 0 ]; then
 			_error "Error mouning $_node"
 			start-cleanup $_pname
+			return 1 # false
 		else
 			_debug "mount $_mnt_p"
 		fi
@@ -67,6 +68,7 @@ _js_mount()
 	if [ "$?" -ne 0 ]; then
 		_error "Error mouning tmpfs"
 		start-cleanup $_pname
+		return 1 # false
 	else
 		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
 	fi

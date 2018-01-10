@@ -64,6 +64,8 @@ pot-vnet-start()
 		_debug "Bridge $_bridge already present"
 	fi
 
+	# load pf module
+	kldload -n pf
 	# firewall rules
 	_pfrules="/tmp/pot_pfrules"
 	if [ -w "$_pfrules" ]; then
@@ -79,5 +81,6 @@ pot-vnet-start()
 	if _is_verbose ; then
 		pfctl -s nat
 	fi
+	pfctl -e
 }
 

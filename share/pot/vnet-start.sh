@@ -11,7 +11,7 @@ vnet-start-help()
 pot-vnet-start()
 {
 	local _bridge _pfrules
-	args=$(getopt hr:v $*)
+	args=$(getopt hv $*)
 	if [ $? -ne 0 ]; then
 		vnet-start-help
 		exit 1

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.2.0] 2018-01-23
 ### Added
 - create-dns : new command, to create the dns pot
 - create : add the option -d to choose the type of dns (inherit or pot)

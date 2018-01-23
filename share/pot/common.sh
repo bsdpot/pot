@@ -223,7 +223,32 @@ _is_vnet_up()
 	fi
 }
 
+# $1 base name
+# $2 quiet / no _error messages are emitted (sometimes usefult)
+# tested
+_is_base()
+{
+	local _base _bdir _bdset
+	_base="$1"
+	_bdir="${POT_FS_ROOT}/bases/$_base"
+	_bdset="${POT_ZFS_ROOT}/bases/$_base"
+	if [ ! -d "$_bdir" ]; then
+		if [ "$2" != "quiet" ]; then
+			_error "Base $_base not found"
+		fi
+		return 1 # false
+	fi
+	if ! _zfs_is_dataset $_bdset ; then
+		if [ "$2" != "quiet" ]; then
+			_error "zfs dataset $_bdset not found"
+		fi
+		return 2 #false
+	fi
+	return 0 # true
+}
+
 # $1 pot name
+# $2 quiet / no _error messages are emitted (sometimes usefult)
 # tested
 _is_pot()
 {
@@ -231,18 +256,24 @@ _is_pot()
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	if [ ! -d $_pdir ]; then
-		_error "Pot $_pname not found"
+		if [ "$2" != "quiet" ]; then
+			_error "Pot $_pname not found"
+		fi
 		return 1 # false
 	fi
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ]; then
-		_error "zfs dataset $_pname not found"
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ; then
+		if [ "$2" != "quiet" ]; then
+			_error "zfs dataset $_pname not found"
+		fi
 		return 2 # false
 	fi
 
 	if [ ! -d $_pdir/m -o \
 		 ! -r $_pdir/conf/pot.conf -o \
 		 ! -r $_pdir/conf/fs.conf ]; then
-		_error "Some component of the pot $_pname is missing"
+		if [ "$2" != "quiet" ]; then
+			_error "Some component of the pot $_pname is missing"
+		fi
 		return 3 # false
 	fi
 	return 0

@@ -3,7 +3,7 @@
 create-help()
 {
 	echo "pot create [-hv] -p potname [-i ipaddr] [-l lvl] [-f flavour|-F]"
-	echo '  [-b base | -P basepot ] [-S] '
+	echo '  [-b base | -P basepot ] [-S] [-d dns]'
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p potname : the pot name (mandatory)'
@@ -11,6 +11,7 @@ create-help()
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference with lvl 2'
 	echo '  -i ipaddr : an ip address'
+	echo '  -d dns : one between inherit(default) or pot'
 	echo '  -f flavour : flavour to be used'
 	echo '  -F : no default flavour is used'
 	echo '  -S : use snapshots for lvl 2 fs component'
@@ -23,7 +24,7 @@ create-help()
 # $5 use snapshots
 _cj_zfs()
 {
-	local _pname _base _potbase _jdset _snap _custom
+	local _pname _base _potbase _jdset _usesnap _snap _custom
 	_pname=$1
 	_base=$2
 	_lvl=$3
@@ -104,17 +105,19 @@ _cj_zfs()
 # $2 base name
 # $3 ip
 # $4 level
-# $5 pot-base name
-# $6 use snapshots
+# $5 use snapshots
+# $6 dns
+# $7 pot-base name
 _cj_conf()
 {
-	local _pname _base _ip _lvl _jdir _bdir _potbase _usesnap
+	local _pname _base _ip _lvl _jdir _bdir _potbase _usesnap _dns
 	_pname=$1
 	_base=$2
 	_ip=$3
 	_lvl=$4
-	_potbase=$5
-	_usesnap=$6
+	_usesnap=$5
+	_dns=$6
+	_potbase=$7
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 	if [ ! -d $_jdir/conf ]; then
@@ -143,6 +146,7 @@ _cj_conf()
 		echo "pot.level=${_lvl}"
 		echo "pot.base=${_base}"
 		echo "pot.potbase=${_potbase}"
+		echo "pot.dns=${_dns}"
 		echo "host.hostname=\"${_pname}.$( hostname )\""
 		echo "osrelease=\"${_base}-RELEASE\""
 		if [ "$_ip" = "inherit" ]; then
@@ -151,6 +155,9 @@ _cj_conf()
 		else
 			echo "ip4=${_ipaddr}"
 			echo "vnet=true"
+		fi
+		if [ "${_dns}" == "pot" ]; then
+			echo "pot.depend=${POT_DNS_NAME}"
 		fi
 	) > $_jdir/conf/pot.conf
 }
@@ -184,7 +191,7 @@ _cj_flv()
 pot-create()
 {
 	local _pname _ipaddr _lvl _base _flv _potbase
-	local _flv_default _usesnap
+	local _flv_default _usesnap _dns
 	_pname=
 	_base=
 	_ipaddr=inherit
@@ -193,7 +200,8 @@ pot-create()
 	_potbase=
 	_flv_default="YES"
 	_usesnap="NO"
-	args=$(getopt hvp:i:l:b:f:P:SF $*)
+	_dns=inherit
+	args=$(getopt hvp:i:l:b:f:P:SFd: $*)
 	if [ $? -ne 0 ]; then
 		create-help
 		exit 1
@@ -250,6 +258,19 @@ pot-create()
 		-F)
 			_flv_default="NO"
 			shift
+			;;
+		-d)
+			case $2 in
+				"inherit")
+					;;
+				"pot")
+					_dns=pot
+					;;
+				*)
+					_error "The dns $2 is not a valid option: choose between inherit or pot"
+					exit 1
+			esac
+			shift 2
 			;;
 		--)
 			shift
@@ -330,10 +351,25 @@ pot-create()
 			pot-cmd vnet-start
 		fi
 	fi
+	if [ "$_dns" = "pot" ]; then
+		if ! _is_pot "${POT_DNS_NAME}" quiet ; then
+			_info "dns pot not found ($POT_DNS_NAME) - fixing"
+			pot-cmd create-dns
+		fi
+	fi
+	if _is_verbose ; then
+		_info "Option summary"
+		_info "pname : $_pname"
+		_info "base  : $_base"
+		_info "lvl   : $_lvl"
+		_info "dns   : $_dns"
+		_info "pbase : $_potbase"
+		_info "snap  : $_usesnap"
+	fi
 	if ! _cj_zfs $_pname $_base $_lvl $_potbase $_usesnap ; then
 		exit 1
 	fi
-	if ! _cj_conf $_pname $_base $_ipaddr $_lvl $_potbase $_usesnap ; then
+	if ! _cj_conf $_pname $_base $_ipaddr $_lvl ${_usesnap} $_dns $_potbase ; then
 		exit 1
 	fi
 	if [ $_flv_default = "YES" ]; then

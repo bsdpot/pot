@@ -126,7 +126,7 @@ case "${CMD}" in
 	show|\
 	list|\
 	init|vnet-start|\
-	create-base|create-fscomp|create|\
+	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|add-rss|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|\

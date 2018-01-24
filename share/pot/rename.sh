@@ -59,6 +59,21 @@ _rn_zfs()
 	zfs mount $_nset/usr.local
 }
 
+# rename also on all lvl2 and dependencies
+_rn_recursive()
+{
+	local _pname _newname _pots _cdir
+	_pname=$1
+	_newname=$2
+	_pots=$(  ls -d ${POT_FS_ROOT}/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	for _p in $_pots ; do
+		_cdir=${POT_FS_ROOT}/jails/$_p/conf
+		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
+		sed -i '' -e "s/^pot.potbase=$_pname$/pot.potbase=$_newname/" $_cdir/pot.conf
+		sed -i '' -e "s/^pot.depends=$_pname$/pot.depends=$_newname/" $_cdir/pot.conf
+	done
+}
+
 pot-rename()
 {
 	local _pname _newname
@@ -121,6 +136,6 @@ pot-rename()
 	fi
 	_rn_conf $_pname $_newname
 	_rn_zfs $_pname $_newname
-	# look for lvl 2 pot based on $_pname
+	_rn_recursive $_pname $_newname
 	return 0
 }

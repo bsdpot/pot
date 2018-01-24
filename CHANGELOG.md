@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - create-base (#016): do not re-create the base pot
+- rename (#017): apply the rename also in dependents pots (level 2 or runtime dependency)
 
 ## [0.2.0] 2018-01-23
 ### Added

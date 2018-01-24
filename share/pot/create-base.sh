@@ -82,13 +82,16 @@ _cb_tar_dir()
 # $1 release
 _cb_base_pot()
 {
-	local _rel
+	local _rel _pname
 	_rel=$1
 	_rel_2=$(echo $_rel | sed 's/\./_/')
-	if [ -x ${_POT_FLAVOUR_DIR}/default-base.sh ]; then
-		pot-cmd create -F -f default-base -l 0 -b $_rel -p base-$_rel_2
-	else
-		pot-cmd create -F -l 0 -b $_rel -p base-$_rel_2
+	_pname="base-$_rel_2"
+	if ! _is_pot $_pname quiet ; then
+		if [ -x ${_POT_FLAVOUR_DIR}/default-base.sh ]; then
+			pot-cmd create -F -f default-base -l 0 -b $_rel -p base-$_rel_2
+		else
+			pot-cmd create -F -l 0 -b $_rel -p base-$_rel_2
+		fi
 	fi
 	pot-cmd snapshot -a -p base-$_rel_2
 }

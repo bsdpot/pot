@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - set-rss : rename command (it was add-rss)
 
+### Fixed
+- create-base (#016): do not re-create the base pot
+
 ## [0.2.0] 2018-01-23
 ### Added
 - create-dns : new command, to create the dns pot

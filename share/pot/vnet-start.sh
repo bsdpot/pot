@@ -43,6 +43,9 @@ pot-vnet-start()
 		_error "No external interface defined"
 		exit 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 
 	# bridge creation
 	# if bridge0 doesn't exist yet

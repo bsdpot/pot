@@ -85,6 +85,10 @@ pot-snapshot()
 			_error "The pot $_objname is still running. Snapshot is possible only for stopped pots"
 			${EXIT} 1
 		fi
+		if ! _is_uid0 ; then
+			${EXIT} 1
+		fi
+
 		if [ "$_full_pot" = "YES" ]; then
 			_pot_zfs_snap_full $_objname
 		else
@@ -100,6 +104,10 @@ pot-snapshot()
 		if [ "$_full_pot" = "YES" ]; then
 			_info "-a option is incompatible with -f. Ignored"
 		fi
+		if ! _is_uid0 ; then
+			${EXIT} 1
+		fi
+
 		_fscomp_zfs_snap $_objname
 		;;
 	esac

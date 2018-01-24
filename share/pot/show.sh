@@ -38,8 +38,14 @@ _show_all_pots()
 	local _jdir _pots
 	_jdir="${POT_FS_ROOT}/jails/"
 	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	if ! _is_uid0 quiet; then
+		_info "runtime memory usage require root privileges"
+	fi
 	for _p in $_pots; do
 		_show_pot $_p
+		if ! _is_uid0 quiet; then
+			return
+		fi
 		if _is_pot_running $_p ; then
 			_show_pot_run $_p
 		fi

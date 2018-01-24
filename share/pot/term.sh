@@ -59,6 +59,10 @@ pot-term()
 	fi
 	if ! _is_pot_running $_pname ; then
 		if [ "$_force" = "YES" ]; then
+			if ! _is_uid0 ; then
+				${EXIT} 1
+			fi
+
 			pot-cmd start $_pname
 			if ! _is_pot_running $_pname ; then
 				_error "The pot $_pname doesn't start"
@@ -69,5 +73,9 @@ pot-term()
 			exit 1
 		fi
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+
 	_term $_pname
 }

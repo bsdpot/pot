@@ -33,6 +33,10 @@ pot-init()
 		esac
 	done
 
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
 		if _zfs_is_dataset "${POT_ZFS_ROOT}" ; then
 			_error "${POT_ZFS_ROOT} is an invalid POT root"

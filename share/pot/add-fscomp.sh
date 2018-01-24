@@ -86,5 +86,8 @@ pot-add-fscomp()
 		add-fscomp-help
 		exit 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 	_add_f_to_p $_fscomp $_pname $_mnt_p
 }

@@ -61,7 +61,7 @@ _rn_zfs()
 
 pot-rename()
 {
-	local _pname _newname _temp
+	local _pname _newname
 	_pname=
 	_newname=
 	args=$(getopt hvp:n: $*)
@@ -108,16 +108,15 @@ pot-rename()
 		_error "$_pname is not a valid pot"
 		${EXIT} 1
 	fi
-	temp=$_POT_VERBOSITY
-	_POT_VERBOSITY=-1
-	if _is_pot $_newname ; then
-		_POT_VERBOSITY=$temp
+	if _is_pot $_newname quiet ; then
 		_error "pot $_newname exists already"
 		${EXIT} 1
 	fi
-	_POT_VERBOSITY=$temp
 	if _is_pot_running $_pname ; then
 		_error "pot $_pname is still running"
+		${EXIT} 1
+	fi
+	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 	_rn_conf $_pname $_newname

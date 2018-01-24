@@ -95,6 +95,10 @@ pot-stop()
 		stop-help
 		exit 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+
 	if ! _js_stop $_pname ; then
 		_error "Stop the jail $_pname failed"
 		exit 1

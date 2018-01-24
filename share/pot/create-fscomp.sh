@@ -44,8 +44,11 @@ pot-create-fscomp()
 		create-fscomp-help
 		exit 1
 	fi
-		
+
 	if ! _zfs_is_dataset "$_dset" ; then
+		if ! _is_uid0 ; then
+			${EXIT} 1
+		fi
 		zfs create "$_dset"
 		if [ $? -ne 0 ]; then
 			_error "fs component $_dset creation failed"
@@ -54,4 +57,5 @@ pot-create-fscomp()
 	else
 		_info "fs component $_dset already exists"
 	fi
+	return 0
 }

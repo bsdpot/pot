@@ -177,6 +177,9 @@ pot-clone()
 		clone-help
 		exit 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 	if ! _cj_zfs $_pname $_potbase ; then
 		exit 1
 	fi

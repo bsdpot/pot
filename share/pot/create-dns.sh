@@ -54,6 +54,10 @@ pot-create-dns()
 		fi
 	fi
 
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+
 	_info "Create a dns pot with base "${_base}" (name: ${POT_DNS_NAME} - IP: ${POT_DNS_IP}"
 
 	pot-cmd create -p ${POT_DNS_NAME} -i ${POT_DNS_IP} -b ${_base} -f dns

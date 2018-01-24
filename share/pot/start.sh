@@ -235,6 +235,10 @@ pot-start()
 		_debug "pot $_pname is already running"
 		return 0
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+
 	if ! _js_dep $_pname ; then
 		_error "dependecy failed to start"
 	fi

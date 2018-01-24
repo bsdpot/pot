@@ -81,6 +81,8 @@ pot-add-dep()
 		add-dep-help
 		${EXIT} 1
 	fi
-	
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 	_add_dependency $_pname $_depPot
 }

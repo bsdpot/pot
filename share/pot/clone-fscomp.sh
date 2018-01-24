@@ -66,6 +66,7 @@ pot-clone-fscomp()
 		esac
 	done
 
+	# parameter validation
 	if [ -z "$_fscomp" ]; then
 		_error "fscomp name is missing (option -f)"
 		clone-fscomp-help
@@ -76,7 +77,6 @@ pot-clone-fscomp()
 		clone-fscomp-help
 		exit 1
 	fi
-	# parameter validation
 	if _zfs_is_dataset ${POT_ZFS_ROOT}/fscomp/$_fscomp ; then
 		_error "fscomp $_fscomp already exists"
 		return 1
@@ -84,6 +84,9 @@ pot-clone-fscomp()
 	if ! _zfs_is_dataset ${POT_ZFS_ROOT}/fscomp/$_cfscomp ; then
 		_error "fscomp $_cfscomp doesn't exist"
 		return 1
+	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
 	fi
 	if ! _cf_zfs $_fscomp $_cfscomp ; then
 		exit 1

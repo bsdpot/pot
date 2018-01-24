@@ -112,6 +112,9 @@ pot-destroy()
 		destroy-help
 		exit 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 	if [ -n "$_bname" ]; then
 		# check the base
 		if ! _zfs_is_dataset "${POT_ZFS_ROOT}/bases/$_bname" ; then

@@ -17,6 +17,12 @@ _info()
 	[ "$INFO_DEBUG" = "YES" ] && echo "_error: $*"
 }
 
+_is_uid0()
+{
+	__monitor ISUID0 "$@"
+	return 0 # true
+}
+
 _is_pot()
 {
 	__monitor ISPOT "$@"
@@ -71,6 +77,7 @@ common_setUp()
 	_POT_VERBOSITY=1
 	ERROR_CALLS=0
 	INFO_CALLS=0
+	ISUID0_CALLS=0
 	ISPOT_CALLS=0
 	ISPOTRUN_CALLS=0
 	ZFSEXIST_CALLS=0

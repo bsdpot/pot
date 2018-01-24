@@ -54,6 +54,19 @@ _is_verbose()
 	fi
 }
 
+# $1 quiet / no _error messages are emitted (sometimes useful)
+_is_uid0()
+{
+	if [ "$(id -u)" = "0" ]; then
+		return 0 # true
+	else
+		if [ "$1" != "quiet" ]; then
+			_error "This operation needs 'root' privilegies"
+		fi
+		return 1 # false
+	fi
+}
+
 # check if the dataset $1 exists
 # $1 the dataset NAME
 # tested

@@ -115,6 +115,9 @@ pot-set-rss()
 		set-rss-help
 		${EXIT} 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 	if [ -n "$_cpuset" ]; then
 		if ! _set_cpu $_pname $_cpuset ; then
 			_error "cpuset $_cpuset not valid!"

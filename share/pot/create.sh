@@ -345,6 +345,9 @@ pot-create()
 		create-help
 		exit 1
 	fi
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
 	if [ "$_ipaddr" != "inherit" ]; then
 		if ! _is_vnet_up ; then
 			_info "No pot bridge found! Calling vnet-start to fix the issue"

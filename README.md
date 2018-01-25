@@ -34,7 +34,7 @@ When the pot'r configuration file is ready, the initialization can be performed 
 
 The first command will initialize zfs datasets
 
-The first command create a usable base, based on FreeBSD 11.1
+The second command create a usable base, based on FreeBSD 11.1
 
 **NOTE** You can use base versions that are less or equal of your host system versions.
 
@@ -54,4 +54,17 @@ To start and access it, you can used the command:
 # pot run potname
 ```
 
-This command will start the pot and spawn a `tcsh` shell in it
+This command will start the pot and spawn a `tcsh` shell in it.
+
+### Get help
+
+pot command line provides inline help:
+
+```sh
+# pot help
+# pot help create
+```
+
+The first command will show all supported commands.
+
+The second command will show the create command help.

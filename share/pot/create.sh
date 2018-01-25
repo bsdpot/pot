@@ -174,7 +174,11 @@ _cj_flv()
 	if [ -r ${_POT_FLAVOUR_DIR}/${_flv} ]; then
 		_debug "Adopt $_flv for $_pname"
 		while read -r line ; do
-			pot-cmd $line -p $_pname
+			if _is_cmd_flavorable $line ; then
+				pot-cmd $line -p $_pname
+			else
+				_error "Flavor $_flv: line $line not valid - ignoring"
+			fi
 		done < ${_POT_FLAVOUR_DIR}/${_flv}
 	fi
 	_debug "Start $_pname pot for the initial bootstrap"

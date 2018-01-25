@@ -354,6 +354,22 @@ _umount()
 	fi
 }
 
+# $1 the cmd
+# all other parameter will be ignored
+# tested
+_is_cmd_flavorable()
+{
+	local _cmd
+	_cmd=$1
+	case $_cmd in
+		add-dep|add-fscomp|\
+		set-rss)
+			return 0
+			;;
+	esac
+	return 1 # false
+}
+
 pot-cmd()
 {
 	local _cmd _func

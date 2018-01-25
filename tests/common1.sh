@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # system utilities stubs
+. monitor.sh
+
 mount()
 {
 	cat << EOF--
@@ -19,16 +21,9 @@ zroot/var/tmp on /var/tmp (zfs, local, noatime, nosuid, nfsv4acls)
 EOF--
 }
 
-UMOUNT_CALLS=0
-UMOUNT_CALL1_ARG1=
-UMOUNT_CALL1_ARG2=
-UMOUNT_CALL1_ARG3=
 umount()
 {
-	UMOUNT_CALLS=$(( UMOUT_CALLS + 1 ))
-	UMOUNT_CALL1_ARG1="$1"
-	UMOUNT_CALL1_ARG2="$2"
-	UMOUNT_CALL1_ARG3="$3"
+	__monitor UMOUNT "$@"
 }
 
 jls()
@@ -130,7 +125,27 @@ test_umount()
 	assertEquals "1" "$UMOUNT_CALLS"
 	assertEquals "-f" "$UMOUNT_CALL1_ARG1"
 	assertEquals "/opt/distfiles" "$UMOUNT_CALL1_ARG2"
+}
 
+test_is_cmd_flavorable()
+{
+	_is_cmd_flavorable
+	assertNotEquals "$?" "0"
+
+	_is_cmd_flavorable help
+	assertNotEquals "$?" "0"
+
+	_is_cmd_flavorable help create
+	assertNotEquals "$?" "0"
+
+	_is_cmd_flavorable create -p help
+	assertNotEquals "$?" "0"
+
+	_is_cmd_flavorable add-dep
+	assertEquals "$?" "0"
+
+	_is_cmd_flavorable add-dep -v -p me -P you
+	assertEquals "$?" "0"
 }
 
 setUp()

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Every command that need root privileges perform a check of the user id
 - create (#010): add a validation of command types executable in a pot flavour
+- Checks about VIMAGE and rctl usability
 
 ### Changed
 - set-rss : rename command (it was add-rss)

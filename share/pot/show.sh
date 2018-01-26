@@ -41,9 +41,15 @@ _show_all_pots()
 	if ! _is_uid0 quiet; then
 		_info "runtime memory usage require root privileges"
 	fi
+	if ! _is_rctl_available ; then
+		_info "runtime memory usage require rctl enabled"
+	fi
 	for _p in $_pots; do
 		_show_pot $_p
 		if ! _is_uid0 quiet; then
+			return
+		fi
+		if ! _is_rctl_available ; then
 			return
 		fi
 		if _is_pot_running $_p ; then

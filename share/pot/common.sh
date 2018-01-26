@@ -370,6 +370,28 @@ _is_cmd_flavorable()
 	return 1 # false
 }
 
+# tested
+_is_rctl_available()
+{
+	local _racct
+	_racct="$(sysctl -qn kern.racct.enable)"
+	if [ "$_racct" = "1" ]; then
+		return 0 # true
+	fi
+	return 1 # false
+}
+
+_is_vnet_available()
+{
+	local _vimage
+	_vimage="$(sysctl kern.conftxt | grep -c VIMAGE)"
+	if [ $_vimage -eq 0 ]; then
+		return 1 # false
+	else
+		return 0 # true
+	fi
+}
+
 pot-cmd()
 {
 	local _cmd _func

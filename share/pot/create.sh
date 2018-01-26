@@ -353,12 +353,20 @@ pot-create()
 		${EXIT} 1
 	fi
 	if [ "$_ipaddr" != "inherit" ]; then
+		if ! _is_vnet_available ; then
+			_error "This kernel doesn't support VIMAGE! No vnet possible"
+			${EXIT} 1
+		fi
 		if ! _is_vnet_up ; then
 			_info "No pot bridge found! Calling vnet-start to fix the issue"
 			pot-cmd vnet-start
 		fi
 	fi
 	if [ "$_dns" = "pot" ]; then
+		if ! _is_vnet_available ; then
+			_error "This kernel doesn't support VIMAGE! No vnet possible (needed by the dns)"
+			${EXIT} 1
+		fi
 		if ! _is_pot "${POT_DNS_NAME}" quiet ; then
 			_info "dns pot not found ($POT_DNS_NAME) - fixing"
 			pot-cmd create-dns

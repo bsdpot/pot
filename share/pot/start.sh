@@ -154,7 +154,11 @@ _js_rss()
 		cpuset -l $_cpuset -j $_jid
 	fi
 	if [ -n "$_memory" ]; then
-		rctl -a jail:$_pname:memoryuse:deny=$_memory
+		if ! _is_rctl_available ; then
+			_info "memory constraint cannot be applies because rctl is not enabled - ignoring"
+		else
+			rctl -a jail:$_pname:memoryuse:deny=$_memory
+		fi
 	fi
 }
 
@@ -237,6 +241,13 @@ pot-start()
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
+	fi
+
+	if _is_pot_vnet $_pname ; then
+		if ! _is_vnet_available ; then
+			_error "This kernel doesn't support VIMAGE! No vnet possible - abort"
+			${EXIT} 1
+		fi
 	fi
 
 	if ! _js_dep $_pname ; then

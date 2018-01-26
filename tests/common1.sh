@@ -43,6 +43,15 @@ jls()
 EOF--
 }
 
+sysctl()
+{
+	if [ -n "$SYSCTL_OUTPUT" ]; then
+		echo $SYSCTL_OUTPUT
+	fi
+	return $SYSCTL_RC
+}
+	
+
 # UUT
 . ../share/pot/common.sh
 
@@ -148,10 +157,27 @@ test_is_cmd_flavorable()
 	assertEquals "$?" "0"
 }
 
+test_is_rctl_available()
+{
+	_is_rctl_available
+	assertEquals "$?" "0"
+
+	SYSCTL_OUTPUT="0"
+	_is_rctl_available
+	assertNotEquals "$?" "0"
+
+	SYSCTL_OUTPUT=""
+	SYSCTL_RC=1
+	_is_rctl_available
+	assertNotEquals "$?" "0"
+}
+
 setUp()
 {
 	_POT_VERBOSITY=1
 	UMOUNT_CALLS=0
+	SYSCTL_OUTPUT="1"
+	SYSCTL_RC=0
 }
 
 . shunit/shunit2

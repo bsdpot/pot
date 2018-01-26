@@ -291,6 +291,11 @@ pot-create()
 				create-help
 				exit 1
 			fi
+			if ! _is_base "$_base" quiet ; then
+				_error "$_base is not a valid base"
+				create-help
+				exit 1
+			fi
 			;;
 		1)
 			if [ -z "$_base" -a -z "$_potbase" ]; then
@@ -311,6 +316,11 @@ pot-create()
 				fi
 				_debug "-P $_potbase induced -b $_base"
 			fi
+			if ! _is_base "$_base" quiet ; then
+				_error "$_base is not a valid base"
+				create-help
+				exit 1
+			fi
 			if [ -n "$_potbase" ]; then
 				_info "-p $_potbase will be ignored"
 			fi
@@ -327,6 +337,11 @@ pot-create()
 				exit 1
 			fi
 			if [ -n "$_base" ]; then
+				if ! _is_base "$_base" quiet ; then
+					_error "$_base is not a valid base"
+					create-help
+					exit 1
+				fi
 				if [ "$( _get_pot_base $_potbase )" != "$_base" ]; then
 					_error "-b $_base and -P $_potbase are not compatible"
 					exit 1
@@ -335,6 +350,11 @@ pot-create()
 				_base=$( _get_pot_base $_potbase )
 				if [ -z "$_base" ]; then
 					_error "-P $potbase has no base??"
+					exit 1
+				fi
+				if ! _is_base "$_base" quiet ; then
+					_error "$_base (induced by the pot $_potbase) is not a valid base"
+					create-help
 					exit 1
 				fi
 			fi

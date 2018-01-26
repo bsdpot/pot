@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - set-rss : rename command (it was add-rss)
+- vnet-start (#019): automatic activation of ip forwarding
 
 ### Fixed
 - create-base (#016): do not re-create the base pot

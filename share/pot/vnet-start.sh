@@ -47,6 +47,12 @@ pot-vnet-start()
 		${EXIT} 1
 	fi
 
+	# activate ip forwarding
+	if _is_verbose ; then
+		sysctl net.inet.ip.forwarding=1
+	else
+		sysctl -qn net.inet.ip.forwarding=1 > /dev/null
+	fi
 	# bridge creation
 	# if bridge0 doesn't exist yet
 	_bridge=$(_pot_bridge)

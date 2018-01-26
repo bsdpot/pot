@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.0] 2018-01-26
 ### Added
 - Every command that need root privileges perform a check of the user id
 - create (#010): add a validation of command types executable in a pot flavour

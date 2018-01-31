@@ -3,13 +3,13 @@
 # supported releases
 stop-help()
 {
-	echo "pot stop [-h] [potname]"
+	echo "pot stop [-hv] [potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  potname : the jail that has to start'
 }
 
-# $1 jail name
+# $1 pot name
 _js_stop()
 {
 	local _pname _jdir _epair
@@ -29,7 +29,7 @@ _js_stop()
 	return 0 # true
 }
 
-# $1 jail name
+# $1 pot name
 _js_umount()
 {
 	local _pname _tmpfile _jdir _mnt_p
@@ -52,7 +52,7 @@ _js_umount()
 	rm $_tmpfile
 }
 
-# $1 jail name
+# $1 pot name
 _js_rm_resolv()
 {
 	local _pname _jdir
@@ -91,16 +91,21 @@ pot-stop()
 	done
 	_pname=$1
 	if [ -z "$_pname" ]; then
-		_error "A jail name is mandatory"
+		_error "A pot name is mandatory"
 		stop-help
 		exit 1
+	fi
+	if ! _is_pot "$_pname" quiet ; then
+		_error "The pot $_pname is not a valid pot"
+		stop-help
+		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 
 	if ! _js_stop $_pname ; then
-		_error "Stop the jail $_pname failed"
+		_error "Stop the pot $_pname failed"
 		exit 1
 	fi
 	_js_rm_resolv $_pname

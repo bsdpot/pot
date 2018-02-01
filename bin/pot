@@ -89,7 +89,7 @@ Commands:
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
 	snap/snapshot -- Take a snapshot of a pot
-	revert -- Restore the last snapshot
+	rollback/revert -- Restore the last snapshot
 EOF
 }
 
@@ -107,6 +107,9 @@ shift
 case "${CMD}" in
 	ls)
 		CMD=list
+		;;
+	rollback)
+		CMD=revert
 		;;
 	snap)
 		CMD=snapshot

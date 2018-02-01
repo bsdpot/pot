@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - stop (#024): check the pot existance
 - stop : fixed error messages referring to "jail"
+- list : fix help, option -s never implemented
 
 ## [0.3.1] 2018-01-26
 ### Added

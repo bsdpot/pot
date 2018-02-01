@@ -10,7 +10,6 @@ list-help()
 	echo '  -f list fs components instead of pots'
 	echo '  -F list available flavours'
 	echo '  -a list everything'
-	echo '  -s list snaphots'
 }
 
 _ls_info_pot_fs()

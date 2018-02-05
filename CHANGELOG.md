@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - stop (#024): check the pot existance
 - stop : fixed error messages referring to "jail"
 - list : fix help, option -s never implemented
+- destroy (0#25): fix pot name validation and add dependency detection
 
 ## [0.3.1] 2018-01-26
 ### Added

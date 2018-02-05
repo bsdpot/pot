@@ -272,6 +272,6 @@ pot-start()
 		_error "$_pname failed to start"
 		exit 1
 	else
-		_info "Start the jail "${_pname}" "
+		_info "The pot "${_pname}" started"
 	fi
 }

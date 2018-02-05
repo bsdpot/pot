@@ -58,7 +58,7 @@ _base_zfs_destroy()
 pot-destroy()
 {
 	local _pname _bname _force _recursive
-	local _pots
+	local _pots _depPot
 	_pname=
 	_bname=
 	_force=
@@ -127,7 +127,7 @@ pot-destroy()
 				for _p in $_pots ; do
 					if [ "$( _get_conf_var $_p pot.level )" = "$_lvl" ]; then
 						if [ "$( _get_conf_var $_p pot.base )" = "$_bname" ]; then
-							_debug "Destroying recursively pot $_p based on $_bname"
+							_info "Destroying recursively pot $_p based on $_bname"
 							_pot_zfs_destroy $_p $_force
 						fi
 					fi
@@ -139,29 +139,52 @@ pot-destroy()
 			_debug "Destroying lvl 0 pot $_pname"
 			_pot_zfs_destroy $_pname $_force
 		fi
-		_debug "Destroying base $_bname"
+		_info "Destroying base $_bname"
 		_base_zfs_destroy $_bname
 		return 0
 	fi
 	if [ -n "$_pname" ]; then
+		if ! _is_pot "$_pname" ; then
+			return 1 # false
+		fi
 		if [ "$( _get_conf_var $_pname pot.level )" = "0" ]; then
 			_error "The pot $_pname has level 0. Please destroy the related base insted"
 			return 1
 		fi
-		if [ "$_recursive" = "YES" ]; then
-			if [ "$( _get_conf_var $_pname pot.level )" = "2" ]; then
-				_debug "$_pname has level 2. No recursive destroy possible"
-			else
-				_pots=$( ls -d ${POT_FS_ROOT}/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
-				for _p in $_pots ; do
-					if [ "$( _get_conf_var $_p pot.potbase )" = "$_pname" ]; then
+		if [ "$( _get_conf_var $_pname pot.level )" = "1" ]; then
+			_pots=$( ls -d ${POT_FS_ROOT}/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+			for _p in $_pots ; do
+				if [ "$( _get_conf_var $_p pot.potbase )" = "$_pname" ]; then
+					if [ "$_recursive" = "YES" ]; then
 						_debug "Destroying recursively pot $_p based on $_pname"
 						_pot_zfs_destroy $_p $_force
+					else
+						_error "$_pname is used at least by one level 2 pot - use option -r to destroy it recursively"
+						return 1
 					fi
-				done
-			fi
+				fi
+			done
 		fi
-		_debug "Destroying pot $_pname"
+		if [ "$( _get_conf_var $_pname pot.level )" = "2" -a "$_recursive" = "YES" ]; then
+			_debug "$_pname has level 2. No recursive destroy possible (ignored)"
+		fi
+
+		## dependency detection
+		_pots=$( ls -d ${POT_FS_ROOT}/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+		for _p in $_pots ; do
+			_depPot="$( _get_conf_var $_p pot.depend )"
+			if [ -z "$_depPot" ]; then
+				continue
+			fi
+			for _d in $_depPot ; do
+				if [ "$_d" = "$_pname" ]; then
+					_info "pot $_p is losing his dependency $_pname"
+					continue
+				fi
+			done
+		done
+		
+		_info "Destroying pot $_pname"
 		_pot_zfs_destroy $_pname $_force
 	fi
 }

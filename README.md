@@ -7,9 +7,11 @@ Every running instance is called "pot", but less flexible than a VM.
 It's heavily based on FreeBSD, in particular on jails, ZFS, pf and rctl.
 
 Currently, pot is only a bunch of shell script enforcing the pot container model, but it relay only on the command line tools provided by FreeBSD to play with jails, ZFS and so on.
-So, at the moment the only dependency is the operating system. That will change in the future, to provide more feature.
+So, at the moment the only dependency is the operating system. That will change in the future, to provide more features.
 
-It is an educational/experimental project, so don't expect any production quality.
+It is an educational/experimental project, so don't expect any production quality. Yet.
+
+The project was presented at FOSDEM 2018: [video mp4](https://video.fosdem.org/2018/K.3.401/pot_container_framework.mp4) [video webm](https://video.fosdem.org/2018/K.3.401/pot_container_framework.webm) [slides (PDF)](https://fosdem.org/2018/schedule/event/pot_container_framework/attachments/slides/2128/export/events/attachments/pot_container_framework/slides/2128/pot_slides.pdf)
 
 ### Installation
 

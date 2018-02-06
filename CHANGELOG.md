@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - rollback : added rollback as alias of revert
 - help : add support for aliases
+- add-fscomp (#027): add support for external ZFS dataset via the option -e
 
 ### Fixed
 - stop (#024): check the pot existance

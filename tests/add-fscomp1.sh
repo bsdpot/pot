@@ -17,6 +17,9 @@ _zfs_is_dataset()
 	if [ "$1" = "/zroot/test-fscomp" ]; then
 		return 0 # true
 	fi
+	if [ "$1" = "zroot/test-fscomp" ]; then
+		return 0 # true
+	fi
 	return 1 # false
 }
 
@@ -168,6 +171,26 @@ test_pot_add_fscomp_003()
 
 	setUp
 	pot-add-fscomp -p test-no-pot -f /zroot/test-fscomp -m test-no-mnt -e
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+
+	setUp
+	pot-add-fscomp -p test-no-pot -f zroot/test-fscomp -m test-no-mnt -e
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+
+	setUp
+	pot-add-fscomp -p test-no-pot -f zroot/test-fscomp -m test-no-mnt -e
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"

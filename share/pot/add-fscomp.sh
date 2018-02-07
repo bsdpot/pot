@@ -27,9 +27,13 @@ _add_f_to_p()
 	_ext="${4}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	if [ "$_ext" = "external" ]; then
-		echo "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+		# convert zfs dataset in the mountpoint
+		_fscomp=$( zfs list -H -o mountpoint $_fscomp )
+		_debug "add $_fscomp $_pdir/m/$_mnt_p"
+		${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
 	else
-		echo "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+		_debug "add $POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p"
+		${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
 	fi
 }
 

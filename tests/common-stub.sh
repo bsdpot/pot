@@ -17,6 +17,12 @@ _info()
 	[ "$INFO_DEBUG" = "YES" ] && echo "_error: $*"
 }
 
+_debug()
+{
+	__monitor DEBUG "$@"
+	[ "$INFO_DEBUG" = "YES" ] && echo "_error: $*"
+}
+
 _is_uid0()
 {
 	__monitor ISUID0 "$@"
@@ -77,6 +83,7 @@ common_setUp()
 	_POT_VERBOSITY=1
 	ERROR_CALLS=0
 	INFO_CALLS=0
+	DEBUG_CALLS=0
 	ISUID0_CALLS=0
 	ISPOT_CALLS=0
 	ISPOTRUN_CALLS=0

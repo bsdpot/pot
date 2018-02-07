@@ -181,15 +181,15 @@ _cj_flv()
 			fi
 		done < ${_POT_FLAVOUR_DIR}/${_flv}
 	fi
-	_debug "Start $_pname pot for the initial bootstrap"
-	pot-cmd start $_pname
 	if [ -x ${_POT_FLAVOUR_DIR}/${_flv}.sh ]; then
+		_debug "Start $_pname pot for the initial bootstrap"
+		pot-cmd start $_pname
 		cp -v ${_POT_FLAVOUR_DIR}/${_flv}.sh $_pdir/m/tmp
 		jexec $_pname /tmp/${_flv}.sh $_pname
+		pot-cmd stop $_pname
 	else
 		_debug "No shell script available for the flavour $_flv"
 	fi
-	pot-cmd stop $_pname
 }
 
 pot-create()

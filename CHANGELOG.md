@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - rollback : added rollback as alias of revert
 - help : add support for aliases
 - add-fscomp (#027): add support for external ZFS dataset via the option -e
+- de-init (0#23): new command to completely remove (de-install) pot from your system
 
 ### Fixed
 - stop (#024): check the pot existance

@@ -74,6 +74,7 @@ Commands:
 	show
 	ls/list	-- List of the installed pots
 	init	-- Initialize the ZFS layout
+	de-init	-- Deinstall pot from your system
 	vnet-start -- Start the vnet configuration
 	create-base	-- Create a new base image
 	create-fscomp -- Create a new fs component
@@ -128,7 +129,7 @@ case "${CMD}" in
 		;;
 	show|\
 	list|\
-	init|vnet-start|\
+	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|\
 	start|stop|term|\

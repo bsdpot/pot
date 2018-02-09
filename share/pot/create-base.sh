@@ -132,6 +132,9 @@ pot-create-base()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
+	if ! _is_init ; then
+		${EXIT} 1
+	fi
 	_info "Create a base with release "${_FBSD_RELEASE}" "
 	# fetch binaries
 	if ! _cb_fetch "${_FBSD_RELEASE}" ; then

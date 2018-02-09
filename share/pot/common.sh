@@ -45,6 +45,14 @@ _debug()
 	_msg $__POT_MSG_DBG $*
 }
 
+# $1 quiet / no _error message is emitted
+_qerror()
+{
+	if [ "$1" != "quiet" ]; then
+		_error $*
+	fi
+}
+
 # tested
 _is_verbose()
 {
@@ -61,10 +69,42 @@ _is_uid0()
 	if [ "$(id -u)" = "0" ]; then
 		return 0 # true
 	else
-		if [ "$1" != "quiet" ]; then
-			_error "This operation needs 'root' privilegies"
-		fi
+		_qerror $1"This operation needs 'root' privilegies"
 		return 1 # false
+	fi
+}
+
+# validate some values of the configuration files
+# $1 quiet / no _error messages are emitted
+_conf_check()
+{
+	if [ -z "${POT_ZFS_ROOT}" ]; then
+		_qerror $1"POT_ZFS_ROOT is mandatory"
+		return 1 # false
+	fi
+	if [ -z "${POT_FS_ROOT}" ]; then
+		_qerror $1"POT_FS_ROOT is mandatory"
+		return 1 # false
+	fi
+	return 0 # true
+}
+
+# it checkes that the pot environment is initialized
+# $1 quiet / no _error messages are emitted
+_is_init()
+{
+	if ! conf_check ; then
+		_qerror $1"Configuration not valid, please verify it"
+		return 1 # false
+	fi
+	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
+		_qerror $1"Your system is not initialized, please run pot init"
+		return 1 # false
+	fi
+	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/bases" ||\
+	   ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails" ||\ 
+	   ! _zfs_is_dataset "${POT_ZFS_ROOT}/fscomp" ; then
+		_querror $1"Your system is not propery initialized, please run pot init to fix it"
 	fi
 }
 

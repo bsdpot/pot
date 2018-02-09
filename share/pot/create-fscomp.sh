@@ -44,7 +44,9 @@ pot-create-fscomp()
 		create-fscomp-help
 		exit 1
 	fi
-
+	if ! _is_init ; then
+		${EXIT} 1
+	fi
 	if ! _zfs_is_dataset "$_dset" ; then
 		if ! _is_uid0 ; then
 			${EXIT} 1

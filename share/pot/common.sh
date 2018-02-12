@@ -93,7 +93,7 @@ _conf_check()
 # $1 quiet / no _error messages are emitted
 _is_init()
 {
-	if ! conf_check ; then
+	if ! _conf_check ; then
 		_qerror $1"Configuration not valid, please verify it"
 		return 1 # false
 	fi

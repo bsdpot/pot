@@ -130,8 +130,8 @@ _cj_conf()
 			echo "$_bdir/opt/custom ${_jdir}/m/opt/custom"
 		elif [ $_lvl -eq 1 ]; then
 			echo "$_bdir ${_jdir}/m ro"
-			echo "$_jdir/usr.local ${_jdir}/m/usr/local"
-			echo "$_jdir/custom ${_jdir}/m/opt/custom"
+			echo "$_jdir/usr.local ${_jdir}/m/usr/local zfs-remount"
+			echo "$_jdir/custom ${_jdir}/m/opt/custom zfs-remount"
 		elif [ $_lvl -eq 2 ]; then
 			echo "$_bdir ${_jdir}/m ro"
 			if [ "$_usesnap" = "YES" ]; then
@@ -139,7 +139,7 @@ _cj_conf()
 			else
 				echo "${POT_FS_ROOT}/jails/$_potbase/usr.local ${_jdir}/m/usr/local ro"
 			fi
-			echo "$_jdir/custom ${_jdir}/m/opt/custom"
+			echo "$_jdir/custom ${_jdir}/m/opt/custom zfs-remount"
 		fi
 	) > $_jdir/conf/fs.conf
 	(

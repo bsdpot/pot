@@ -128,7 +128,7 @@ _zfs_exist()
 	[ -z "$2" ] && return 1 # false
 	zfs list "$1" 2> /dev/null > /dev/null
 	[ $? -ne 0 ] && return 1 # false
-	_mnt_=$(zfs list -H -o mountpoint $1 2> /dev/null)
+	_mnt_="$(zfs list -H -o mountpoint $1 2> /dev/null )"
 	if [ "$_mnt_" != "$2" ]; then
 		return 1 # false
 	fi
@@ -139,7 +139,7 @@ _get_zfs_dataset()
 {
 	local _mnt_p _dset
 	_mnt_p=$1
-	_dset="$( zfs list -o name -H $_mnt_p )"
+	_dset="$( zfs list -o name -H $_mnt_p 2> /dev/null )"
 	echo $_dset
 }
 

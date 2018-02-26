@@ -48,19 +48,25 @@ _js_dep()
 # $1 jail name
 _js_mount()
 {
-	local _pname _node _mnt_p _opt
+	local _pname _node _mnt_p _opt _dset
 	_pname=$1
 	while read -r line ; do
 		_node=$( echo $line | awk '{print $1}' )
 		_mnt_p=$( echo $line | awk '{print $2}' )
 		_opt=$( echo $line | awk '{print $3}' )
-		mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
-		if [ "$?" -ne 0 ]; then
-			_error "Error mouning $_node"
-			start-cleanup $_pname
-			return 1 # false
+		if [ "$_opt" = "zfs-remount" ]; then
+			_dset=$( _get_zfs_dataset $_node )
+			zfs set mountpoint=$_mnt_p $_dset
+			# TODO - check the return value
 		else
-			_debug "mount $_mnt_p"
+			mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
+			if [ "$?" -ne 0 ]; then
+				_error "Error mouning $_node"
+				start-cleanup $_pname
+				return 1 # false
+			else
+				_debug "mount $_mnt_p"
+			fi
 		fi
 	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
 

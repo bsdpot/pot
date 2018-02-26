@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- private datasets are now mounted changing the mountpoint of the dataset, instead of relying on nullfs
+  For that reasons, an option called "zfs-remount" is added to the fs.conf file
 
 ## [0.4.0] 2018-02-13
 ### Added

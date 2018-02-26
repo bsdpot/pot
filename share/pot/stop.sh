@@ -32,7 +32,7 @@ _js_stop()
 # $1 pot name
 _js_umount()
 {
-	local _pname _tmpfile _jdir _mnt_p
+	local _pname _tmpfile _jdir _node _mnt_p _opt _dset
 	_pname=$1
 	_tmpfile=$(mktemp -t ${_pname}.XXXXXX)
 	if [ $? -ne 0 ]; then
@@ -45,9 +45,19 @@ _js_umount()
 	_umount $_jdir/m/tmp
 	_umount $_jdir/m/dev
 	while read -r line ; do
+		_node=$( echo $line | awk '{print $1}' )
 		_mnt_p=$( echo $line | awk '{print $2}' )
-		_umount $_mnt_p
-		# TODO - check the return value
+		_opt=$( echo $line | awk '{print $3}' )
+		if [ "$_opt" = "zfs-remount" ]; then
+			_dset="$( _get_zfs_dataset $_mnt_p )"
+			if [ -n "$_dset" ]; then
+				zfs set mountpoint=$_node $_dset
+				# TODO - check the return value
+			fi
+		else
+			_umount $_mnt_p
+			# TODO - check the return value
+		fi
 	done < $_tmpfile
 	rm $_tmpfile
 }

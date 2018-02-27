@@ -10,37 +10,49 @@ add-fscomp-help()
 	echo '  -e : the fscomp is an external zfs dataset'
 	echo '  -p pot : the working pot'
 	echo '  -m mnt : the mount point inside the pot'
+	echo '  -w : '"don't use nullfs, but change the zfs mountpoint (DANGEROUS)"
+	echo '  -r : mount the fscomp in read-only'
 }
 
 # $1 fscomp
 # $2 pot
 # $3 mount point
-# $4 external
+# $4 external/NO
+# $5 mount option (zfs-remount, ro)
 _add_f_to_p()
 {
-	local _fscomp _pname _mnt_p _pdir _ext
+	local _fscomp _pname _mnt_p _pdir _ext _opt
 	_fscomp="$1"
 	_pname="$2"
 	# Removing the trailing /
 	# _mnt_p="$(echo $3 | sed 's%^/%%')" # or, more efficiently
 	_mnt_p="${3#/}"
 	_ext="${4}"
+	_opt="${5}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	if [ "$_ext" = "external" ]; then
 		# convert zfs dataset in the mountpoint
 		_fscomp=$( zfs list -H -o mountpoint $_fscomp )
 		_debug "add $_fscomp $_pdir/m/$_mnt_p"
-		${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+		if [ -z "$_opt" ]; then
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+		else
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
+		fi
 	else
 		_debug "add $POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p"
-		${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+		if [ -z "$_opt" ]; then
+			${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+		else
+			${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
+		fi
 	fi
 }
 
 pot-add-fscomp()
 {
-	local _pname _fscomp _mnt_p _ext
-	args=$(getopt hvf:p:m:e $*)
+	local _pname _fscomp _mnt_p _ext _remount _readonly _opt
+	args=$(getopt hvf:p:m:ewr $*)
 	if [ $? -ne 0 ]; then
 		add-fscomp-help
 		${EXIT} 1
@@ -48,7 +60,10 @@ pot-add-fscomp()
 	_fscomp=
 	_pname=
 	_mnt_p=
-	_ext=
+	_ext="NO"
+	_remount="NO"
+	_readonly="NO"
+	_opt=
 	set -- $args
 	while true; do
 		case "$1" in
@@ -76,6 +91,14 @@ pot-add-fscomp()
 			_mnt_p="$2"
 			shift 2
 			;;
+		-w)
+			_remount="YES"
+			shift
+			;;
+		-r)
+			_readonly="YES"
+			shift
+			;;
 		--)
 			shift
 			break
@@ -96,6 +119,23 @@ pot-add-fscomp()
 		_error "A mount point is mandatory"
 		add-fscomp-help
 		${EXIT} 1
+	fi
+	if [ "$_remount" = "YES" ]; then
+		_opt="zfs-remount"
+		if [ "$_ext" = "external" ]; then
+			_error "External fscomp cannot be remounted: -e and -w option are mututally exclusive"
+			add-fscomp-help
+			${EXIT} 1
+		fi
+		if [ "$_readonly" = "YES" ]; then
+			_info "Readonly and remount are mutually exclusive: readonly considered, remount ignored"
+			_remount="NO"
+			_opt="ro"
+		fi
+	else
+		if [ "$_readonly" = "YES" ]; then
+			_opt="ro"
+		fi
 	fi
 	if [ "$_ext" = "external" ]; then
 		if ! _zfs_is_dataset $_fscomp ; then
@@ -118,5 +158,5 @@ pot-add-fscomp()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_add_f_to_p $_fscomp $_pname $_mnt_p $_ext
+	_add_f_to_p $_fscomp $_pname $_mnt_p $_ext $_opt
 }

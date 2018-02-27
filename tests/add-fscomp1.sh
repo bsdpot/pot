@@ -188,14 +188,16 @@ test_pot_add_fscomp_003()
 	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+}
 
-	setUp
-	pot-add-fscomp -p test-no-pot -f zroot/test-fscomp -m test-no-mnt -e
+test_pot_add_fscomp_004()
+{
+	pot-add-fscomp -p test-pot -f zroot/test-fscomp -m test-mnt -e -w
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
 }
@@ -213,7 +215,8 @@ test_pot_add_fscomp_020()
 	assertEquals "_add_f_to_p arg" "test-fscomp" "$ADDF2P_CALL1_ARG1"
 	assertEquals "_add_f_to_p arg" "test-pot" "$ADDF2P_CALL1_ARG2"
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
-	assertEquals "_add_f_to_p arg" "" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "" "$ADDF2P_CALL1_ARG5"
 
 	setUp
 	pot-add-fscomp -p test-pot -f /zroot/test-fscomp -m test-mnt -e
@@ -228,6 +231,69 @@ test_pot_add_fscomp_020()
 	assertEquals "_add_f_to_p arg" "test-pot" "$ADDF2P_CALL1_ARG2"
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "external" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "" "$ADDF2P_CALL1_ARG5"
+}
+
+test_pot_add_fscomp_021()
+{
+	pot-add-fscomp -p test-pot -f test-fscomp -m test-mnt -r
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_add_f_to_p calls" "1" "$ADDF2P_CALLS"
+	assertEquals "_add_f_to_p arg" "test-fscomp" "$ADDF2P_CALL1_ARG1"
+	assertEquals "_add_f_to_p arg" "test-pot" "$ADDF2P_CALL1_ARG2"
+	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
+	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "ro" "$ADDF2P_CALL1_ARG5"
+
+	setUp
+	pot-add-fscomp -p test-pot -f /zroot/test-fscomp -m test-mnt -e -r
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_add_f_to_p calls" "1" "$ADDF2P_CALLS"
+	assertEquals "_add_f_to_p arg" "/zroot/test-fscomp" "$ADDF2P_CALL1_ARG1"
+	assertEquals "_add_f_to_p arg" "test-pot" "$ADDF2P_CALL1_ARG2"
+	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
+	assertEquals "_add_f_to_p arg" "external" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "ro" "$ADDF2P_CALL1_ARG5"
+
+	setUp
+	pot-add-fscomp -p test-pot -f test-fscomp -m test-mnt -w
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_add_f_to_p calls" "1" "$ADDF2P_CALLS"
+	assertEquals "_add_f_to_p arg" "test-fscomp" "$ADDF2P_CALL1_ARG1"
+	assertEquals "_add_f_to_p arg" "test-pot" "$ADDF2P_CALL1_ARG2"
+	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
+	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "zfs-remount" "$ADDF2P_CALL1_ARG5"
+
+	setUp
+	pot-add-fscomp -p test-pot -f test-fscomp -m test-mnt -w -r
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_add_f_to_p calls" "1" "$ADDF2P_CALLS"
+	assertEquals "_add_f_to_p arg" "test-fscomp" "$ADDF2P_CALL1_ARG1"
+	assertEquals "_add_f_to_p arg" "test-pot" "$ADDF2P_CALL1_ARG2"
+	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
+	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
+	assertEquals "_add_f_to_p arg" "ro" "$ADDF2P_CALL1_ARG5"
 }
 
 setUp()

@@ -11,8 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - add-fscomp: add the ability to mount a fscomp in read-only (-r)
 
 ### Changed
+- create: the new wiki page shows the slightly different behavior of all use cases
 - private datasets are now mounted changing the mountpoint of the dataset, instead of relying on nullfs
   For that reasons, an option called "zfs-remount" is added to the fs.conf file
+
+### Remove
+- create: -S option, not needed anymore
 
 ## [0.4.0] 2018-02-13
 ### Added

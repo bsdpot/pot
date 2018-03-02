@@ -2,6 +2,7 @@
 
 : ${EXIT:=exit}
 : ${ECHO:=echo}
+: ${SED:=sed}
 
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1

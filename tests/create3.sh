@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# system utilities stubs
+mkdir()
+{
+	__monitor MKDIR "$@"
+	/bin/mkdir $@
+}
+
+SED=sed_stub
+sed_stub()
+{
+	__monitor SED "$@"
+}
+
+# UUT
+. ../share/pot/create.sh
+
+# common stubs
+. common-stub.sh
+
+test_cj_conf_001()
+{
+	# level 0
+	_cj_conf new-pot 11.1 inherit 0 inherit
+	assertEquals "return code" "0" "$?"
+	assertEquals "echo args1" "/tmp/bases/11.1 /tmp/jails/new-pot/m" "$(sed '1!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args2" "/tmp/bases/11.1/usr/local /tmp/jails/new-pot/m/usr/local" "$(sed '2!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args3" "/tmp/bases/11.1/opt/custom /tmp/jails/new-pot/m/opt/custom" "$(sed '3!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "sed calls" "0" "$SED_CALLS"
+}
+
+test_cj_conf_002()
+{
+	_cj_conf new-pot 11.1 inherit 1 inherit
+	assertEquals "return code" "0" "$?"
+	assertEquals "echo args1" "/tmp/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args2" "/tmp/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args3" "/tmp/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "sed calls" "0" "$SED_CALLS"
+
+	tearDown
+	setUp
+	_cj_conf new-pot 11.1 inherit 1 inherit test-pot
+	assertEquals "return code" "0" "$?"
+	assertEquals "echo args1" "/tmp/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args2" "/tmp/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args3" "/tmp/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "sed calls" "0" "$SED_CALLS"
+}
+
+test_cj_conf_003()
+{
+	_cj_conf new-pot 11.1 inherit 2 inherit test-pot
+	assertEquals "return code" "0" "$?"
+	assertEquals "echo args1" "/tmp/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args2" "/tmp/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args3" "/tmp/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "sed calls" "1" "$SED_CALLS"
+}
+
+test_cj_conf_004()
+{
+	_cj_conf new-pot 11.1 inherit 2 inherit test-pot-2
+	assertEquals "return code" "0" "$?"
+	assertEquals "echo args1" "/tmp/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args2" "/tmp/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "echo args3" "/tmp/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fs.conf)"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "sed calls" "0" "$SED_CALLS"
+}
+
+setUp()
+{
+	common_setUp
+	MKDIR_CALLS=0
+	SED_CALLS=0
+
+	POT_FS_ROOT=/tmp
+}
+
+tearDown()
+{
+	rm -rf /tmp/jails
+}
+
+. shunit/shunit2

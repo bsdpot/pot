@@ -134,7 +134,4 @@ setUp()
 	POT_FS_ROOT=/tmp
 }
 
-tearDown()
-{
-}
 . shunit/shunit2

@@ -107,7 +107,11 @@ _cj_conf()
 	_potbase=$6
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
-	_pblvl=$( _get_conf_var $_potbase pot.level )
+	if [ -n "$_potbase" ]; then
+		_pblvl=$( _get_conf_var $_potbase pot.level )
+	else
+		_pblvl=
+	fi
 	if [ ! -d $_jdir/conf ]; then
 		mkdir -p $_jdir/conf
 	fi

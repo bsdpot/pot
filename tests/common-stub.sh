@@ -24,8 +24,13 @@ _debug()
 }
 
 _is_verbose() {
-	return 1
+	if [ $_POT_VERBOSITY -gt 1 ]; then
+		return 0
+	else
+		return 1
+	fi
 }
+
 _is_uid0()
 {
 	__monitor ISUID0 "$@"

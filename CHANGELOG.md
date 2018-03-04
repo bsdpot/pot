@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- add-fscomp: add the ability to remount a fscomp (-w), instead of mount it via nullfs
-- add-fscomp: add the ability to mount a fscomp in read-only (-r)
+- add-fscomp : add the ability to remount a fscomp (-w), instead of mount it via nullfs
+- add-fscomp : add the ability to mount a fscomp in read-only (-r)
+- info : new command, to get information about a specific pot
+- rc.d script (#022)
 
 ### Changed
 - create: the new wiki page shows the slightly different behavior of all use cases

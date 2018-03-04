@@ -128,7 +128,7 @@ case "${CMD}" in
 		fi
 		;;
 	show|\
-	list|\
+	list|info|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|\

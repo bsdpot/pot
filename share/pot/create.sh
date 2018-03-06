@@ -146,7 +146,7 @@ _cj_conf()
 			echo "ip4=inherit"
 			echo "vnet=false"
 		else
-			echo "ip4=${_ipaddr}"
+			echo "ip4=${_ip}"
 			echo "vnet=true"
 		fi
 		if [ "${_dns}" == "pot" ]; then

@@ -122,6 +122,36 @@ test_cj_zfs_003()
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" "$MKDIR_CALL1_ARG2"
 }
 
+test_cj_zfs_021()
+{
+	_cj_zfs test-pot 11.1 0
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "0" "$ZFS_CALLS"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/test-pot/m" "$MKDIR_CALL1_ARG2"
+	assertEquals "info calls" "1" "$INFO_CALLS"
+}
+
+test_cj_zfs_022()
+{
+	_cj_zfs test-pot 11.1 1
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "0" "$ZFS_CALLS"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/test-pot/m" "$MKDIR_CALL1_ARG2"
+	assertEquals "info calls" "3" "$INFO_CALLS"
+}
+
+test_cj_zfs_023()
+{
+	_cj_zfs test-pot 11.1 2 test-pot2
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "0" "$ZFS_CALLS"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/test-pot/m" "$MKDIR_CALL1_ARG2"
+	assertEquals "info calls" "2" "$INFO_CALLS"
+}
+
 setUp()
 {
 	common_setUp

@@ -38,14 +38,14 @@ pot-clone-fscomp()
 	args=$(getopt hvf:F: $*)
 	if [ $? -ne 0 ]; then
 		clone-fscomp-help
-		exit 1
+		${EXIT} 1
 	fi
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
 			clone-fscomp-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -70,25 +70,25 @@ pot-clone-fscomp()
 	if [ -z "$_fscomp" ]; then
 		_error "fscomp name is missing (option -f)"
 		clone-fscomp-help
-		exit 1
+		${EXIT} 1
 	fi
 	if [ -z "$_cfscomp" ]; then
 		_error "clonable fscomp name is missing (option -F)"
 		clone-fscomp-help
-		exit 1
+		${EXIT} 1
 	fi
 	if _zfs_is_dataset ${POT_ZFS_ROOT}/fscomp/$_fscomp ; then
 		_error "fscomp $_fscomp already exists"
-		return 1
+		${EXIT} 1
 	fi
 	if ! _zfs_is_dataset ${POT_ZFS_ROOT}/fscomp/$_cfscomp ; then
 		_error "fscomp $_cfscomp doesn't exist"
-		return 1
+		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 	if ! _cf_zfs $_fscomp $_cfscomp ; then
-		exit 1
+		${EXIT} 1
 	fi
 }

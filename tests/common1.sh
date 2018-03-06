@@ -136,7 +136,7 @@ test_umount()
 	assertEquals "/opt/distfiles" "$UMOUNT_CALL1_ARG2"
 }
 
-test_is_cmd_flavorable()
+test_is_cmd_flavorable_01()
 {
 	_is_cmd_flavorable
 	assertNotEquals "$?" "0"
@@ -149,13 +149,23 @@ test_is_cmd_flavorable()
 
 	_is_cmd_flavorable create -p help
 	assertNotEquals "$?" "0"
+}
 
+test_is_cmd_flavorable_02()
+{
 	_is_cmd_flavorable add-dep
 	assertEquals "$?" "0"
 
 	_is_cmd_flavorable add-dep -v -p me -P you
 	assertEquals "$?" "0"
+
+	_is_cmd_flavorable set-rss
+	assertEquals "$?" "0"
+
+	_is_cmd_flavorable add-fscomp
+	assertEquals "$?" "0"
 }
+
 
 test_is_rctl_available()
 {

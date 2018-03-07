@@ -30,6 +30,7 @@
 
 # Environment initialization and initial checks
 
+_POT_VERSION=0.4.99
 _POT_PATHNAME="$(realpath $0)"
 _POT_PREFIX="$(dirname ${_POT_PATHNAME})"
 _POT_INCLUDE="$( realpath ${_POT_PREFIX}/../share/pot)"
@@ -71,7 +72,9 @@ Usage: pot command [options]
 
 Commands:
 	help	-- Show help
+	version -- Show the pot version
 	show
+	info    -- Print minimal information on a pot
 	ls/list	-- List of the installed pots
 	init	-- Initialize the ZFS layout
 	de-init	-- Deinstall pot from your system
@@ -80,8 +83,8 @@ Commands:
 	create-fscomp -- Create a new fs component
 	create -- Create a new pot (jail)
 	clone -- Clone a pot creating a new one
-	rename -- Rename a pot
 	clone-fscomp - Clone a fscomp
+	rename -- Rename a pot
 	destroy -- Destroy a pot
 	add-fscomp -- Add a fs component to a pot
 	add-dep -- Add a dependency
@@ -127,7 +130,7 @@ case "${CMD}" in
 			exit 0
 		fi
 		;;
-	show|\
+	show|version|\
 	list|info|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\

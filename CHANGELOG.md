@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - rc.d script (#022)
 - create (#020) : add option -s, to configure static ip address (alias to external network interface)
 - create-base (#030) : add sha verification using freebsd-release-manifests
+- version : add a subcommand the print the current version of the utility
 
 ### Changed
 - create: the new wiki page shows the slightly different behavior of all use cases

@@ -193,7 +193,7 @@ _js_rss()
 # $1 jail name
 _js_start()
 {
-	local _pname _jdir _iface _hostname _osrelease _param
+	local _pname _jdir _iface _hostname _osrelease _param _ip
 	_iface=
 	_param="allow.set_hostname allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags"
@@ -208,11 +208,16 @@ _js_start()
 		_iface="$( _js_create_epair )"
 		_js_vnet $_pname $_iface
 		_param="$_param vnet vnet.interface=${_iface}b"
-		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
 	else
-		_param="$_param ip4=inherit"
-		jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
+		_ip=$( _get_conf_var $_pname ip4 )
+		if [ "$_ip" = "inherit" ]; then
+			_param="$_param ip4=inherit"
+		else
+			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
+		fi
 	fi
+	jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
+	sleep 1
 	if ! _is_pot_running $_pname ; then
 		start-cleanup $_pname ${_iface}a
 	fi

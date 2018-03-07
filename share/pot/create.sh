@@ -11,6 +11,7 @@ create-help()
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
 	echo '  -i ipaddr : an ip address'
+	echo '  -s : static ip address'
 	echo '  -d dns : one between inherit(default) or pot'
 	echo '  -f flavour : flavour to be used'
 	echo '  -F : no default flavour is used'
@@ -92,19 +93,21 @@ _cj_zfs()
 # $1 pot name
 # $2 base name
 # $3 ip
-# $4 level
-# $5 dns
-# $6 pot-base name
+# $4 static_ip
+# $5 level
+# $6 dns
+# $7 pot-base name
 _cj_conf()
 {
-	local _pname _base _ip _lvl _jdir _bdir _potbase _dns
+	local _pname _base _ip _staticip _lvl _jdir _bdir _potbase _dns
 	local _pblvl _pbpb
 	_pname=$1
 	_base=$2
 	_ip=$3
-	_lvl=$4
-	_dns=$5
-	_potbase=$6
+	_staticip=$4
+	_lvl=$5
+	_dns=$6
+	_potbase=$7
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 	if [ -n "$_potbase" ]; then
@@ -146,8 +149,13 @@ _cj_conf()
 			echo "ip4=inherit"
 			echo "vnet=false"
 		else
-			echo "ip4=${_ip}"
-			echo "vnet=true"
+			if [ $_staticip = "YES" ]; then
+				echo "ip4=${_ip}"
+				echo "vnet=false"
+			else
+				echo "ip4=${_ip}"
+				echo "vnet=true"
+			fi
 		fi
 		if [ "${_dns}" == "pot" ]; then
 			echo "pot.depend=${POT_DNS_NAME}"
@@ -194,7 +202,7 @@ _cj_flv()
 pot-create()
 {
 	local _pname _ipaddr _lvl _base _flv _potbase
-	local _flv_default _dns
+	local _flv_default _dns _staticip
 	_pname=
 	_base=
 	_ipaddr=inherit
@@ -203,7 +211,8 @@ pot-create()
 	_potbase=
 	_flv_default="YES"
 	_dns=inherit
-	args=$(getopt hvp:i:l:b:f:P:Fd: $*)
+	_staticip="NO"
+	args=$(getopt hvp:i:sl:b:f:P:Fd: $*)
 	if [ $? -ne 0 ]; then
 		create-help
 		${EXIT} 1
@@ -226,6 +235,10 @@ pot-create()
 		-i)
 			_ipaddr=$2
 			shift 2
+			;;
+		-s)
+			_staticip="YES"
+			shift
 			;;
 		-l)
 			_lvl=$2
@@ -266,6 +279,7 @@ pot-create()
 					;;
 				*)
 					_error "The dns $2 is not a valid option: choose between inherit or pot"
+					create-help
 					${EXIT} 1
 			esac
 			shift 2
@@ -389,17 +403,23 @@ pot-create()
 		_error "pot $_pname already exists"
 		${EXIT} 1
 	fi
+	if [ "$_ipaddr" = "inherit" -a $_staticip = "YES" ]; then
+		_info "-s option is ignored if -i is inherit"
+		_staticip="NO"
+	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 	if [ "$_ipaddr" != "inherit" ]; then
-		if ! _is_vnet_available ; then
-			_error "This kernel doesn't support VIMAGE! No vnet possible"
-			${EXIT} 1
-		fi
-		if ! _is_vnet_up ; then
-			_info "No pot bridge found! Calling vnet-start to fix the issue"
-			pot-cmd vnet-start
+		if [ "$_staticip" != "YES" ]; then
+			if ! _is_vnet_available ; then
+				_error "This kernel doesn't support VIMAGE! No vnet possible"
+				${EXIT} 1
+			fi
+			if ! _is_vnet_up ; then
+				_info "No pot bridge found! Calling vnet-start to fix the issue"
+				pot-cmd vnet-start
+			fi
 		fi
 	fi
 	if [ "$_dns" = "pot" ]; then
@@ -419,11 +439,13 @@ pot-create()
 		_info "lvl   : $_lvl"
 		_info "dns   : $_dns"
 		_info "pbase : $_potbase"
+		_info "ip    : $_ipaddr"
+		_info "ip alias : $_staticip"
 	fi
 	if ! _cj_zfs $_pname $_base $_lvl $_potbase ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf $_pname $_base $_ipaddr $_lvl $_dns $_potbase ; then
+	if ! _cj_conf $_pname $_base $_ipaddr $_staticip $_lvl $_dns $_potbase ; then
 		${EXIT} 1
 	fi
 	if [ $_flv_default = "YES" ]; then

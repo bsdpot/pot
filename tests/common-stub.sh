@@ -42,7 +42,8 @@ _is_pot()
 	__monitor ISPOT "$@"
 	case "$1" in
 		test-pot|test-pot-run|\
-		test-pot-2|test-pot-run-2)
+		test-pot-2|test-pot-run-2|\
+		${POT_DNS_NAME})
 			return 0 # true
 			;;
 	esac
@@ -137,6 +138,7 @@ _fscomp_zfs_snap()
 common_setUp()
 {
 	_POT_VERBOSITY=1
+	POT_DNS_NAME=dns
 	ERROR_CALLS=0
 	INFO_CALLS=0
 	DEBUG_CALLS=0

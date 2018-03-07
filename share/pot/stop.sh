@@ -12,10 +12,11 @@ stop-help()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair
+	local _pname _jdir _epair _ip
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
+	_ip=$( _get_conf_var $_pname ip4 )
 	if _is_pot_running $_pname ; then
 		if _is_pot_vnet $_pname ; then
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
@@ -23,6 +24,10 @@ _js_stop()
 		jail -r $_pname
 		if [ -n "$_epair" ]; then
 			ifconfig ${_epair%b}a destroy
+		else
+			if [ "$_ip" != inherit ]; then
+				ifconfig ${POT_EXTIF} $_ip -alias
+			fi
 		fi
 		return $?
 	fi

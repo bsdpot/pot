@@ -13,10 +13,24 @@ create-base-help()
 # $1 release
 _cb_fetch()
 {
-	local _rel
+	local _rel _sha _sha_m
 	_rel=$1
 	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/${_rel}-RELEASE/base.txz -o /tmp/${_rel}_base.txz
-	return $?
+	if [ ! -r /tmp/${_rel}_base.txz ]; then
+		return 1 # false
+	fi
+	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE ]; then
+		_sha=$( sha256 -q /tmp/${_rel}_base.txz )
+		_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE)
+		if [ "$_sha" != "$_sha_m" ]; then
+			_error "sha256 doesn't match! Aborting"
+			return 1 # false
+		fi
+	else
+		_error "No manifests found - please install the package freebsd-release-manifests"
+		return 1 # false
+	fi
+	return 0 # true
 }
 
 # $1 release

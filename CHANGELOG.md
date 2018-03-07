@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - info : new command, to get information about a specific pot
 - rc.d script (#022)
 - create (#020) : add option -s, to configure static ip address (alias to external network interface)
+- create-base (#030) : add sha verification using freebsd-release-manifests
 
 ### Changed
 - create: the new wiki page shows the slightly different behavior of all use cases

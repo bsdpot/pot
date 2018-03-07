@@ -14,7 +14,7 @@ fi
 		if ${TEST} "$2" = "-r" ]; then
 			if ${TEST} "$3" = "/tmp/11.1_base.txz" ]; then
 				return 1 # false
-			elif ${TEST} "$3" = "/tmp/11.0_base.txz" ]; then
+			elif ${TEST} "$3" = "/tmp/12.0_base.txz" ]; then
 				return 1 # false
 			elif ${TEST} "$3" = "/tmp/8.1_base.txz" ]; then
 				return 1 # false
@@ -25,7 +25,7 @@ fi
 	elif ${TEST} "$1" = "-r" ]; then
 		if ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-11.1-RELEASE" ]; then
 			return 0 # true
-		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-11.0-RELEASE" ]; then
+		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-12.0-RELEASE" ]; then
 			return 0 # true
 		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-8.1-RELEASE" ]; then
 			return 1 # false
@@ -42,20 +42,24 @@ fetch()
 
 sha256()
 {
-	__monitor SHA "$@"
 	if [ "$2" = /tmp/11.1_base.txz ]; then
 		echo "0123456789abcdef"
-	elif [ "$2" = /tmp/11.0_base.txz ]; then 
+	elif [ "$2" = /tmp/12.0_base.txz ]; then
 		echo "fedcba9876543210"
 	else
 		echo ""
 	fi
 }
 
-awk()
+cat()
 {
-	__monitor AWK "$@"
-	echo "0123456789abcdef"
+	if [ "$1" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-12.0-RELEASE" ]; then
+		echo "base.txz 0123456789abcdef"
+	elif [ "$1" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-11.1-RELEASE" ]; then
+		echo "base.txz 0123456789abcdef"
+	else
+		/bin/cat "$@"
+	fi
 }
 
 # UUT
@@ -84,10 +88,10 @@ test_cb_fetch_002()
 
 test_cb_fetch_003()
 {
-	_cb_fetch 11.0
+	_cb_fetch 12.0
 	assertEquals "return code" "1" "$?"
 	assertEquals "fetch calls" "1" "$FETCH_CALLS"
-	assertEquals "fetch arg4" "/tmp/11.0_base.txz" "$FETCH_CALL1_ARG4"
+	assertEquals "fetch arg4" "/tmp/12.0_base.txz" "$FETCH_CALL1_ARG4"
 	assertEquals "error calls" "1" "$ERROR_CALLS"
 }
 
@@ -104,8 +108,6 @@ setUp()
 {
 	common_setUp
 	FETCH_CALLS=0
-	SHA_CALLS=0
-	AWK_CALLS=0
 }
 
 . shunit/shunit2

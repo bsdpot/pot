@@ -21,7 +21,8 @@ _cb_fetch()
 	fi
 	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE ]; then
 		_sha=$( sha256 -q /tmp/${_rel}_base.txz )
-		_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE)
+#		_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE)
+		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE | awk '/^base.txz/ { print $2 }' )
 		if [ "$_sha" != "$_sha_m" ]; then
 			_error "sha256 doesn't match! Aborting"
 			return 1 # false

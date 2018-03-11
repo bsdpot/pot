@@ -102,9 +102,9 @@ _is_init()
 		_qerror $1"Your system is not initialized, please run pot init"
 		return 1 # false
 	fi
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/bases" ||\
-	   ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails" ||\ 
-	   ! _zfs_is_dataset "${POT_ZFS_ROOT}/fscomp" ; then
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" ||\
+	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" ||\ 
+	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
 		_querror $1"Your system is not propery initialized, please run pot init to fix it"
 	fi
 }
@@ -331,7 +331,7 @@ _is_base()
 		fi
 		return 1 # false
 	fi
-	if ! _zfs_is_dataset $_bdset ; then
+	if ! _zfs_dataset_valid $_bdset ; then
 		if [ "$2" != "quiet" ]; then
 			_error "zfs dataset $_bdset not found"
 		fi
@@ -354,7 +354,7 @@ _is_pot()
 		fi
 		return 1 # false
 	fi
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails/$_pname" ; then
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails/$_pname" ; then
 		if [ "$2" != "quiet" ]; then
 			_error "zfs dataset $_pname not found"
 		fi

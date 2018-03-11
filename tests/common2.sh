@@ -48,7 +48,7 @@ _error()
 	:
 }
 
-_zfs_is_dataset()
+_zfs_dataset_valid()
 {
 	if ${TEST} "$1" = "/jails/pot-test" ]; then
 		return 0 # true

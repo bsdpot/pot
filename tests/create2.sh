@@ -31,9 +31,9 @@ mkdir()
 # common stubs
 . common-stub.sh
 
-_zfs_is_dataset()
+_zfs_dataset_valid()
 {
-	__monitor ZFSISDATASET "$@"
+	__monitor ZFSDATASETVALID "$@"
 	case "$1" in
 	${POT_ZFS_ROOT}/jails/test-pot|\
 	${POT_ZFS_ROOT}/jails/test-pot/usr.local|\
@@ -158,7 +158,7 @@ setUp()
 	ZFS_CALLS=0
 	ECHO_CALLS=0
 	MKDIR_CALLS=0
-	ZFSISDATASET_CALLS=0
+	ZFSDATASETVALID_CALLS=0
 	ZFSLASTSNAP_CALLS=0
 
 	POT_FS_ROOT=/tmp

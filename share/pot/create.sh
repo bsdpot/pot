@@ -30,7 +30,7 @@ _cj_zfs()
 	_potbase=$4
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	# Create the main jail zfs dataset
-	if ! _zfs_is_dataset $_jdset ; then
+	if ! _zfs_dataset_valid $_jdset ; then
 		zfs create $_jdset
 	else
 		_info "$_jdset exists already"
@@ -48,7 +48,7 @@ _cj_zfs()
 	# usr.local
 	if [ $_lvl -eq 1 ]; then
 		# lvl 1 images clone usr.local dataset
-		if ! _zfs_is_dataset $_jdset/usr.local ; then
+		if ! _zfs_dataset_valid $_jdset/usr.local ; then
 			if [ -n "$_potbase" ]; then
 				_dset=${POT_ZFS_ROOT}/jails/$_potbase
 			else
@@ -69,7 +69,7 @@ _cj_zfs()
 	fi
 
 	# custom dataset
-	if ! _zfs_is_dataset $_jdset/custom ; then
+	if ! _zfs_dataset_valid $_jdset/custom ; then
 		if [ -n "$_potbase" ]; then
 			_dset=${POT_ZFS_ROOT}/jails/$_potbase/custom
 		else

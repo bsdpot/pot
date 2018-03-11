@@ -77,11 +77,11 @@ pot-clone-fscomp()
 		clone-fscomp-help
 		${EXIT} 1
 	fi
-	if _zfs_is_dataset ${POT_ZFS_ROOT}/fscomp/$_fscomp ; then
+	if _zfs_dataset_valid ${POT_ZFS_ROOT}/fscomp/$_fscomp ; then
 		_error "fscomp $_fscomp already exists"
 		${EXIT} 1
 	fi
-	if ! _zfs_is_dataset ${POT_ZFS_ROOT}/fscomp/$_cfscomp ; then
+	if ! _zfs_dataset_valid ${POT_ZFS_ROOT}/fscomp/$_cfscomp ; then
 		_error "fscomp $_cfscomp doesn't exist"
 		${EXIT} 1
 	fi

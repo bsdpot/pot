@@ -8,7 +8,7 @@
 # common stubs
 . common-stub.sh
 
-_zfs_is_dataset()
+_zfs_dataset_valid()
 {
 	__monitor ZDSET "$@"
 	if [ "$1" = "/fscomp/test-fscomp" ]; then
@@ -38,7 +38,7 @@ test_pot_add_fscomp_001()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 
 	setUp
@@ -46,7 +46,7 @@ test_pot_add_fscomp_001()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 
 	setUp
@@ -54,7 +54,7 @@ test_pot_add_fscomp_001()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 
 	setUp
@@ -62,7 +62,7 @@ test_pot_add_fscomp_001()
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 }
 
@@ -72,7 +72,7 @@ test_pot_add_fscomp_002()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cf_zfs calls" "0" "$CFZFS_CALLS"
 
@@ -81,7 +81,7 @@ test_pot_add_fscomp_002()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "0" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "0" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cf_zfs calls" "0" "$CFZFS_CALLS"
 }
@@ -92,7 +92,7 @@ test_pot_add_fscomp_003()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "2" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "2" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cf_zfs calls" "0" "$CFZFS_CALLS"
 
@@ -101,7 +101,7 @@ test_pot_add_fscomp_003()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "1" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "1" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cf_zfs calls" "0" "$CFZFS_CALLS"
 }
@@ -112,7 +112,7 @@ test_pot_add_fscomp_020()
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_zfs_is_dataset calls" "2" "$ZDSET_CALLS"
+	assertEquals "_zfs_dataset_valid calls" "2" "$ZDSET_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_cf_zfs calls" "1" "$CFZFS_CALLS"
 	assertEquals "_cf_zfs arg1" "new-fscomp" "$CFZFS_CALL1_ARG1"

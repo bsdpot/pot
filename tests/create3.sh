@@ -12,7 +12,7 @@ sed_stub()
 {
 	__monitor SED "$@"
 	if [ "$(uname)" = "Linux" ]; then
-		gsed -i'' "$3" "$4"
+		sed -i'' "$3" "$4"
 	else
 		sed "$@"
 	fi

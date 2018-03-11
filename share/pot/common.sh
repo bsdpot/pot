@@ -130,8 +130,9 @@ _zfs_exist()
 {
 	local _mnt_
 	[ -z "$2" ] && return 1 # false
-	zfs list "$1" 2> /dev/null > /dev/null
-	[ $? -ne 0 ] && return 1 # false
+	if ! _zfs_dataset_valid $1 ; then
+		return 1 # false
+	fi
 	_mnt_="$(zfs list -H -o mountpoint $1 2> /dev/null )"
 	if [ "$_mnt_" != "$2" ]; then
 		return 1 # false

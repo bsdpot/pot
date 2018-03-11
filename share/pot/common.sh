@@ -149,6 +149,8 @@ _zfs_exist()
 	return 0 # true
 }
 
+# given a dataset, look for the corresponding mountpoint
+# $1 the dataset
 _get_zfs_mountpoint()
 {
 	local _mnt_p _dset
@@ -157,11 +159,13 @@ _get_zfs_mountpoint()
 	echo $_mnt_p
 }
 
+# given a mountpoint, look for the corresponding dataset
+# $1 the mountpoint
 _get_zfs_dataset()
 {
 	local _mnt_p _dset
 	_mnt_p=$1
-	_dset="$( zfs list -o name -H $_mnt_p 2> /dev/null )"
+	_dset=$(zfs list -o name,mountpoint -H 2>/dev/null | awk -v "mntp=${_mnt_p}" '{ if ($2 == mntp) print $1 }')
 	echo $_dset
 }
 
@@ -184,18 +188,30 @@ _pot_zfs_snap_full()
 	_pname=$1
 	_snaptag="$(date +%s)"
 	_debug "Take snapshot of the full $_pname"
-	while read -r line ; do
-		_node=$( echo $line | awk '{print $1}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		if [ "$_opt" = "ro" ]; then
-			continue
-		fi
-		_dset=$( zfs list -H $_node | awk '{print $1}' )
-		if [ -n "$_dset" ]; then
+	if [ -r ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf ]; then
+		while read -r line ; do
+			_dset=$( echo $line | awk '{print $1}' )
+			_opt=$( echo $line | awk '{print $3}' )
+			if [ "$_opt" = "ro" ]; then
+				continue
+			fi
 			_debug "snapshot of $_dset"
 			zfs snapshot ${_dset}@${_snaptag}
-		fi
-	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
+		done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
+	else
+		while read -r line ; do
+			_node=$( echo $line | awk '{print $1}' )
+			_opt=$( echo $line | awk '{print $3}' )
+			if [ "$_opt" = "ro" ]; then
+				continue
+			fi
+			_dset=$( zfs list -H $_node | awk '{print $1}' )
+			if [ -n "$_dset" ]; then
+				_debug "snapshot of $_dset"
+				zfs snapshot ${_dset}@${_snaptag}
+			fi
+		done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
+	fi
 }
 
 # take a zfs snapshot of a fscomp
@@ -209,6 +225,7 @@ _fscomp_zfs_snap()
 	zfs snapshot ${POT_ZFS_ROOT}/fscomp/${_pname}@${_snaptag}
 }
 
+# get the last available snaphost of the given dataset
 # $1 the dataset name
 _zfs_last_snap()
 {

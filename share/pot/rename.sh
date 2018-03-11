@@ -16,7 +16,12 @@ _rn_conf()
 	_pname=$1
 	_newname=$2
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
-	sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
+	if [ -w $_cdir/fs.conf ]; then
+		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
+	fi
+	if [ -w $_cdir/fscomp.conf ]; then
+		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fscomp.conf
+	fi
 	sed -i '' -e "s%host.hostname=\"${_pname}%host.hostname=\"${_newname}%g" $_cdir/pot.conf
 }
 
@@ -68,7 +73,12 @@ _rn_recursive()
 	_pots=$(  ls -d ${POT_FS_ROOT}/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots ; do
 		_cdir=${POT_FS_ROOT}/jails/$_p/conf
-		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
+		if [ -w $_cdir/fs.conf ]; then
+			sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
+		fi
+		if [ -w $_cdir/fscomp.conf ]; then
+			sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fscomp.conf
+		fi
 		sed -i '' -e "s/^pot.potbase=$_pname$/pot.potbase=$_newname/" $_cdir/pot.conf
 		sed -i '' -e "s/^pot.depends=$_pname$/pot.depends=$_newname/" $_cdir/pot.conf
 	done

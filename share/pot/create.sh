@@ -101,6 +101,7 @@ _cj_conf()
 {
 	local _pname _base _ip _staticip _lvl _jdir _bdir _potbase _dns
 	local _pblvl _pbpb
+	local _jdset _bdset _pbdset
 	_pname=$1
 	_base=$2
 	_ip=$3
@@ -110,8 +111,12 @@ _cj_conf()
 	_potbase=$7
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
+
+	_jdset=${POT_ZFS_ROOT}/jails/$_pname
+	_bdset=${POT_ZFS_ROOT}/bases/$_base
 	if [ -n "$_potbase" ]; then
 		_pblvl=$( _get_conf_var $_potbase pot.level )
+		_pbdset=${POT_ZFS_ROOT}/jails/$_potbase
 	else
 		_pblvl=
 	fi
@@ -139,6 +144,30 @@ _cj_conf()
 		fi
 	) > $_jdir/conf/fs.conf
 	(
+		case $_lvl in
+		0)
+			echo "$_bdset ${_jdir}/m"
+			echo "$_bdset/usr.local ${_jdir}/m/usr/local"
+			echo "$_bdset/custom ${_jdir}/m/opt/custom"
+			;;
+		1)
+			echo "$_bdset ${_jdir}/m ro"
+			echo "$_jdset/usr.local ${_jdir}/m/usr/local zfs-remount"
+			echo "$_jdset/custom ${_jdir}/m/opt/custom zfs-remount"
+			;;
+		2)
+			echo "$_bdset ${_jdir}/m ro"
+			if [ $_pblvl -eq 1 ]; then
+				echo "$_pbdset/usr.local ${_jdir}/m/usr/local ro"
+			else
+				_pbpb=$( _get_conf_var $_potbase pot.potbase )
+				echo "${POT_ZFS_ROOT}/jails/$_pbpb/usr.local ${_jdir}/m/usr/local ro"
+			fi
+			echo "$_jdset/custom ${_jdir}/m/opt/custom zfs-remount"
+			;;
+		esac
+	) > $_jdir/conf/fscomp.conf
+	(
 		echo "pot.level=${_lvl}"
 		echo "pot.base=${_base}"
 		echo "pot.potbase=${_potbase}"
@@ -164,7 +193,16 @@ _cj_conf()
 	if [ $_lvl -eq 2 ]; then
 		if [ $_pblvl -eq 1 ]; then
 			# CHANGE the potbase usr.local to be not zfs-remount
-			${SED} -i '' "s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local%" ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf
+			# Add an info here would be nice
+			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf ]; then
+				${SED} -i '' "s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local%" ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf
+			fi
+			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf ]; then
+				_info "${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf fix (${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount)"
+				${SED} -i '' "s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local%" ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
+			else
+				_info "$_potbase fscomp.conf has not fscomp.conf"
+			fi
 		fi
 	fi
 }

@@ -22,6 +22,16 @@ _ls_info_pot_fs()
 	done < $1
 }
 
+_ls_info_pot_fscomp()
+{
+	local _dset _mnt_p
+	while read -r line ; do
+		_dset=$( echo $line | awk '{print $1}' )
+		_mnt_p=$( echo $line | awk '{print $2}' )
+		printf "\t\t${_mnt_p##${POT_FS_ROOT}/jails/} => ${_dset##${POT_ZFS_ROOT}/}\n"
+	done < $1
+}
+
 _ls_info_pot_snap()
 {
 	local _pname
@@ -52,7 +62,11 @@ _ls_info_pot()
 	fi
 	if _is_verbose ; then
 		printf "\tdatasets:\n"
-		_ls_info_pot_fs $_cdir/fs.conf
+		if [ -r $_cdir/fscomp.conf ]; then
+			_ls_info_pot_fscomp $_cdir/fscomp.conf
+		else
+			_ls_info_pot_fs $_cdir/fs.conf
+		fi
 		printf "\tsnapshot:\n"
 		_ls_info_pot_snap $_pname
 	fi

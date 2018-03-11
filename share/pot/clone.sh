@@ -14,11 +14,12 @@ clone-help()
 # $2 pot-base name
 _cj_zfs()
 {
-	local _pname _potbase _jdset _pdir _pbdir
+	local _pname _potbase _jdset _pdir _pbdir _pbdset
 	local _node _mnt_p _opt _new_mnt_p
 	_pname=$1
 	_potbase=$2
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
+	_pbdset=${POT_ZFS_ROOT}/jails/$_potbase
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
 	if [ "0" = "$( _get_conf_var $_potbase pot.level )" ]; then
@@ -38,47 +39,92 @@ _cj_zfs()
 	if [ -e "$_pdir/conf/fs.conf" ]; then
 		rm -f $_pdir/conf/fs.conf
 	fi
+	if [ -e "$_pdir/conf/fscomp.conf" ]; then
+		rm -f $_pdir/conf/fscomp.conf
+	fi
 	# Create the root mountpoint
 	if [ ! -d "$_pdir/m" ]; then
 		mkdir -p $_pdir/m
 	fi
-	while read -r line ; do
-		_node=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		# ro components are replicated "as is"
-		if [ "$_opt" = ro ] ; then
-			_debug $_node ${_pdir}/${_mnt_p##${_pbdir}/} $_opt
-			echo $_node ${_pdir}/${_mnt_p##${_pbdir}/} $_opt >> $_pdir/conf/fs.conf
-		else
-			# managing potbase datasets
-			if [ "$_node" != "${_node##${_pbdir}}" ]; then
-				_dname="${_node##${_pbdir}/}"
-				_dset=$( _get_zfs_dataset $_node )
-				_snap=$( _zfs_last_snap $_dset )
-				if [ -z "$_snap" ]; then
-					_error "$_dset has no snap - please take a snapshot of $_pbase"
-					return 1
-				else
-					if _zfs_exist $_jdset/$_dname $_pdir/$_dname ; then
-						_debug "$_dname dataset already cloned"
-					else
-						_debug "clone $_dset@$_snap into $_jdset/$_dname"
-						zfs clone -o mountpoint=$_pdir/$_dname $_dset@$_snap $_jdset/$_dname
-						_debug "$_pdir/$_dname $_pdir/${_mnt_p##${_pbdir}/}"
-						echo "$_pdir/$_dname $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fs.conf
-					fi
-				fi
-			# managing fscomp datasets - the simple way - no clone support for fscomp
-			elif [ "$_node" != "${_node##${POT_FS_ROOT}/fscomp}" ]; then
-				_debug "$_node $_pdir/${_mnt_p##${_pbdir}/}"
-				echo "$_node $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fs.conf
+	if [ -r ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf ]; then
+		while read -r line ; do
+			_dset=$( echo $line | awk '{print $1}' )
+			_mnt_p=$( echo $line | awk '{print $2}' )
+			_opt=$( echo $line | awk '{print $3}' )
+			# ro components are replicated "as is"
+			if [ "$_opt" = ro ] ; then
+				_debug $_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt
+				echo $_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt >> $_pdir/conf/fscomp.conf
 			else
-				_error "not able to manage $_node"
+				# managing potbase datasets
+				if [ "$_dset" != "${_dset##${_pbdset}}" ]; then
+					_dname="${_dset##${_pbdset}/}"
+					_snap=$( _zfs_last_snap $_dset )
+					if [ -z "$_snap" ]; then
+						_error "$_dset has no snap - please take a snapshot of $_potbase"
+						return 1
+					else
+						if _zfs_exist $_jdset/$_dname $_pdir/$_dname ; then
+							_debug "$_dname dataset already cloned"
+						else
+							_debug "clone $_dset@$_snap into $_jdset/$_dname"
+							zfs clone -o mountpoint=$_pdir/$_dname $_dset@$_snap $_jdset/$_dname
+							if [ -z "$_opt" ]; then
+								_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}"
+								echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fscomp.conf
+							else
+								_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/} $_opt"
+								echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/} $_opt" >> $_pdir/conf/fscomp.conf
+							fi
+						fi
+					fi
+				# managing fscomp datasets - the simple way - no clone support for fscomp
+				elif [ "$_dset" != "${_dset##${POT_ZFS_ROOT}/fscomp}" ]; then
+					_debug "$_dset $_pdir/${_mnt_p##${_pbdir}/}"
+					echo "$_dset $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fscomp.conf
+				else
+					_error "not able to manage $_dset"
+				fi
 			fi
-		fi
-	done < ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf
-
+		done < ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
+	else
+		while read -r line ; do
+			_node=$( echo $line | awk '{print $1}' )
+			_mnt_p=$( echo $line | awk '{print $2}' )
+			_opt=$( echo $line | awk '{print $3}' )
+			# ro components are replicated "as is"
+			if [ "$_opt" = ro ] ; then
+				_debug $_node ${_pdir}/${_mnt_p##${_pbdir}/} $_opt
+				echo $_node ${_pdir}/${_mnt_p##${_pbdir}/} $_opt >> $_pdir/conf/fs.conf
+			else
+				# managing potbase datasets
+				if [ "$_node" != "${_node##${_pbdir}}" ]; then
+					_dname="${_node##${_pbdir}/}"
+					_dset=$( _get_zfs_dataset $_node )
+					_snap=$( _zfs_last_snap $_dset )
+					if [ -z "$_snap" ]; then
+						_error "$_dset has no snap - please take a snapshot of $_potbase"
+						return 1
+					else
+						if _zfs_exist $_jdset/$_dname $_pdir/$_dname ; then
+							_debug "$_dname dataset already cloned"
+						else
+							_debug "clone $_dset@$_snap into $_jdset/$_dname"
+							zfs clone -o mountpoint=$_pdir/$_dname $_dset@$_snap $_jdset/$_dname
+							_debug "$_pdir/$_dname $_pdir/${_mnt_p##${_pbdir}/}"
+							echo "$_pdir/$_dname $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fs.conf
+						fi
+					fi
+				# managing fscomp datasets - the simple way - no clone support for fscomp
+				elif [ "$_node" != "${_node##${POT_FS_ROOT}/fscomp}" ]; then
+					_debug "$_node $_pdir/${_mnt_p##${_pbdir}/}"
+					echo "$_node $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fs.conf
+				else
+					_error "not able to manage $_node"
+				fi
+			fi
+		done < ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf
+	fi
 	return 0 # true
 }
 

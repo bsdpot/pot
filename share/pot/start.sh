@@ -68,34 +68,66 @@ _js_mount()
 {
 	local _pname _node _mnt_p _opt _dset
 	_pname=$1
-	_js_fix_mountpoint $_pname
-	while read -r line ; do
-		_node=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		if [ "$_opt" = "zfs-remount" ]; then
-			_dset=$( _get_zfs_dataset $_node )
-			if _zfs_exist $_dset $_node ; then
-				# the information are correct - move the mountpoint
+	if [ -r ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf ]; then
+		_debug "Using the fscomp.conf"
+		while read -r line ; do
+			_dset=$( echo $line | awk '{print $1}' )
+			_mnt_p=$( echo $line | awk '{print $2}' )
+			_opt=$( echo $line | awk '{print $3}' )
+			if [ "$_opt" = "zfs-remount" ]; then
 				zfs set mountpoint=$_mnt_p $_dset
+				_node=$( _get_zfs_mountpoint $_dset )
+				if _zfs_exist $_dset $_node ; then
+					# the information are correct - move the mountpoint
+					_debug "start: the dataset $_dset is mounted at $_node"
+				else
+					# mountpoint already moved ?
+					_error "Dataset $_dset not mounted at $_mnt_p! Aborting"
+					start-cleanup $_pname
+					return 1 # false
+				fi
 			else
-				# mountpoint already moved ?
-				_error "Dataset of $_node not found! Already mounted??"
-				start-cleanup $_pname
-				return 1 # false
+				_node=$( _get_zfs_mountpoint $_dset )
+				mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
+				if [ "$?" -ne 0 ]; then
+					_error "Error mounting $_node"
+					start-cleanup $_pname
+					return 1 # false
+				else
+					_debug "mount $_mnt_p"
+				fi
 			fi
-		else
-			mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
-			if [ "$?" -ne 0 ]; then
-				_error "Error mounting $_node"
-				start-cleanup $_pname
-				return 1 # false
+		done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
+	else
+		_debug "Using old compatible fs.conf"
+		_js_fix_mountpoint $_pname
+		while read -r line ; do
+			_node=$( echo $line | awk '{print $1}' )
+			_mnt_p=$( echo $line | awk '{print $2}' )
+			_opt=$( echo $line | awk '{print $3}' )
+			if [ "$_opt" = "zfs-remount" ]; then
+				_dset=$( _get_zfs_dataset $_node )
+				if _zfs_exist $_dset $_node ; then
+					# the information are correct - move the mountpoint
+					zfs set mountpoint=$_mnt_p $_dset
+				else
+					# mountpoint already moved ?
+					_error "Dataset of $_node not found! Already mounted??"
+					start-cleanup $_pname
+					return 1 # false
+				fi
 			else
-				_debug "mount $_mnt_p"
+				mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
+				if [ "$?" -ne 0 ]; then
+					_error "Error mounting $_node"
+					start-cleanup $_pname
+					return 1 # false
+				else
+					_debug "mount $_mnt_p"
+				fi
 			fi
-		fi
-	done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
-
+		done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
+	fi
 	mount -t tmpfs tmpfs ${POT_FS_ROOT}/jails/$_pname/m/tmp
 	if [ "$?" -ne 0 ]; then
 		_error "Error mouning tmpfs"

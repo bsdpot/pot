@@ -14,13 +14,13 @@ _error()
 _info()
 {
 	__monitor INFO "$@"
-	[ "$INFO_DEBUG" = "YES" ] && echo "_error: $*"
+	[ "$INFO_DEBUG" = "YES" ] && echo "_info: $*"
 }
 
 _debug()
 {
 	__monitor DEBUG "$@"
-	[ "$INFO_DEBUG" = "YES" ] && echo "_error: $*"
+	[ "$INFO_DEBUG" = "YES" ] && echo "_debug: $*"
 }
 
 _is_verbose() {
@@ -43,6 +43,7 @@ _is_pot()
 	case "$1" in
 		test-pot|test-pot-run|\
 		test-pot-2|test-pot-run-2|\
+		test-pot-0|\
 		${POT_DNS_NAME})
 			return 0 # true
 			;;
@@ -84,6 +85,9 @@ _get_conf_var()
 		test-pot-2|test-pot-run-2)
 			echo "2"
 			;;
+		test-pot-0)
+			echo "0"
+			;;
 		esac
 		;;
 	"pot.potbase")
@@ -95,6 +99,17 @@ _get_conf_var()
 			echo "test-pot-run"
 			;;
 		esac
+		;;
+	"ip4")
+		case $1 in
+		test-pot|test-pot-0)
+			echo "inherit"
+			;;
+		test-pot-2)
+			echo "10.1.2.3"
+			;;
+		esac
+		;;
 	esac
 }
 

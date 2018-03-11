@@ -22,29 +22,34 @@ add-fscomp-help()
 _add_f_to_p()
 {
 	local _fscomp _pname _mnt_p _pdir _ext _opt
+	local _fscomp_mntp
 	_fscomp="$1"
 	_pname="$2"
 	# Removing the trailing /
-	# _mnt_p="$(echo $3 | sed 's%^/%%')" # or, more efficiently
+	#_mnt_p="$(echo $3 | sed 's%^/%%')" # or, more efficiently
 	_mnt_p="${3#/}"
 	_ext="${4}"
 	_opt="${5}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	if [ "$_ext" = "external" ]; then
 		# convert zfs dataset in the mountpoint
-		_fscomp=$( zfs list -H -o mountpoint $_fscomp )
-		_debug "add $_fscomp $_pdir/m/$_mnt_p"
+		_fscomp_mntp=$( zfs list -H -o mountpoint $_fscomp )
+		_debug "add $_fscomp $_pdir/m/$_mnt_p $_opt"
 		if [ -z "$_opt" ]; then
-			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+			${ECHO} "$_fscomp_mntp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
 		else
-			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
+			${ECHO} "$_fscomp_mntp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
 		fi
 	else
-		_debug "add $POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p"
+		_debug "add $POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt"
 		if [ -z "$_opt" ]; then
 			${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
+			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
 		else
 			${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
+			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
 		fi
 	fi
 }
@@ -138,13 +143,13 @@ pot-add-fscomp()
 		fi
 	fi
 	if [ "$_ext" = "external" ]; then
-		if ! _zfs_is_dataset $_fscomp ; then
+		if ! _zfs_dataset_valid $_fscomp ; then
 			_error "fscomp $_fscomp is not a valid ZFS dataset"
 			add-fscomp-help
 			${EXIT} 1
 		fi
 	else
-		if ! _zfs_is_dataset $POT_ZFS_ROOT/fscomp/$_fscomp ; then
+		if ! _zfs_dataset_valid $POT_ZFS_ROOT/fscomp/$_fscomp ; then
 			_error "fscomp $_fscomp is not valid"
 			add-fscomp-help
 			${EXIT} 1

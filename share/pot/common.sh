@@ -109,6 +109,19 @@ _is_init()
 	fi
 }
 
+# check if the dataset is a dataset name
+# $1 the dataset NAME
+# tested
+_zfs_dataset_valid()
+{
+	[ -z "$1" ] && return 1 # return false
+	if [ "$1" = "$( zfs list -o name -H $1 2> /dev/null)" ]; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 # check if the dataset $1 exists
 # $1 the dataset NAME
 # tested
@@ -134,6 +147,14 @@ _zfs_exist()
 		return 1 # false
 	fi
 	return 0 # true
+}
+
+_get_zfs_mountpoint()
+{
+	local _mnt_p _dset
+	_dset=$1
+	_mnt_p="$( zfs list -o mountpoint -H $_dset 2> /dev/null )"
+	echo $_mnt_p
 }
 
 _get_zfs_dataset()
@@ -324,10 +345,11 @@ _is_pot()
 	fi
 
 	if [ ! -d $_pdir/m -o \
-		 ! -r $_pdir/conf/pot.conf -o \
-		 ! -r $_pdir/conf/fs.conf ]; then
-		if [ "$2" != "quiet" ]; then
-			_error "Some component of the pot $_pname is missing"
+		 ! -r $_pdir/conf/pot.conf -o ]; then
+		if [ ! -r $_pdir/conf/fs.conf -a ! -r $_pdir/conf/fscomp.conf ]; then
+			if [ "$2" != "quiet" ]; then
+				_error "Some component of the pot $_pname is missing"
+			fi
 		fi
 		return 3 # false
 	fi

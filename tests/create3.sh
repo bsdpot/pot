@@ -11,7 +11,11 @@ SED=sed_stub
 sed_stub()
 {
 	__monitor SED "$@"
-	sed "$@"
+	if [ "$(uname)" = "Linux" ]; then
+		gsed -i'' "$3" "$4"
+	else
+		sed "$@"
+	fi
 }
 
 # UUT

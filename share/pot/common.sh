@@ -122,16 +122,6 @@ _zfs_dataset_valid()
 	fi
 }
 
-# check if the dataset $1 exists
-# $1 the dataset NAME
-# tested
-_zfs_is_dataset()
-{
-	[ -z "$1" ] && return 1 ## return false
-	zfs list "$1" 2> /dev/null > /dev/null
-	return $?
-}
-
 # check if the dataset $1 with the mountpoint $2 exists
 # $1 the dataset NAME
 # $2 the mountpoint

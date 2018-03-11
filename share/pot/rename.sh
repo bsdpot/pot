@@ -37,17 +37,17 @@ _rn_zfs()
 #sudo zfs umount zroot/pot/jails/dns1/custom   
 #sudo zfs set mountpoint=/opt/pot/jails/dns2/custom zroot/pot/jails/dns2/custom
 #sudo zfs umount zroot/pot/jails/dns1       
-	if _zfs_is_dataset $_dset/usr.local ; then
+	if _zfs_dataset_valid $_dset/usr.local ; then
 		_debug "Preparing $_dset/usr.local"
 		zfs umount -f $_dset/usr.local
 		zfs set mountpoint=${POT_FS_ROOT}/jails/$_newname/usr.local $_dset/usr.local
 	fi
-	if _zfs_is_dataset $_dset/custom ; then
+	if _zfs_dataset_valid $_dset/custom ; then
 		_debug "Preparing $_dset/custom"
 		zfs umount -f $_dset/custom
 		zfs set mountpoint=${POT_FS_ROOT}/jails/$_newname/custom $_dset/custom
 	fi
-	if _zfs_is_dataset $_dset; then
+	if _zfs_dataset_valid $_dset; then
 		_debug "Preparing $_dset"
 		zfs umount -f $_dset
 	fi

@@ -31,7 +31,7 @@ _pot_zfs_destroy()
 	_pname=$1
 	_force=$2
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
-	if ! _zfs_is_dataset $_jdset ; then
+	if ! _zfs_dataset_valid $_jdset ; then
 		_error "$_pname not found"
 		return 1 # false
 	fi
@@ -117,7 +117,7 @@ pot-destroy()
 	fi
 	if [ -n "$_bname" ]; then
 		# check the base
-		if ! _zfs_is_dataset "${POT_ZFS_ROOT}/bases/$_bname" ; then
+		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases/$_bname" ; then
 			_error "$_bname is not a base"
 			exit 1
 		fi

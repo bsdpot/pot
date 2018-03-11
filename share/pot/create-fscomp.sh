@@ -47,7 +47,7 @@ pot-create-fscomp()
 	if ! _is_init ; then
 		${EXIT} 1
 	fi
-	if ! _zfs_is_dataset "$_dset" ; then
+	if ! _zfs_dataset_valid "$_dset" ; then
 		if ! _is_uid0 ; then
 			${EXIT} 1
 		fi

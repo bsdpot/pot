@@ -59,7 +59,7 @@ pot-de-init()
 	if _is_verbose ; then
 		_zopt="-v"
 	fi
-	if ! _zfs_is_dataset ${POT_ZFS_ROOT} ; then
+	if ! _zfs_dataset_valid ${POT_ZFS_ROOT} ; then
 		_info "no root dataset found ($POT_ZFS_ROOT)"
 	else
 		_info "Deinstall pot ($POT_ZFS_ROOT)"

@@ -38,7 +38,7 @@ pot-init()
 	fi
 
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
-		if _zfs_is_dataset "${POT_ZFS_ROOT}" ; then
+		if _zfs_dataset_valid "${POT_ZFS_ROOT}" ; then
 			_error "${POT_ZFS_ROOT} is an invalid POT root"
 			return 1 # false
 		fi
@@ -58,13 +58,13 @@ pot-init()
 	fi
 
 	# create mandatory datasets
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/bases" ; then
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" ; then
 		zfs create ${POT_ZFS_ROOT}/bases
 	fi
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/jails" ; then
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" ; then
 		zfs create ${POT_ZFS_ROOT}/jails
 	fi
-	if ! _zfs_is_dataset "${POT_ZFS_ROOT}/fscomp" ; then
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
 		zfs create ${POT_ZFS_ROOT}/fscomp
 	fi
 }

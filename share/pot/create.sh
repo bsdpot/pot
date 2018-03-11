@@ -199,7 +199,7 @@ _cj_conf()
 			fi
 			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf ]; then
 				_info "${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf fix (${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount)"
-				${SED} -i '' "s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local%" ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
+				${SED} -i '' s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local\ zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local% ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
 			else
 				_info "$_potbase fscomp.conf has not fscomp.conf"
 			fi

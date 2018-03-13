@@ -136,7 +136,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|\
 	start|stop|term|\
-	rename|clone|clone-fscomp|\
+	rename|clone|clone-fscomp|promote|\
 	snapshot|revert)
 		pot-cmd "${CMD}" $@
 		exit 0

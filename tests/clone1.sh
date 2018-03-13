@@ -1,0 +1,215 @@
+#!/bin/sh
+
+# system utilities stubs
+
+# UUT
+. ../share/pot/clone.sh
+
+# common stubs
+. common-stub.sh
+
+# app specific stubs
+_cj_zfs()
+{
+	__monitor CJZFS "$@"
+}
+
+_cj_conf()
+{
+	__monitor CJCONF "$@"
+}
+
+clone-help()
+{
+	__monitor HELP "$@"
+}
+
+test_pot_clone_001()
+{
+	pot-clone
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+
+	setUp
+	pot-clone -vL
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+
+	setUp
+	pot-clone -L bb
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+
+	setUp
+	pot-clone -h
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+
+	setUp
+	pot-clone -S
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_002()
+{
+	pot-clone -p new-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+
+	setUp
+	pot-clone -P test-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_003()
+{
+	pot-clone -p new-pot -P no-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+
+	setUp
+	pot-clone -p test-pot -P test-pot-2
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_004()
+{
+	pot-clone -p new-pot -P test-pot-2
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_005()
+{
+	pot-clone -p new-pot -P test-pot -i 10.1.2.3
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_005()
+{
+	pot-clone -p new-pot -P test-pot-2 -i 10.1.2.3
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_020()
+{
+	pot-clone -p new-pot -P test-pot-0
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+}
+
+test_pot_clone_021()
+{
+	pot-clone -p new-pot -P test-pot
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg2" "test-pot" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_zfs arg3" "NO" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+}
+
+test_pot_clone_022()
+{
+	pot-clone -p new-pot-2 -P test-pot-2 -i 10.1.2.4
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-2" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-2" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-2" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-2" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "10.1.2.4" "$CJCONF_CALL1_ARG3"
+}
+
+test_pot_clone_023()
+{
+	pot-clone -p new-pot -P test-pot -f
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg2" "test-pot" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_zfs arg3" "YES" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+}
+setUp()
+{
+	common_setUp
+	CJZFS_CALLS=0
+	CJCONF_CALLS=0
+	HELP_CALLS=0
+}
+
+. shunit/shunit2

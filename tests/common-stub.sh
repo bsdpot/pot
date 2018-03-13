@@ -20,7 +20,7 @@ _info()
 _debug()
 {
 	__monitor DEBUG "$@"
-	[ "$INFO_DEBUG" = "YES" ] && echo "_debug: $*"
+	[ "$DEBUG_DEBUG" = "YES" ] && echo "_debug: $*"
 }
 
 _is_verbose() {
@@ -43,7 +43,7 @@ _is_pot()
 	case "$1" in
 		test-pot|test-pot-run|\
 		test-pot-2|test-pot-run-2|\
-		test-pot-0|\
+		test-pot-0|test-pot-nosnap|\
 		${POT_DNS_NAME})
 			return 0 # true
 			;;
@@ -79,7 +79,8 @@ _get_conf_var()
 	case "$2" in
 	"pot.level")
 		case "$1" in
-		test-pot|test-pot-run)
+		test-pot|test-pot-run|\
+		test-pot-nosnap)
 			echo "1"
 			;;
 		test-pot-2|test-pot-run-2)

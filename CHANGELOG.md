@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create-base (#030) : add sha verification using freebsd-release-manifests
 - version : add a subcommand the print the current version of the utility
 - fscomp.conf : new fs component description file
+- clone : -f option to automatically get a snapshot of a dataset, if needed
 
 ### Changed
 - create: the new wiki page shows the slightly different behavior of all use cases

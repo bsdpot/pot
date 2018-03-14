@@ -17,6 +17,7 @@ _rn_conf()
 	_newname=$2
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
 	if [ -w $_cdir/fs.conf ]; then
+		_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
 		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
 	fi
 	if [ -w $_cdir/fscomp.conf ]; then

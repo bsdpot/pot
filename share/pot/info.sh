@@ -64,6 +64,7 @@ _info_pot()
 		if [ -r $_cdir/fscomp.conf ]; then
 			_info_pot_fscomp $_cdir/fscomp.conf
 		else
+			_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
 			_info_pot_fs $_cdir/fs.conf
 		fi
 		printf "\tsnapshot:\n"

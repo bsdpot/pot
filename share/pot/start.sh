@@ -99,6 +99,7 @@ _js_mount()
 			fi
 		done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
 	else
+		_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
 		_debug "Using old compatible fs.conf"
 		_js_fix_mountpoint $_pname
 		while read -r line ; do

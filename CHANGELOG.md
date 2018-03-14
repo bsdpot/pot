@@ -20,8 +20,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - create: the new wiki page shows the slightly different behavior of all use cases
+- create: fscomp.conf is generated instead of fs.conf, using dataset instead of mountpoint as first column
 - private datasets are now mounted changing the mountpoint of the dataset, instead of relying on nullfs
   For that reasons, an option called "zfs-remount" is added to the fs.conf file
+
+### Deprecated
+- fs.conf: fs.conf is deprecated. Support will be removed in the next release.
 
 ### Remove
 - create: -S option, not needed anymore

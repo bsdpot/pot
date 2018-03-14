@@ -108,6 +108,7 @@ _cj_zfs()
 			fi
 		done < ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
 	else
+		info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
 		while read -r line ; do
 			_node=$( echo $line | awk '{print $1}' )
 			_mnt_p=$( echo $line | awk '{print $2}' )

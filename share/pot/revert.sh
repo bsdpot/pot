@@ -62,6 +62,7 @@ _pot_zfs_rollback_full()
 			zfs rollback ${_dset}@${_snap}
 		done < ${_pdir}/conf/fscomp.conf
 	else
+		_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
 		while read -r line ; do
 			_node=$( echo $line | awk '{print $1}' )
 			_opt=$( echo $line | awk '{print $3}' )

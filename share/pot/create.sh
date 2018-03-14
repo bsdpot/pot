@@ -124,26 +124,6 @@ _cj_conf()
 		mkdir -p $_jdir/conf
 	fi
 	(
-		if [ $_lvl -eq 0 ]; then
-			echo "$_bdir ${_jdir}/m"
-			echo "$_bdir/usr/local ${_jdir}/m/usr/local"
-			echo "$_bdir/opt/custom ${_jdir}/m/opt/custom"
-		elif [ $_lvl -eq 1 ]; then
-			echo "$_bdir ${_jdir}/m ro"
-			echo "$_jdir/usr.local ${_jdir}/m/usr/local zfs-remount"
-			echo "$_jdir/custom ${_jdir}/m/opt/custom zfs-remount"
-		elif [ $_lvl -eq 2 ]; then
-			echo "$_bdir ${_jdir}/m ro"
-			if [ $_pblvl -eq 1 ]; then
-				echo "${POT_FS_ROOT}/jails/$_potbase/usr.local ${_jdir}/m/usr/local ro"
-			else
-				_pbpb=$( _get_conf_var $_potbase pot.potbase )
-				echo "${POT_FS_ROOT}/jails/$_pbpb/usr.local ${_jdir}/m/usr/local ro"
-			fi
-			echo "$_jdir/custom ${_jdir}/m/opt/custom zfs-remount"
-		fi
-	) > $_jdir/conf/fs.conf
-	(
 		case $_lvl in
 		0)
 			echo "$_bdset ${_jdir}/m"
@@ -195,6 +175,7 @@ _cj_conf()
 			# CHANGE the potbase usr.local to be not zfs-remount
 			# Add an info here would be nice
 			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf ]; then
+				info "WARNING: pot $_potbase has no fscomp.conf - fs.conf will be deprecated soon"
 				${SED} -i '' "s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local%" ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf
 			fi
 			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf ]; then

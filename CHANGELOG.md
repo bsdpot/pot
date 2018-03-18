@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Removed
+- fs.conf is not supported anymore
+
 ## [0.5.0] 2018-03-16
 ### Added
 - add-fscomp : add the ability to remount a fscomp (-w), instead of mount it via nullfs
@@ -29,7 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 - fs.conf: fs.conf is deprecated. Support will be removed in the next release.
 
-### Remove
+### Removed
 - create: -S option, not needed anymore
 
 ## [0.4.0] 2018-02-13

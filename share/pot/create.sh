@@ -174,10 +174,6 @@ _cj_conf()
 		if [ $_pblvl -eq 1 ]; then
 			# CHANGE the potbase usr.local to be not zfs-remount
 			# Add an info here would be nice
-			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf ]; then
-				info "WARNING: pot $_potbase has no fscomp.conf - fs.conf will be deprecated soon"
-				${SED} -i '' "s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local%" ${POT_FS_ROOT}/jails/$_potbase/conf/fs.conf
-			fi
 			if [ -w ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf ]; then
 				_info "${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf fix (${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount)"
 				${SED} -i '' s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local\ zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local% ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf

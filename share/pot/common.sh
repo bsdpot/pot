@@ -171,7 +171,7 @@ _pot_zfs_snap()
 	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}
 }
 
-# take a zfs snapshot of all rw dataset found in the fs.conf of a pot
+# take a zfs snapshot of all rw dataset found in the fscomp.conf of a pot
 # $1 pot name
 _pot_zfs_snap_full()
 {
@@ -179,30 +179,15 @@ _pot_zfs_snap_full()
 	_pname=$1
 	_snaptag="$(date +%s)"
 	_debug "Take snapshot of the full $_pname"
-	if [ -r ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf ]; then
-		while read -r line ; do
-			_dset=$( echo $line | awk '{print $1}' )
-			_opt=$( echo $line | awk '{print $3}' )
-			if [ "$_opt" = "ro" ]; then
-				continue
-			fi
-			_debug "snapshot of $_dset"
-			zfs snapshot ${_dset}@${_snaptag}
-		done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
-	else
-		while read -r line ; do
-			_node=$( echo $line | awk '{print $1}' )
-			_opt=$( echo $line | awk '{print $3}' )
-			if [ "$_opt" = "ro" ]; then
-				continue
-			fi
-			_dset=$( zfs list -H $_node | awk '{print $1}' )
-			if [ -n "$_dset" ]; then
-				_debug "snapshot of $_dset"
-				zfs snapshot ${_dset}@${_snaptag}
-			fi
-		done < ${POT_FS_ROOT}/jails/$_pname/conf/fs.conf
-	fi
+	while read -r line ; do
+		_dset=$( echo $line | awk '{print $1}' )
+		_opt=$( echo $line | awk '{print $3}' )
+		if [ "$_opt" = "ro" ]; then
+			continue
+		fi
+		_debug "snapshot of $_dset"
+		zfs snapshot ${_dset}@${_snaptag}
+	done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
 }
 
 # take a zfs snapshot of a fscomp
@@ -353,11 +338,10 @@ _is_pot()
 	fi
 
 	if [ ! -d $_pdir/m -o \
-		 ! -r $_pdir/conf/pot.conf -o ]; then
-		if [ ! -r $_pdir/conf/fs.conf -a ! -r $_pdir/conf/fscomp.conf ]; then
-			if [ "$2" != "quiet" ]; then
-				_error "Some component of the pot $_pname is missing"
-			fi
+		 ! -r $_pdir/conf/pot.conf -o\
+		 ! -r $_pdir/conf/fscomp.conf ]; then
+		if [ "$2" != "quiet" ]; then
+			_error "Some component of the pot $_pname is missing"
 		fi
 		return 3 # false
 	fi

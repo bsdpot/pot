@@ -47,37 +47,19 @@ _pot_zfs_rollback_full()
 	local _pname _pdir _snap _node _opt _dset
 	_pname=$1
 	_pdir=${POT_FS_ROOT}/jails/$_pname
-	if [ -r ${_pdir}/conf/fscomp.conf ]; then
-		while read -r line ; do
-			_dset=$( echo $line | awk '{print $1}' )
-			_opt=$( echo $line | awk '{print $3}' )
-			if [ "$_opt" = "ro" ]; then
-				continue
-			fi
-			_snap="$( _zfs_last_snap $_dset)"
-			if [ -z "$_snap" ]; then
-				_info "$_dset has not snapshot - no possible rollback"
-				continue
-			fi
-			zfs rollback ${_dset}@${_snap}
-		done < ${_pdir}/conf/fscomp.conf
-	else
-		_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
-		while read -r line ; do
-			_node=$( echo $line | awk '{print $1}' )
-			_opt=$( echo $line | awk '{print $3}' )
-			if [ "$_opt" = "ro" ]; then
-				continue
-			fi
-			_dset=$( zfs list -o name -H $_node )
-			_snap="$( _zfs_last_snap $_dset)"
-			if [ -z "$_snap" ]; then
-				_info "$_dset has not snapshot - no possible rollback"
-				continue
-			fi
-			zfs rollback ${_dset}@${_snap}
-		done < ${_pdir}/conf/fs.conf
-	fi
+	while read -r line ; do
+		_dset=$( echo $line | awk '{print $1}' )
+		_opt=$( echo $line | awk '{print $3}' )
+		if [ "$_opt" = "ro" ]; then
+			continue
+		fi
+		_snap="$( _zfs_last_snap $_dset)"
+		if [ -z "$_snap" ]; then
+			_info "$_dset has not snapshot - no possible rollback"
+			continue
+		fi
+		zfs rollback ${_dset}@${_snap}
+	done < ${_pdir}/conf/fscomp.conf
 }
 
 pot-revert()

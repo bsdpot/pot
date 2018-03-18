@@ -48,44 +48,25 @@ _js_umount()
 
 	_umount $_jdir/m/tmp
 	_umount $_jdir/m/dev
-	if [ -r $_jdir/conf/fscomp.conf ]; then
-		tail -r $_jdir/conf/fscomp.conf > $_tmpfile
-		while read -r line ; do
-			_dset=$( echo $line | awk '{print $1}' )
-			_mnt_p=$( echo $line | awk '{print $2}' )
-			_opt=$( echo $line | awk '{print $3}' )
-			if [ "$_opt" = "zfs-remount" ]; then
-				_node=${POT_FS_ROOT}/jails/$_pname/$(basename $_dset)
-				zfs set mountpoint=$_node $_dset
-				if _zfs_exist $_dset $_node ; then
-					# the information are correct - move the mountpoint
-					_debug "stop: the dataset $_dset is mounted at $_node"
-				else
-					# mountpoint not moved
-					_error "Dataset $_dset moved to $_node (Fix it manually)"
-				fi
+	tail -r $_jdir/conf/fscomp.conf > $_tmpfile
+	while read -r line ; do
+		_dset=$( echo $line | awk '{print $1}' )
+		_mnt_p=$( echo $line | awk '{print $2}' )
+		_opt=$( echo $line | awk '{print $3}' )
+		if [ "$_opt" = "zfs-remount" ]; then
+			_node=${POT_FS_ROOT}/jails/$_pname/$(basename $_dset)
+			zfs set mountpoint=$_node $_dset
+			if _zfs_exist $_dset $_node ; then
+				# the information are correct - move the mountpoint
+				_debug "stop: the dataset $_dset is mounted at $_node"
 			else
-				_umount $_mnt_p
+				# mountpoint not moved
+				_error "Dataset $_dset moved to $_node (Fix it manually)"
 			fi
-		done < $_tmpfile
-	else
-		tail -r $_jdir/conf/fs.conf > $_tmpfile
-		while read -r line ; do
-			_node=$( echo $line | awk '{print $1}' )
-			_mnt_p=$( echo $line | awk '{print $2}' )
-			_opt=$( echo $line | awk '{print $3}' )
-			if [ "$_opt" = "zfs-remount" ]; then
-				_dset="$( _get_zfs_dataset $_mnt_p )"
-				if [ -n "$_dset" ]; then
-					zfs set mountpoint=$_node $_dset
-					# TODO - check the return value
-				fi
-			else
-				_umount $_mnt_p
-				# TODO - check the return value
-			fi
-		done < $_tmpfile
-	fi
+		else
+			_umount $_mnt_p
+		fi
+	done < $_tmpfile
 	rm $_tmpfile
 }
 

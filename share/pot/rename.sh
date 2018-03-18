@@ -16,10 +16,6 @@ _rn_conf()
 	_pname=$1
 	_newname=$2
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
-	if [ -w $_cdir/fs.conf ]; then
-		_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
-		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
-	fi
 	if [ -w $_cdir/fscomp.conf ]; then
 		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fscomp.conf
 	fi
@@ -74,9 +70,6 @@ _rn_recursive()
 	_pots=$(  ls -d ${POT_FS_ROOT}/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots ; do
 		_cdir=${POT_FS_ROOT}/jails/$_p/conf
-		if [ -w $_cdir/fs.conf ]; then
-			sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fs.conf
-		fi
 		if [ -w $_cdir/fscomp.conf ]; then
 			sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" $_cdir/fscomp.conf
 		fi

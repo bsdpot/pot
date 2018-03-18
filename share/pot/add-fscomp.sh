@@ -31,40 +31,21 @@ _add_f_to_p()
 	_ext="${4}"
 	_opt="${5}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
-	if [ ! -w $_pdir/conf/fscomp.conf ]; then
-		_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
-	fi
 	if [ "$_ext" = "external" ]; then
 		# convert zfs dataset in the mountpoint
 		_fscomp_mntp=$( zfs list -H -o mountpoint $_fscomp )
 		_debug "add $_fscomp $_pdir/m/$_mnt_p $_opt"
 		if [ -z "$_opt" ]; then
-			if [ -w $_pdir/conf/fscomp.conf ]; then
-				${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
-			else
-				${ECHO} "$_fscomp_mntp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
-			fi
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
 		else
-			if [ -w $_pdir/conf/fscomp.conf ]; then
-				${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
-			else
-				${ECHO} "$_fscomp_mntp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
-			fi
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
 		fi
 	else
 		_debug "add $POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt"
 		if [ -z "$_opt" ]; then
-			if [ -w $_pdir/conf/fscomp.conf ]; then
-				${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
-			else
-				${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fs.conf
-			fi
+			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
 		else
-			if [ -w $_pdir/conf/fscomp.conf ]; then
-				${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
-			else
-				${ECHO} "$POT_FS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fs.conf
-			fi
+			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
 		fi
 	fi
 }

@@ -12,16 +12,6 @@ list-help()
 	echo '  -a list everything'
 }
 
-_ls_info_pot_fs()
-{
-	local _node _mnt_p
-	while read -r line ; do
-		_node=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		printf "\t\t${_mnt_p##${POT_FS_ROOT}/jails/} => ${_node##${POT_FS_ROOT}/}\n"
-	done < $1
-}
-
 _ls_info_pot_fscomp()
 {
 	local _dset _mnt_p
@@ -62,12 +52,7 @@ _ls_info_pot()
 	fi
 	if _is_verbose ; then
 		printf "\tdatasets:\n"
-		if [ -r $_cdir/fscomp.conf ]; then
-			_ls_info_pot_fscomp $_cdir/fscomp.conf
-		else
-			_info "WARNING: pot $_pname has no fscomp.conf - fs.conf will be deprecated soon"
-			_ls_info_pot_fs $_cdir/fs.conf
-		fi
+		_ls_info_pot_fscomp $_cdir/fscomp.conf
 		printf "\tsnapshot:\n"
 		_ls_info_pot_snap $_pname
 	fi

@@ -23,8 +23,8 @@ pot_start()
 {
 	local _pname
 	for _pname in $pot_list ; do
-		if pot info -qp $_pname ; then
-			pot start $_pname
+		if /usr/local/bin/pot info -qp $_pname ; then
+			/usr/local/bin/pot start $_pname
 		else
 			echo "pot start: pot $_pnmame not found"
 		fi
@@ -35,8 +35,8 @@ pot_stop()
 {
 	local _pname
 	for _pname in $pot_list ; do
-		if pot info -qp $_pname ; then
-			pot stop $_pname
+		if /usr/local/bin/pot info -qp $_pname ; then
+			/usr/local/bin/pot stop $_pname
 		else
 			echo "pot stop: pot $_pname not found"
 		fi
@@ -54,7 +54,7 @@ pot_status()
 {
 	local _p
 	for _p in $pot_list ; do
-		if pot info -qrp $_p ; then
+		if /usr/local/bin/pot info -qrp $_p ; then
 			echo "pot $_p is up and running"
 		else
 			echo "pot $_p is not running"

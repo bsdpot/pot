@@ -1,5 +1,5 @@
 #!/bin/sh
-
+. ../share/pot/common.sh
 EXIT="return"
 
 # common stubs

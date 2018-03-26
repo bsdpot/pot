@@ -1,8 +1,8 @@
 #!/bin/sh
 
-: ${EXIT:=exit}
-: ${ECHO:=echo}
-: ${SED:=sed}
+: "${EXIT:=exit}"
+: "${ECHO:=echo}"
+: "${SED:=sed}"
 
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1
@@ -13,7 +13,7 @@ _msg()
 	local _sev
 	_sev=$1
 	shift
-	if [ $_sev -gt $_POT_VERBOSITY ]; then
+	if [ "$_sev" -gt "$_POT_VERBOSITY" ]; then
 		return
 	fi
 	case $_sev in
@@ -57,7 +57,7 @@ _qerror()
 # tested
 _is_verbose()
 {
-	if [ $_POT_VERBOSITY -gt $__POT_MSG_INFO ]; then
+	if [ "$_POT_VERBOSITY" -gt $__POT_MSG_INFO ]; then
 		return 0 # true
 	else
 		return 1 # false
@@ -70,7 +70,7 @@ _is_uid0()
 	if [ "$(id -u)" = "0" ]; then
 		return 0 # true
 	else
-		_qerror $1"This operation needs 'root' privilegies"
+		_qerror "$1" "This operation needs 'root' privilegies"
 		return 1 # false
 	fi
 }
@@ -80,11 +80,11 @@ _is_uid0()
 _conf_check()
 {
 	if [ -z "${POT_ZFS_ROOT}" ]; then
-		_qerror $1"POT_ZFS_ROOT is mandatory"
+		_qerror $1 "POT_ZFS_ROOT is mandatory"
 		return 1 # false
 	fi
 	if [ -z "${POT_FS_ROOT}" ]; then
-		_qerror $1"POT_FS_ROOT is mandatory"
+		_qerror $1 "POT_FS_ROOT is mandatory"
 		return 1 # false
 	fi
 	return 0 # true
@@ -95,17 +95,17 @@ _conf_check()
 _is_init()
 {
 	if ! _conf_check ; then
-		_qerror $1"Configuration not valid, please verify it"
+		_qerror $1 "Configuration not valid, please verify it"
 		return 1 # false
 	fi
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
-		_qerror $1"Your system is not initialized, please run pot init"
+		_qerror $1 "Your system is not initialized, please run pot init"
 		return 1 # false
 	fi
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" ||\
 	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" ||\ 
 	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
-		_querror $1"Your system is not propery initialized, please run pot init to fix it"
+		_qerror $1 "Your system is not propery initialized, please run pot init to fix it"
 	fi
 }
 
@@ -288,7 +288,11 @@ _is_vnet_up()
 	if [ -z "$_bridge" ]; then
 		return 1 # false
 	else
-		return 0 # true
+		if [ ! -c /dev/pf ]; then
+			return 1 # false
+		else
+			return 0 # true
+		fi
 	fi
 }
 

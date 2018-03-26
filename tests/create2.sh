@@ -4,14 +4,6 @@
 zfs()
 {
 	__monitor ZFS "$@"
-#	case "$5" in
-#	/zroot/test-fscomp)
-#		echo "/zroot/test-fscomp"
-#		;;
-#	zroot/test-fscomp)
-#		echo "/zroot/test-fscomp"
-#		;;
-#	esac
 }
 
 ECHO=echo_stub

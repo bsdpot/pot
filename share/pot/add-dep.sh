@@ -18,14 +18,13 @@ _add_dependency()
 	_pname="$1"
 	_depPot="$2"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
-	echo "pot.depend=$_depPot" >> $_cdir/pot.conf
+	echo "pot.depend=$_depPot" >> "$_cdir"/pot.conf
 }
 
 pot-add-dep()
 {
 	local _pname _depPot _mnt_p
-	args=$(getopt hvP:p: $*)
-	if [ $? -ne 0 ]; then
+	if ! args=$(getopt hvP:p: "$@") ; then
 		add-dep-help
 		${EXIT} 1
 	fi
@@ -71,12 +70,12 @@ pot-add-dep()
 		add-dep-help
 		${EXIT} 1
 	fi
-	if ! _is_pot $_pname ; then
+	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		add-dep-help
 		${EXIT} 1
 	fi
-	if ! _is_pot $_depPot ; then
+	if ! _is_pot "$_depPot" ; then
 		_error "dependency pot $_depPot is not valid"
 		add-dep-help
 		${EXIT} 1
@@ -84,5 +83,5 @@ pot-add-dep()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_add_dependency $_pname $_depPot
+	_add_dependency "$_pname" "$_depPot"
 }

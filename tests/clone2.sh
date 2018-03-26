@@ -31,7 +31,7 @@ date()
 
 # common stubs
 . common-stub.sh
-
+. conf-stub.sh
 
 _zfs_dataset_valid()
 {
@@ -170,34 +170,18 @@ test_cj_zfs_20()
 setUp()
 {
 	common_setUp
+	conf_setUp
 	ZFS_CALLS=0
 	ECHO_CALLS=0
 	MKDIR_CALLS=0
 	DATE_CALLS=0
 	ZFSDATASETVALID_CALLS=0
 	ZFSLASTSNAP_CALLS=0
-
-	POT_FS_ROOT=/tmp
-	POT_ZFS_ROOT=zpot
-	/bin/mkdir -p /tmp/jails/test-pot/conf
-	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
-	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-
-	/bin/mkdir -p /tmp/jails/test-pot-2/conf
-	echo "zpot/bases/11.1 /tmp/jails/test-pot-2/m ro" >> /tmp/jails/test-pot-2/conf/fscomp.conf
-	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot-2/m/usr/local ro" >> /tmp/jails/test-pot-2/conf/fscomp.conf
-	echo "zpot/jails/test-pot-2/custom /tmp/jails/test-pot-2/m/opt/custom zfs-remount" >> /tmp/jails/test-pot-2/conf/fscomp.conf
-
-	/bin/mkdir -p /tmp/jails/test-pot-nosnap/conf
-	echo "zpot/bases/11.1 /tmp/jails/test-pot-nosnap/m ro" >> /tmp/jails/test-pot-nosnap/conf/fscomp.conf
-	echo "zpot/jails/test-pot-nosnap/usr.local /tmp/jails/test-pot-nosnap/m/usr/local zfs-remount" >> /tmp/jails/test-pot-nosnap/conf/fscomp.conf
-	echo "zpot/jails/test-pot-nosnap/custom /tmp/jails/test-pot-nosnap/m/opt/custom zfs-remount" >> /tmp/jails/test-pot-nosnap/conf/fscomp.conf
 }
 
 tearDown()
 {
-	rm -rf /tmp/jails
+	conf_tearDown
 }
 
 . shunit/shunit2

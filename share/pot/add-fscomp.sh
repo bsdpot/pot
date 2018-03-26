@@ -22,30 +22,26 @@ add-fscomp-help()
 _add_f_to_p()
 {
 	local _fscomp _pname _mnt_p _pdir _ext _opt
-	local _fscomp_mntp
 	_fscomp="$1"
 	_pname="$2"
 	# Removing the trailing /
-	#_mnt_p="$(echo $3 | sed 's%^/%%')" # or, more efficiently
 	_mnt_p="${3#/}"
 	_ext="${4}"
 	_opt="${5}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	if [ "$_ext" = "external" ]; then
-		# convert zfs dataset in the mountpoint
-		_fscomp_mntp=$( zfs list -H -o mountpoint $_fscomp )
 		_debug "add $_fscomp $_pdir/m/$_mnt_p $_opt"
 		if [ -z "$_opt" ]; then
-			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
 		else
-			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
+			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
 		fi
 	else
 		_debug "add $POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt"
 		if [ -z "$_opt" ]; then
-			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> $_pdir/conf/fscomp.conf
+			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
 		else
-			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> $_pdir/conf/fscomp.conf
+			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
 		fi
 	fi
 }
@@ -53,8 +49,7 @@ _add_f_to_p()
 pot-add-fscomp()
 {
 	local _pname _fscomp _mnt_p _ext _remount _readonly _opt
-	args=$(getopt hvf:p:m:ewr $*)
-	if [ $? -ne 0 ]; then
+	if ! args=$(getopt hvf:p:m:ewr "$@") ; then
 		add-fscomp-help
 		${EXIT} 1
 	fi
@@ -139,19 +134,19 @@ pot-add-fscomp()
 		fi
 	fi
 	if [ "$_ext" = "external" ]; then
-		if ! _zfs_dataset_valid $_fscomp ; then
+		if ! _zfs_dataset_valid "$_fscomp" ; then
 			_error "fscomp $_fscomp is not a valid ZFS dataset"
 			add-fscomp-help
 			${EXIT} 1
 		fi
 	else
-		if ! _zfs_dataset_valid $POT_ZFS_ROOT/fscomp/$_fscomp ; then
+		if ! _zfs_dataset_valid "$POT_ZFS_ROOT/fscomp/$_fscomp" ; then
 			_error "fscomp $_fscomp is not valid"
 			add-fscomp-help
 			${EXIT} 1
 		fi
 	fi
-	if ! _is_pot $_pname ; then
+	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		add-fscomp-help
 		${EXIT} 1
@@ -159,5 +154,5 @@ pot-add-fscomp()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_add_f_to_p $_fscomp $_pname $_mnt_p $_ext $_opt
+	_add_f_to_p "$_fscomp" "$_pname" "$_mnt_p" $_ext $_opt
 }

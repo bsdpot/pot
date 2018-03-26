@@ -46,7 +46,7 @@ _set_cpu()
 	_pname=$1
 	_cpuset=$2
 	if _cpuset_validation $_cpuset ; then
-		_set_rss $_pname cpuset $_cpuset
+		_set_rss "$_pname" cpuset "$_cpuset"
 		return 0 # true
 	fi
 	return 1 # false
@@ -66,8 +66,7 @@ pot-set-rss()
 	_pname=
 	_cpuset=
 	_memory=
-	args=$(getopt hvp:C:M: $*)
-	if [ $? -ne 0 ]; then
+	if ! args=$(getopt hvp:C:M: "$@") ; then
 		set-rss-help
 		${EXIT} 1
 	fi
@@ -106,7 +105,7 @@ pot-set-rss()
 		${EXIT} 1
 	fi
 	if ! _is_pot "$_pname" ; then
-		_error "$_pot is not a valid pot name"
+		_error "$_pname is not a valid pot name"
 		set-rss-help
 		${EXIT} 1
 	fi
@@ -119,12 +118,12 @@ pot-set-rss()
 		${EXIT} 1
 	fi
 	if [ -n "$_cpuset" ]; then
-		if ! _set_cpu $_pname $_cpuset ; then
+		if ! _set_cpu "$_pname" "$_cpuset" ; then
 			_error "cpuset $_cpuset not valid!"
 			${EXIT} 1
 		fi
 	fi
 	if [ -n "$_memory" ]; then
-		_set_memory $_pname $_memory
+		_set_memory "$_pname" "$_memory"
 	fi
 }

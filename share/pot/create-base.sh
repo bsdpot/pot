@@ -113,26 +113,26 @@ _cb_base_pot()
 
 pot-create-base()
 {
-	args=$(getopt hr:v $*)
-	if [ $? -ne 0 ]; then
+	if ! args=$(getopt hr:v "$@") ; then
 		create-base-help
-		exit 1
+		${EXIT} 1
 	fi
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
 			create-base-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
 		-r)
-			if ! _is_in_list $2 $_POT_RELEASES ; then
+			if ! _is_in_list "$2" $_POT_RELEASES ; then
 				_error "$2 is not a supported release"
-				exit 1
+				create-base-help
+				${EXIT} 1
 			fi
 			_FBSD_RELEASE=$2
 			shift 2
@@ -144,25 +144,30 @@ pot-create-base()
 		esac
 	done
 
+	if [ -z "$_FBSD_RELEASE" ]; then
+		_error "option -r is mandatory"
+		create-base-help
+		${EXIT} 1
+	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 	if ! _is_init ; then
 		${EXIT} 1
 	fi
-	_info "Create a base with release "${_FBSD_RELEASE}" "
+	_info "Create a base with release ${_FBSD_RELEASE} "
 	# fetch binaries
 	if ! _cb_fetch "${_FBSD_RELEASE}" ; then
 		_error "fetch of ${_FBSD_RELEASE}-RELEASE failed"
-		exit 1
+		${EXIT} 1
 	fi
 	# create zfs dataset
 	if ! _cb_zfs "${_FBSD_RELEASE}" ; then
 		_error "zfs dataset of ${_FBSD_RELEASE}-RELEASE failed"
-		exit 1
+		${EXIT} 1
 	fi
 	# move binaries to the dataset and create linkx
 	_cb_tar_dir "${_FBSD_RELEASE}"
 	# create jail level 0
-	_cb_base_pot ${_FBSD_RELEASE}
+	_cb_base_pot "${_FBSD_RELEASE}"
 }

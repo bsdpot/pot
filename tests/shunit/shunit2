@@ -901,6 +901,7 @@ _shunit_generateReport() {
 
   echo
   _shunit_msg_="Ran ${__shunit_ansi_cyan}${__shunit_testsTotal}${__shunit_ansi_none}"
+  _shunit_msg_="Ran ${__shunit_testsTotal}"
   if \[ "${__shunit_testsTotal}" -eq 1 ]; then
     ${__SHUNIT_CMD_ECHO_ESC} "${_shunit_msg_} test."
   else

@@ -3,4 +3,4 @@
 /etc/pot/pot.conf
 /etc/pot/flavours/*
 !/etc/pot/flavours/dns.sh
-
+devenv.sh

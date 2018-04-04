@@ -131,7 +131,7 @@ case "${CMD}" in
 		fi
 		;;
 	show|version|\
-	list|info|\
+	list|info|ps|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|\

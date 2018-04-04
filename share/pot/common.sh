@@ -13,7 +13,7 @@ _msg()
 	local _sev
 	_sev=$1
 	shift
-	if [ "$_sev" -gt "$_POT_VERBOSITY" ]; then
+	if [ "$_sev" -gt "${_POT_VERBOSITY:-0}" ]; then
 		return
 	fi
 	case $_sev in
@@ -94,7 +94,7 @@ _conf_check()
 # $1 quiet / no _error messages are emitted
 _is_init()
 {
-	if ! _conf_check ; then
+	if ! _conf_check $1 ; then
 		_qerror $1 "Configuration not valid, please verify it"
 		return 1 # false
 	fi
@@ -102,8 +102,8 @@ _is_init()
 		_qerror $1 "Your system is not initialized, please run pot init"
 		return 1 # false
 	fi
-	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" ||\
-	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" ||\ 
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" || \
+	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" || \
 	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
 		_qerror $1 "Your system is not propery initialized, please run pot init to fix it"
 	fi

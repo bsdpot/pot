@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# supported releases
+# shellcheck disable=SC2039
 ps-help()
 {
 	echo "pot ps [-hvq]"
@@ -12,6 +12,7 @@ ps-help()
 # $1 pot name
 _ps_pot()
 {
+	# shellcheck disable=SC2039
 	local _pname _q
 	_pname=$1
 	_q=$2
@@ -26,6 +27,7 @@ _ps_pot()
 
 _ps_pots()
 {
+	# shellcheck disable=SC2039
 	local _jdir _pots _q _p
 	_q="$1"
 	_jdir="${POT_FS_ROOT}/jails/"
@@ -35,14 +37,17 @@ _ps_pots()
 	done
 }
 
+# shellcheck disable=SC2039
 pot-ps()
 {
+	# shellcheck disable=SC2039
 	local _q
 	_q=
 	if ! args=$(getopt hvq "$@") ; then
 		ps-help
 		${EXIT} 1
 	fi
+	# shellcheck disable=SC2086
 	set -- $args
 	while true; do
 		case "$1" in

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - ps : add ps subcommand, to show information about which pot is running
 
+### Changed
+- list : keep it more simple, leaving more information under -v
+- show : add -r (all running pots) option and made it the new default
+- show : -a greatly improved show all relevant information per pot
+
 ### Removed
 - fs.conf is not supported anymore
 

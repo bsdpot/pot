@@ -7,95 +7,100 @@ show-help()
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -a all pots'
+	echo '  -r all running pots (default)'
 	echo '  -p potname select the pot by name'
 }
 
 # show pot static information
 _show_pot()
 {
-	local _pname
+	# shellcheck disable=SC2039
+	local _pname _bname line _dset
 	_pname=$1
-	printf "pot %s\n" $_pname
-	printf "\tdisk usage      : %s\n" $( zfs list -o used -H ${POT_ZFS_ROOT}/jails/$_pname)
+	printf "pot %s\\n" "$_pname"
+	printf "\\tdisk usage      : %s\\n" "$( zfs list -o used -H "${POT_ZFS_ROOT}/jails/$_pname")"
+
+	if _is_verbose ; then
+		# TODO show external dataset usage
+		_bname=$( _get_pot_base "$_pname" )
+		printf "\\tbase usage      : %s\\n" "$( zfs list -o used -H "${POT_ZFS_ROOT}/bases/$_bname")"
+		while read -r line ; do
+			_dset=$( echo "$line" | awk '{print $1}' )
+			if [ "$_dset" = "${_dset#${POT_ZFS_ROOT}/jails/$_pname}" ] &&
+				[ "$_dset" = "${_dset#${POT_ZFS_ROOT}/bases/$_bname}" ]; then
+				printf "\\tdataset %s usage  : %s\\n" "${_dset##${POT_ZFS_ROOT}/}" "$( zfs list -o used -H "$_dset")"
+			fi
+		done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
+	fi
+	if _is_pot_running "$_pname" ; then
+		_show_pot_run "$_pname"
+	fi
 }
 
 # show pot runtime information
 # $1 pot name
 _show_pot_run()
 {
-	local _pname _res
-	local _vm _pm
+	# shellcheck disable=SC2039
+	local _pname _res _vm _pm
 	_pname=$1
-	_res="$(rctl -hu jail:$_pname )"
-	_vm="$(echo $_res | tr ' ' '\n' | grep ^vmemoryuse | cut -d'=' -f2)"
-	_pm="$(echo $_res | tr ' ' '\n' | grep ^memoryuse | cut -d'=' -f2)"
-	printf "\tvirtual memory  : %s\n" $_vm
-	printf "\tphysical memory : %s\n" $_pm
+	if ! _is_uid0 quiet; then
+		_info "runtime memory usage require root privileges"
+		return
+	fi
+	if ! _is_rctl_available ; then
+		_info "runtime memory usage require rctl enabled"
+		return
+	fi
+	_res="$(rctl -hu jail:"$_pname" )"
+	_vm="$(echo "$_res" | tr ' ' '\n' | grep ^vmemoryuse | cut -d'=' -f2)"
+	_pm="$(echo "$_res" | tr ' ' '\n' | grep ^memoryuse | cut -d'=' -f2)"
+	printf "\\tvirtual memory  : %s\\n" "$_vm"
+	printf "\\tphysical memory : %s\\n" "$_pm"
+}
+
+_show_running_pots()
+{
+	# shellcheck disable=SC2039
+	local _jdir _pots _p
+	_jdir="${POT_FS_ROOT}/jails/"
+	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs basename | tr '\n' ' ' )
+	for _p in $_pots; do
+		if _is_pot_running "$_p" ; then
+			_show_pot "$_p"
+		fi
+	done
 }
 
 _show_all_pots()
 {
-	local _jdir _pots
+	# shellcheck disable=SC2039
+	local _jdir _pots _p
 	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
-	if ! _is_uid0 quiet; then
-		_info "runtime memory usage require root privileges"
-	fi
-	if ! _is_rctl_available ; then
-		_info "runtime memory usage require rctl enabled"
-	fi
+	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs basename | tr '\n' ' ' )
 	for _p in $_pots; do
-		_show_pot $_p
-		if ! _is_uid0 quiet; then
-			return
-		fi
-		if ! _is_rctl_available ; then
-			return
-		fi
-		if _is_pot_running $_p ; then
-			_show_pot_run $_p
-		fi
-	done
-}
-
-_show_all_bases()
-{
-	local _bdir _bases
-	_bdir="${POT_FS_ROOT}/bases/"
-	_bases=$( ls -d $_bdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
-	for _b in $_bases; do
-		printf "base %s\n" $_b
-		printf "\tdisk usage      : %s\n" $( zfs list -o used -H ${POT_ZFS_ROOT}/bases/$_b)
-	done
-}
-
-_show_all_fscomps()
-{
-	local _fdir _fscomps
-	_fdir="${POT_FS_ROOT}/fscomp/"
-	_fscomps=$( ls -d $_fdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
-	for _f in $_fscomps; do
-		printf "fscomp %s\n" $_f
-		printf "\tdisk usage      : %s\n" $( zfs list -o used -H ${POT_ZFS_ROOT}/fscomp/$_f)
+		_show_pot "$_p"
 	done
 }
 
 pot-show()
 {
-	local _obj
+	# shellcheck disable=SC2039
+	local _pname _running _all
 	_pname=
+	_running=
 	_all=
-	args=$(getopt hvp:a $*)
-	if [ $? -ne 0 ]; then
+	if ! args=$(getopt hvp:ar "$@") ; then
 		show-help
-		exit 1
+		${EXIT} 1
 	fi
+	# shellcheck disable=SC2086
 	set -- $args
 	while true; do
 		case "$1" in
 		-h)
 			show-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -104,6 +109,10 @@ pot-show()
 		-p)
 			_pname="$2"
 			shift 2
+			;;
+		-r)
+			_running="YES2"
+			shift
 			;;
 		-a)
 			_all="YES"
@@ -115,23 +124,27 @@ pot-show()
 			;;
 		esac
 	done
-	if [ -z "$_pname" -a -z "$_all" ]; then
-		_all="YES"
+	if ( [ -n "$_pname" ] && [ -n "$_all" ] ) || 
+		( [ -n "$_pname" ] && [ -n "$_running" ] ) || 
+		( [ -n "$_all" ] && [ -n "$_running" ] ); then
+		_error "-p -r -a are mutually exclusive"
+		show-help
+		${EXIT} 1
+	fi
+	if [ -z "$_pname" ] && 
+		[ -z "$_all" ] && 
+		[ -z "$_running" ]; then
+		_running="YES"
 	fi
 	if [ -n "$_all" ]; then
 		_show_all_pots
-		echo
-		_show_all_bases
-		echo
-		_show_all_fscomps
+	elif [ -n "$_running" ]; then
+		_show_running_pots
 	else
-		if ! _is_pot $_pname ; then
+		if ! _is_pot "$_pname" ; then
 			_error "$_pname is not a valid pot"
-			exit 1
+			${EXIT} 1
 		fi
-		_show_pot $_pname
-		if _is_pot_running $_pname ; then
-			_show_pot_run $_pname
-		fi
+		_show_pot "$_pname"
 	fi
 }

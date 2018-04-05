@@ -239,20 +239,25 @@ _pot_bridge()
 # $2 var name
 _get_conf_var()
 {
+	# shellcheck disable=SC2039
 	local _pname _cdir _var _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_var="$2"
-	_value="$( grep "$_var" $_cdir/pot.conf | tr -d ' \t"' | cut -f2 -d'=' )"
-	echo $_value
+	_value="$( grep "$_var" "$_cdir/pot.conf" | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo "$_value"
 }
 
 # $1 pot name
 _get_pot_base()
 {
-	local _pname
-	_pname="$1"
-	_get_conf_var $_pname pot.base
+	_get_conf_var "$1" pot.base
+}
+
+# $1 pot name
+_get_pot_lvl()
+{
+	_get_conf_var "$1" pot.level
 }
 
 # $1 pot name
@@ -443,13 +448,34 @@ _is_rctl_available()
 
 _is_vnet_available()
 {
+	# shellcheck disable=SC2039
 	local _vimage
 	_vimage="$(sysctl kern.conftxt | grep -c VIMAGE)"
-	if [ $_vimage -eq 0 ]; then
+	if [ "$_vimage" = "0" ]; then
 		return 1 # false
 	else
 		return 0 # true
 	fi
+}
+
+# $1 fscomp.conf absolute pathname
+_print_pot_fscomp()
+{
+	# shellcheck disable=SC2039
+	local _dset _mnt_p
+	while read -r line ; do
+		_dset=$( echo "$line" | awk '{print $1}' )
+		_mnt_p=$( echo "$line" | awk '{print $2}' )
+		printf "\\t\\t%s => %s\\n" "${_mnt_p##${POT_FS_ROOT}/jails/}" "${_dset##${POT_ZFS_ROOT}/}"
+	done < "$1"
+}
+
+# $1 pot name
+_print_pot_snaps()
+{
+	for _s in $( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1" | tr '\n' ' ' ) ; do
+		printf "\\t\\t%s\\n" "$_s"
+	done
 }
 
 pot-cmd()

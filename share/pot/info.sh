@@ -11,25 +11,6 @@ info-help()
 	echo '  -r check if the pot is running'
 }
 
-_info_pot_fscomp()
-{
-	local _dset _mnt_p
-	while read -r line ; do
-		_dset=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		printf "\t\t${_mnt_p##${POT_FS_ROOT}/jails/} => ${_dset##${POT_ZFS_ROOT}/}\n"
-	done < $1
-}
-
-_info_pot_snap()
-{
-	local _pname
-	_pname=$1
-	for _s in $( zfs list -t snapshot -o name -Hr ${POT_ZFS_ROOT}/jails/$_pname | tr '\n' ' ' ) ; do
-		printf "\t\t%s\n" $_s
-	done
-}
-
 # $1 pot name
 _info_pot()
 {
@@ -51,9 +32,9 @@ _info_pot()
 	fi
 	if _is_verbose ; then
 		printf "\tdatasets:\n"
-		_info_pot_fscomp $_cdir/fscomp.conf
+		_print_pot_fscomp "$_cdir/fscomp.conf"
 		printf "\tsnapshot:\n"
-		_info_pot_snap $_pname
+		_print_pot_snaps "$_pname"
 	fi
 	echo
 }

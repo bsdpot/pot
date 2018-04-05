@@ -1,0 +1,201 @@
+#compdef pot
+
+: ${POT_FS_ROOT:=/opt/pot}
+
+_pot() {
+	_arguments \
+		'1: :_pot_cmds' \
+		'*:: :->args'
+
+	case $state in
+		args)
+			case $words[1] in
+				init|vnet-start)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]'
+					;;
+				de-init) 
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-f[Force stop of all running pots]'
+					;;
+				version) 
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-q[Quiet output]'
+					;;
+				list|ls)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-b[List bases]' \
+						'-f[List fscomps]' \
+						'-F[List flavours]' \
+						'-a[List them all]'
+					;;
+				info)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-q[Quiet output]' \
+						'-p[pot name]:pot name:->pot_names' \
+						'-r[Check if the pos is running]'
+					;;
+				show)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-a[All pots]' \
+						'-p[pot name]:pot name:->pot_names'
+					;;
+				create-base) 
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-r[Release number]:supported releases:(10.1 10.3 10.4 11.0 11.1)'
+					;;
+				create-fscomp) 
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-f[fscomp name]::_normal'
+					;;
+				create)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_normal' \
+						'-P[pot reference]:pot reference name:->pot_names' \
+						'-b[base version]:base version:->base_names' \
+						'-l[pot level]:level:(0 1 2)' \
+						'-i[network config]::_normal' \
+						'-s[static ip]' \
+						'-d[dns type]:dns types:->dns_types' \
+						'-f[flavour name]:flavour name:_normal' \
+						'-F[avoid default flavour]'
+					;;
+				clone-fscomp)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-f[fscomp name]::_normal' \
+						'-F[fscomp reference]:fscomp reference name:->fscomp_names'
+					;;
+				clone)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]::_normal' \
+						'-P[pot reference]:pot reference name:->pot_names' \
+						'-i[network config]::_normal' \
+						'-f[force snapshot of the pot reference]' 
+					;;
+				rename)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-n[pot new name]::_normal' \
+						'-p[pot old name]:pot old name:->pot_names'
+					;;
+				destroy)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-f[Force the pot to stop]' \
+						'-p[pot name]:pot name:->pot_names' \
+						'-b[base name]:base name:->base_names' \
+						'-r[Recursive destroying]'
+					;;
+				add-fscomp)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:->pot_names' \
+						'-f[fscomp name]:fscomp name:->fscomp_names' \
+						'-m[Mountpoint]::_normal' \
+						'-e[External dataset]' \
+						'-w[Move ZFS mountpoint]' \
+						'-r[Read-only]'
+					;;
+				add-dep)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:->pot_names' \
+						'-P[dependency pot name]:dependency pot name:->pot_names'
+					;;
+				set-rss)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:->pot_names' \
+						'-C[Cpuset config]::_normal' \
+						'-M[Memory size]::_normal'
+					;;
+				snap|snapshot|revert|rollback)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:->pot_names' \
+						'-f[fscomp name]:fscomp name:->fscomp_names' \
+						'-a[also external components]'
+					;;
+				start|stop|term|run)
+					_arguments '1:pot name:->pot_names'
+					;;
+			esac
+			case "$state" in
+				pot_names)
+					_files -/ -W "${POT_FS_ROOT}/jails/" -S' '
+					;;
+				fscomp_names)
+					_files -/ -W "${POT_FS_ROOT}/fscomp/" -S' '
+					;;
+				base_names)
+					_files -/ -W "${POT_FS_ROOT}/bases/" -S' '
+					;;
+				dns_types)
+					_values 'dns types' "pot" "inherit" 
+					;;
+			esac
+	esac
+}
+
+_pot_cmds() {
+	local -a commands;
+	commands=(
+	'help:Show help'
+	'version:Show version'
+	'ls:List elements'
+	'list:List elements'
+	'show:Show pot resources'
+	'info:Show info on pot'
+	'init:Init ZFS'
+	'de-init:Remove all ZFS datasets'
+	'vnet-start:Start the vnet configuration'
+	'create-base:Create a new base image'
+	'create-fscomp:Create a new fs component'
+	'create:Create a new pot'
+	'clone:Clone a pot'
+	'clone-fscomp:Clone a fs component'
+	'rename:Rename a pot'
+	'destroy:Destroy a pot'
+	'add-fscomp:Add a fs component to a pot'
+	'add-dep:Add a dependency to a pot'
+	'set-rss:Set a resource constraint to a pot'
+	'start:Start a pot'
+	'stop:Stop a pot'
+	'run:Start a pot and open a shell in it'
+	'term:Open a shell in a pot'
+	'snap:Take a snapshot of a pot'
+	'snapshot:Take a snapshot of a pot'
+	'revert:Restore the last snapshot of a pot'
+	'rollback:Restore the last snapshot of a pot'
+	)
+	_describe 'command' commands
+}
+
+_pot

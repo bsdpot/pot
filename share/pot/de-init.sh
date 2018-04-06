@@ -22,7 +22,7 @@ pot-de-init()
 	while true; do
 		case "$1" in
 		-h)
-			init-help
+			de-init-help
 			exit 0
 			;;
 		-v)

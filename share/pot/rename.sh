@@ -18,6 +18,16 @@ _rn_conf()
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
 	sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"
 	sed -i '' -e "s%host.hostname=\"${_pname}%host.hostname=\"${_newname}%g" "$_cdir/pot.conf"
+	if [ -w /usr/local/etc/syslog.d/"${_pname}".conf ]; then
+		mv /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/syslog.d/"${_newname}".conf
+		sed -i '' "s/$_pname.log/$_newname.log/" /usr/local/etc/syslog.d/"${_newname}".conf
+		touch /var/log/pot/$_newname.log
+		service syslogd reload
+	fi
+	if [ -w /usr/local/etc/newsyslog.conf.d/"${_pname}".conf ]; then
+		mv /usr/local/etc/newsyslog.conf.d/"${_pname}".conf /usr/local/etc/newsyslog.conf.d/"${_newname}".conf
+		sed -i '' "s%pot/$_pname.log%pot/$_newname.log%" /usr/local/etc/newsyslog.conf.d/"${_newname}".conf
+	fi
 }
 
 _rn_zfs()

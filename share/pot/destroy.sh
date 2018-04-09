@@ -20,7 +20,7 @@ _zfs_dataset_destroy()
 	if _is_verbose ; then
 		_zopt="-v"
 	fi
-	zfs destroy -r $_zopt $_dset
+	zfs destroy -r $_zopt "$_dset"
 }
 
 # $1 pot name
@@ -44,6 +44,7 @@ _pot_zfs_destroy()
 		fi
 	fi
 	_zfs_dataset_destroy "$_jdset"
+	rm -f /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
 }
 
 # $1 base name

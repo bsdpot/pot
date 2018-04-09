@@ -125,6 +125,18 @@ _cj_conf()
 		echo "host.hostname=\"${_pname}.$( hostname )\""
 		echo "ip4=$_ip"
 	) >> $_pdir/conf/pot.conf
+	if [ "$_ip" != "inherit" ]; then
+		(
+			echo +"$_ip"
+			echo '*.*		'"/var/log/pot/${_pname}.log"
+		) > /usr/local/etc/syslog.d/"${_pname}".conf
+		touch /var/log/pot/"${_pname}".log
+		(
+			echo "# log rotation for pot ${_pname}"
+			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
+		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
+		service syslogd reload
+	fi
 }
 
 pot-clone()

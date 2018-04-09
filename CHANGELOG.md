@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - ps : add ps subcommand, to show information about which pot is running
 - config : add config subcommand, to easily access configuration values
 - zsh autocompletion (#013): pot autocompletion support for zsh
+- syslogd log unification (#032): when possible, syslogd autoconfigured to log in the host instead of in the pot
 
 ### Changed
 - list : keep it more simple, leaving more information under -v

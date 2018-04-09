@@ -4,18 +4,39 @@
 mkdir()
 {
 	__monitor MKDIR "$@"
-	/bin/mkdir $@
+	/bin/mkdir "$@"
 }
 
 SED=sed_stub
 sed_stub()
 {
 	__monitor SED "$@"
+	if [ "$4" = "${POT_FS_ROOT}/jails/$_pname/custom/etc/crontab" ]; then
+		return 0 # true
+	fi
+	if [ "$4" = "${POT_FS_ROOT}/jails/$_pname/custom/etc/syslog.conf" ]; then
+		return 0 # true
+	fi
 	if [ "$(uname)" = "Linux" ]; then
 		sed -i'' "$3" "$4"
 	else
 		sed "$@"
 	fi
+}
+
+sysrc()
+{
+	__monitor SYSRC "$@"
+}
+
+service()
+{
+	__monitor SERVICE "$@"
+}
+
+touch()
+{
+	__monitor TOUCH "$@"
 }
 
 # UUT
@@ -40,7 +61,7 @@ test_cj_conf_001()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "2" "$SED_CALLS"
 }
 
 test_cj_conf_002()
@@ -58,7 +79,7 @@ test_cj_conf_002()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "2" "$SED_CALLS"
 }
 
 test_cj_conf_003()
@@ -81,7 +102,7 @@ test_cj_conf_003()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "2" "$SED_CALLS"
 }
 
 test_cj_conf_004()
@@ -104,6 +125,7 @@ test_cj_conf_004()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "sed calls" "3" "$SED_CALLS"
 }
 
 test_cj_conf_005()
@@ -121,7 +143,7 @@ test_cj_conf_005()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "2" "$SED_CALLS"
 }
 
 test_cj_conf_006()
@@ -139,7 +161,8 @@ test_cj_conf_006()
 	assertEquals "vnet" "vnet=true" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "3" "$SED_CALLS"
+	assertEquals "touch calls" "1" "$TOUCH_CALLS"
 }
 
 test_cj_conf_007()
@@ -158,7 +181,7 @@ test_cj_conf_007()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "2" "$SED_CALLS"
 }
 
 test_cj_conf_008()
@@ -177,7 +200,8 @@ test_cj_conf_008()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "3" "$SED_CALLS"
+	assertEquals "touch calls" "1" "$TOUCH_CALLS"
 }
 
 test_cj_conf_009()
@@ -196,7 +220,8 @@ test_cj_conf_009()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "3" "$SED_CALLS"
+	assertEquals "touch calls" "1" "$TOUCH_CALLS"
 }
 
 test_cj_conf_020()
@@ -215,17 +240,23 @@ test_cj_conf_020()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "sed calls" "2" "$SED_CALLS"
+	assertEquals "touch calls" "0" "$TOUCH_CALLS"
 }
+
 setUp()
 {
 	common_setUp
 	MKDIR_CALLS=0
 	SED_CALLS=0
+	SYSRC_CALLS=0
+	SERVICE_CALLS=0
+	TOUCH_CALLS=0
 
 	POT_FS_ROOT=/tmp
 	POT_ZFS_ROOT=zpot
 	POT_DNS_NAME=foobar-dns
+	/bin/mkdir -p /tmp/jails/new-pot/custom/etc/syslog.d
 }
 
 tearDown()

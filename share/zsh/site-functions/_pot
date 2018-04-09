@@ -20,7 +20,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
-						'-g[Element name]:config element name:(fs_root zfs_root gateway)'
+						'-g[Element name]:config element name:(fs_root zfs_root gateway syslogd)'
 					;;
 				de-init) 
 					_arguments \
@@ -82,7 +82,7 @@ _pot() {
 						'-l[pot level]:level:(0 1 2)' \
 						'-i[network config]::_normal' \
 						'-s[static ip]' \
-						'-d[dns type]:dns types:->dns_types' \
+						'-d[dns type]:dns types:(inherit pot)' \
 						'-f[flavour name]:flavour name:_normal' \
 						'-F[avoid default flavour]'
 					;;
@@ -171,9 +171,6 @@ _pot() {
 					;;
 				base_names)
 					_files -/ -W "${POT_FS_ROOT}/bases/" -S' '
-					;;
-				dns_types)
-					_values 'dns types' "pot" "inherit" 
 					;;
 			esac
 	esac

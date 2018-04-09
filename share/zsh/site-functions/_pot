@@ -31,6 +31,7 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-p[List pots]' \
 						'-b[List bases]' \
 						'-f[List fscomps]' \
 						'-F[List flavours]' \
@@ -49,6 +50,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-a[All pots]' \
+						'-r[All running pots]' \
 						'-p[pot name]:pot name:->pot_names'
 					;;
 				create-base) 
@@ -92,6 +94,12 @@ _pot() {
 						'-P[pot reference]:pot reference name:->pot_names' \
 						'-i[network config]::_normal' \
 						'-f[force snapshot of the pot reference]' 
+					;;
+				promote)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:->pot_names'
 					;;
 				rename)
 					_arguments \
@@ -181,6 +189,7 @@ _pot_cmds() {
 	'create:Create a new pot'
 	'clone:Clone a pot'
 	'clone-fscomp:Clone a fs component'
+	'promote:Promote a cloned pot'
 	'rename:Rename a pot'
 	'destroy:Destroy a pot'
 	'add-fscomp:Add a fs component to a pot'

@@ -73,7 +73,8 @@ Usage: pot command [options]
 Commands:
 	help	-- Show help
 	version -- Show the pot version
-	show
+	config  -- Show pot configuration
+	show	-- Show pot information
 	info    -- Print minimal information on a pot
 	ls/list	-- List of the installed pots
 	init	-- Initialize the ZFS layout
@@ -132,7 +133,7 @@ case "${CMD}" in
 			exit 0
 		fi
 		;;
-	show|version|\
+	show|version|config|\
 	list|info|ps|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\

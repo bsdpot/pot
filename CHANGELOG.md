@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - ps : add ps subcommand, to show information about which pot is running
+- config : add config subcommand, to easily access configuration values
 - zsh autocompletion (#013): pot autocompletion support for zsh
 
 ### Changed

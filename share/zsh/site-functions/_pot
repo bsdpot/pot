@@ -1,6 +1,6 @@
 #compdef pot
 
-: ${POT_FS_ROOT:=/opt/pot}
+: ${POT_FS_ROOT:=$( pot config -qg fs_root )}
 
 _pot() {
 	_arguments \
@@ -14,6 +14,13 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]'
+					;;
+				config) 
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-q[Quiet output]' \
+						'-g[Element name]:config element name:(fs_root zfs_root gateway)'
 					;;
 				de-init) 
 					_arguments \
@@ -177,6 +184,7 @@ _pot_cmds() {
 	commands=(
 	'help:Show help'
 	'version:Show version'
+	'config:Show config values'
 	'ls:List elements'
 	'list:List elements'
 	'show:Show pot resources'

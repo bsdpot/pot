@@ -2,6 +2,26 @@
 
 : ${POT_FS_ROOT:=$( pot config -qg fs_root )}
 
+_pot_pots() {
+        _values "pot pots" ${${(f)"$(${service} ls -qp)"}%% *}
+}
+
+_pot_run_pots() {
+        _values "pot pots" ${${(f)"$(${service} ps -q)"}%% *}
+}
+
+_pot_bases() {
+        _values "pot pots" ${${(f)"$(${service} ls -qb)"}%% *}
+}
+
+_pot_fscomps() {
+        _values "pot flavors" ${${(f)"$(${service} ls -qf)"}%% *}
+}
+
+_pot_flavours() {
+        _values "pot flavors" ${${(f)"$(${service} ls -qF)"}%% *}
+}
+
 _pot() {
 	_arguments \
 		'1: :_pot_cmds' \
@@ -49,7 +69,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
-						'-p[pot name]:pot name:->pot_names' \
+						'-p[pot name]:pot name:_pot_pots' \
 						'-r[Check if the pos is running]'
 					;;
 				show)
@@ -58,7 +78,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-a[All pots]' \
 						'-r[All running pots]' \
-						'-p[pot name]:pot name:->pot_names'
+						'-p[pot name]:pot name:_pot_pots'
 					;;
 				create-base) 
 					_arguments \
@@ -77,13 +97,13 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_normal' \
-						'-P[pot reference]:pot reference name:->pot_names' \
-						'-b[base version]:base version:->base_names' \
+						'-P[pot reference]:pot reference name:_pot_pots' \
+						'-b[base version]:base version:_pot_bases' \
 						'-l[pot level]:level:(0 1 2)' \
 						'-i[network config]::_normal' \
 						'-s[static ip]' \
 						'-d[dns type]:dns types:(inherit pot)' \
-						'-f[flavour name]:flavour name:_normal' \
+						'-f[flavour name]:flavour name:_pot_flavours' \
 						'-F[avoid default flavour]'
 					;;
 				clone-fscomp)
@@ -91,14 +111,14 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-f[fscomp name]::_normal' \
-						'-F[fscomp reference]:fscomp reference name:->fscomp_names'
+						'-F[fscomp reference]:fscomp reference name:_pot_fscomps'
 					;;
 				clone)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]::_normal' \
-						'-P[pot reference]:pot reference name:->pot_names' \
+						'-P[pot reference]:pot reference name:_pot_pots' \
 						'-i[network config]::_normal' \
 						'-f[force snapshot of the pot reference]' 
 					;;
@@ -106,30 +126,30 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-p[pot name]:pot name:->pot_names'
+						'-p[pot name]:pot name:_pot_pots'
 					;;
 				rename)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-n[pot new name]::_normal' \
-						'-p[pot old name]:pot old name:->pot_names'
+						'-p[pot old name]:pot old name:_pot_pots'
 					;;
 				destroy)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-f[Force the pot to stop]' \
-						'-p[pot name]:pot name:->pot_names' \
-						'-b[base name]:base name:->base_names' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-b[base name]:base name:_pot_bases' \
 						'-r[Recursive destroying]'
 					;;
 				add-fscomp)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-p[pot name]:pot name:->pot_names' \
-						'-f[fscomp name]:fscomp name:->fscomp_names' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-m[Mountpoint]::_normal' \
 						'-e[External dataset]' \
 						'-w[Move ZFS mountpoint]' \
@@ -139,14 +159,14 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-p[pot name]:pot name:->pot_names' \
-						'-P[dependency pot name]:dependency pot name:->pot_names'
+						'-p[pot name]:pot name:_pot_pots' \
+						'-P[dependency pot name]:dependency pot name:_pot_pots'
 					;;
 				set-rss)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-p[pot name]:pot name:->pot_names' \
+						'-p[pot name]:pot name:_pot_pots' \
 						'-C[Cpuset config]::_normal' \
 						'-M[Memory size]::_normal'
 					;;
@@ -154,12 +174,15 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-p[pot name]:pot name:->pot_names' \
-						'-f[fscomp name]:fscomp name:->fscomp_names' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-a[also external components]'
 					;;
-				start|stop|term|run)
-					_arguments '1:pot name:->pot_names'
+				stop)
+					_arguments '1:pot name:_pot_run_pots'
+					;;
+				start|term|run)
+					_arguments '1:pot name:_pot_pots'
 					;;
 			esac
 			case "$state" in

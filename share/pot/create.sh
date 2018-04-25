@@ -101,7 +101,7 @@ _cj_conf()
 {
 	local _pname _base _ip _staticip _lvl _jdir _bdir _potbase _dns
 	local _pblvl _pbpb
-	local _jdset _bdset _pbdset
+	local _jdset _bdset _pbdset _baseos
 	_pname=$1
 	_base=$2
 	_ip=$3
@@ -148,12 +148,13 @@ _cj_conf()
 		esac
 	) > $_jdir/conf/fscomp.conf
 	(
+		_baseos=$( cat $_bdir/.osrelease )
 		echo "pot.level=${_lvl}"
 		echo "pot.base=${_base}"
 		echo "pot.potbase=${_potbase}"
 		echo "pot.dns=${_dns}"
 		echo "host.hostname=\"${_pname}.$( hostname )\""
-		echo "osrelease=\"${_base}-RELEASE\""
+		echo "osrelease=\"${_baseos}-RELEASE\""
 		if [ "$_ip" = "inherit" ]; then
 			echo "ip4=inherit"
 			echo "vnet=false"
@@ -183,8 +184,10 @@ _cj_conf()
 		fi
 	fi
 	# disable some cron jobs, not relevant in a jail
-	${SED} -i '' 's/^.*save-entropy$/# &/g' "${_jdir}/custom/etc/crontab"
-	${SED} -i '' 's/^.*adjkerntz.*$/# &/g' "${_jdir}/custom/etc/crontab"
+	if [ $_lvl -ne 0 ]; then
+		${SED} -i '' 's/^.*save-entropy$/# &/g' "${_jdir}/custom/etc/crontab"
+		${SED} -i '' 's/^.*adjkerntz.*$/# &/g' "${_jdir}/custom/etc/crontab"
+	fi
 
 	# add remote syslogd capability, if not inherit
 	if [ "$_ip" != "inherit" ]; then

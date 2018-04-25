@@ -39,6 +39,13 @@ touch()
 	__monitor TOUCH "$@"
 }
 
+cat()
+{
+	if [ "$1" = "${POT_FS_ROOT}/bases/11.1/.osrelease" ]; then
+		echo 11.1
+	fi
+}
+
 # UUT
 . ../share/pot/create.sh
 
@@ -61,7 +68,7 @@ test_cj_conf_001()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "2" "$SED_CALLS"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_002()

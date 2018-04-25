@@ -84,13 +84,14 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-r[Release number]:supported releases:(10.1 10.3 10.4 11.0 11.1)'
+						'-r[Release number]:supported releases:(10.1 10.3 10.4 11.0 11.1)' \
+						'-b[base name]:base name:_normal'
 					;;
 				create-fscomp) 
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-f[fscomp name]::_normal'
+						'-f[fscomp name]:fscomp name:_normal'
 					;;
 				create)
 					_arguments \

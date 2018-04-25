@@ -105,7 +105,34 @@ test_base_create_base_002()
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
 }
 
-test_nase_create_base_010()
+test_base_create_base_003()
+{
+	pot-create-base -b 104x64
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
+	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
+	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
+}
+
+test_base_create_base_004()
+{
+	# base name is invalid
+	pot-create-base -r 11.1 -b 10.4
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
+	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
+	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
+}
+
+test_base_create_base_010()
 {
 	# simulate fetch issue
 	pot-create-base -r 10.1
@@ -119,7 +146,7 @@ test_nase_create_base_010()
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
 }
 
-test_nase_create_base_011()
+test_base_create_base_011()
 {
 	# simulate zfs issue
 	pot-create-base -r 11.0
@@ -133,17 +160,48 @@ test_nase_create_base_011()
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
 }
 
-test_nase_create_base_020()
+test_base_create_base_012()
 {
 	pot-create-base -r 11.1
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
+	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
+	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
+}
+
+test_base_create_base_013()
+{
+	pot-create-base -r 11.1 -b test-base
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
+	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
+	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
+}
+
+test_base_create_base_020()
+{
+	pot-create-base -r 11.1 -b new-test-base
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_cb_fetch calls" "1" "$CBFETCH_CALLS"
+	assertEquals "_cb_fetch arg" "11.1" "$CBFETCH_CALL1_ARG1"
 	assertEquals "_cb_zfs calls" "1" "$CBZFS_CALLS"
+	assertEquals "_cb_zfs arg" "new-test-base" "$CBZFS_CALL1_ARG1"
 	assertEquals "_cb_tar_dir calls" "1" "$CBTAR_CALLS"
+	assertEquals "_cb_tar_dir arg" "11.1" "$CBTAR_CALL1_ARG1"
+	assertEquals "_cb_tar_dir arg" "new-test-base" "$CBTAR_CALL1_ARG2"
 	assertEquals "_cb_base_pot calls" "1" "$CBPOT_CALLS"
+	assertEquals "_cb_base_pot arg" "new-test-base" "$CBPOT_CALL1_ARG1"
 }
 
 setUp()

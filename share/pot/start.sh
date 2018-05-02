@@ -45,24 +45,6 @@ _js_dep()
 	return 0 # true
 }
 
-# $1 pot name
-_js_fix_mountpoint()
-{
-	local _pname
-	_pname=$1
-	if zfs list -o name -H ${POT_ZFS_ROOT}/jails/$_pname/usr.local 2> /dev/null > /dev/null ; then
-		_debug "${POT_ZFS_ROOT}/jails/$_pname/usr.local => mnt_point ${POT_FS_ROOT}/jails/$_pname/usr.local"
-		zfs set mountpoint=${POT_FS_ROOT}/jails/$_pname/usr.local ${POT_ZFS_ROOT}/jails/$_pname/usr.local
-		if [ "$( zfs get -H mounted ${POT_ZFS_ROOT}/jails/$_pname/usr.local | awk '{ print $3 }' )" != "yes" ]; then
-			zfs mount ${POT_ZFS_ROOT}/jails/$_pname/usr.local
-		fi
-	fi
-	zfs set mountpoint=${POT_FS_ROOT}/jails/$_pname/custom ${POT_ZFS_ROOT}/jails/$_pname/custom
-	if [ "$( zfs get -H mounted ${POT_ZFS_ROOT}/jails/$_pname/custom | awk '{ print $3 }' )" != "yes" ]; then
-		zfs mount ${POT_ZFS_ROOT}/jails/$_pname/custom
-	fi
-}
-
 # $1 jail name
 _js_mount()
 {
@@ -191,15 +173,28 @@ _js_rss()
 	fi
 }
 
+# $1 pot name
+_js_get_cmd()
+{
+	# shellcheck disable=SC2039
+	local _pname _cdir _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_value="$( grep "^pot.cmd=" "$_cdir/pot.conf" | cut -f2 -d'=' )"
+	[ -z "$_value" ] && _value="sh /etc/rc"
+	echo "$_value"
+}
+
 # $1 jail name
 _js_start()
 {
-	local _pname _jdir _iface _hostname _osrelease _param _ip
+	local _pname _jdir _iface _hostname _osrelease _param _ip _cmd
+	_pname="$1"
+	_cmd="$( _js_get_cmd "$_pname" )"
 	_iface=
 	_param="allow.set_hostname allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags"
 	_param="$_param mount.devfs persist exec.stop=sh,/etc/rc.shutdown"
-	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_hostname="$( _get_conf_var $_pname host.hostname )"
 	_osrelease="$( _get_conf_var $_pname osrelease )"
@@ -217,7 +212,7 @@ _js_start()
 			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
 		fi
 	fi
-	jail -c -J /tmp/${_pname}.jail.conf $_param command=sh /etc/rc
+	jail -c -J /tmp/${_pname}.jail.conf $_param command=$_cmd
 	sleep 1
 	if ! _is_pot_running $_pname ; then
 		start-cleanup $_pname ${_iface}a

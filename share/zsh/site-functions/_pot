@@ -101,6 +101,7 @@ _pot() {
 						'-P[pot reference]:pot reference name:_pot_pots' \
 						'-b[base version]:base version:_pot_bases' \
 						'-l[pot level]:level:(0 1 2)' \
+						'-t[pot type]:type:(multi single)' \
 						'-i[network config]::_normal' \
 						'-s[static ip]' \
 						'-d[dns type]:dns types:(inherit pot)' \
@@ -171,6 +172,13 @@ _pot() {
 						'-C[Cpuset config]::_normal' \
 						'-M[Memory size]::_normal'
 					;;
+				set-cmd)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-c[command]::_normal'
+					;;
 				snap|snapshot|revert|rollback)
 					_arguments \
 						'-h[Show help]' \
@@ -224,6 +232,7 @@ _pot_cmds() {
 	'add-fscomp:Add a fs component to a pot'
 	'add-dep:Add a dependency to a pot'
 	'set-rss:Set a resource constraint to a pot'
+	'set-cmd:Set the initial command of a pot'
 	'start:Start a pot'
 	'stop:Stop a pot'
 	'run:Start a pot and open a shell in it'

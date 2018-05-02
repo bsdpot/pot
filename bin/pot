@@ -31,28 +31,28 @@
 # Environment initialization and initial checks
 
 _POT_VERSION=0.5.0
-_POT_PATHNAME="$(realpath $0)"
-_POT_PREFIX="$(dirname ${_POT_PATHNAME})"
-_POT_INCLUDE="$( realpath ${_POT_PREFIX}/../share/pot)"
-_POT_ETC="$( realpath ${_POT_PREFIX}/../etc/pot)"
+_POT_PATHNAME="$(realpath "$0")"
+_POT_PREFIX="$(dirname "${_POT_PATHNAME}")"
+_POT_INCLUDE="$( realpath "${_POT_PREFIX}/../share/pot")"
+_POT_ETC="$( realpath "${_POT_PREFIX}/../etc/pot")"
 if [ -d "${_POT_ETC}/flavours" ]; then
-	_POT_FLAVOUR_DIR="$( realpath ${_POT_ETC}/flavours)"
+	_POT_FLAVOUR_DIR="$( realpath "${_POT_ETC}/flavours")"
 else
 	_POT_FLAVOUR_DIR=
 fi
 
-if [ ! -d ${_POT_INCLUDE} ]; then
+if [ ! -d "${_POT_INCLUDE}" ]; then
 	echo "Fatal error! Not able to find the subroutines dir on ${_POT_PREFIX}!"
 	exit 1
 fi
 
 # loading subroutines
 
-if [ ! -r ${_POT_INCLUDE}/common.sh ]; then
+if [ ! -r "${_POT_INCLUDE}/common.sh" ]; then
 	echo "Fatal error! Not able to find common subroutines on ${_POT_INCLUDE}!"
 	exit 1
 fi
-. ${_POT_INCLUDE}/common.sh
+. "${_POT_INCLUDE}/common.sh"
 
 # loading configuration
 if [ -r $_POT_ETC/pot.default.conf ]; then
@@ -90,7 +90,8 @@ Commands:
 	destroy -- Destroy a pot
 	add-fscomp -- Add a fs component to a pot
 	add-dep -- Add a dependency
-	set-rss -- Add a resource constraint
+	set-rss -- Set a resource constraint
+	set-cmd -- Set the command to start the pot
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
@@ -126,7 +127,7 @@ esac
 case "${CMD}" in
 	help)
 		if [ -n "$1" ]; then
-			pot-cmd "${CMD}" $@
+			pot-cmd "${CMD}" "$1"
 			exit 0
 		else
 			usage
@@ -137,15 +138,15 @@ case "${CMD}" in
 	list|info|ps|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
-	add-fscomp|destroy|add-dep|set-rss|\
+	add-fscomp|destroy|add-dep|set-rss|set-cmd|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert)
-		pot-cmd "${CMD}" $@
+		pot-cmd "${CMD}" "$@"
 		exit 0
 		;;
 	run)
-		pot-cmd term -f $@
+		pot-cmd term -f "$@"
 		exit 0
 		;;
 	*)

@@ -54,7 +54,7 @@ _zfs_last_snap()
 test_cj_zfs_001()
 {
 	# level 0
-	_cj_zfs new-pot 11.1 0
+	_cj_zfs new-pot multi 0 11.1
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "1" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
@@ -65,7 +65,7 @@ test_cj_zfs_001()
 
 test_cj_zfs_002()
 {
-	_cj_zfs new-pot 11.1 1
+	_cj_zfs new-pot multi 1 11.1
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "3" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
@@ -82,7 +82,7 @@ test_cj_zfs_002()
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" "$MKDIR_CALL1_ARG2"
 
 	setUp
-	_cj_zfs new-pot 11.1 1 test-pot
+	_cj_zfs new-pot multi 1 11.1 test-pot
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "3" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
@@ -101,7 +101,7 @@ test_cj_zfs_002()
 
 test_cj_zfs_003()
 {
-	_cj_zfs new-pot 11.1 2 test-pot
+	_cj_zfs new-pot multi 2 11.1 test-pot
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "2" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
@@ -116,7 +116,7 @@ test_cj_zfs_003()
 
 test_cj_zfs_021()
 {
-	_cj_zfs test-pot 11.1 0
+	_cj_zfs test-pot multi 0 11.1
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "0" "$ZFS_CALLS"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
@@ -126,7 +126,7 @@ test_cj_zfs_021()
 
 test_cj_zfs_022()
 {
-	_cj_zfs test-pot 11.1 1
+	_cj_zfs test-pot multi 1 11.1
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "0" "$ZFS_CALLS"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
@@ -136,7 +136,7 @@ test_cj_zfs_022()
 
 test_cj_zfs_023()
 {
-	_cj_zfs test-pot 11.1 2 test-pot2
+	_cj_zfs test-pot multi 2 11.1 test-pot2
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "0" "$ZFS_CALLS"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"

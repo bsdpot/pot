@@ -261,6 +261,17 @@ _get_pot_lvl()
 }
 
 # $1 pot name
+_get_pot_type()
+{
+	local _type
+	_type="$( _get_conf_var "$1" pot.type )"
+	if [ -z "$_type" ]; then
+		_type="multi"
+	fi
+	echo "$_type"
+}
+
+# $1 pot name
 _is_ip_inherit()
 {
 	local _pname _val
@@ -333,25 +344,17 @@ _is_pot()
 	local _pname _pdir
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
-	if [ ! -d $_pdir ]; then
-		if [ "$2" != "quiet" ]; then
-			_error "Pot $_pname not found"
-		fi
+	if [ ! -d "$_pdir" ]; then
+		_qerror "$2" "Pot $_pname not found"
 		return 1 # false
 	fi
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails/$_pname" ; then
-		if [ "$2" != "quiet" ]; then
-			_error "zfs dataset $_pname not found"
-		fi
+		_qerror "$2" "zfs dataset $_pname not found"
 		return 2 # false
 	fi
 
-	if [ ! -d $_pdir/m -o \
-		 ! -r $_pdir/conf/pot.conf -o\
-		 ! -r $_pdir/conf/fscomp.conf ]; then
-		if [ "$2" != "quiet" ]; then
-			_error "Some component of the pot $_pname is missing"
-		fi
+	if [ ! -d "$_pdir/m" ] || [ ! -r "$_pdir/conf/pot.conf" ] || [ ! -r "$_pdir/conf/fscomp.conf" ]; then
+		_qerror "Some component of the pot $_pname is missing"
 		return 3 # false
 	fi
 	return 0
@@ -487,7 +490,7 @@ pot-cmd()
 		_error "Fatal error! $_cmd implementation not found!"
 		exit 1
 	fi
-	. ${_POT_INCLUDE}/${_cmd}.sh
+	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
-	$_func $@
+	$_func "$@"
 }

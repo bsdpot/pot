@@ -19,15 +19,22 @@ fi
 			elif ${TEST} "$3" = "/jails/pot-test-noconf" ]; then
 				return 1 # false
 			elif ${TEST} "$3" = "/jails/pot-test/m" ]; then
-				if ${TEST} "$4" = "-o" ]; then
-					return 1 # false
-				fi
+				return 1 # false
 			elif ${TEST} "$3" = "/bases/base-test" ]; then
 				return 1 # false
 			elif ${TEST} "$3" = "/bases/base-test-nodset" ]; then
 				return 1 # false
 			else
 				return 0 # true
+			fi
+		fi
+		if ${TEST} "$2" = "-r" ]; then
+			if ${TEST} "$3" = "/jails/pot-test/conf/pot.conf" ]; then
+				return 1 # false
+			elif ${TEST} "$3" = "/jails/pot-test/conf/fscomp.conf" ]; then
+				return 1 # false
+			else
+				return 0
 			fi
 		fi
 	fi

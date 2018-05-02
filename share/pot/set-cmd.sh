@@ -30,8 +30,8 @@ pot-set-cmd()
 
 	_cmd=
 	_pname=
-
-	while getopts hvp:c: _o ; do
+	OPTIND=1
+	while getopts ":hvp:c:" _o ; do
 		case "$_o" in
 		h)
 			set-cmd-help

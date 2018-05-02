@@ -81,15 +81,6 @@ test_pot_set_cmd_020()
 	assertEquals "_set_command calls" "0" "$SETCMD_CALLS"
 }
 
-test_pot_set_cmd_021()
-{
-	pot-set-cmd -p test-pot -c "sh /etc/rc"
-	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_command calls" "0" "$SETCMD_CALLS"
-}
 test_pot_set_cmd_040()
 {
 	pot-set-cmd -p test-pot -c "/echo Hello World"

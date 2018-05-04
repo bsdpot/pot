@@ -187,6 +187,11 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-a[also external components]'
 					;;
+				top)
+					_arguments \
+						'-h[Show help]' \
+						'-p[pot name]:pot name:_pot_pots' \
+					;;
 				stop)
 					_arguments '1:pot name:_pot_run_pots'
 					;;
@@ -214,6 +219,7 @@ _pot_cmds() {
 	'help:Show help'
 	'version:Show version'
 	'config:Show config values'
+	'top:Run top in pot'
 	'ls:List elements'
 	'list:List elements'
 	'show:Show pot resources'

@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
 - create-base : add option -b, to provide a specific name to a base and support multiple bases with the same FreeBSD version
 - create: add support to single dataset pots.
 - set-cmd: add the command to manage the command line that starts the container
+- top: add a new command, to spawn a top only on a pot
 
 ## [0.5.5] 2018-04-18
 ### Added

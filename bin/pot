@@ -96,6 +96,7 @@ Commands:
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
 	run -- Start and open a terminal in a pot
+	top -- Run the unix top in the pot
 	snap/snapshot -- Take a snapshot of a pot
 	rollback/revert -- Restore the last snapshot
 EOF
@@ -135,7 +136,7 @@ case "${CMD}" in
 		fi
 		;;
 	show|version|config|\
-	list|info|ps|\
+	list|info|ps|top|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|set-cmd|\

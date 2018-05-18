@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.5.6] 2018-05-18
 ### Added
 - create-base : add option -b, to provide a specific name to a base and support multiple bases with the same FreeBSD version
 - create: add support to single dataset pots.

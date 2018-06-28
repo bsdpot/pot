@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # supported releases
-: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1"}
+: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2"}
 create-base-help()
 {
 	echo "pot create-base [-h] [-r RELEASE]"

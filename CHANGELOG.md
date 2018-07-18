@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- clone : fix a misleading/false positive error message 
+
 ## [0.5.7] 2018-06-28
 ### Added
 - create-base : add support to FreeBSD 11.2

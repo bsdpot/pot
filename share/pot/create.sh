@@ -10,7 +10,7 @@ create-help()
 	echo '  -l lvl : pot level'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
-	echo '  -i ipaddr : an ip address'
+	echo '  -i ipaddr : an ip address or the keyword auto'
 	echo '  -s : static ip address'
 	echo '  -d dns : one between inherit(default) or pot'
 	echo '  -f flavour : flavour to be used'
@@ -307,7 +307,11 @@ pot-create()
 			shift 2
 			;;
 		-i)
-			_ipaddr=$2
+			if [ "$2" = "auto" ]; then
+				_ipaddr="$(potnet next)"
+			else
+				_ipaddr=$2
+			fi
 			shift 2
 			;;
 		-s)

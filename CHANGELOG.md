@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- create : -i auto (based on potnet) to get automatically a valid IP address
+
 ### Fixed
 - clone : fix a misleading/false positive error message 
 

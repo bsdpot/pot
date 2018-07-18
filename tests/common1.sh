@@ -50,6 +50,17 @@ sysctl()
 	fi
 	return $SYSCTL_RC
 }
+
+which()
+{
+	if [ "$1" = potnet ]; then
+		if [ "$WHICH_POTNET_FAIL" = "YES" ]; then
+			return 1 # false
+		else
+			return 0 # true
+		fi
+	fi
+}
 	
 
 # UUT
@@ -182,12 +193,23 @@ test_is_rctl_available()
 	assertNotEquals "$?" "0"
 }
 
+test_is_potnet_available()
+{
+	_is_potnet_available
+	assertEquals "$?" "0"
+
+	WHICH_POTNET_FAIL="YES"
+	_is_potnet_available
+	assertNotEquals "$?" "0"
+}
+
 setUp()
 {
 	_POT_VERBOSITY=1
 	UMOUNT_CALLS=0
 	SYSCTL_OUTPUT="1"
 	SYSCTL_RC=0
+	WHICH_POTNET_FAIL="NO"
 }
 
 . shunit/shunit2

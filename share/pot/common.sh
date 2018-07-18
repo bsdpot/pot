@@ -461,6 +461,15 @@ _is_vnet_available()
 	fi
 }
 
+_is_potnet_available()
+{
+	if $(which potnet 2> /dev/null > /dev/null) ; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 # $1 fscomp.conf absolute pathname
 _print_pot_fscomp()
 {

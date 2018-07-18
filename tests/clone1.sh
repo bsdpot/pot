@@ -8,6 +8,21 @@
 # common stubs
 . common-stub.sh
 
+potnet()
+{
+	# no monitor, potnet is called in a subshell
+	if [ "$1" = "next" ]; then
+		echo "10.123.123.123"
+		return 0 # true
+	fi
+	return 1 # false
+}
+
+_is_potnet_available()
+{
+	return 0 # true
+}
+
 # app specific stubs
 _cj_zfs()
 {
@@ -133,7 +148,7 @@ test_pot_clone_005()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 }
 
-test_pot_clone_005()
+test_pot_clone_006()
 {
 	pot-clone -p new-pot -P test-pot-2 -i 10.1.2.3
 	assertEquals "Exit rc" "1" "$?"
@@ -204,6 +219,23 @@ test_pot_clone_023()
 	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
 }
+
+test_pot_clone_024()
+{
+	pot-clone -p new-pot-2 -P test-pot-2 -i auto
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-2" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-2" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-2" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-2" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "10.123.123.123" "$CJCONF_CALL1_ARG3"
+}
+
 setUp()
 {
 	common_setUp

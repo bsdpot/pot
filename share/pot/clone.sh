@@ -170,7 +170,16 @@ pot-clone()
 			shift 2
 			;;
 		-i)
-			_ipaddr=$2
+			if [ "$2" = "auto" ]; then
+				if ! _is_potnet_available ; then
+				   _error "potnet is not available! It's needed by -i auto"
+					${EXIT} 1
+				fi
+				_ipaddr="auto"
+			else
+				# if $(potnet validate $2) then
+				_ipaddr=$2
+			fi
 			shift 2
 			;;
 		-P)
@@ -209,6 +218,10 @@ pot-clone()
 		${EXIT} 1
 	fi
 	_pb_ipaddr="$( _get_conf_var $_potbase ip4 )"
+	if [ "$_ipaddr" = "auto" ]; then
+		_ipaddr="$(potnet next)"
+		_debug "-i auto: assigned $_ipaddr"
+	fi
 	# check ip4 configuration compatibility
 	if [ "$_ipaddr" = "inherit" -a "$_pb_ipaddr" != "inherit" ]; then
 		_error "$_potbase has IP $_pb_ipaddr Provide a new IP for $_pname with the option -i"
@@ -216,12 +229,12 @@ pot-clone()
 		${EXIT} 1
 	fi
 	if [ "$_pb_ipaddr" = "inherit" -a "$_ipaddr" != "inherit" ]; then
-		_error "$_potbase has no IP, so $_pname cannot have -i $_ipaddr"
+		_error "$_potbase has no IP, so $_pname cannot have -i $_ipaddr or auto"
 		clone-help
 		${EXIT} 1
 	fi
 	if [ "$_pb_ipaddr" = "$_ipaddr" -a "$_ipaddr" != "inherit" ]; then
-		_error "$_ipaddr is areadly used by $_potbase, please use a different IP"
+		_error "$_ipaddr is areadly used by $_potbase, please use a different IP or -i auto"
 		clone-help
 		${EXIT} 1
 	fi

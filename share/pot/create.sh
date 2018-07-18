@@ -308,8 +308,13 @@ pot-create()
 			;;
 		-i)
 			if [ "$2" = "auto" ]; then
-				_ipaddr="$(potnet next)"
+				if ! _is_potnet_available ; then
+				   _error "potnet is not available! It's needed by -i auto"
+					${EXIT} 1
+				fi
+				_ipaddr="auto"
 			else
+				# if $(potnet validate $2) then
 				_ipaddr=$2
 			fi
 			shift 2
@@ -528,8 +533,16 @@ pot-create()
 		_info "-s option is ignored if -i is inherit"
 		_staticip="NO"
 	fi
+	if [ "$_ipaddr" = "auto" ] && [ $_staticip = "YES" ]; then
+		_info "-s option is currently ignored if -i is auto"
+		_staticip="NO"
+	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
+	fi
+	if [ "$_ipaddr" = "auto" ]; then
+		_ipaddr="$(potnet next)"
+		_debug "-i auto: assigned $_ipaddr"
 	fi
 	if [ "$_ipaddr" != "inherit" ]; then
 		if [ "$_staticip" != "YES" ]; then

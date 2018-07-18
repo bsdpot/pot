@@ -1,7 +1,15 @@
 #!/bin/sh
 
 # system utilities stubs
-
+potnet()
+{
+	__monitor POTNET "$@"
+	if [ "$1" = "next" ]; then
+		echo "10.192.123.123"
+		return 0 # true
+	fi
+	return 1 # false
+}
 # UUT
 . ../share/pot/create.sh
 
@@ -17,6 +25,12 @@ _is_vnet_available()
 _is_vnet_up()
 {
 	__monitor ISVNETUP "$@"
+	return 0 # true
+}
+
+_is_potnet_available()
+{
+	__monitor ISPOTNETAVAIL "$@"
 	return 0 # true
 }
 
@@ -405,6 +419,61 @@ test_pot_create_063()
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
+test_pot_create_064()
+{
+	pot-create -p new-pot -b 11.1 -i auto
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
+	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
+	assertEquals "_is_potnet_available calls" "1" "$ISPOTNETAVAIL_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "11.1" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_zfs arg5" "" "$CJZFS_CALL1_ARG5"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "11.1" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "10.192.123.123" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "NO" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "1" "$CJCONF_CALL1_ARG5"
+	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
+	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
+	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
+}
+
+test_pot_create_065()
+{
+	# -s is ignored in this case
+	pot-create -p new-pot -b 11.1 -i auto -s
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
+	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
+	assertEquals "_is_potnet_available calls" "1" "$ISPOTNETAVAIL_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "11.1" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_zfs arg5" "" "$CJZFS_CALL1_ARG5"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "11.1" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "10.192.123.123" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "NO" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "1" "$CJCONF_CALL1_ARG5"
+	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
+	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
+	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
+}
+
 test_pot_create_080()
 {
 	pot-create -p new-pot -b 11.1 -d asdf
@@ -505,6 +574,7 @@ setUp()
 	HELP_CALLS=0
 	ISVNETAVAIL_CALLS=0
 	ISVNETUP_CALLS=0
+	ISPOTNETAVAIL_CALLS=0
 }
 
 . shunit/shunit2

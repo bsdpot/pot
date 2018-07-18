@@ -198,12 +198,12 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
-	if ! _is_pot $_potbase ; then
+	if ! _is_pot $_potbase quiet ; then
 		_error "reference pot $_potbase not found"
 		clone-help
 		${EXIT} 1
 	fi
-	if _is_pot $_pname ; then
+	if _is_pot $_pname quiet ; then
 		_error "pot $_pname already exists"
 		clone-help
 		${EXIT} 1

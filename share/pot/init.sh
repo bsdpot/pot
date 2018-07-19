@@ -67,5 +67,12 @@ pot-init()
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
 		zfs create ${POT_ZFS_ROOT}/fscomp
 	fi
+
+	# create mandatory directories for logs
+	mkdir -p /usr/local/etc/syslog.d
+	mkdir -p /usr/local/etc/newsyslog.conf.d
+	mkdir -p /var/log/pot
+
+	sysrc syslogd_flags="-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
 }
 

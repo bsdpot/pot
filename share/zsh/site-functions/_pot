@@ -179,6 +179,13 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'-c[command]::_normal'
 					;;
+				export-ports)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-e[port]::'
+					;;
 				snap|snapshot|revert|rollback)
 					_arguments \
 						'-h[Show help]' \
@@ -239,6 +246,7 @@ _pot_cmds() {
 	'add-dep:Add a dependency to a pot'
 	'set-rss:Set a resource constraint to a pot'
 	'set-cmd:Set the initial command of a pot'
+	'export-ports:export ports of a pot'
 	'start:Start a pot'
 	'stop:Stop a pot'
 	'run:Start a pot and open a shell in it'

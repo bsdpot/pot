@@ -42,21 +42,30 @@ _show_pot()
 _show_pot_run()
 {
 	# shellcheck disable=SC2039
-	local _pname _res _vm _pm
+	local _pname _res _vm _pm _ip
 	_pname=$1
 	if ! _is_uid0 quiet; then
-		_info "runtime memory usage require root privileges"
+		_info "some runtime information requires root privileges"
 		return
 	fi
 	if ! _is_rctl_available ; then
 		_info "runtime memory usage require rctl enabled"
-		return
+	else
+		_res="$(rctl -hu jail:"$_pname" )"
+		_vm="$(echo "$_res" | tr ' ' '\n' | grep ^vmemoryuse | cut -d'=' -f2)"
+		_pm="$(echo "$_res" | tr ' ' '\n' | grep ^memoryuse | cut -d'=' -f2)"
+		printf "\\tvirtual memory  : %s\\n" "$_vm"
+		printf "\\tphysical memory : %s\\n" "$_pm"
 	fi
-	_res="$(rctl -hu jail:"$_pname" )"
-	_vm="$(echo "$_res" | tr ' ' '\n' | grep ^vmemoryuse | cut -d'=' -f2)"
-	_pm="$(echo "$_res" | tr ' ' '\n' | grep ^memoryuse | cut -d'=' -f2)"
-	printf "\\tvirtual memory  : %s\\n" "$_vm"
-	printf "\\tphysical memory : %s\\n" "$_pm"
+	_ip="$( _get_conf_var $_pname ip4)"
+	if [ "$_ip" != "inherit" ]; then
+		if pfctl -s nat -P | grep -qF \ ${_ip}\  ; then
+			printf "\\n\\tNetwork port redirection\\n"
+			pfctl -s nat -P | grep -F \ ${_ip}\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
+				printf "\\t\\t%s\\n" "$rule"
+			done
+		fi
+	fi
 }
 
 _show_running_pots()

@@ -92,6 +92,7 @@ Commands:
 	add-dep -- Add a dependency
 	set-rss -- Set a resource constraint
 	set-cmd -- Set the command to start the pot
+	export-ports -- Let export tcp ports
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
@@ -140,6 +141,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|set-cmd|\
+	export-ports|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert)

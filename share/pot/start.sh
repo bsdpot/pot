@@ -24,7 +24,7 @@ start-cleanup()
 	if [ -z "$_pname" ]; then
 		return
 	fi
-	if [ -z $2 ]; then
+	if [ -n $2 ]; then
 		ifconfig $2 destroy
 	fi
 	pot-cmd stop $_pname
@@ -89,7 +89,7 @@ _js_mount()
 	fi
 }
 
-# $1 jail name
+# $1 pot name
 _js_resolv()
 {
 	local _pname _jdir _dns
@@ -131,6 +131,7 @@ _js_create_epair()
 	echo ${_epair%a}
 }
 
+# $1 pot name
 _js_vnet()
 {
 	local _pname _bridge _epair _epairb _ip
@@ -151,6 +152,48 @@ _js_vnet()
 	fi
 	echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
 	sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$POT_GATEWAY"
+}
+
+# $1: exclude list
+_js_get_free_rnd_port()
+{
+	local _min _max exc_ports used_ports rdr_ports rand
+	excl_ports="$1"
+	_min=$( sysctl -n net.inet.ip.portrange.reservedhigh )
+	_min=$(( _min + 1 ))
+	_max=$( sysctl -n net.inet.ip.portrange.first )
+	_max=$(( _max - 1 ))
+	used_ports="$(sockstat -p ${_min}-${_max} -4l | awk '!/USER/ { n=split($6,a,":"); if ( n == 2 ) { print a[2]; }}' | sort -u)"
+	rdr_ports="$(pfctl -s nat -P | awk '/rdr/ { n=split($0,a," "); for(i=1;i<=n;i++) { if (a[i] == "=" ) { print a[i+1];break;}}}')"
+	rand=$_min
+	while [ $rand -le $_max ]; do
+		for p in $excl_ports $used_ports $rdr_ports ; do
+			if [ "$p" = "$rand" ]; then
+				rand=$(( rand + 1 ))
+				continue 2
+			fi
+		done
+		echo $rand
+		break
+	done
+}
+
+# $1 pot name
+_js_export_ports()
+{
+	local _pname _ip _ports _random_port _excl_list
+	_pname=$1
+	_ip="$( _get_conf_var $_pname ip4 )"
+	_ports="$( _get_pot_export_ports $_pname )"
+	_pfrules="/tmp/pot_pfrules"
+	pfctl -s nat -P > $_pfrules
+	for _port in $_ports ; do
+		_random_port=$( _js_get_free_rnd_port "$_excl_list" )
+		_debug "Redirect: from $POT_EXTIF : $_random_port to $_ip : $_port"
+		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_random_port -> $_ip port $_port" >> $_pfrules
+		_excl_list="$excl_list $_random_port"
+	done
+	pfctl -f $_pfrules
 }
 
 # $1 jail name
@@ -200,10 +243,11 @@ _js_start()
 	_osrelease="$( _get_conf_var $_pname osrelease )"
 	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
 	_param="$_param path=${_jdir}/m"
-	if _is_pot_vnet $_pname ; then
+	if _is_pot_vnet "$_pname" ; then
 		_iface="$( _js_create_epair )"
-		_js_vnet $_pname $_iface
+		_js_vnet "$_pname" "$_iface"
 		_param="$_param vnet vnet.interface=${_iface}b"
+		_js_export_ports "$_pname"
 	else
 		_ip=$( _get_conf_var $_pname ip4 )
 		if [ "$_ip" = "inherit" ]; then
@@ -212,12 +256,13 @@ _js_start()
 			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
 		fi
 	fi
-	jail -c -J /tmp/${_pname}.jail.conf $_param command=$_cmd
+	jail -c -J "/tmp/${_pname}.jail.conf" $_param command=$_cmd
 	sleep 1
-	if ! _is_pot_running $_pname ; then
+	if ! _is_pot_running "$_pname" ; then
 		start-cleanup $_pname ${_iface}a
+		return 1
 	fi
-	_js_rss $_pname
+	_js_rss "$_pname"
 }
 
 pot-start()

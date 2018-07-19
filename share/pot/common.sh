@@ -248,6 +248,16 @@ _get_conf_var()
 	echo "$_value"
 }
 
+_get_pot_export_ports()
+{
+	# shellcheck disable=SC2039
+	local _pname _cdir _var _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_value="$(awk '/pot.export.ports/ { n=split($0,array,"="); if (n==2) { print array[2]; } }' $_cdir/pot.conf )"
+	echo "$_value"
+}
+
 # $1 pot name
 _get_pot_base()
 {

@@ -12,24 +12,42 @@ stop-help()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair _ip
+	local _pname _jdir _epair _ip _pfrules
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
 	_ip=$( _get_conf_var $_pname ip4 )
-	if _is_pot_running $_pname ; then
-		if _is_pot_vnet $_pname ; then
+	if _is_pot_running "$_pname" ; then
+		if _is_pot_vnet "$_pname" ; then
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
 		fi
-		jail -r $_pname
+		_debug "Stop the pot $_pname"
+		jail -r "$_pname"
+		if [ -n "$( _get_pot_export_ports $_pname)" ]; then
+			_debug "Remove redirection rules from the firewall"
+			_pfrules="/tmp/pot_pfrules"
+			pfctl -s nat -P > $_pfrules
+			sed -i '' "/ $_ip /d" $_pfrules
+			pfctl -f $_pfrules
+		fi
 		if [ -n "$_epair" ]; then
-			ifconfig ${_epair%b}a destroy
+			_debug "Remove ${_epair%b}[a|b] network interfaces"
+			ifconfig "${_epair%b}"a destroy
 		else
 			if [ "$_ip" != inherit ]; then
-				ifconfig ${POT_EXTIF} $_ip -alias
+				_debug "Remove the $_ip alias"
+				ifconfig "${POT_EXTIF}" "$_ip" -alias
 			fi
 		fi
 		return $?
+	fi
+	# to be user that I'm cleaning everything
+	if [ -n "$( _get_pot_export_ports $_pname)" ]; then
+		_debug "Remove redirection rules from the firewall"
+		_pfrules="/tmp/pot_pfrules"
+		pfctl -s nat -P > $_pfrules
+		sed -i '' "/ $_ip /d" $_pfrules
+		pfctl -f $_pfrules
 	fi
 	return 0 # true
 }
@@ -46,9 +64,9 @@ _js_umount()
 	fi
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 
-	_umount $_jdir/m/tmp
-	_umount $_jdir/m/dev
-	tail -r $_jdir/conf/fscomp.conf > $_tmpfile
+	_umount "$_jdir/m/tmp"
+	_umount "$_jdir/m/dev"
+	tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
 	while read -r line ; do
 		_dset=$( echo $line | awk '{print $1}' )
 		_mnt_p=$( echo $line | awk '{print $2}' )

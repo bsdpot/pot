@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - create : -i auto (based on potnet) to get automatically a valid IP address
 - clone : -i auto (based on potnet) to get automatically a valid IP address
+- export-port : new command that allow pot ports to be exposed outside (vnet case)
 
 ### Fixed
 - clone : fix a misleading/false positive error message 

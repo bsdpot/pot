@@ -14,7 +14,7 @@ info-help()
 # $1 pot name
 _info_pot()
 {
-	local _pname _cdir _lvl
+	local _pname _cdir _lvl _ports
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_lvl=$( _get_conf_var $_pname pot.level)
@@ -25,6 +25,15 @@ _info_pot()
 		printf "\tbase pot : %s\n" "$( _get_conf_var $_pname pot.potbase)"
 	fi
 	printf "\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
+	if _is_verbose ; then
+		_ports="$( _get_pot_export_ports $_pname )"
+		if [ -z "$_ports" ]; then
+			printf "\t\tno ports exported\n"
+		else
+			printf "\t\texported ports: $_ports\n"
+			echo "$_ports"
+		fi
+	fi
 	if _is_pot_running $_pname ; then
 		printf "\tactive : true\n"
 	else

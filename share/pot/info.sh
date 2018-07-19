@@ -31,7 +31,6 @@ _info_pot()
 			printf "\t\tno ports exported\n"
 		else
 			printf "\t\texported ports: $_ports\n"
-			echo "$_ports"
 		fi
 	fi
 	if _is_pot_running $_pname ; then

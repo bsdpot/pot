@@ -227,7 +227,7 @@ _cj_conf()
 			# configure syslog in the pot
 			${SED} -i '' 's%^[^#].*/var/log.*$%# &%g' "${_jdir}/custom/etc/syslog.conf"
 			echo "*.*  @${POT_GATEWAY}:514" > "${_jdir}/custom/etc/syslog.d/pot.conf"
-			sysrc -q -f "${_jdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip"
+			sysrc -f "${_jdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" > /dev/null
 			# configure syslogd in the host
 			(
 				echo +"$_ip"

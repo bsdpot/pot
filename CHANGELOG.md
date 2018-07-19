@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - clone : fix a misleading/false positive error message 
+- clone : fix syslogd configuration in the cloned pot
 
 ## [0.5.7] 2018-06-28
 ### Added

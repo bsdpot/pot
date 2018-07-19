@@ -117,10 +117,11 @@ _cj_conf()
 	_ip=$3
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
-	if [ ! -d $_jdir/conf ]; then
-		mkdir -p $_jdir/conf
+	if [ ! -d $_pdir/conf ]; then
+		mkdir -p $_pdir/conf
 	fi
 	grep -v ^host.hostname $_pbdir/conf/pot.conf | grep -v ^ip4 > $_pdir/conf/pot.conf
+	sysrc -f "${_pdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" /dev/null
 	(
 		echo "host.hostname=\"${_pname}.$( hostname )\""
 		echo "ip4=$_ip"

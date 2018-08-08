@@ -34,6 +34,12 @@ _is_potnet_available()
 	return 0 # true
 }
 
+_fetch_freebsd()
+{
+	__monitor FETCHBSD "$@"
+	return 0 # true
+}
+
 # app specific stubs
 _cj_zfs()
 {
@@ -43,6 +49,11 @@ _cj_zfs()
 _cj_conf()
 {
 	__monitor CJCONF "$@"
+}
+
+_cj_single_install()
+{
+	__monitor CJSINGLE "$@"
 }
 
 _cj_flv()
@@ -568,6 +579,8 @@ setUp()
 	common_setUp
 	CJZFS_CALLS=0
 	CJZFS_CALL1_ARG5=
+	CJSINGLE_CALLS=0
+	CJSINGLE_CALL1_ARGS=
 	CJCONF_CALLS=0
 	CJCONF_CALL1_ARG8=
 	CJFLV_CALLS=0

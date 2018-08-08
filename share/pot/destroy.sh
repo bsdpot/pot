@@ -150,8 +150,24 @@ pot-destroy()
 			return 1 # false
 		fi
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "0" ]; then
-			_error "The pot $_pname has level 0. Please destroy the related base insted"
-			return 1
+			# if single we can remove a level 0 pot
+			if [ "$( _get_conf_var "$_pname" pot.type )" = "single" ]; then
+				_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+				for _p in $_pots ; do
+					if [ "$( _get_conf_var "$_p" pot.potbase )" = "$_pname" ]; then
+						if [ "$_recursive" = "YES" ]; then
+							_debug "Destroying recursively pot $_p based on $_pname"
+							_pot_zfs_destroy "$_p" $_force
+						else
+							_error "$_pname is used at least by another pot ($_p) - use option -r to destroy it recursively"
+							return 1
+						fi
+					fi
+				done
+			else
+				_error "The pot $_pname has level 0. Please destroy the related base insted"
+				return 1
+			fi
 		fi
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "1" ]; then
 			_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )

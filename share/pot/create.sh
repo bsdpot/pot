@@ -215,31 +215,49 @@ _cj_conf()
 			fi
 		fi
 	fi
-	# disable some cron jobs, not relevant in a jail
-	if [ "$_lvl" -ne 0 ]; then
-		${SED} -i '' 's/^.*save-entropy$/# &/g' "${_jdir}/custom/etc/crontab"
-		${SED} -i '' 's/^.*adjkerntz.*$/# &/g' "${_jdir}/custom/etc/crontab"
+	if [ "$_type" = "multi" ]; then
+		_cj_internal_conf "$_pname" "$_type" "$_lvl" "$_ip"
+	fi
+}
+
+_cj_internal_conf()
+{
+	local _pname _type _lvl _ip _jdir
+	_pname=$1
+	_type=$2
+	_lvl=$3
+	_ip=$4
+	_jdir=${POT_FS_ROOT}/jails/$_pname
+	if [ "$_type" = "multi" ]; then
+		_etcdir="${POT_FS_ROOT}/jails/$_pname/custom/etc"
+	else
+		_etcdir="${POT_FS_ROOT}/jails/$_pname/m/etc"
 	fi
 
-	if [ "$_type" = "multi" ]; then
-		# add remote syslogd capability, if not inherit
-		if [ "$_ip" != "inherit" ]; then
-			# configure syslog in the pot
-			${SED} -i '' 's%^[^#].*/var/log.*$%# &%g' "${_jdir}/custom/etc/syslog.conf"
-			echo "*.*  @${POT_GATEWAY}:514" > "${_jdir}/custom/etc/syslog.d/pot.conf"
-			sysrc -f "${_jdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" > /dev/null
-			# configure syslogd in the host
-			(
-				echo +"$_ip"
-				echo '*.*		'"/var/log/pot/${_pname}.log"
-			) > /usr/local/etc/syslog.d/"${_pname}".conf
-			touch /var/log/pot/"${_pname}".log
-			(
-				echo "# log rotation for pot ${_pname}"
-				echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
-			) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
-			service syslogd reload
-		fi
+
+	# disable some cron jobs, not relevant in a jail
+	if [ "$_type" = "single" ] || [ "$_lvl" -ne 0 ]; then
+		${SED} -i '' 's/^.*save-entropy$/# &/g' "${_etcdir}/crontab"
+		${SED} -i '' 's/^.*adjkerntz.*$/# &/g' "${_etcdir}/crontab"
+	fi
+
+	# add remote syslogd capability, if not inherit
+	if [ "$_ip" != "inherit" ]; then
+		# configure syslog in the pot
+		${SED} -i '' 's%^[^#].*/var/log.*$%# &%g' "${_etcdir}/syslog.conf"
+		echo "*.*  @${POT_GATEWAY}:514" > "${_etcdir}/syslog.d/pot.conf"
+		sysrc -f "${_etcdir}/rc.conf" "syslogd_flags=-vv -s -b $_ip" > /dev/null
+		# configure syslogd in the host
+		(
+			echo +"$_ip"
+			echo '*.*		'"/var/log/pot/${_pname}.log"
+		) > /usr/local/etc/syslog.d/"${_pname}".conf
+		touch /var/log/pot/"${_pname}".log
+		(
+			echo "# log rotation for pot ${_pname}"
+			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
+		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
+		service syslogd reload
 	fi
 }
 
@@ -271,6 +289,25 @@ _cj_flv()
 	else
 		_debug "No shell script available for the flavour $_flv"
 	fi
+}
+
+# $1 pot name
+# $2 freebsd version
+_cj_single_install()
+{
+	local _pname _base _proot
+	_pname=$1
+	_base=$2
+	_proot=${POT_FS_ROOT}/jails/$_pname/m
+	_info "Fetching FreeBSD $_base"
+	if ! _fetch_freebsd $_base ; then
+		_error "FreeBSD $_base fetch failed"
+	fi
+	(
+	  cd $_proot
+	  _info "Extract the tarball"
+	  tar xkf /tmp/${_base}_base.txz
+	)
 }
 
 pot-create()
@@ -387,14 +424,13 @@ pot-create()
 	# check options consitency
 	if [ "$_type" = "single" ]; then
 		_lvl=0
-		_flv_default="NO"
 		if [ -n "$_potbase" ]; then
 			if ! is_pot "$_potbase" quiet ; then
 				_error "pot $_potbase not found"
 				${EXIT} 1
 			fi
 			if [ "$( _get_pot_type "$_potbase" )" != "single" ]; then
-				_error "pot $_potbase has the wrong type, it as to be of type single"
+				_error "pot $_potbase has the wrong type, it has to be of type single"
 				${EXIT} 1
 			fi
 			if [ -z "$_base" ]; then
@@ -583,10 +619,14 @@ pot-create()
 	if ! _cj_conf "$_pname" "$_base" "$_ipaddr" "$_staticip" "$_lvl" "$_dns" "$_type" "$_potbase" ; then
 		${EXIT} 1
 	fi
+	if [ "$_type" = "single" ] && [ -z "$_potbase" ]; then
+		_cj_single_install "$_pname" "$_base"
+		_cj_internal_conf "$_pname" "$_type" "0" "$_ipaddr"
+	fi
 	if [ $_flv_default = "YES" ]; then
-		_cj_flv $_pname default
+		_cj_flv "$_pname" default
 	fi
 	if [ -n "$_flv" ]; then
-		_cj_flv $_pname $_flv
+		_cj_flv "$_pname" "$_flv"
 	fi
 }

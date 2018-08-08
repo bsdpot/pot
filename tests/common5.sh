@@ -68,36 +68,36 @@ cat()
 # common stubs
 . common-stub.sh
 
-test_cb_fetch_001()
+test_fetch_freebsd_001()
 {
-	_cb_fetch 2.1
+	_fetch_freebsd 2.1
 	assertEquals "return code" "1" "$?"
 	assertEquals "fetch calls" "1" "$FETCH_CALLS"
 	assertEquals "fetch arg4" "/tmp/2.1_base.txz" "$FETCH_CALL1_ARG4"
 	assertEquals "error calls" "0" "$ERROR_CALLS"
 }
 
-test_cb_fetch_002()
+test_fetch_freebsd_002()
 {
-	_cb_fetch 8.1
+	_fetch_freebsd 8.1
 	assertEquals "return code" "1" "$?"
 	assertEquals "fetch calls" "1" "$FETCH_CALLS"
 	assertEquals "fetch arg4" "/tmp/8.1_base.txz" "$FETCH_CALL1_ARG4"
 	assertEquals "error calls" "1" "$ERROR_CALLS"
 }
 
-test_cb_fetch_003()
+test_fetch_freebsd_003()
 {
-	_cb_fetch 12.0
+	_fetch_freebsd 12.0
 	assertEquals "return code" "1" "$?"
 	assertEquals "fetch calls" "1" "$FETCH_CALLS"
 	assertEquals "fetch arg4" "/tmp/12.0_base.txz" "$FETCH_CALL1_ARG4"
 	assertEquals "error calls" "1" "$ERROR_CALLS"
 }
 
-test_cb_fetch_004()
+test_fetch_freebsd_004()
 {
-	_cb_fetch 11.1
+	_fetch_freebsd 11.1
 	assertEquals "return code" "0" "$?"
 	assertEquals "fetch calls" "1" "$FETCH_CALLS"
 	assertEquals "fetch arg4" "/tmp/11.1_base.txz" "$FETCH_CALL1_ARG4"

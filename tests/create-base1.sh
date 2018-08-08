@@ -20,9 +20,9 @@ create-base-help()
 	__monitor HELP "$@"
 }
 
-_cb_fetch()
+_fetch_freebsd()
 {
-	__monitor CBFETCH "$@"
+	__monitor FETCHBSD "$@"
 	if [ "$1" = "10.1" ]; then
 		return 1 # false
 	fi
@@ -53,7 +53,7 @@ test_base_create_base_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -64,7 +64,7 @@ test_base_create_base_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -75,7 +75,7 @@ test_base_create_base_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -86,7 +86,7 @@ test_base_create_base_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -99,7 +99,7 @@ test_base_create_base_002()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -112,7 +112,7 @@ test_base_create_base_003()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -126,7 +126,7 @@ test_base_create_base_004()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -140,7 +140,7 @@ test_base_create_base_010()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "1" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "1" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -154,7 +154,7 @@ test_base_create_base_011()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "1" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "1" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "1" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -167,7 +167,7 @@ test_base_create_base_012()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -180,7 +180,7 @@ test_base_create_base_013()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "0" "$CBFETCH_CALLS"
+	assertEquals "_fetch calls" "0" "$FETCHBSD_CALLS"
 	assertEquals "_cb_zfs calls" "0" "$CBZFS_CALLS"
 	assertEquals "_cb_tar_dir calls" "0" "$CBTAR_CALLS"
 	assertEquals "_cb_base_pot calls" "0" "$CBPOT_CALLS"
@@ -193,8 +193,8 @@ test_base_create_base_020()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
-	assertEquals "_cb_fetch calls" "1" "$CBFETCH_CALLS"
-	assertEquals "_cb_fetch arg" "11.1" "$CBFETCH_CALL1_ARG1"
+	assertEquals "_fetch calls" "1" "$FETCHBSD_CALLS"
+	assertEquals "_fetch arg" "11.1" "$FETCHBSD_CALL1_ARG1"
 	assertEquals "_cb_zfs calls" "1" "$CBZFS_CALLS"
 	assertEquals "_cb_zfs arg" "new-test-base" "$CBZFS_CALL1_ARG1"
 	assertEquals "_cb_tar_dir calls" "1" "$CBTAR_CALLS"
@@ -208,7 +208,7 @@ setUp()
 {
 	common_setUp
 	HELP_CALLS=0
-	CBFETCH_CALLS=0
+	FETCHBSD_CALLS=0
 	CBZFS_CALLS=0
 	CBTAR_CALLS=0
 	CBPOT_CALLS=0

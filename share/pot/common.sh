@@ -480,6 +480,32 @@ _is_potnet_available()
 	fi
 }
 
+# supported releases
+: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2"}
+
+# $1 release, in short format, major.minor
+_fetch_freebsd()
+{
+	local _rel _sha _sha_m
+	_rel=$1
+	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"-RELEASE/base.txz -o /tmp/"${_rel}"_base.txz
+	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
+		return 1 # false
+	fi
+	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}"-RELEASE ]; then
+		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
+		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}"-RELEASE | awk '/^base.txz/ { print $2 }' )
+		if [ "$_sha" != "$_sha_m" ]; then
+			_error "sha256 doesn't match! Aborting"
+			return 1 # false
+		fi
+	else
+		_error "No manifests found - please install the package freebsd-release-manifests"
+		return 1 # false
+	fi
+	return 0 # true
+}
+
 # $1 fscomp.conf absolute pathname
 _print_pot_fscomp()
 {

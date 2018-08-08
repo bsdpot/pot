@@ -11,30 +11,6 @@ create-base-help()
 	echo '  -b base name : optional, (default: the release)'
 }
 
-# $1 release
-_cb_fetch()
-{
-	local _rel _sha _sha_m
-	_rel=$1
-	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"-RELEASE/base.txz -o /tmp/"${_rel}"_base.txz
-	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
-		return 1 # false
-	fi
-	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}"-RELEASE ]; then
-		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
-#		_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-${_rel}-RELEASE)
-		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}"-RELEASE | awk '/^base.txz/ { print $2 }' )
-		if [ "$_sha" != "$_sha_m" ]; then
-			_error "sha256 doesn't match! Aborting"
-			return 1 # false
-		fi
-	else
-		_error "No manifests found - please install the package freebsd-release-manifests"
-		return 1 # false
-	fi
-	return 0 # true
-}
-
 # $1 base name
 _cb_zfs()
 {
@@ -191,7 +167,7 @@ pot-create-base()
 	fi
 	_info "Create a base with release $_rel"
 	# fetch binaries
-	if ! _cb_fetch "${_rel}" ; then
+	if ! _fetch_freebsd "${_rel}" ; then
 		_error "fetch of ${_rel}-RELEASE failed"
 		${EXIT} 1
 	fi

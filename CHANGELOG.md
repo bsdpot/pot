@@ -13,10 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Chagned
 - init : it takes care of syslogd configuration in the host system
+- create : type=single will install plain FreeBSD and run the default flavour
 
 ### Fixed
 - clone : fix a misleading/false positive error message 
 - clone : fix syslogd configuration in the cloned pot
+- destroy : fix if pot is a single dataset one
 
 ## [0.5.7] 2018-06-28
 ### Added

@@ -235,7 +235,7 @@ _js_start()
 	_pname="$1"
 	_cmd="$( _js_get_cmd "$_pname" )"
 	_iface=
-	_param="allow.set_hostname allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
+	_param="allow.set_hostname=false allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags"
 	_param="$_param mount.devfs persist exec.stop=sh,/etc/rc.shutdown"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"

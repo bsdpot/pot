@@ -51,6 +51,11 @@ _cj_conf()
 	__monitor CJCONF "$@"
 }
 
+_cj_internal_conf()
+{
+	__monitor CJICONF "$@"
+}
+
 _cj_single_install()
 {
 	__monitor CJSINGLE "$@"
@@ -75,6 +80,8 @@ test_pot_create_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -85,6 +92,8 @@ test_pot_create_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -95,6 +104,8 @@ test_pot_create_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -105,6 +116,8 @@ test_pot_create_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -115,6 +128,8 @@ test_pot_create_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -127,6 +142,8 @@ test_pot_create_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -139,6 +156,8 @@ test_pot_create_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -149,6 +168,8 @@ test_pot_create_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -161,6 +182,8 @@ test_pot_create_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -171,6 +194,8 @@ test_pot_create_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 
 	setUp
@@ -181,6 +206,8 @@ test_pot_create_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -206,6 +233,8 @@ test_pot_create_020()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 
 	setUp
@@ -229,6 +258,8 @@ test_pot_create_020()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "test-pot" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -241,6 +272,8 @@ test_pot_create_021()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -253,6 +286,8 @@ test_pot_create_022()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -265,6 +300,8 @@ test_pot_create_023()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -289,6 +326,8 @@ test_pot_create_040()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "test-pot" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 
 	setUp
@@ -311,6 +350,8 @@ test_pot_create_040()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "test-pot" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -323,6 +364,8 @@ test_pot_create_041()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -349,6 +392,8 @@ test_pot_create_060()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -375,6 +420,8 @@ test_pot_create_061()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -401,6 +448,8 @@ test_pot_create_062()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -427,6 +476,8 @@ test_pot_create_063()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -454,6 +505,8 @@ test_pot_create_064()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -482,6 +535,8 @@ test_pot_create_065()
 	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -494,6 +549,8 @@ test_pot_create_080()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
@@ -520,6 +577,8 @@ test_pot_create_081()
 	assertEquals "_cj_conf arg6" "pot" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -546,6 +605,8 @@ test_pot_create_082()
 	assertEquals "_cj_conf arg6" "pot" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
 
@@ -572,17 +633,197 @@ test_pot_create_083()
 	assertEquals "_cj_conf arg6" "pot" "$CJCONF_CALL1_ARG6"
 	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
 	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 }
+
+test_pot_create_100()
+{
+	pot-create -p new-pot -t single
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_101()
+{
+	pot-create -p new-pot -t single -b no-base
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_102()
+{
+	pot-create -p new-pot -t single -P no-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_103()
+{
+	pot-create -p new-pot -t single -P test-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_104()
+{
+	pot-create -p test-pot -t single -b 11.1
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_105()
+{
+	pot-create -p new-pot -t single -P test-pot-0
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_106()
+{
+	pot-create -p new-pot -t single -P test-pot-single -b 10.3
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_107()
+{
+	pot-create -p new-pot -t single -b 11.1 -l 1
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+}
+
+test_pot_create_120()
+{
+	pot-create -p new-pot -b 11.1 -t single
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
+	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg2" "single" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_zfs arg3" "0" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "11.1" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_zfs arg5" "" "$CJZFS_CALL1_ARG5"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "11.1" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "NO" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "0" "$CJCONF_CALL1_ARG5"
+	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
+	assertEquals "_cj_conf arg7" "single" "$CJCONF_CALL1_ARG7"
+	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "1" "$CJSINGLE_CALLS"
+	assertEquals "_cj_single_install arg1" "new-pot" "$CJSINGLE_CALL1_ARG1"
+	assertEquals "_cj_single_install arg2" "11.1" "$CJSINGLE_CALL1_ARG2"
+	assertEquals "_cj_interal_conf calls" "1" "$CJICONF_CALLS"
+	assertEquals "_cj_interal_conf arg1" "new-pot" "$CJICONF_CALL1_ARG1"
+	assertEquals "_cj_interal_conf arg2" "single" "$CJICONF_CALL1_ARG2"
+	assertEquals "_cj_interal_conf arg3" "0" "$CJICONF_CALL1_ARG3"
+	assertEquals "_cj_interal_conf arg4" "inherit" "$CJICONF_CALL1_ARG4"
+	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
+}
+
+test_pot_create_121()
+{
+	pot-create -p new-pot -b 11.1 -t single -i 10.1.2.3
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
+	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg2" "single" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_zfs arg3" "0" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "11.1" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_zfs arg5" "" "$CJZFS_CALL1_ARG5"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "11.1" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "10.1.2.3" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "NO" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "0" "$CJCONF_CALL1_ARG5"
+	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
+	assertEquals "_cj_conf arg7" "single" "$CJCONF_CALL1_ARG7"
+	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "1" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "1" "$CJICONF_CALLS"
+	assertEquals "_cj_single_install arg1" "new-pot" "$CJSINGLE_CALL1_ARG1"
+	assertEquals "_cj_single_install arg2" "11.1" "$CJSINGLE_CALL1_ARG2"
+	assertEquals "_cj_interal_conf arg1" "new-pot" "$CJICONF_CALL1_ARG1"
+	assertEquals "_cj_interal_conf arg2" "single" "$CJICONF_CALL1_ARG2"
+	assertEquals "_cj_interal_conf arg3" "0" "$CJICONF_CALL1_ARG3"
+	assertEquals "_cj_interal_conf arg4" "10.1.2.3" "$CJICONF_CALL1_ARG4"
+	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
+}
+
+test_pot_create_122()
+{
+	pot-create -p new-pot -P test-pot-single -t single
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
+	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg2" "single" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_zfs arg3" "0" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "11.1" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_zfs arg5" "test-pot-single" "$CJZFS_CALL1_ARG5"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "11.1" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "NO" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "0" "$CJCONF_CALL1_ARG5"
+	assertEquals "_cj_conf arg6" "inherit" "$CJCONF_CALL1_ARG6"
+	assertEquals "_cj_conf arg7" "single" "$CJCONF_CALL1_ARG7"
+	assertEquals "_cj_conf arg8" "test-pot-single" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "1" "$CJICONF_CALLS"
+	assertEquals "_cj_interal_conf arg1" "new-pot" "$CJICONF_CALL1_ARG1"
+	assertEquals "_cj_interal_conf arg2" "single" "$CJICONF_CALL1_ARG2"
+	assertEquals "_cj_interal_conf arg3" "0" "$CJICONF_CALL1_ARG3"
+	assertEquals "_cj_interal_conf arg4" "inherit" "$CJICONF_CALL1_ARG4"
+	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
+}
+
 setUp()
 {
 	common_setUp
 	CJZFS_CALLS=0
 	CJZFS_CALL1_ARG5=
 	CJSINGLE_CALLS=0
-	CJSINGLE_CALL1_ARGS=
+	CJSINGLE_CALL1_ARG1=
 	CJCONF_CALLS=0
+	CJCONF_CALL1_ARG1=
 	CJCONF_CALL1_ARG8=
+	CJICONF_CALLS=0
 	CJFLV_CALLS=0
 	HELP_CALLS=0
 	ISVNETAVAIL_CALLS=0

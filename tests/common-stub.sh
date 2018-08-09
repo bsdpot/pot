@@ -44,6 +44,7 @@ _is_pot()
 		test-pot|test-pot-run|\
 		test-pot-2|test-pot-run-2|\
 		test-pot-0|test-pot-nosnap|\
+		test-pot-single|test-pot-single-run|\
 		${POT_DNS_NAME})
 			return 0 # true
 			;;
@@ -55,7 +56,8 @@ _is_pot_running()
 {
 	__monitor ISPOTRUN "$@"
 	case "$1" in
-		test-pot-run|test-pot-run-2)
+		test-pot-run|test-pot-run-2|\
+		test-pot-single-run)
 			return 0 # true
 			;;
 	esac
@@ -111,6 +113,16 @@ _get_conf_var()
 			;;
 		esac
 		;;
+	"pot.type")
+		case $1 in
+		test-pot|test-pot-0|\
+		test-pot-run|test-pot-nosnap|\
+		test-pot-2|test-pot-run-2)
+			echo "multi"
+			;;
+		test-pot-single|test-pot-single-run)
+			echo "single"
+		esac
 	esac
 }
 
@@ -119,7 +131,8 @@ _get_pot_base()
 	__monitor GETPOTBASE "$@"
 	case "$1" in
 		test-pot|test-pot-run|\
-		test-pot-2|test-pot-run-2)
+		test-pot-2|test-pot-run-2|\
+		test-pot-single|test-pot-single-run)
 			echo "11.1"
 			;;
 	esac

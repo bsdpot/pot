@@ -53,7 +53,7 @@ _cj_zfs()
 			_snap=$(_zfs_last_snap "$_dset")
 			if [ -n "$_snap" ]; then
 				_debug "Clone zfs snapshot $_dset@$_snap"
-				zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/m" "$_dset/@$_snap" "$_jdset/m"
+				zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/m" "$_dset@$_snap" "$_jdset/m"
 			else
 				# TODO - autofix
 				_error "no snapshot found for $_dset/m"
@@ -220,6 +220,10 @@ _cj_conf()
 	fi
 }
 
+# $1 pot name
+# $2 type
+# $3 level
+# $4 ip
 _cj_internal_conf()
 {
 	local _pname _type _lvl _ip _jdir
@@ -233,7 +237,6 @@ _cj_internal_conf()
 	else
 		_etcdir="${POT_FS_ROOT}/jails/$_pname/m/etc"
 	fi
-
 
 	# disable some cron jobs, not relevant in a jail
 	if [ "$_type" = "single" ] || [ "$_lvl" -ne 0 ]; then
@@ -313,11 +316,12 @@ _cj_single_install()
 pot-create()
 {
 	local _pname _ipaddr _lvl _base _flv _potbase
-	local _flv_default _dns _staticip _type
+	local _flv_default _dns _staticip _type _new_lvl
 	_pname=
 	_base=
 	_ipaddr=inherit
 	_lvl=1
+	_new_lvl=
 	_flv=
 	_potbase=
 	_flv_default="YES"
@@ -362,6 +366,7 @@ pot-create()
 			;;
 		-l)
 			_lvl=$2
+			_new_lvl=$2
 			shift 2
 			;;
 		-t)
@@ -423,14 +428,21 @@ pot-create()
 
 	# check options consitency
 	if [ "$_type" = "single" ]; then
+		if [ -n "$_new_lvl" ] && [ "$_new_lvl" != "0" ]; then
+			_error "single pot level can only be zero (omit -l option"
+			create-help
+			${EXIT} 1
+		fi
 		_lvl=0
 		if [ -n "$_potbase" ]; then
-			if ! is_pot "$_potbase" quiet ; then
+			if ! _is_pot "$_potbase" quiet ; then
 				_error "pot $_potbase not found"
+				create-help
 				${EXIT} 1
 			fi
 			if [ "$( _get_pot_type "$_potbase" )" != "single" ]; then
 				_error "pot $_potbase has the wrong type, it has to be of type single"
+				create-help
 				${EXIT} 1
 			fi
 			if [ -z "$_base" ]; then
@@ -619,8 +631,10 @@ pot-create()
 	if ! _cj_conf "$_pname" "$_base" "$_ipaddr" "$_staticip" "$_lvl" "$_dns" "$_type" "$_potbase" ; then
 		${EXIT} 1
 	fi
-	if [ "$_type" = "single" ] && [ -z "$_potbase" ]; then
-		_cj_single_install "$_pname" "$_base"
+	if [ "$_type" = "single" ]; then
+		if [ -z "$_potbase" ]; then
+			_cj_single_install "$_pname" "$_base"
+		fi
 		_cj_internal_conf "$_pname" "$_type" "0" "$_ipaddr"
 	fi
 	if [ $_flv_default = "YES" ]; then

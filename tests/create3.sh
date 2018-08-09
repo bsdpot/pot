@@ -34,11 +34,6 @@ service()
 	__monitor SERVICE "$@"
 }
 
-touch()
-{
-	__monitor TOUCH "$@"
-}
-
 cat()
 {
 	if [ "$1" = "${POT_FS_ROOT}/bases/11.1/.osrelease" ]; then
@@ -51,6 +46,11 @@ cat()
 
 # common stubs
 . common-stub.sh
+
+_cj_internal_conf()
+{
+	__monitor ICONF "$@"
+}
 
 test_cj_conf_001()
 {
@@ -69,6 +69,11 @@ test_cj_conf_001()
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
 	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "0" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
 }
 
 test_cj_conf_002()
@@ -86,7 +91,12 @@ test_cj_conf_002()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "2" "$SED_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_003()
@@ -109,7 +119,12 @@ test_cj_conf_003()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "2" "$SED_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_004()
@@ -132,7 +147,12 @@ test_cj_conf_004()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "3" "$SED_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "2" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "1" "$SED_CALLS"
 }
 
 test_cj_conf_005()
@@ -150,7 +170,12 @@ test_cj_conf_005()
 	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "2" "$SED_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "2" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_006()
@@ -168,8 +193,12 @@ test_cj_conf_006()
 	assertEquals "vnet" "vnet=true" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "3" "$SED_CALLS"
-	assertEquals "touch calls" "1" "$TOUCH_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "10.1.2.3" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_007()
@@ -188,7 +217,12 @@ test_cj_conf_007()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "2" "$SED_CALLS"
+	assertEquals "sed calls" "0" "$SED_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
 }
 
 test_cj_conf_008()
@@ -207,8 +241,12 @@ test_cj_conf_008()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "3" "$SED_CALLS"
-	assertEquals "touch calls" "1" "$TOUCH_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "10.1.2.3" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_009()
@@ -227,8 +265,12 @@ test_cj_conf_009()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "3" "$SED_CALLS"
-	assertEquals "touch calls" "1" "$TOUCH_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "10.1.2.3" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
 test_cj_conf_020()
@@ -247,10 +289,33 @@ test_cj_conf_020()
 	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
-	assertEquals "sed calls" "2" "$SED_CALLS"
-	assertEquals "touch calls" "0" "$TOUCH_CALLS"
+	assertEquals "internal_conf calls" "1" "$ICONF_CALLS"
+	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
+	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
+	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
+	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
+test_cj_conf_040()
+{
+	_cj_conf new-pot 11.1 inherit NO 0 pot single
+	assertEquals "return code" "0" "$?"
+	assertEquals "fscomp args1" "" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "pot.level" "pot.level=0" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.potbase" "pot.potbase=" "$(grep ^pot.potbase /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "ip4" "ip4=inherit" "$(grep ^ip4= /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "vnet" "vnet=false" "$(grep ^vnet= /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "internal_conf calls" "0" "$ICONF_CALLS"
+	assertEquals "sed calls" "0" "$SED_CALLS"
+}
 setUp()
 {
 	common_setUp
@@ -258,7 +323,7 @@ setUp()
 	SED_CALLS=0
 	SYSRC_CALLS=0
 	SERVICE_CALLS=0
-	TOUCH_CALLS=0
+	ICONF_CALLS=0
 
 	POT_FS_ROOT=/tmp
 	POT_ZFS_ROOT=zpot

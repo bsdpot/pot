@@ -48,6 +48,9 @@ _zfs_last_snap()
 	${POT_ZFS_ROOT}/jails/test-pot/custom)
 		echo 4321
 		;;
+	${POT_ZFS_ROOT}/jails/test-pot/m)
+		echo 9999
+		;;
 	esac
 }
 
@@ -144,6 +147,46 @@ test_cj_zfs_023()
 	assertEquals "info calls" "2" "$INFO_CALLS"
 }
 
+test_cj_zfs_041()
+{
+	_cj_zfs new-pot single 0 11.1
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "2" "$ZFS_CALLS"
+	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "zfs arg1" "create" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot/m" "$ZFS_CALL2_ARG2"
+	assertEquals "mkdir calls" "2" "$MKDIR_CALLS"
+	assertEquals "mkdir 1 arg2" "${POT_FS_ROOT}/jails/new-pot/m/tmp" "$MKDIR_CALL1_ARG2"
+	assertEquals "mkdir 2 arg2" "${POT_FS_ROOT}/jails/new-pot/m/dev" "$MKDIR_CALL2_ARG2"
+}
+
+test_cj_zfs_042()
+{
+	_cj_zfs test-pot single 0 11.1
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "1" "$ZFS_CALLS"
+	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/test-pot/m" "$ZFS_CALL1_ARG2"
+	assertEquals "mkdir calls" "2" "$MKDIR_CALLS"
+	assertEquals "mkdir 1 arg2" "${POT_FS_ROOT}/jails/test-pot/m/tmp" "$MKDIR_CALL1_ARG2"
+	assertEquals "mkdir 2 arg2" "${POT_FS_ROOT}/jails/test-pot/m/dev" "$MKDIR_CALL2_ARG2"
+}
+
+test_cj_zfs_043()
+{
+	_cj_zfs new-pot single 0 11.1 test-pot
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "2" "$ZFS_CALLS"
+	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "zfs arg1" "clone" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/m" "$ZFS_CALL2_ARG3"
+	assertEquals "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot/m@9999" "$ZFS_CALL2_ARG4"
+	assertEquals "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/m" "$ZFS_CALL2_ARG5"
+	assertEquals "mkdir calls" "0" "$MKDIR_CALLS"
+}
+
 setUp()
 {
 	common_setUp
@@ -154,6 +197,7 @@ setUp()
 	ZFSLASTSNAP_CALLS=0
 
 	POT_FS_ROOT=/tmp
+	POT_ZFS_ROOT=zpot
 }
 
 . shunit/shunit2

@@ -94,7 +94,7 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_normal'
 					;;
 				create)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_normal' \
@@ -105,7 +105,7 @@ _pot() {
 						'-i[network config]::_normal' \
 						'-s[static ip]' \
 						'-d[dns type]:dns types:(inherit pot)' \
-						'-f[flavour name]:flavour name:_pot_flavours' \
+						'*-f[flavour name]:flavour name:_pot_flavours' \
 						'-F[avoid default flavour]'
 					;;
 				clone-fscomp)

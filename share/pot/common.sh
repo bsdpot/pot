@@ -109,6 +109,15 @@ _is_init()
 	fi
 }
 
+# checks if the flavour dir is set up and exist
+_is_flavourdir()
+{
+	if [ -z "${_POT_FLAVOUR_DIR}" ] || [ ! -d "${_POT_FLAVOUR_DIR}" ]; then
+		return 1 # false
+	fi
+	return 0 # true
+}
+
 # check if the dataset is a dataset name
 # $1 the dataset NAME
 # tested
@@ -367,7 +376,7 @@ _is_pot()
 		_qerror "Some component of the pot $_pname is missing"
 		return 3 # false
 	fi
-	return 0
+	return 0 # true
 }
 
 # $1 pot name
@@ -379,6 +388,15 @@ _is_pot_running()
 	fi
 	jls -j "$1" >/dev/null 2>/dev/null
 	return $?
+}
+
+# $1 flavour name
+_is_flavour()
+{
+	if [ -r "${_POT_FLAVOUR_DIR}/$1" ] || [ -x "${_POT_FLAVOUR_DIR}/$1.sh" ]; then
+		return 0 # true
+	fi
+	return 1 # false
 }
 
 # $1 the element to search

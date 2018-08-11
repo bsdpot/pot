@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Chagned
 - init : it takes care of syslogd configuration in the host system
 - create : type=single will install plain FreeBSD and run the default flavour
+- create : multiple flavour support, executed in sequentially; option -f can be repeated
 
 ### Fixed
 - clone : fix a misleading/false positive error message 

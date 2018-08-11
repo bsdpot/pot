@@ -37,6 +37,12 @@ _is_uid0()
 	return 0 # true
 }
 
+_is_flavourdir()
+{
+	__monitor ISFLVDIR "$@"
+	return 0 # true
+}
+
 _is_pot()
 {
 	__monitor ISPOT "$@"
@@ -69,6 +75,16 @@ _is_base()
 	__monitor ISBASE "$@"
 	case "$1" in
 		test-base|11.1)
+			return 0 # true
+			;;
+	esac
+	return 1 # false
+}
+
+_is_flavour()
+{
+	case $1 in
+		default|flap|flap2)
 			return 0 # true
 			;;
 	esac

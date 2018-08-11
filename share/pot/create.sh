@@ -388,12 +388,16 @@ pot-create()
 			shift 2
 			;;
 		-f)
-			if [ -z "${_POT_FLAVOUR_DIR}" -o ! -d "${_POT_FLAVOUR_DIR}" ]; then
+			if ! _is_flavourdir ; then
 				_error "The flavour dir is missing"
 				${EXIT} 1
 			fi
-			if [ -r "${_POT_FLAVOUR_DIR}/$2" -o -x "${_POT_FLAVOUR_DIR}/$2.sh" ]; then
-				_flv=$2
+			if _is_flavour "$2" ; then
+				if [ -z "$_flv" ]; then
+					_flv=$2
+				else
+					_flv="$_flv $2"
+				fi
 			else
 				_error "The flavour $2 not found"
 				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
@@ -641,6 +645,8 @@ pot-create()
 		_cj_flv "$_pname" default
 	fi
 	if [ -n "$_flv" ]; then
-		_cj_flv "$_pname" "$_flv"
+		for _f in $_flv ; do
+			_cj_flv "$_pname" "$_f"
+		done
 	fi
 }

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create : -i auto (based on potnet) to get automatically a valid IP address
 - clone : -i auto (based on potnet) to get automatically a valid IP address
 - export-port : new command that allow pot ports to be exposed outside (vnet case)
+- slim flavor, designed to be used with single dataset pot types
 
 ### Chagned
 - init : it takes care of syslogd configuration in the host system

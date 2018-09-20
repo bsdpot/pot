@@ -26,7 +26,7 @@ Or you can install pot manually:
 
 ### Initialization
 
-Before to run any initialization, I suggest to copy `etc/pot/pot.defaul.conf` in `etc/pot/pot.conf` and set all variables in accord to your system.
+Before to run any initialization, I suggest to copy `etc/pot/pot.default.conf` in `etc/pot/pot.conf` and set all variables in accord to your system.
 
 When the pot'r configuration file is ready, the initialization can be performed (root privileges are needed):
 ```console

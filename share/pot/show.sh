@@ -3,7 +3,7 @@
 # supported releases
 show-help()
 {
-	echo "pot show [-hv] [-a|-p potname]"
+	echo "pot show [-hv] [-a|-r|-p potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -a all pots'

@@ -4,11 +4,11 @@
 : ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2"}
 create-base-help()
 {
-	echo "pot create-base [-h] [-r RELEASE]"
+	echo "pot create-base [-h] [-v] -r RELEASE [-b basename]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -r RELEASE : supported release are:'"${_POT_RELEASES}"
-	echo '  -b base name : optional, (default: the release)'
+	echo '  -b basename : optional, (default: the release)'
 }
 
 # $1 base name

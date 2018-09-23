@@ -6,11 +6,11 @@
 # shellcheck disable=SC2039
 create-base-help()
 {
-	echo "pot create-base [-h] [-r RELEASE] [-b basename]"
+	echo "pot create-base [-h] [-v] -r RELEASE [-b basename]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -r RELEASE : supported release are:'"${_POT_RELEASES}"
-	echo '  -b base name : optional, (default: the release)'
+	echo '  -b basename : optional, (default: the release)'
 }
 
 # $1 base name

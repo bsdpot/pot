@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone : fix syslogd configuration in the cloned pot
 - destroy : fix if pot is a single dataset one
 - start : fix hostname warning
+- start (#046) : run the jail in a clean enviroment
+- term (#046) : spawn the shell in a jail using the jailed user environment
 
 ## [0.5.7] 2018-06-28
 ### Added

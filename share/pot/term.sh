@@ -16,7 +16,7 @@ _term()
 {
 	local _pname
 	_pname="$1"
-	jexec $_pname tcsh
+	jexec -l -U root $_pname
 }
 
 pot-term()

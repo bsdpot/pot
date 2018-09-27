@@ -85,7 +85,7 @@ Commands:
 	create -- Create a new pot (jail)
 	clone -- Clone a pot creating a new one
 	clone-fscomp - Clone a fscomp
-	rename -- Promote a cloned pot
+	promote -- Promote a cloned pot
 	rename -- Rename a pot
 	destroy -- Destroy a pot
 	add-fscomp -- Add a fs component to a pot

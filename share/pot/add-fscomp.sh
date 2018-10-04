@@ -14,6 +14,40 @@ add-fscomp-help()
 	echo '  -r : mount the fscomp in read-only'
 }
 
+# $1 pot
+# $2 mount point
+_mountpoint_validation()
+{
+	local _pname _mnt_p _mpdir _startflag
+	_pname="$1"
+	_mnt_p="$2"
+	_mpdir=$POT_FS_ROOT/jails/$_pname/m
+	_started=false # false
+	if ! _is_pot_running ; then
+		_started=true # true
+		if ! pot-cmd start "$_pname" ; then
+			_error "Pot $_pname failed to start"
+			return 1 # false
+		fi
+	fi
+	# if the mountpoint doesn't exist, make it
+	if [ ! -d "$_mpdir/$_mnt_p" ]; then
+		if ! mkdir -p "$_mpdir/$_mnt_p" ; then
+			if eval $_started ; then
+				pot-cmd stop "$_pname"
+			fi
+			return 1 # false
+		fi
+	fi
+	if eval $_started ; then
+		pot-cmd stop "$_pname"
+	else
+		# TODO mount it directly?
+		_info "You have to restart your pot $_pname to make new modification effective"
+	fi
+	return 0 # true
+}
+
 # $1 fscomp
 # $2 pot
 # $3 mount point
@@ -152,6 +186,10 @@ pot-add-fscomp()
 		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+	if ! _mountpoint_validation "$_pname" "$_mnt_p" ; then
+		_error "The mountpoint is not valid!"
 		${EXIT} 1
 	fi
 	_add_f_to_p "$_fscomp" "$_pname" "$_mnt_p" $_ext $_opt

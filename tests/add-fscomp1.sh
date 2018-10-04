@@ -24,6 +24,12 @@ _zfs_dataset_valid()
 add-fscomp-help()
 {
 	__monitor HELP "$@"
+	return 0 # true
+}
+
+_mountpoint_validation()
+{
+	__monitor MPVALID "$@"
 }
 
 _add_f_to_p()
@@ -41,6 +47,7 @@ test_pot_add_fscomp_001()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -vb
@@ -51,6 +58,7 @@ test_pot_add_fscomp_001()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -b bb
@@ -61,6 +69,7 @@ test_pot_add_fscomp_001()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -h
@@ -71,6 +80,7 @@ test_pot_add_fscomp_001()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_002()
@@ -83,6 +93,7 @@ test_pot_add_fscomp_002()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -f test-fscomp
@@ -93,6 +104,7 @@ test_pot_add_fscomp_002()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -m test-mnt
@@ -103,6 +115,7 @@ test_pot_add_fscomp_002()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -p test-pot -f test-fscomp
@@ -113,6 +126,7 @@ test_pot_add_fscomp_002()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -m test-mnt -f test-fscomp
@@ -123,6 +137,7 @@ test_pot_add_fscomp_002()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -m test-mnt -p test-pot
@@ -133,6 +148,7 @@ test_pot_add_fscomp_002()
 	assertEquals "_zfs_dataset_valid calls" "0" "$ZDVALID_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_003()
@@ -145,6 +161,7 @@ test_pot_add_fscomp_003()
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_004()
@@ -157,6 +174,7 @@ test_pot_add_fscomp_004()
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_005()
@@ -169,6 +187,7 @@ test_pot_add_fscomp_005()
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_006()
@@ -181,6 +200,7 @@ test_pot_add_fscomp_006()
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_007()
@@ -193,6 +213,7 @@ test_pot_add_fscomp_007()
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_008()
@@ -205,6 +226,7 @@ test_pot_add_fscomp_008()
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_add_f_to_p calls" "0" "$ADDF2P_CALLS"
+	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_020()
@@ -222,6 +244,7 @@ test_pot_add_fscomp_020()
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
 	assertEquals "_add_f_to_p arg" "" "$ADDF2P_CALL1_ARG5"
+	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -p test-pot -f zroot/test-fscomp -m test-mnt -e
@@ -237,6 +260,7 @@ test_pot_add_fscomp_020()
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "external" "$ADDF2P_CALL1_ARG4"
 	assertEquals "_add_f_to_p arg" "" "$ADDF2P_CALL1_ARG5"
+	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_add_fscomp_021()
@@ -254,6 +278,7 @@ test_pot_add_fscomp_021()
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
 	assertEquals "_add_f_to_p arg" "ro" "$ADDF2P_CALL1_ARG5"
+	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -p test-pot -f zroot/test-fscomp -m test-mnt -e -r
@@ -269,6 +294,7 @@ test_pot_add_fscomp_021()
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "external" "$ADDF2P_CALL1_ARG4"
 	assertEquals "_add_f_to_p arg" "ro" "$ADDF2P_CALL1_ARG5"
+	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -p test-pot -f test-fscomp -m test-mnt -w
@@ -284,6 +310,7 @@ test_pot_add_fscomp_021()
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
 	assertEquals "_add_f_to_p arg" "zfs-remount" "$ADDF2P_CALL1_ARG5"
+	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 
 	setUp
 	pot-add-fscomp -p test-pot -f test-fscomp -m test-mnt -w -r
@@ -299,6 +326,7 @@ test_pot_add_fscomp_021()
 	assertEquals "_add_f_to_p arg" "test-mnt" "$ADDF2P_CALL1_ARG3"
 	assertEquals "_add_f_to_p arg" "NO" "$ADDF2P_CALL1_ARG4"
 	assertEquals "_add_f_to_p arg" "ro" "$ADDF2P_CALL1_ARG5"
+	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 setUp()
@@ -307,6 +335,7 @@ setUp()
 	ZDVALID_CALLS=0
 	HELP_CALLS=0
 	ADDF2P_CALLS=0
+	MPVALID_CALLS=0
 
 	POT_FS_ROOT=/tmp
 	POT_ZFS_ROOT=zpot

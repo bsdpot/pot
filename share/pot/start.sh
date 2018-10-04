@@ -24,7 +24,7 @@ start-cleanup()
 	if [ -z "$_pname" ]; then
 		return
 	fi
-	if [ -n $2 ]; then
+	if [ -n "$2" ]; then
 		ifconfig $2 destroy
 	fi
 	pot-cmd stop $_pname
@@ -56,6 +56,7 @@ _js_mount()
 		_mnt_p=$( echo $line | awk '{print $2}' )
 		_opt=$( echo $line | awk '{print $3}' )
 		if [ "$_opt" = "zfs-remount" ]; then
+			# if the mountpoint doesn't exist, zfs will create it
 			zfs set mountpoint=$_mnt_p $_dset
 			_node=$( _get_zfs_mountpoint $_dset )
 			if _zfs_exist $_dset $_node ; then
@@ -69,6 +70,15 @@ _js_mount()
 			fi
 		else
 			_node=$( _get_zfs_mountpoint $_dset )
+			if [ ! -d "$_mnt_p" ]; then
+				_debug "start: creating the missing mountpoint $_mnt_p"
+				mkdir "$_mnt_p"
+				if [ "$?" -ne 0 ]; then
+					_error "Error creating the missing mountpoint $_mnt_p"
+					start-cleanup $_pname
+					return 1
+				fi
+			fi
 			mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
 			if [ "$?" -ne 0 ]; then
 				_error "Error mounting $_node"
@@ -272,7 +282,7 @@ pot-start()
 	args=$(getopt hvsS $*)
 	if [ $? -ne 0 ]; then
 		start-help
-		exit 1
+		return 1
 	fi
 
 	set -- $args
@@ -304,23 +314,23 @@ pot-start()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		start-help
-		exit 1
+		return 1
 	fi
 	if ! _is_pot $_pname ; then
-		exit 1
+		return1
 	fi
 	if _is_pot_running $_pname ; then
 		_debug "pot $_pname is already running"
 		return 0
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 
 	if _is_pot_vnet $_pname ; then
 		if ! _is_vnet_available ; then
 			_error "This kernel doesn't support VIMAGE! No vnet possible - abort"
-			${EXIT} 1
+			return 1
 		fi
 	fi
 
@@ -339,13 +349,14 @@ pot-start()
 	esac
 	if ! _js_mount $_pname ; then
 		_error "Mount failed"
-		exit 1
+		return 1
 	fi
 	_js_resolv $_pname
 	if ! _js_start $_pname ; then
 		_error "$_pname failed to start"
-		exit 1
+		return 1
 	else
 		_info "The pot "${_pname}" started"
 	fi
+	return 0
 }

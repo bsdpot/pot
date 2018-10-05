@@ -53,42 +53,6 @@ _js_stop()
 }
 
 # $1 pot name
-_js_umount()
-{
-	local _pname _tmpfile _jdir _node _mnt_p _opt _dset
-	_pname=$1
-	_tmpfile=$(mktemp -t ${_pname}.XXXXXX)
-	if [ $? -ne 0 ]; then
-		_error "not able to create temporary file - umount failed"
-		return 1 # false
-	fi
-	_jdir="${POT_FS_ROOT}/jails/$_pname"
-
-	_umount "$_jdir/m/tmp"
-	_umount "$_jdir/m/dev"
-	tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
-	while read -r line ; do
-		_dset=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		if [ "$_opt" = "zfs-remount" ]; then
-			_node=${POT_FS_ROOT}/jails/$_pname/$(basename $_dset)
-			zfs set mountpoint=$_node $_dset
-			if _zfs_exist $_dset $_node ; then
-				# the information are correct - move the mountpoint
-				_debug "stop: the dataset $_dset is mounted at $_node"
-			else
-				# mountpoint not moved
-				_error "Dataset $_dset moved to $_node (Fix it manually)"
-			fi
-		else
-			_umount $_mnt_p
-		fi
-	done < $_tmpfile
-	rm $_tmpfile
-}
-
-# $1 pot name
 _js_rm_resolv()
 {
 	local _pname _jdir
@@ -145,5 +109,5 @@ pot-stop()
 		exit 1
 	fi
 	_js_rm_resolv $_pname
-	_js_umount $_pname
+	_pot_umount "$_pname"
 }

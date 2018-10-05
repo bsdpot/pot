@@ -544,6 +544,91 @@ _print_pot_snaps()
 	done
 }
 
+# $1 pot name
+_pot_mount()
+{
+	local _pname _dset _mnt_p _opt _node
+	_pname="$1"
+	if ! _is_pot "$_pname" ; then
+		return 1 # false
+	fi
+	while read -r line ; do
+		_dset=$( echo "$line" | awk '{print $1}' )
+		_mnt_p=$( echo "$line" | awk '{print $2}' )
+		_opt=$( echo "$line" | awk '{print $3}' )
+		if [ "$_opt" = "zfs-remount" ]; then
+			# if the mountpoint doesn't exist, zfs will create it
+			zfs set mountpoint="$_mnt_p" "$_dset"
+			_node=$( _get_zfs_mountpoint "$_dset" )
+			if _zfs_exist "$_dset" "$_node" ; then
+				# the information are correct - move the mountpoint
+				_debug "_pot_mount: the dataset $_dset is mounted at $_node"
+			else
+				# mountpoint already moved ?
+				_error "_pot_mount: Dataset $_dset not mounted at $_mnt_p! Aborting"
+				return 1 # false
+			fi
+		else
+			_node=$( _get_zfs_mountpoint "$_dset" )
+			if [ ! -d "$_mnt_p" ]; then
+				_debug "start: creating the missing mountpoint $_mnt_p"
+				if ! mkdir "$_mnt_p" ; then
+					_error "Error creating the missing mountpoint $_mnt_p"
+					return 1
+				fi
+			fi
+			if ! mount_nullfs -o "${_opt:-rw}" "$_node" "$_mnt_p" ; then
+				_error "Error mounting $_node"
+				return 1 # false
+			else
+				_debug "mount $_mnt_p"
+			fi
+		fi
+	done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
+	if ! mount -t tmpfs tmpfs "${POT_FS_ROOT}/jails/$_pname/m/tmp" ; then
+		_error "Error mounting tmpfs"
+		return 1
+	else
+		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
+	fi
+	return 0 # true
+}
+
+# $1 pot name
+_pot_umount()
+{
+	local _pname _tmpfile _jdir _node _mnt_p _opt _dset
+	_pname="$1"
+	if ! _tmpfile=$(mktemp -t "${_pname}.XXXXXX") ; then
+		_error "not able to create temporary file - umount failed"
+		return 1 # false
+	fi
+	_jdir="${POT_FS_ROOT}/jails/$_pname"
+
+	_umount "$_jdir/m/tmp"
+	_umount "$_jdir/m/dev"
+	tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
+	while read -r line ; do
+		_dset=$( echo "$line" | awk '{print $1}' )
+		_mnt_p=$( echo "$line" | awk '{print $2}' )
+		_opt=$( echo "$line" | awk '{print $3}' )
+		if [ "$_opt" = "zfs-remount" ]; then
+			_node=${POT_FS_ROOT}/jails/$_pname/$(basename "$_dset")
+			zfs set mountpoint="$_node" "$_dset"
+			if _zfs_exist "$_dset" "$_node" ; then
+				# the information are correct - move the mountpoint
+				_debug "stop: the dataset $_dset is mounted at $_node"
+			else
+				# mountpoint not moved
+				_error "Dataset $_dset moved to $_node (Fix it manually)"
+			fi
+		else
+			_umount "$_mnt_p"
+		fi
+	done < "$_tmpfile"
+	rm "$_tmpfile"
+}
+
 pot-cmd()
 {
 	local _cmd _func

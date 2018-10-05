@@ -45,60 +45,6 @@ _js_dep()
 	return 0 # true
 }
 
-# $1 jail name
-_js_mount()
-{
-	local _pname _node _mnt_p _opt _dset
-	_pname=$1
-	_debug "Using the fscomp.conf"
-	while read -r line ; do
-		_dset=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		if [ "$_opt" = "zfs-remount" ]; then
-			# if the mountpoint doesn't exist, zfs will create it
-			zfs set mountpoint=$_mnt_p $_dset
-			_node=$( _get_zfs_mountpoint $_dset )
-			if _zfs_exist $_dset $_node ; then
-				# the information are correct - move the mountpoint
-				_debug "start: the dataset $_dset is mounted at $_node"
-			else
-				# mountpoint already moved ?
-				_error "Dataset $_dset not mounted at $_mnt_p! Aborting"
-				start-cleanup $_pname
-				return 1 # false
-			fi
-		else
-			_node=$( _get_zfs_mountpoint $_dset )
-			if [ ! -d "$_mnt_p" ]; then
-				_debug "start: creating the missing mountpoint $_mnt_p"
-				mkdir "$_mnt_p"
-				if [ "$?" -ne 0 ]; then
-					_error "Error creating the missing mountpoint $_mnt_p"
-					start-cleanup $_pname
-					return 1
-				fi
-			fi
-			mount_nullfs -o ${_opt:-rw} $_node $_mnt_p
-			if [ "$?" -ne 0 ]; then
-				_error "Error mounting $_node"
-				start-cleanup $_pname
-				return 1 # false
-			else
-				_debug "mount $_mnt_p"
-			fi
-		fi
-	done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
-	mount -t tmpfs tmpfs ${POT_FS_ROOT}/jails/$_pname/m/tmp
-	if [ "$?" -ne 0 ]; then
-		_error "Error mouning tmpfs"
-		start-cleanup $_pname
-		return 1 # false
-	else
-		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
-	fi
-}
-
 # $1 pot name
 _js_resolv()
 {
@@ -317,7 +263,7 @@ pot-start()
 		return 1
 	fi
 	if ! _is_pot $_pname ; then
-		return1
+		return 1
 	fi
 	if _is_pot_running $_pname ; then
 		_debug "pot $_pname is already running"
@@ -347,8 +293,9 @@ pot-start()
 		none|*)
 			;;
 	esac
-	if ! _js_mount $_pname ; then
-		_error "Mount failed"
+	if ! _pot_mount "$_pname" ; then
+		_error "Mount failed "
+		start-cleanup "$_pname"
 		return 1
 	fi
 	_js_resolv $_pname

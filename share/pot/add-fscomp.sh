@@ -18,29 +18,29 @@ add-fscomp-help()
 # $2 mount point
 _mountpoint_validation()
 {
-	local _pname _mnt_p _mpdir _startflag
+	local _pname _mnt_p _mpdir _mounted
 	_pname="$1"
 	_mnt_p="$2"
 	_mpdir=$POT_FS_ROOT/jails/$_pname/m
-	_started=false # false
-	if ! _is_pot_running ; then
-		_started=true # true
-		if ! pot-cmd start "$_pname" ; then
-			_error "Pot $_pname failed to start"
+	_mounted=false # false
+	if ! _is_pot_running "$_pname" ; then
+		_mounted=true # true
+		if ! _pot_mount "$_pname" ; then
+			_error "Pot $_pname failed to mount"
 			return 1 # false
 		fi
 	fi
 	# if the mountpoint doesn't exist, make it
 	if [ ! -d "$_mpdir/$_mnt_p" ]; then
 		if ! mkdir -p "$_mpdir/$_mnt_p" ; then
-			if eval $_started ; then
-				pot-cmd stop "$_pname"
+			if eval $_mounted ; then
+				_pot_umount "$_pname"
 			fi
 			return 1 # false
 		fi
 	fi
-	if eval $_started ; then
-		pot-cmd stop "$_pname"
+	if eval $_mounted ; then
+		_pot_umount "$_pname"
 	else
 		# TODO mount it directly?
 		_info "You have to restart your pot $_pname to make new modification effective"
@@ -55,7 +55,7 @@ _mountpoint_validation()
 # $5 mount option (zfs-remount, ro)
 _add_f_to_p()
 {
-	local _fscomp _pname _mnt_p _pdir _ext _opt
+	local _fscomp _pname _mnt_p _pdir _ext _opt _zfscomp _node
 	_fscomp="$1"
 	_pname="$2"
 	# Removing the trailing /
@@ -64,18 +64,26 @@ _add_f_to_p()
 	_opt="${5}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	if [ "$_ext" = "external" ]; then
-		_debug "add $_fscomp $_pdir/m/$_mnt_p $_opt"
-		if [ -z "$_opt" ]; then
-			${ECHO} "$_fscomp $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
-		else
-			${ECHO} "$_fscomp $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
-		fi
+		_zfscomp="$_fscomp"
 	else
-		_debug "add $POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt"
-		if [ -z "$_opt" ]; then
-			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
+		_zfscomp="$POT_ZFS_ROOT/fscomp/$_fscomp"
+	fi
+	_debug "add fscomp:$_zfscomp mnt_p:$_pdir/m/$_mnt_p opt:$_opt"
+	if [ -z "$_opt" ]; then
+		${ECHO} "$_zfscomp $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
+	else
+		${ECHO} "$_zfscomp $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
+	fi
+	if _is_pot_running "$_pname" ; then
+		if [ "$_opt" = "zfs-remount" ]; then
+			zfs set mountpoint="$_pdir/m/$_mnt_p" "$_zfscomp"
 		else
-			${ECHO} "$POT_ZFS_ROOT/fscomp/$_fscomp $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
+			_node=$( _get_zfs_mountpoint "$_zfscomp" )
+			if ! mount_nullfs -o "${_opt:-rw}" "$_node" "$_pdir/m/$_mnt_p" ; then
+				_error "Error mounting $_node on $_pname"
+			else
+				_debug "Mounted $_node on $_pname"
+			fi
 		fi
 	fi
 }

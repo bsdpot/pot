@@ -1,7 +1,6 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
@@ -12,10 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - export-port : new command that allow pot ports to be exposed outside (vnet case)
 - slim flavor, designed to be used with single dataset pot types
 
-### Chagned
+### Changed
 - init : it takes care of syslogd configuration in the host system
 - create : type=single will install plain FreeBSD and run the default flavour
 - create : multiple flavour support, executed in sequentially; option -f can be repeated
+- add-fscomp : exploit the new internal refactorized mount and umount function to avoid to start the pot
+- add-fscomp : if the pot is running, mount the new fscomp right away
 
 ### Fixed
 - clone : fix a misleading/false positive error message 

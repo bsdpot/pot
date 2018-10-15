@@ -41,9 +41,6 @@ _mountpoint_validation()
 	fi
 	if eval $_mounted ; then
 		_pot_umount "$_pname"
-	else
-		# TODO mount it directly?
-		_info "You have to restart your pot $_pname to make new modification effective"
 	fi
 	return 0 # true
 }

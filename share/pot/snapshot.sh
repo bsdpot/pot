@@ -1,6 +1,7 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 snapshot-help()
 {
 	echo "pot snapshot [-h][-v][-a] [-p potname|-f fscomp]"
@@ -11,6 +12,7 @@ snapshot-help()
 	echo '  -f fscomp : the fs component target of the snapshot'
 }
 
+# shellcheck disable=SC2039
 pot-snapshot()
 {
 	local _full_pot _obj _objname

@@ -200,14 +200,14 @@ _pot_zfs_snap_full()
 }
 
 # take a zfs snapshot of a fscomp
-# $1 pot name
+# $1 fscomp name
 _fscomp_zfs_snap()
 {
 	local _fscomp _snaptag _dset
 	_fscomp=$1
 	_snaptag="$(date +%s)"
 	_debug "Take snapshot of $_fscomp"
-	zfs snapshot ${POT_ZFS_ROOT}/fscomp/${_pname}@${_snaptag}
+	zfs snapshot ${POT_ZFS_ROOT}/fscomp/${_fscomp}@${_snaptag}
 }
 
 # get the last available snaphost of the given dataset

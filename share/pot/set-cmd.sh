@@ -1,8 +1,8 @@
 #!/bin/sh
+:
 
-# supported releases
-set-cmd-help()
-{
+# shellcheck disable=SC2039
+set-cmd-help() {
 	echo "pot set-cmd [-hv] -p pot -c cmd"
 	echo '  -h print this help'
 	echo '  -v verbose'
@@ -23,15 +23,15 @@ _set_command()
 	echo "pot.cmd=$_cmd" >> "$_cdir"/pot.conf
 }
 
+# shellcheck disable=SC2039
 pot-set-cmd()
 {
-	# shellcheck disable=SC2039
 	local _pname _cmd
 
 	_cmd=
 	_pname=
 	OPTIND=1
-	while getopts ":hvp:c:" _o ; do
+	while getopts "hvp:c:" _o ; do
 		case "$_o" in
 		h)
 			set-cmd-help

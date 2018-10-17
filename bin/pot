@@ -144,7 +144,7 @@ case "${CMD}" in
 	export-ports|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
-	snapshot|revert)
+	snapshot|revert|purge-snapshots)
 		pot-cmd "${CMD}" "$@"
 		exit 0
 		;;

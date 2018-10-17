@@ -194,6 +194,14 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-a[also external components]'
 					;;
+				purge-snapshots)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-f[fscomp name]:fscomp name:_pot_fscomps' \
+						'-a[all snapshots, instead of the old ones]'
+					;;
 				top)
 					_arguments \
 						'-h[Show help]' \
@@ -255,6 +263,7 @@ _pot_cmds() {
 	'snapshot:Take a snapshot of a pot'
 	'revert:Restore the last snapshot of a pot'
 	'rollback:Restore the last snapshot of a pot'
+	'purge-snapshots:Remove old or all snapshots'
 	)
 	_describe 'command' commands
 }

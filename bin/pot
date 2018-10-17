@@ -100,6 +100,7 @@ Commands:
 	top -- Run the unix top in the pot
 	snap/snapshot -- Take a snapshot of a pot
 	rollback/revert -- Restore the last snapshot
+	purge-snapshots -- Remove old/all snapshots
 EOF
 }
 

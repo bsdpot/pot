@@ -14,11 +14,13 @@ info-help()
 # $1 pot name
 _info_pot()
 {
-	local _pname _cdir _lvl _ports
+	local _pname _cdir _lvl _ports _type
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_lvl=$( _get_conf_var $_pname pot.level)
+	_type=$( _get_conf_var "$_pname" pot.type)
 	printf "pot name : %s\n" $_pname
+	printf "\ttype : %s\n" "$_type"
 	printf "\tbase : %s\n" "$( _get_conf_var $_pname pot.base)"
 	printf "\tlevel : %s\n" "$_lvl"
 	if [ $_lvl -eq 2 ]; then
@@ -40,6 +42,9 @@ _info_pot()
 	fi
 	if _is_verbose ; then
 		printf "\tdatasets:\n"
+		if [ "$_type" = "single" ]; then
+			printf "\\t\\t%s\\n" "$_pname/m"
+		fi
 		_print_pot_fscomp "$_cdir/fscomp.conf"
 		printf "\tsnapshot:\n"
 		_print_pot_snaps "$_pname"

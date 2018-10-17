@@ -16,7 +16,9 @@ _term()
 {
 	local _pname
 	_pname="$1"
-	jexec -l -U root $_pname
+	jexec -l -U root "$_pname"
+	# This would perform a login (poudriere approach)
+	# jexec "$_pname" env -i TERM="$TERM" /usr/bin/login -fp root
 }
 
 pot-term()

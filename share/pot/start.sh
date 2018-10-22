@@ -110,6 +110,23 @@ _js_vnet()
 	sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$POT_GATEWAY"
 }
 
+# $1 pot name
+_js_export_static_ports()
+{
+	local _pname _ip _ports _random_port _excl_list
+	_pname=$1
+	_ip="$( _get_conf_var $_pname ip4 )"
+	_ports="$( _get_pot_export_static_ports $_pname )"
+	_pfrules="/tmp/pot_pfrules"
+	pfctl -s nat -P > $_pfrules
+	for _port in $_ports ; do
+		_debug "Redirect: from $POT_EXTIF : $_port to $_ip : $_port"
+		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_port -> $_ip port $_port" >> $_pfrules
+		_excl_list="$_excl_list $_port"
+	done
+	pfctl -f $_pfrules
+}
+
 # $1: exclude list
 _js_get_free_rnd_port()
 {
@@ -203,6 +220,7 @@ _js_start()
 		_iface="$( _js_create_epair )"
 		_js_vnet "$_pname" "$_iface"
 		_param="$_param vnet vnet.interface=${_iface}b"
+		_js_export_static_ports "$_pname"
 		_js_export_ports "$_pname"
 	else
 		_ip=$( _get_conf_var $_pname ip4 )

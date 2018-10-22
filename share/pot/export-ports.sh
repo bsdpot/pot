@@ -1,6 +1,7 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 export-ports-help()
 {
 	echo "pot export-ports [-hv] -p pot -P rssPot"
@@ -9,58 +10,65 @@ export-ports-help()
 	echo '  -p pot : the working pot'
 	echo '  -e port : the tcp port'
 	echo '            This option can be repeated multiple time, to export more ports'
+	echo '  -S The port is exported statically: the host will use the same port used by the pot'
 }
 
 # $1 pot
 # $2 port list
 _export_ports()
 {
-	local _pname _ports
+	# shellcheck disable=SC2039
+	local _pname _ports _static
 	_pname="$1"
-	_ports="$2"
+	_static="$2"
+	_ports="$3"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
-	sed -i '' -e "/pot.export.ports=.*/d" $_cdir/pot.conf
-	echo "pot.export.ports=$_ports" >> $_cdir/pot.conf
+	if [ "$_static" = "YES" ]; then
+		sed -i '' -e "/pot.export.static.ports=.*/d" "$_cdir/pot.conf"
+		echo "pot.export.static.ports=$_ports" >> "$_cdir/pot.conf"
+	else
+		sed -i '' -e "/pot.export.ports=.*/d" "$_cdir/pot.conf"
+		echo "pot.export.ports=$_ports" >> "$_cdir/pot.conf"
+	fi
 }
 
+# shellcheck disable=SC2039
 pot-export-ports()
 {
-	local _pname _ports
+	local _pname _ports _static
 	_pname=
 	_ports=
-	if ! args=$(getopt hvp:e: "$@") ; then
-		export-ports-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	_static="NO"
+	OPTIND=1
+	while getopts "hvp:e:S" _o ; do
+		case "$_o" in
+		h)
 			export-ports-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-p)
-			_pname="$2"
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		-e)
+		e)
 			if [ -z "$_ports" ]; then
-				_ports="$2"
+				_ports="$OPTARG"
 			else
-				_ports="$_ports $2"
+				_ports="$_ports $OPTARG"
 			fi
-			shift 2
 			;;
-		--)
-			shift
-			break
+		S)
+			_static="YES"
+			;;
+		*)
+			export-ports-help
+			${EXIT} 1
 			;;
 		esac
 	done
+
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		export-ports-help
@@ -81,5 +89,5 @@ pot-export-ports()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_export_ports "$_pname" "$_ports"
+	_export_ports "$_pname" "$_static" "$_ports"
 }

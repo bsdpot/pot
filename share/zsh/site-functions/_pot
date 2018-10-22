@@ -184,7 +184,8 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-e[port]::'
+						'*-e[port to be exported]::_normal' \
+						'-S[Static export]'
 					;;
 				snap|snapshot|revert|rollback)
 					_arguments \

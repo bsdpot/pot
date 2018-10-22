@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - export-port : new command that allow pot ports to be exposed outside (vnet case)
 - slim flavor, designed to be used with single dataset pot types
 - purge-snapshot : new command that will remove all snapshots, except the last one
+- export-port : static option, to add statically exported ports
 
 ### Changed
 - init : it takes care of syslogd configuration in the host system

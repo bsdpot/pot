@@ -267,6 +267,16 @@ _get_pot_export_ports()
 	echo "$_value"
 }
 
+_get_pot_export_static_ports()
+{
+	# shellcheck disable=SC2039
+	local _pname _cdir _var _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_value="$(awk '/pot.export.static.ports/ { n=split($0,array,"="); if (n==2) { print array[2]; } }' $_cdir/pot.conf )"
+	echo "$_value"
+}
+
 # $1 pot name
 _get_pot_base()
 {
@@ -440,6 +450,7 @@ _is_mounted()
 # tested
 _umount()
 {
+	# shellcheck disable=SC2039
 	local _mnt_p
 	_mnt_p=$1
 	if _is_mounted "$_mnt_p" ; then
@@ -455,11 +466,12 @@ _umount()
 # tested
 _is_cmd_flavorable()
 {
+	# shellcheck disable=SC2039
 	local _cmd
 	_cmd=$1
 	case $_cmd in
 		add-dep|add-fscomp|\
-		set-rss)
+		set-rss|export-ports)
 			return 0
 			;;
 	esac
@@ -469,6 +481,7 @@ _is_cmd_flavorable()
 # tested
 _is_rctl_available()
 {
+	# shellcheck disable=SC2039
 	local _racct
 	_racct="$(sysctl -qn kern.racct.enable)"
 	if [ "$_racct" = "1" ]; then

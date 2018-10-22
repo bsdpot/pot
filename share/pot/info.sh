@@ -27,12 +27,18 @@ _info_pot()
 		printf "\tbase pot : %s\n" "$( _get_conf_var $_pname pot.potbase)"
 	fi
 	printf "\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
-	if _is_verbose ; then
+	if _is_verbose && [ "$( _get_conf_var $_pname ip4)" != "inherit" ]; then
+		_ports="$( _get_pot_export_static_ports $_pname )"
+		if [ -z "$_ports" ]; then
+			printf "\t\tno ports exported (static)\n"
+		else
+			printf "\t\tstatically exported ports: $_ports\n"
+		fi
 		_ports="$( _get_pot_export_ports $_pname )"
 		if [ -z "$_ports" ]; then
-			printf "\t\tno ports exported\n"
+			printf "\t\tno ports exported (dynamic)\n"
 		else
-			printf "\t\texported ports: $_ports\n"
+			printf "\t\tdynamically exported ports: $_ports\n"
 		fi
 	fi
 	if _is_pot_running $_pname ; then

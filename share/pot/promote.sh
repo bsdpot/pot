@@ -39,6 +39,10 @@ pot-promote()
 		esac
 	done
 
+	echo '#########################'
+	echo '# promote is deprecated #'
+	echo '#########################'
+
 	if [ -z "$_pname" ]; then
 		_error "-p is missing"
 		promote-help

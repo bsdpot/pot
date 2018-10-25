@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - term (#046) : spawn the shell in a jail using the jailed user environment
 - add-fscomp (#045) : check the mount point and create it, if missing
 
+### Deprecated
+- promote : mark promot as deprecated, so we can remove it in the next major release
+
 ## [0.5.7] 2018-06-28
 ### Added
 - create-base : add support to FreeBSD 11.2

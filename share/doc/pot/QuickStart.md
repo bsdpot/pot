@@ -2,26 +2,45 @@
 
 This is an introduction at the usage of `pot`, a `jail(8)` wrapper based on ZFS and `pf(4)` that naively tries to emulate containerization on FreeBSD.
 `pot`uses FreeBSD specific technologies, so you need a FreeBSD machine to run it.
-**NOTE** 99% of the operations needs `root` privileges. In this guide, we consider to be logged in as `root`
-[TODO] FreeBSD kernel + racct
+
+**NOTE**: 99% of the operations needs `root` privileges. In this guide, we consider to be logged in as `root`
+
+**NOTE2**: ZFS is mandatory, so if you don't know what it is or you don't have a ZFS pool, please consider to read this [quick guide](https://www.freebsd.org/doc/handbook/zfs-quickstart.html)
+
+**NOTE3**: Some features, like memory limits and memory usage, rely on the resources limit framework, normally disabled. Even if it's not mandatory, it's suggested to enable it, with the following steps:
+```shell
+# echo kern.racct.enable=1 >> /boot/loader.cont
+```
+This settings will take effect at the next reboot.
+
+**NOTE4**: One of the 3 network configuration need VNET(9), the network subsystem virtualization infrastructure, enabled in the kernel.
+On FreeBSD > 12, this kernel feature is already enabled and you don't need to do anything.
+On FreeBSD <= 11.x, you have to rebuild the kernel, enabling the VIMAGE options, following the instruction reported [here](https://www.freebsd.org/doc/handbook/kernelconfig.html)
 ## Install `pot`
 The installation process is pretty straightforward:
 ```shell
 # pkg install -y pot
 ```
 That's it, `pot` is installed, but we're not yet ready.
-#### [Optional] Configuration
-[TODO]
+#### Configuration [Optional]
+Under the folder `/usr/local/etc/pot` you'll find two files:
+* `pot.default.conf`
+* `pot.conf`
+
+The `pot.default.conf` contains all the default values and it shouldn't be touched.
+If you want to change something, please modify `pot.conf` instead.
 ### Initialization
+When you are happy with your configuration file, especially with the location of `POT_ZFS_ROOT`, you can run:
 ```shell
 # pot init
 ```
+This command will just create the needed ZFS datasets.
 ## Create a simple `pot`
 We can now create the simplest `pot`
 ```shell
 # pot create -p mypot -t single -b 11.2
 ```
-[TODO] A note about version
+**NOTE** The FreeBSD machine doesn't have to be the same version of your `pot` (jail). However, the hosting machine's version has to be greater or equal than the `pot`'s one.
 So, we created a `pot`, named `mypot`, based on FreeBSD 11.2 consisting of one ZFS dataset.
 Now you can start it or stop it, via:
 ```shell

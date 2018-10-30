@@ -15,6 +15,29 @@ add-fscomp-help()
 }
 
 # $1 pot
+# $2 fscomp
+# $3 mount point
+# $4 extern dataset
+# $5 option
+_fscomp_validation()
+{
+	local _pname _fscomp _mnt_p _ext _opt
+	_pname="$1"
+	_fscomp="$2"
+	_mnt_p="${3#/}"
+	_ext="$4"
+	_opt="$5"
+	_conf="${POT_FS_ROOT}/jails/${_pname}/conf/fscomp.conf"
+	# Here I should check the existing configuration, to see if the new fscomp is not colliding
+	## check if the mount_point is already used
+	if [ $(grep -c " $POT_FS_ROOT/jails/$_pname/m/$_mnt_p$" "$_conf") -ne 0 ]; then
+		_error "the mount point $_mnt_p is already in use"
+		return 1
+	fi
+	return 0
+}
+
+# $1 pot
 # $2 mount point
 _mountpoint_validation()
 {
@@ -155,6 +178,15 @@ pot-add-fscomp()
 		add-fscomp-help
 		${EXIT} 1
 	fi
+	if [ "${_mnt_p}" = "${_mnt_p#/}" ]; then
+		_error "The mount point has to be an absolute pathname"
+		${EXIT} 1
+	fi
+	if [ "${_mnt_p}" = "/" ]; then
+		_error "/ is not a valid mount point"
+		${EXIT} 1
+	fi
+
 	if [ "$_remount" = "YES" ]; then
 		_opt="zfs-remount"
 		if [ "$_ext" = "external" ]; then
@@ -191,6 +223,9 @@ pot-add-fscomp()
 		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+	if ! _fscomp_validation "$_pname" "$_fscomp" "$_mnt_p" $_ext $_opt ; then
 		${EXIT} 1
 	fi
 	if ! _mountpoint_validation "$_pname" "$_mnt_p" ; then

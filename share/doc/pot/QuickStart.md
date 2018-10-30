@@ -128,3 +128,53 @@ The snapshot can be used to revert all the modifications occurred between the ti
 # pot run mypot
 ```
 The revert command will automatically select the newest snapshot.
+## Attach a "volume" to your pot
+Let's say that you want to attach a pre-existent "volume" to your `pot`.
+To do that, there is one limitation and 2 possible ways.
+
+### Limitation
+The "volume" that you can attach to a `pot` has to be a ZFS dataset. You cannot attach a generic directory or a disk partition. You can attach ZFS dataset only.
+
+### First way: fscomp
+To support users managing ZFS datasets for `pot`, the concept of `fscomp` (AKA file system component) is introduced.
+You can create a file system component in the `pot` ecosystem, that can be attached to one or more `pot`s.
+
+When a `fscomp` is created, the underlaying ZFS dataset is created as well.
+
+To create a `fscomp`, you can run:
+```shell
+# pot create-fscomp -f myfscomp
+```
+With this command, you have created an empty ZFS dataset, a "volume", that can be attached to one or more `pot`s
+
+A list of available `fscomp`s can be obtained with the command:
+```shell
+# pot ls -f
+```
+To attach your new `fscomp` to a `pot`, you can use the command:
+```shell
+# pot add-fscomp -p mypot -f myfscomp -m /mnt
+# pot info -p mypot -v
+```
+The `-m` mandatory option represents the mountpoint (absolute pathname) inside the `pot`.
+
+The advantage of this approach, is that `fscomp` are recognized by the `pot` framework, and a set of features is provided, like snapshot, rollback and clone.
+
+### Seconda way: an already existent dataset
+It could happen that you want to attach to a `pot` a pre-existing ZFS dataset and you don't want to create an emtpy `fscomp` and move all data there.
+
+To add and external ZFS dataset, the command would be:
+```shell
+# pot add-fscomp -p mypot -m /mnt -f zroot/mydataset -e
+```
+The main difference is the presence of the flag `-e` (external) and the argument of the option `-f` is not a `fscomp` name anymore, but a generic valid ZFS dataset.
+### Common consideration
+The `add-fscomp` command will change the configuration of the `pot`; the `fscomp` will be mounted when the `pot` starts and unmounted when the `pot` stops.
+A `fscomp` can be used with multiple `pot`s. Potential problems, like concurrent access to the same files, cannot be managed by `pot` and are left to the user.
+
+In order to mitigate concurrency access to the same `fscomp`, the option `-r` is introduced:
+```shell
+# pot add-fscomp -p mypot-ro -f myfscomp -m /mnt -r
+# pot add-fscomp -p mypot-rw -f myfscomp -m /mnt
+```
+This option will inform the framework to mount `myfscomp` in `mypot-ro` in read-only mode, while in `mypot-rw` that same `myfscomp` is mounted in read-write mode.

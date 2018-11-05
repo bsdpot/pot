@@ -10,7 +10,7 @@ create-help()
 	echo '  -l lvl : pot level'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
-	echo '  -i ipaddr : an ip address or the keyword auto'
+	echo '  -i ipaddr : an ip address or the keyword auto or the keyword inherit'
 	echo '  -s : static ip address'
 	echo '  -d dns : one between inherit(default) or pot'
 	echo '  -f flavour : flavour to be used'
@@ -605,6 +605,12 @@ pot-create()
 			if ! _is_vnet_up ; then
 				_info "No pot bridge found! Calling vnet-start to fix the issue"
 				pot-cmd vnet-start
+			fi
+			if [ "$_ipaddr" != "auto" ]; then
+				if ! potnet validate -H "$_ipaddr" 2> /dev/null ; then
+					_error "The $_ipaddr IP is not valid - run potnet validate -H $_ipaddr for more invormation"
+					${EXIT} 1
+				fi
 			fi
 		fi
 	fi

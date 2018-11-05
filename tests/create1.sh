@@ -8,6 +8,11 @@ potnet()
 		echo "10.192.123.123"
 		return 0 # true
 	fi
+	if [ "$1" = "validate" ] && [ "$2" = "-H" ] ; then
+		if [ "$3" = "10.192.123.123" ] || [ "$3" = "10.1.2.3" ]; then
+			return 0 # true
+		fi
+	fi
 	return 1 # false
 }
 # UUT
@@ -560,6 +565,7 @@ test_pot_create_060()
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
 test_pot_create_061()
@@ -589,6 +595,7 @@ test_pot_create_061()
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
 test_pot_create_062()
@@ -618,6 +625,7 @@ test_pot_create_062()
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "1" "$POTNET_CALLS"
 }
 
 test_pot_create_063()
@@ -647,6 +655,7 @@ test_pot_create_063()
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
 test_pot_create_064()
@@ -677,6 +686,7 @@ test_pot_create_064()
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "1" "$POTNET_CALLS" # the first call is in a subshell
 }
 
 test_pot_create_065()
@@ -708,6 +718,7 @@ test_pot_create_065()
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "1" "$POTNET_CALLS" # the first call is in a subshell
 }
 
 test_pot_create_080()
@@ -953,6 +964,7 @@ test_pot_create_121()
 	assertEquals "_cj_interal_conf arg4" "10.1.2.3" "$CJICONF_CALL1_ARG4"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "1" "$POTNET_CALLS"
 }
 
 test_pot_create_122()
@@ -987,6 +999,7 @@ test_pot_create_122()
 	assertEquals "_cj_interal_conf arg4" "inherit" "$CJICONF_CALL1_ARG4"
 	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
 	assertEquals "_cj_flv arg2" "default" "$CJFLV_CALL1_ARG2"
+	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
 setUp()
@@ -1006,6 +1019,7 @@ setUp()
 	ISVNETAVAIL_CALLS=0
 	ISVNETUP_CALLS=0
 	ISPOTNETAVAIL_CALLS=0
+	POTNET_CALLS=0
 }
 
 . shunit/shunit2

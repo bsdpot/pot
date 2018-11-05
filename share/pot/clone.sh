@@ -17,10 +17,10 @@ _cj_cleanup()
 	local _pname _jdset
 	_pname=$1
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
-	if [ -z $_pname ]; then
+	if [ -z "$_pname" ]; then
 		return
 	fi
-	zfs destroy -r $_jdset 2> /dev/null
+	zfs destroy -r "$_jdset" 2> /dev/null
 }
 
 # $1 pot name
@@ -117,15 +117,15 @@ _cj_conf()
 	_ip=$3
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
-	if [ ! -d $_pdir/conf ]; then
-		mkdir -p $_pdir/conf
+	if [ ! -d "$_pdir/conf" ]; then
+		mkdir -p "$_pdir/conf"
 	fi
-	grep -v ^host.hostname $_pbdir/conf/pot.conf | grep -v ^ip4 > $_pdir/conf/pot.conf
+	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | grep -v ^ip4 > "$_pdir/conf/pot.conf"
 	sysrc -f "${_pdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" /dev/null
 	(
 		echo "host.hostname=\"${_pname}.$( hostname )\""
 		echo "ip4=$_ip"
-	) >> $_pdir/conf/pot.conf
+	) >> "$_pdir/conf/pot.conf"
 	if [ "$_ip" != "inherit" ]; then
 		(
 			echo +"$_ip"
@@ -142,9 +142,8 @@ _cj_conf()
 
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _autosnap
+	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _pbvnet _autosnap
 	_pname=
-	_base=
 	_ipaddr=inherit
 	_potbase=
 	_pb_ipaddr=
@@ -176,11 +175,8 @@ pot-clone()
 				   _error "potnet is not available! It's needed by -i auto"
 					${EXIT} 1
 				fi
-				_ipaddr="auto"
-			else
-				# if $(potnet validate $2) then
-				_ipaddr=$2
 			fi
+			_ipaddr=$2
 			shift 2
 			;;
 		-P)
@@ -208,38 +204,44 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
-	if ! _is_pot $_potbase quiet ; then
+	if ! _is_pot "$_potbase" quiet ; then
 		_error "reference pot $_potbase not found"
 		clone-help
 		${EXIT} 1
 	fi
-	if _is_pot $_pname quiet ; then
+	if _is_pot "$_pname" quiet ; then
 		_error "pot $_pname already exists"
 		clone-help
 		${EXIT} 1
 	fi
-	_pb_ipaddr="$( _get_conf_var $_potbase ip4 )"
-	if [ "$_ipaddr" = "auto" ]; then
-		_ipaddr="$(potnet next)"
-		_debug "-i auto: assigned $_ipaddr"
+	_pb_ipaddr="$( _get_conf_var "$_potbase" ip4 )"
+	_pb_vnet="$( _get_conf_var "$_potbase" vnet )"
+	if [ "$_ipaddr" = "auto" ] ; then
+		if [ "$_pb_vnet" = "true" ]; then
+			_ipaddr="$(potnet next)"
+			_debug "-i auto: assigned $_ipaddr"
+		else
+			_error "$_potbase has a static IP; the auto keyword is valid only in the internal network"
+			${EXIT} 1
+		fi
 	fi
 	# check ip4 configuration compatibility
-	if [ "$_ipaddr" = "inherit" -a "$_pb_ipaddr" != "inherit" ]; then
+	if [ "$_ipaddr" = "inherit" ] && [ "$_pb_ipaddr" != "inherit" ]; then
 		_error "$_potbase has IP $_pb_ipaddr Provide a new IP for $_pname with the option -i"
 		clone-help
 		${EXIT} 1
 	fi
-	if [ "$_pb_ipaddr" = "inherit" -a "$_ipaddr" != "inherit" ]; then
+	if [ "$_pb_ipaddr" = "inherit" ] && [ "$_ipaddr" != "inherit" ]; then
 		_error "$_potbase has no IP, so $_pname cannot have -i $_ipaddr or auto"
 		clone-help
 		${EXIT} 1
 	fi
-	if [ "$_pb_ipaddr" = "$_ipaddr" -a "$_ipaddr" != "inherit" ]; then
+	if [ "$_pb_ipaddr" = "$_ipaddr" ] && [ "$_ipaddr" != "inherit" ]; then
 		_error "$_ipaddr is areadly used by $_potbase, please use a different IP or -i auto"
 		clone-help
 		${EXIT} 1
 	fi
-	_pblvl="$( _get_conf_var $_potbase pot.level )"
+	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
 	if [ "$_pblvl" = "0" ]; then
 		_error "Level 0 pots cannot be cloned"
 		clone-help
@@ -248,10 +250,10 @@ pot-clone()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	if ! _cj_zfs $_pname $_potbase $_autosnap ; then
+	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf $_pname $_potbase $_ipaddr ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_ipaddr" ; then
 		${EXIT} 1
 	fi
 }

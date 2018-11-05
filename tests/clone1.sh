@@ -15,6 +15,11 @@ potnet()
 		echo "10.123.123.123"
 		return 0 # true
 	fi
+	if [ "$1" = "validate" ] && [ "$2" = "-H" ] ; then
+		if [ "$3" = "10.192.123.123" ] || [ "$3" = "10.1.2.3" ]; then
+			return 0 # true
+		fi
+	fi
 	return 1 # false
 }
 

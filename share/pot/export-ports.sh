@@ -32,6 +32,23 @@ _export_ports()
 	fi
 }
 
+_is_port_number()
+{
+	# shellcheck disable=SC2039
+	local _port
+	_port=$1
+	if [ -z "$_port" ]; then
+		return 1
+	fi
+	if [ -n "$( echo "$_port" | sed 's/[0-9][0-9]*//' )" ]; then
+		return 1
+	fi
+	if [ "$_port" -le 0 ] || [ "$_port" -gt 65535 ]; then
+		return 1 # false
+	fi
+	return 0
+}
+
 # shellcheck disable=SC2039
 pot-export-ports()
 {
@@ -53,6 +70,11 @@ pot-export-ports()
 			_pname="$OPTARG"
 			;;
 		e)
+			if ! _is_port_number "$OPTARG" ; then
+				_error "$OPTARG is not a valid port number"
+				export-ports-help
+				${EXIT} 1
+			fi
 			if [ -z "$_ports" ]; then
 				_ports="$OPTARG"
 			else

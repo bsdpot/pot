@@ -14,9 +14,10 @@ This is an introduction at the usage of `pot`, a `jail(8)` wrapper based on ZFS 
 ```
 This settings will take effect at the next reboot.
 
-**NOTE4**: One of the 3 network configuration need VNET(9), the network subsystem virtualization infrastructure, enabled in the kernel.
-On FreeBSD >= 12, this kernel feature is already enabled and you don't need to do anything.
-On FreeBSD <= 11.x, you have to rebuild the kernel, enabling the VIMAGE options, following the instruction reported [here](https://www.freebsd.org/doc/handbook/kernelconfig.html)
+**NOTE4**: One of the 3 network configuration need `VNET(9)`, the network subsystem virtualization infrastructure, enabled in the kernel.
+On FreeBSD 12 and later, this kernel feature is already enabled and you don't need to do anything.
+On FreeBSD 11.x, you have to rebuild the kernel, enabling the VIMAGE options, following the instruction reported [here](https://www.freebsd.org/doc/handbook/kernelconfig.html)
+FreeBSD 10.x is not tested as host system.
 ## Install `pot`
 The installation process is pretty straightforward:
 ```shell
@@ -44,6 +45,7 @@ We can now create the simplest `pot`
 # pot create -p mypot -t single -b 11.2
 ```
 **NOTE** The FreeBSD machine doesn't have to be the same version of your `pot` (jail). However, the hosting machine's version has to be greater or equal than the `pot`'s one.
+For instance, you can ran a FreeBSD 10.4 `pot` on a FreeBSD 11.2 host. You **cannot** run a FreeBSD 12 `pot` on a FreeBSD 11.2 host.
 
 So, we created a `pot`, named `mypot`, based on FreeBSD 11.2 consisting of one ZFS dataset.
 
@@ -63,7 +65,7 @@ Via the command:
 # pot ls
 # pot ls -v # more information
 ```
-You can see a list of the `pot`s available on you local machine. The verbose output would look like this
+You can see a list of the `pot`s available on you local machine. The verbose output would look like this:
 ```shell
 pot name : mypot
 	ip4 : inherit
@@ -97,7 +99,7 @@ Some explanation of this output:
 * `datasets`: single type `pot`s have only one dataset
 * `snapshot`: the list of snapshots of this `pot`; currently empty.
 
-If your `pot` is running, dynamic information can be obtained via:
+If your `pot` is running, runtime information can be obtained via:
 ```shell
 # pot start mypot
 # pot show -p mypot
@@ -119,6 +121,7 @@ Thanks to ZFS, taking a snapshot of your stopped `pot` is easy and super fast:
 		zroot/pot/jails/mypot/m@1539804703
 ```
 The snapshot's name is the Unix epoch and it's used to automatically determine the snapshot's chronological sequence. 
+
 Now you can restart it and do some real damage:
 ```shell
 root@mycomputer# pot run mypot
@@ -166,7 +169,7 @@ The `-m` mandatory option represents the mountpoint (absolute pathname) inside t
 
 The advantage of this approach, is that `fscomp` are recognized by the `pot` framework, and a set of features is provided, like snapshot, rollback and clone.
 
-### Seconda way: an already existent dataset
+### Second way: an already existent dataset
 It could happen that you want to attach to a `pot` a pre-existing ZFS dataset and you don't want to create an emtpy `fscomp` and move all data there.
 
 To add and external ZFS dataset, the command would be:

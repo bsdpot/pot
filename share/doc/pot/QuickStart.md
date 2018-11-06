@@ -269,7 +269,7 @@ root@myhost# pot create -p mypot -t single -b 11.2 -i 10.192.0.10
 ```
 `pot` will verify if the IP address is free to use.
 #### Export services
-The virtual network is not visible outside the host machine, becuase of the pt's NAT.
+The virtual network is not visible outside the host machine, becuase of the pf's NAT.
 To make your network services running in your `pot` visible outside the TCP/UDP, desired ports have to be exported/redirected.
 `pot` provides a command to tell which port has to be exported.
 ```shell

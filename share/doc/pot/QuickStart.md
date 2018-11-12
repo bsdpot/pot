@@ -275,7 +275,7 @@ To make your network services running in your `pot` visible outside the TCP/UDP,
 ```shell
 # pot export-ports -p mypot -e 80 -e 443
 ```
-The `export-ports" command will make available the port 80 and 443 outside the virtual network. At start, `pot` look for an available host port that can be used to redirect the traffic from the host to the virtual network.
+The `export-ports` command will make available the port 80 and 443 outside the virtual network. At start, `pot` look for an available host port that can be used to redirect the traffic from the host to the virtual network.
 
 To know which port is used, you can use the `show` command:
 ```shell

@@ -1,5 +1,7 @@
 #!/bin/sh
+:
 
+# shellcheck disable=SC2039
 clone-help()
 {
 	echo "pot clone [-hv] -p potname -P basepot [-i ipaddr]"
@@ -14,6 +16,7 @@ clone-help()
 # $1 pot name
 _cj_cleanup()
 {
+	# shellcheck disable=SC2039
 	local _pname _jdset
 	_pname=$1
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
@@ -28,8 +31,8 @@ _cj_cleanup()
 # $3 auto-snapshot
 _cj_zfs()
 {
-	local _pname _potbase _jdset _pdir _pbdir _pbdset
-	local _node _mnt_p _opt _new_mnt_p _autosnap _snaptag
+	# shellcheck disable=SC2039
+	local _pname _potbase _jdset _pdir _pbdir _pbdset _mnt_p _opt _autosnap _snaptag _pb_type
 	_pname=$1
 	_potbase=$2
 	_autosnap="${3:-NO}"
@@ -37,72 +40,110 @@ _cj_zfs()
 	_pbdset=${POT_ZFS_ROOT}/jails/$_potbase
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
+	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
 	# Create the main jail zfs dataset
-	if ! _zfs_dataset_valid $_jdset ; then
-		zfs create $_jdset
+	if ! _zfs_dataset_valid "$_jdset" ; then
+		zfs create "$_jdset"
 	else
 		_info "$_jdset exists already"
 	fi
 	# Create the conf directory
-	if [ ! -d $_pdir/conf ]; then
+	if [ ! -d "$_pdir/conf" ]; then
 		_debug "Create conf dir ($_pdir/conf)"
-		mkdir -p $_pdir/conf
+		mkdir -p "$_pdir/conf"
 	fi
 	if [ -e "$_pdir/conf/fscomp.conf" ]; then
-		rm -f $_pdir/conf/fscomp.conf
+		rm -f "$_pdir/conf/fscomp.conf"
 	fi
-	# Create the root mountpoint
-	if [ ! -d "$_pdir/m" ]; then
-		_debug "Create root mountpoint dir ($_pdir/m)"
-		mkdir -p $_pdir/m
-	fi
-	while read -r line ; do
-		_dset=$( echo $line | awk '{print $1}' )
-		_mnt_p=$( echo $line | awk '{print $2}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		# ro components are replicated "as is"
-		if [ "$_opt" = ro ] ; then
-			_debug $_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt
-			echo $_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt >> $_pdir/conf/fscomp.conf
-		else
-			# managing potbase datasets
-			if [ "$_dset" != "${_dset##${_pbdset}}" ]; then
-				_dname="${_dset##${_pbdset}/}"
-				_snap=$( _zfs_last_snap $_dset )
-				if [ -z "$_snap" ]; then
-					if [ "$_autosnap" = "YES" ]; then
-						_snaptag="$(date +%s)"
-						_info "$_dset has no snap - taking a snapshot on the fly with tag $_snaptag"
-						zfs snapshot ${_dset}@${_snaptag}
-						_snap=$_snaptag
-					else
-						_error "$_dset has no snap - please take a snapshot of $_potbase"
-						_cj_cleanup $_pname
-						return 1
-					fi
-				fi
-				if _zfs_exist $_jdset/$_dname $_pdir/$_dname ; then
-					_debug "$_dname dataset already cloned"
-				else
-					_debug "clone $_dset@$_snap into $_jdset/$_dname"
-					zfs clone -o mountpoint=$_pdir/$_dname $_dset@$_snap $_jdset/$_dname
-					if [ -z "$_opt" ]; then
-						_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}"
-						echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fscomp.conf
-					else
-						_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/} $_opt"
-						echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/} $_opt" >> $_pdir/conf/fscomp.conf
-					fi
-				fi
-			# managing fscomp datasets - the simple way - no clone support for fscomp
-			elif [ "$_dset" != "${_dset##${POT_ZFS_ROOT}/fscomp}" ]; then
-				_debug "$_dset $_pdir/${_mnt_p##${_pbdir}/}"
-				echo "$_dset $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fscomp.conf
+	if [ "$_pb_type" = "single" ]; then
+		_dset="${_pbdset}/m"
+		_snap=$( _zfs_last_snap "$_dset" )
+		if [ -z "$_snap" ]; then
+			if [ "$_autosnap" = "YES" ]; then
+				_snaptag="$(date +%s)"
+				_info "$_dset has no snap - taking a snapshot on the fly with tag $_snaptag"
+				zfs snapshot "${_dset}@${_snaptag}"
+				_snap=$_snaptag
 			else
-				_error "not able to manage $_dset"
+				_error "$_dset has no snap - please take a snapshot of $_potbase"
+				_cj_cleanup "$_pname"
+				return 1 # error
 			fi
 		fi
-	done < ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
+		_debug "clone $_dset@$_snap into $_jdset/m"
+		zfs clone -o mountpoint="$_pdir/m" "$_dset@$_snap" "$_jdset/m"
+		while read -r line ; do
+			_dset=$( echo "$line" | awk '{print $1}' )
+			_mnt_p=$( echo "$line" | awk '{print $2}' )
+			_opt=$( echo "$line" | awk '{print $3}' )
+			# ro components are replicated "as is"
+			if [ "$_opt" = ro ] ; then
+				_debug "$_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt"
+				echo "$_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt" >> "$_pdir/conf/fscomp.conf"
+			else
+				# managing fscomp datasets - the simple way - no clone support for fscomp
+				if [ "$_dset" != "${_dset##${POT_ZFS_ROOT}/fscomp}" ]; then
+					_debug "$_dset $_pdir/${_mnt_p##${_pbdir}/}"
+					echo "$_dset $_pdir/${_mnt_p##${_pbdir}/}" >> "$_pdir/conf/fscomp.conf"
+				else
+					_error "not able to manage $_dset"
+				fi
+			fi
+		done < "${_pbdir}/conf/fscomp.conf"
+	elif [ "$_pb_type" = "multi" ]; then
+		# Create the root mountpoint
+		if [ ! -d "$_pdir/m" ]; then
+			_debug "Create root mountpoint dir ($_pdir/m)"
+			mkdir -p "$_pdir/m"
+		fi
+		while read -r line ; do
+			_dset=$( echo "$line" | awk '{print $1}' )
+			_mnt_p=$( echo "$line" | awk '{print $2}' )
+			_opt=$( echo "$line" | awk '{print $3}' )
+			# ro components are replicated "as is"
+			if [ "$_opt" = ro ] ; then
+				_debug "$_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt"
+				echo "$_dset ${_pdir}/${_mnt_p##${_pbdir}/} $_opt" >> "$_pdir/conf/fscomp.conf"
+			else
+				# managing potbase datasets
+				if [ "$_dset" != "${_dset##${_pbdset}}" ]; then
+					_dname="${_dset##${_pbdset}/}"
+					_snap=$( _zfs_last_snap "$_dset" )
+					if [ -z "$_snap" ]; then
+						if [ "$_autosnap" = "YES" ]; then
+							_snaptag="$(date +%s)"
+							_info "$_dset has no snap - taking a snapshot on the fly with tag $_snaptag"
+							zfs snapshot ${_dset}@${_snaptag}
+							_snap=$_snaptag
+						else
+							_error "$_dset has no snap - please take a snapshot of $_potbase"
+							_cj_cleanup $_pname
+							return 1
+						fi
+					fi
+					if _zfs_exist $_jdset/$_dname $_pdir/$_dname ; then
+						_debug "$_dname dataset already cloned"
+					else
+						_debug "clone $_dset@$_snap into $_jdset/$_dname"
+						zfs clone -o mountpoint=$_pdir/$_dname $_dset@$_snap $_jdset/$_dname
+						if [ -z "$_opt" ]; then
+							_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}"
+							echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}" >> "$_pdir/conf/fscomp.conf"
+						else
+							_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/} $_opt"
+							echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/} $_opt" >> "$_pdir/conf/fscomp.conf"
+						fi
+					fi
+				# managing fscomp datasets - the simple way - no clone support for fscomp
+				elif [ "$_dset" != "${_dset##${POT_ZFS_ROOT}/fscomp}" ]; then
+					_debug "$_dset $_pdir/${_mnt_p##${_pbdir}/}"
+					echo "$_dset $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fscomp.conf
+				else
+					_error "not able to manage $_dset"
+				fi
+			fi
+		done < ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
+	fi
 	return 0 # true
 }
 
@@ -140,57 +181,49 @@ _cj_conf()
 	fi
 }
 
+# shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _pbvnet _autosnap
+	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _pb_vnet _autosnap _pb_type
 	_pname=
 	_ipaddr=inherit
 	_potbase=
 	_pb_ipaddr=
 	_pblvl=0
 	_autosnap="NO"
-	args=$(getopt hvp:i:P:f $*)
-	if [ $? -ne 0 ]; then
-		clone-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
-			clone-help
-			${EXIT} 0
-			;;
-		-v)
-			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
-			;;
-		-p)
-			_pname=$2
-			shift 2
-			;;
-		-i)
-			if [ "$2" = "auto" ]; then
-				if ! _is_potnet_available ; then
-				   _error "potnet is not available! It's needed by -i auto"
-					${EXIT} 1
+	OPTIND=1
+	while getopts "hvp:i:P:f" _o ; do
+		case "$_o" in
+			h)
+				clone-help
+				${EXIT} 0
+				;;
+			v)
+				_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+				;;
+			p)
+				_pname=$OPTARG
+				;;
+			i)
+				if [ "$OPTARG" = "auto" ]; then
+					if ! _is_potnet_available ; then
+					   _error "potnet is not available! It's needed by -i auto"
+						${EXIT} 1
+					fi
 				fi
-			fi
-			_ipaddr=$2
-			shift 2
-			;;
-		-P)
-			_potbase=$2
-			shift 2
-			;;
-		-f)
-			_autosnap="YES"
-			shift
-			;;
-		--)
-			shift
-			break
-			;;
+				_ipaddr=$OPTARG
+				;;
+			P)
+				_potbase=$OPTARG
+				;;
+			f)
+				_autosnap="YES"
+				shift
+				;;
+			*)
+				clone-help
+				${EXIT} 1
+				;;
 		esac
 	done
 
@@ -216,6 +249,8 @@ pot-clone()
 	fi
 	_pb_ipaddr="$( _get_conf_var "$_potbase" ip4 )"
 	_pb_vnet="$( _get_conf_var "$_potbase" vnet )"
+	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
+	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
 	if [ "$_ipaddr" = "auto" ] ; then
 		if [ "$_pb_vnet" = "true" ]; then
 			_ipaddr="$(potnet next)"
@@ -241,8 +276,7 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
-	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
-	if [ "$_pblvl" = "0" ]; then
+	if [ "$_pblvl" = "0" ] && [ "$_pb_type" != "single" ]; then
 		_error "Level 0 pots cannot be cloned"
 		clone-help
 		${EXIT} 1

@@ -104,7 +104,7 @@ _get_conf_var()
 		test-pot-2|test-pot-run-2)
 			echo "2"
 			;;
-		test-pot-0)
+		test-pot-0|test-pot-single|test-pot-single-run)
 			echo "0"
 			;;
 		esac
@@ -124,7 +124,8 @@ _get_conf_var()
 		test-pot|test-pot-0)
 			echo "inherit"
 			;;
-		test-pot-2|test-pot-3)
+		test-pot-2|test-pot-3|\
+		test-pot-single)
 			echo "10.1.2.3"
 			;;
 		esac
@@ -142,7 +143,7 @@ _get_conf_var()
 		;;
 	"vnet")
 		case $1 in
-		test-pot-2)
+		test-pot-2|test-pot-single|test-pot-single-run)
 			echo "true"
 			;;
 		test-pot-3)

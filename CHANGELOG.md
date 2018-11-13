@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - QuickStart.md : a markdown quick guide, for new users
 - create : -i auto (based on potnet) to get automatically a valid IP address
 - clone : -i auto (based on potnet) to get automatically a valid IP address
+- clone : add support to single type pot
 - export-port : new command that allow pot ports to be exposed outside (vnet case)
 - slim flavor, designed to be used with single dataset pot types
 - purge-snapshot : new command that will remove all snapshots, except the last one

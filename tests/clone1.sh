@@ -241,6 +241,22 @@ test_pot_clone_024()
 	assertEquals "_cj_conf arg3" "10.123.123.123" "$CJCONF_CALL1_ARG3"
 }
 
+test_pot_clone_040()
+{
+	pot-clone -p new-pot-single -P test-pot-single -i auto
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-single" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-single" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-single" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-single" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "10.123.123.123" "$CJCONF_CALL1_ARG3"
+}
+
 setUp()
 {
 	common_setUp

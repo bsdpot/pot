@@ -38,6 +38,22 @@ conf_setUp()
 		echo "pot.potbase="
 		echo "pot.depend=test-pot"
 	} > /tmp/jails/test-pot-nosnap/conf/pot.conf
+
+	/bin/mkdir -p /tmp/jails/test-pot-single/conf
+	touch /tmp/jails/test-pot-single/conf/fscomp.conf
+	{
+		echo "host.hostname=\"test-pot-single.test\""
+		echo "pot.potbase="
+	} > /tmp/jails/test-pot-single/conf/pot.conf
+
+	/bin/mkdir -p /tmp/jails/test-pot-single-run/conf
+	{
+		echo "zpot/fscomp/examples /tmp/jails/test-pot-single-run/m/tmp/examples ro"
+	} > /tmp/jails/test-pot-single-run/conf/fscomp.conf
+	{
+		echo "host.hostname=\"test-pot-single-run.test\""
+		echo "pot.potbase="
+	} > /tmp/jails/test-pot-single-run/conf/pot.conf
 }
 
 conf_tearDown()

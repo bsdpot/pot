@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start (#046) : run the jail in a clean enviroment
 - term (#046) : spawn the shell in a jail using the jailed user environment
 - add-fscomp (#045) : check the mount point and create it, if missing
+- list (#052) : fixing xargs invocation
 
 ### Deprecated
 - promote : mark promot as deprecated, so we can remove it in the next major release

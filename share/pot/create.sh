@@ -178,7 +178,11 @@ _cj_conf()
 	fi
 	) > $_jdir/conf/fscomp.conf
 	(
-		_baseos=$( cat $_bdir/.osrelease )
+		if [ "$_type" = "multi" ]; then
+			_baseos=$( cat $_bdir/.osrelease )
+		else
+			_baseos="${_base}"
+		fi
 		echo "pot.level=${_lvl}"
 		echo "pot.type=${_type}"
 		echo "pot.base=${_base}"
@@ -186,7 +190,11 @@ _cj_conf()
 		echo "pot.dns=${_dns}"
 		echo "pot.cmd=sh /etc/rc"
 		echo "host.hostname=\"${_pname}.$( hostname )\""
-		echo "osrelease=\"${_baseos}-RELEASE\""
+		if echo "$_baseos" | grep -c "RC" ; then
+			echo "osrelease=\"${_baseos}\""
+		else
+			echo "osrelease=\"${_baseos}-RELEASE\""
+		fi
 		if [ "$_ip" = "inherit" ]; then
 			echo "ip4=inherit"
 			echo "vnet=false"
@@ -304,7 +312,7 @@ _cj_single_install()
 	_proot=${POT_FS_ROOT}/jails/$_pname/m
 	_info "Fetching FreeBSD $_base"
 	if ! _fetch_freebsd $_base ; then
-		_error "FreeBSD $_base fetch failed"
+		_error "FreeBSD $_base fetch failed - try to continue"
 	fi
 	(
 	  cd $_proot
@@ -462,8 +470,8 @@ pot-create()
 				create-help
 				${EXIT} 1
 			fi
-			if ! _is_base "$_base" quiet ; then
-				_error "$_base is not a valid base"
+			if ! _is_valid_release "$_base" ; then
+				_error "$_base is not a valid release"
 				create-help
 				${EXIT} 1
 			fi

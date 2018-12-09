@@ -1,7 +1,9 @@
 #!/bin/sh
+:
 
-# supported releases
-: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2"}
+# supported releases are defined in common.sh
+
+# shellcheck disable=SC2039
 create-base-help()
 {
 	echo "pot create-base [-h] [-r RELEASE]"
@@ -14,6 +16,7 @@ create-base-help()
 # $1 base name
 _cb_zfs()
 {
+	# shellcheck disable=SC2039
 	local _bname _dset _mnt
 	_bname=$1
 	_dset="${POT_ZFS_ROOT}/bases/${_bname}"
@@ -43,6 +46,7 @@ _cb_zfs()
 # $2 base name
 _cb_tar_dir()
 {
+	# shellcheck disable=SC2039
 	local _rel _bname _mnt
 	_rel=$1
 	_bname=$2
@@ -82,6 +86,7 @@ _cb_tar_dir()
 # $1 base name
 _cb_base_pot()
 {
+	# shellcheck disable=SC2039
 	local _bname _pname _tmp
 	_bname=$1
 	_tmp=$(echo "$_bname" | sed 's/\./_/')
@@ -101,44 +106,39 @@ _cb_base_pot()
 
 pot-create-base()
 {
+	# shellcheck disable=SC2039
 	local _rel _bname
-	if ! args=$(getopt hr:b:v "$@") ; then
-		create-base-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hr:b:v" _o ; do
+		case "$_o" in
+		h)
 			create-base-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-r)
-			if ! _is_in_list "$2" $_POT_RELEASES ; then
+		r)
+			if ! _is_valid_release "$OPTARG" ; then
 				_error "$2 is not a supported release"
 				create-base-help
 				${EXIT} 1
 			fi
-			_rel=$2
-			shift 2
+			_rel=$OPTARG
 			;;
-		-b)
-			if _is_base "$2" quiet ; then
-				_error "$2 is already a base"
+		b)
+			if _is_base "$OPTARG" quiet ; then
+				_error "$OPTARG is already a base"
 				${EXIT} 1
 			fi
-			_bname="$2"
-			shift 2
+			_bname="$OPTARG"
 			;;
-		--)
-			shift
-			break
+		*)
+			create-base-help
+			${EXIT} 1
 			;;
 		esac
+
 	done
 
 	if [ -z "$_rel" ]; then
@@ -168,7 +168,7 @@ pot-create-base()
 	_info "Create a base with release $_rel"
 	# fetch binaries
 	if ! _fetch_freebsd "${_rel}" ; then
-		_error "fetch of ${_rel}-RELEASE failed"
+		_error "fetch of ${_rel} RELEASE failed"
 		${EXIT} 1
 	fi
 	# create zfs dataset

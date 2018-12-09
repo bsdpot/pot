@@ -504,7 +504,7 @@ _is_vnet_available()
 
 _is_potnet_available()
 {
-	if $(which potnet 2> /dev/null > /dev/null) ; then
+	if which potnet 2> /dev/null > /dev/null ; then
 		return 0 # true
 	else
 		return 1 # false
@@ -512,20 +512,39 @@ _is_potnet_available()
 }
 
 # supported releases
-: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2"}
+: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2 12.0-RC2 12.0-RC3"}
 
-# $1 release, in short format, major.minor
+_is_valid_release()
+{
+	# shellcheck disable=SC2039
+	local _rel
+	_rel="$1"
+	if _is_in_list "$_rel" $_POT_RELEASES ; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
+# $1 release, in short format, major.minor or major.minor-RC#
 _fetch_freebsd()
 {
+	# shellcheck disable=SC2039
 	local _rel _sha _sha_m
-	_rel=$1
-	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"-RELEASE/base.txz -o /tmp/"${_rel}"_base.txz
+	if echo "$1" | grep -q "RC" ; then
+		_rel="$1"
+	else
+		_rel="$1"-RELEASE
+	fi
+
+	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz
+
 	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
 		return 1 # false
 	fi
-	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}"-RELEASE ]; then
+	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" ]; then
 		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
-		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}"-RELEASE | awk '/^base.txz/ { print $2 }' )
+		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" | awk '/^base.txz/ { print $2 }' )
 		if [ "$_sha" != "$_sha_m" ]; then
 			_error "sha256 doesn't match! Aborting"
 			return 1 # false

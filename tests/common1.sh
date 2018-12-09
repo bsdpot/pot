@@ -26,6 +26,11 @@ umount()
 	__monitor UMOUNT "$@"
 }
 
+fetch()
+{
+	__monitor FETCH "$@"
+}
+
 jls()
 {
 	if [ "$1" = "-j" ]; then
@@ -210,6 +215,7 @@ setUp()
 	SYSCTL_OUTPUT="1"
 	SYSCTL_RC=0
 	WHICH_POTNET_FAIL="NO"
+	FETCH_CALLS=0
 }
 
 . shunit/shunit2

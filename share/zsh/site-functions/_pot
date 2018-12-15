@@ -40,7 +40,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
-						'-g[Element name]:config element name:(fs_root zfs_root gateway syslogd)'
+						'-g[Element name]:config element name:(fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix)'
 					;;
 				de-init) 
 					_arguments \

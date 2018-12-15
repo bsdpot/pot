@@ -1,6 +1,6 @@
 #!/bin/sh
 
-: "${_config_names:="fs_root zfs_root gateway syslogd"}"
+: "${_config_names:="fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix"}"
 
 config-help()
 {
@@ -84,6 +84,12 @@ pot-config()
 			;;
 		syslogd)
 			_config_echo $_quiet "syslogd flags" "-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
+			;;
+		pot_prefix)
+			_config_echo $_quiet "pot prefix" "$POT_FS_ROOT/jails"
+			;;
+		fscomp_prefix)
+			_config_echo $_quiet "fscomp prefix" "$POT_FS_ROOT/fscomp"
 			;;
 	esac
 }

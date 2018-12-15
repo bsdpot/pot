@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Add support to RC FreeBSD version
+- config: add pot_prefix and fscomp_prefix as possible values
 
 ## [0.5.8] 2018-11-29
 ### Added

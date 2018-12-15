@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add support to RC FreeBSD version
 - config: add pot_prefix and fscomp_prefix as possible values
+- snapshot: add option -n to give a name to the snapshot; valid for fscomp only
 
 ## [0.5.8] 2018-11-29
 ### Added

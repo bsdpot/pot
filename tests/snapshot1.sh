@@ -63,8 +63,10 @@ test_pot_snapshot_002()
 	assertEquals "_zfs_exist calls" "0" "$ZFSEXIST_CALLS"
 	assertEquals "_fscomp_zfs_snap calls" "0" "$FSCOMPZFSSNAP_CALLS"
 	assertEquals "Info calls" "0" "$INFO_CALLS"
+}
 
-	setUp
+test_pot_snapshot_003()
+{
 	pot-snapshot -p test-pot -f test-fscomp
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
@@ -78,6 +80,20 @@ test_pot_snapshot_002()
 	assertEquals "Info calls" "0" "$INFO_CALLS"
 }
 
+test_pot_snapshot_004()
+{
+	pot-snapshot -p test-pot -n backup
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "_pot_zfs_snap calls" "0" "$POTZFSSNAP_CALLS"
+	assertEquals "_pot_zfs_snap_full calls" "0" "$POTZFSSNAPFULL_CALLS"
+	assertEquals "_zfs_exist calls" "0" "$ZFSEXIST_CALLS"
+	assertEquals "_fscomp_zfs_snap calls" "0" "$FSCOMPZFSSNAP_CALLS"
+	assertEquals "Info calls" "0" "$INFO_CALLS"
+}
 test_pot_snapshot_020()
 {
 
@@ -175,6 +191,7 @@ test_pot_snapshot_041()
 	assertEquals "_zfs_exist calls" "1" "$ZFSEXIST_CALLS"
 	assertEquals "_fscomp_zfs_snap calls" "1" "$FSCOMPZFSSNAP_CALLS"
 	assertEquals "_fscomp_zfs_snap arg" "test-fscomp" "$FSCOMPZFSSNAP_CALL1_ARG1"
+	assertEquals "_fscomp_zfs_snap arg" "" "$FSCOMPZFSSNAP_CALL1_ARG2"
 	assertEquals "Info calls" "0" "$INFO_CALLS"
 }
 
@@ -191,13 +208,33 @@ test_pot_snapshot_042()
 	assertEquals "_zfs_exist calls" "1" "$ZFSEXIST_CALLS"
 	assertEquals "_fscomp_zfs_snap calls" "1" "$FSCOMPZFSSNAP_CALLS"
 	assertEquals "_fscomp_zfs_snap arg" "test-fscomp" "$FSCOMPZFSSNAP_CALL1_ARG1"
+	assertEquals "_fscomp_zfs_snap arg" "" "$FSCOMPZFSSNAP_CALL1_ARG2"
 	assertEquals "Info calls" "1" "$INFO_CALLS"
+}
+
+test_pot_snapshot_043()
+{
+	pot-snapshot -f test-fscomp -n backup
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "_pot_zfs_snap calls" "0" "$POTZFSSNAP_CALLS"
+	assertEquals "_pot_zfs_snap_full calls" "0" "$POTZFSSNAPFULL_CALLS"
+	assertEquals "_zfs_exist calls" "1" "$ZFSEXIST_CALLS"
+	assertEquals "_fscomp_zfs_snap calls" "1" "$FSCOMPZFSSNAP_CALLS"
+	assertEquals "_fscomp_zfs_snap arg" "test-fscomp" "$FSCOMPZFSSNAP_CALL1_ARG1"
+	assertEquals "_fscomp_zfs_snap arg" "backup" "$FSCOMPZFSSNAP_CALL1_ARG2"
+	assertEquals "Info calls" "0" "$INFO_CALLS"
 }
 
 setUp()
 {
 	common_setUp
 	HELP_CALLS=0
+	FSCOMPZFSSNAP_CALL1_ARG1=""
+	FSCOMPZFSSNAP_CALL1_ARG2=""
 }
 
 . shunit/shunit2

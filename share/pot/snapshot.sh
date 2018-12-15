@@ -15,54 +15,50 @@ snapshot-help()
 # shellcheck disable=SC2039
 pot-snapshot()
 {
-	local _full_pot _obj _objname
-	args=$(getopt hvap:f: $*)
-	if [ $? -ne 0 ]; then
-		snapshot-help
-		${EXIT} 1
-	fi
+	local _full_pot _obj _objname _snapname
 	_full_pot="NO"
 	_obj=""
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	_objname=
+	_snapname=""
+	OPTIND=1
+	while getopts "hvap:f:n:" _o ; do
+		case "$_o" in
+		h)
 			snapshot-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-a)
+		a)
 			_full_pot="YES"
-			shift
 			;;
-		-p)
+		p)
 			if [ -z "$_obj" ]; then
 				_obj="pot"
-				_objname="$2"
+				_objname="$OPTARG"
 			else
 				_error "-p|-f are exclusive"
 				snapshot-help
 				${EXIT} 1
 			fi
-			shift 2
 			;;
-		-f)
+		f)
 			if [ -z "$_obj" ]; then
 				_obj="fscomp"
-				_objname="$2"
+				_objname="$OPTARG"
 			else
 				_error "-p|-f are exclusive"
 				snapshot-help
 				${EXIT} 1
 			fi
-			shift 2
 			;;
-		--)
-			shift
-			break
+		n)
+			_snapname="$OPTARG"
+			;;
+		*)
+			snapshot-help
+			${EXIT} 1
 			;;
 		esac
 	done
@@ -78,12 +74,16 @@ pot-snapshot()
 	fi
 	case $_obj in
 	"pot")
-		if ! _is_pot $_objname ; then
+		if [ -n "$_snapname" ]; then
+			_error "Option -n usable only with fscomp"
+			${EXIT} 1
+		fi
+		if ! _is_pot "$_objname" ; then
 			_error "$_objname is not a pot!"
 			snapshot-help
 			${EXIT} 1
 		fi
-		if _is_pot_running $_objname ; then
+		if _is_pot_running "$_objname" ; then
 			_error "The pot $_objname is still running. Snapshot is possible only for stopped pots"
 			${EXIT} 1
 		fi
@@ -92,13 +92,13 @@ pot-snapshot()
 		fi
 
 		if [ "$_full_pot" = "YES" ]; then
-			_pot_zfs_snap_full $_objname
+			_pot_zfs_snap_full "$_objname"
 		else
-			_pot_zfs_snap $_objname
+			_pot_zfs_snap "$_objname"
 		fi
 		;;
 	"fscomp")
-		if ! _zfs_exist ${POT_ZFS_ROOT}/fscomp/$_objname ${POT_FS_ROOT}/fscomp/$_objname ; then
+		if ! _zfs_exist "${POT_ZFS_ROOT}/fscomp/$_objname" "${POT_FS_ROOT}/fscomp/$_objname" ; then
 			_error "$_objname is not a valid fscomp"
 			snapshot-help
 			${EXIT} 1
@@ -110,7 +110,7 @@ pot-snapshot()
 			${EXIT} 1
 		fi
 
-		_fscomp_zfs_snap $_objname
+		_fscomp_zfs_snap "$_objname" "$_snapname"
 		;;
 	esac
 	return 0

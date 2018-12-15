@@ -163,63 +163,73 @@ _get_zfs_mountpoint()
 # $1 the mountpoint
 _get_zfs_dataset()
 {
+	# shellcheck disable=SC2039
 	local _mnt_p _dset
 	_mnt_p=$1
 	_dset=$(zfs list -o name,mountpoint -H 2>/dev/null | awk -v "mntp=${_mnt_p}" '{ if ($2 == mntp) print $1 }')
-	echo $_dset
+	echo "$_dset"
 }
 
 # take a zfs recursive snapshot of a pot
 # $1 pot name
 _pot_zfs_snap()
 {
+	# shellcheck disable=SC2039
 	local _pname _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
 	_debug "Take snapshot of $_pname"
-	zfs snapshot -r ${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}
+	zfs snapshot -r "${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}"
 }
 
 # take a zfs snapshot of all rw dataset found in the fscomp.conf of a pot
 # $1 pot name
 _pot_zfs_snap_full()
 {
+	# shellcheck disable=SC2039
 	local _pname _node _opt _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
 	_debug "Take snapshot of the full $_pname"
 	while read -r line ; do
-		_dset=$( echo $line | awk '{print $1}' )
-		_opt=$( echo $line | awk '{print $3}' )
+		_dset=$( echo "$line" | awk '{print $1}' )
+		_opt=$( echo "$line" | awk '{print $3}' )
 		if [ "$_opt" = "ro" ]; then
 			continue
 		fi
 		_debug "snapshot of $_dset"
-		zfs snapshot ${_dset}@${_snaptag}
-	done < ${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf
+		zfs snapshot "${_dset}@${_snaptag}"
+	done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
 }
 
 # take a zfs snapshot of a fscomp
 # $1 fscomp name
+# $2 optional name
 _fscomp_zfs_snap()
 {
+	# shellcheck disable=SC2039
 	local _fscomp _snaptag _dset
 	_fscomp=$1
-	_snaptag="$(date +%s)"
+	if [ -z "$2" ]; then
+		_snaptag="$(date +%s)"
+	else
+		_snaptag="$2"
+	fi
 	_debug "Take snapshot of $_fscomp"
-	zfs snapshot ${POT_ZFS_ROOT}/fscomp/${_fscomp}@${_snaptag}
+	zfs snapshot "${POT_ZFS_ROOT}/fscomp/${_fscomp}@${_snaptag}"
 }
 
 # get the last available snaphost of the given dataset
 # $1 the dataset name
 _zfs_last_snap()
 {
+	# shellcheck disable=SC2039
 	local _dset _output
 	_dset="$1"
 	if [ -z "$_dset" ]; then
 		return 1 # false
 	fi
-	_output="$(zfs list -d 1 -H -t snapshot $_dset | sort -r | cut -d'@' -f2 | cut -f1 | head -n1)"
+	_output="$(zfs list -d 1 -H -t snapshot "$_dset" | sort -r | cut -d'@' -f2 | cut -f1 | head -n1)"
 	if [ -z "$_output" ]; then
 		return 1 # false
 	fi

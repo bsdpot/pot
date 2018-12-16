@@ -305,18 +305,28 @@ _cj_flv()
 # $2 freebsd version
 _cj_single_install()
 {
-	local _pname _base _proot
+	local _pname _base _proot _rel
 	_pname=$1
 	_base=$2
 	_proot=${POT_FS_ROOT}/jails/$_pname/m
 	_info "Fetching FreeBSD $_base"
 	if ! _fetch_freebsd $_base ; then
 		_error "FreeBSD $_base fetch failed - try to continue"
+		return 1 # false
+	fi
+	if echo "$_base" | grep -q "RC" ; then
+		_rel="$_base"
+	else
+		_rel="$_base"-RELEASE
+	fi
+	if [ ! -r /tmp/${_rel}_base.txz ]; then
+		_error "FreeBSD base tarball /tmp/${_rel}_base.txz is missing"
+		return 1 # falase
 	fi
 	(
 	  cd $_proot
 	  _info "Extract the tarball"
-	  tar xkf /tmp/${_base}_base.txz
+	  tar xkf /tmp/${_rel}_base.txz
 	)
 }
 

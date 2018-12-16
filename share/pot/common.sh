@@ -522,7 +522,7 @@ _is_potnet_available()
 }
 
 # supported releases
-: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2 12.0-RC2 12.0-RC3"}
+: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2 12.0"}
 
 _is_valid_release()
 {

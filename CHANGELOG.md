@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - config: add pot_prefix and fscomp_prefix as possible values
 - snapshot: add option -n to give a name to the snapshot; valid for fscomp only
 
+### Changed
+- create: removed -F option and silent default flavor invocation. Default flavor has to be explicitely selected via -f
+- create-base: removed support for undocumented default-base flavor
+
 ## [0.5.8] 2018-11-29
 ### Added
 - QuickStart.md : a markdown quick guide, for new users

@@ -93,12 +93,7 @@ _cb_base_pot()
 	_pname="base-$_tmp"
 	_info "Create the related pot [$_pname]"
 	if ! _is_pot "$_pname" quiet ; then
-		if [ -x "${_POT_FLAVOUR_DIR}/default-base.sh" ]; then
-			_debug "Using the default-base flavour"
-			pot-cmd create -F -f default-base -l 0 -b "$_bname" -p "$_pname"
-		else
-			pot-cmd create -F -l 0 -b "$_bname" -p "$_pname"
-		fi
+		pot-cmd create -F -l 0 -b "$_bname" -p "$_pname"
 	fi
 	_debug "Taking a snapshot fo $_pname"
 	pot-cmd snapshot -a -p "$_pname"

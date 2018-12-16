@@ -105,8 +105,7 @@ _pot() {
 						'-i[network config]::_normal' \
 						'-s[static ip]' \
 						'-d[dns type]:dns types:(inherit pot)' \
-						'*-f[flavour name]:flavour name:_pot_flavours' \
-						'-F[avoid default flavour]'
+						'*-f[flavour name]:flavour name:_pot_flavours'
 					;;
 				clone-fscomp)
 					_arguments \

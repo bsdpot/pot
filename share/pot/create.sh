@@ -14,7 +14,6 @@ create-help()
 	echo '  -s : static ip address'
 	echo '  -d dns : one between inherit(default) or pot'
 	echo '  -f flavour : flavour to be used'
-	echo '  -F : no default flavour is used'
 	echo '  -t type: single or multi (default multi)'
     echo '         single: the pot is based on a unique ZFS dataset'	
     echo '         multi: the pot is composed by a classical collection of 3 ZFS dataset'	
@@ -324,7 +323,7 @@ _cj_single_install()
 pot-create()
 {
 	local _pname _ipaddr _lvl _base _flv _potbase
-	local _flv_default _dns _staticip _type _new_lvl
+	local _dns _staticip _type _new_lvl
 	_pname=
 	_base=
 	_ipaddr=inherit
@@ -332,11 +331,10 @@ pot-create()
 	_new_lvl=
 	_flv=
 	_potbase=
-	_flv_default="YES"
 	_dns=inherit
 	_staticip="NO"
 	_type="multi"
-	if ! args=$(getopt hvp:i:sl:b:f:P:Fd:t: "$@") ; then
+	if ! args=$(getopt hvp:i:sl:b:f:P:d:t: "$@") ; then
 		create-help
 		${EXIT} 1
 	fi
@@ -412,10 +410,6 @@ pot-create()
 				${EXIT} 1
 			fi
 			shift 2
-			;;
-		-F)
-			_flv_default="NO"
-			shift
 			;;
 		-d)
 			case $2 in
@@ -654,9 +648,6 @@ pot-create()
 			_cj_single_install "$_pname" "$_base"
 		fi
 		_cj_internal_conf "$_pname" "$_type" "0" "$_ipaddr"
-	fi
-	if [ $_flv_default = "YES" ]; then
-		_cj_flv "$_pname" default
 	fi
 	if [ -n "$_flv" ]; then
 		for _f in $_flv ; do

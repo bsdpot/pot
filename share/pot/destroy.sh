@@ -1,19 +1,23 @@
 #!/bin/sh
+:
 
+# shellcheck disable=SC2039
 destroy-help()
 {
 	echo "pot destroy [-hvfr] [-p potname|-b basename]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -f force the stop and destroy'
+	echo '  -F force the stop and destroy'
 	echo '  -p potname : the pot name (mandatory)'
 	echo '  -b basename : the base name (mandatory)'
+	echo '  -f fscomp : the fscomp name (mandatory)'
 	echo '  -r : destroy recursively all pots based on this base/pot'
 }
 
 # $1 zfs dataset
 _zfs_dataset_destroy()
 {
+	# shellcheck disable=SC2039
 	local _dset _zopt
 	_dset=$1
 	_zopt=
@@ -27,6 +31,7 @@ _zfs_dataset_destroy()
 # $2 force parameter
 _pot_zfs_destroy()
 {
+	# shellcheck disable=SC2039
 	local _pname _zopt _jdset _force
 	_pname=$1
 	_force=$2
@@ -50,72 +55,91 @@ _pot_zfs_destroy()
 # $1 base name
 _base_zfs_destroy()
 {
+	# shellcheck disable=SC2039
 	local _bname _bdset
 	_bname=$1
 	_bdset=${POT_ZFS_ROOT}/bases/$_bname
 	_zfs_dataset_destroy "$_bdset"
 }
 
+# $1 base name
+_fscomp_zfs_destroy()
+{
+	# shellcheck disable=SC2039
+	local _fname _fdset
+	_fname=$1
+	_fdset=${POT_ZFS_ROOT}/fscomp/$_fname
+	_zfs_dataset_destroy "$_fdset"
+}
+
 pot-destroy()
 {
-	local _pname _bname _force _recursive
-	local _pots _depPot
+	# shellcheck disable=SC2039
+	local _pname _bname _fname _force _recursive _pots _depPot
 	_pname=
 	_bname=
+	_fname=
 	_force=
 	_recursive="NO"
-	args=$(getopt hvrfp:b: $*)
-	if [ $? -ne 0 ]; then
-		destroy-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvrf:p:b:F" _o ; do
+		case "$_o" in
+		h)
 			destroy-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-f)
+		F)
 			_force="YES"
-			shift
 			;;
-		-r)
+		r)
 			_recursive="YES"
-			shift
 			;;
-		-p)
-			_pname=$2
-			shift 2
+		p)
+			_pname=$OPTARG
 			;;
-		-b)
-			_bname=$2
-			shift 2
+		b)
+			_bname=$OPTARG
 			;;
-		--)
-			shift
-			break
+		f)
+			_fname=$OPTARG
+			;;
+		*)
+			destroy-help
+			${EXIT} 1
 			;;
 		esac
 	done
 
-	if [ -z "$_pname" -a -z "$_bname" ]; then
-		_error "-b or -p are missing"
+	if [ -z "$_pname" ] && [ -z "$_bname" ] && [ -z "$_fname" ]; then
+		_error "-b or -p or -f are missing"
 		destroy-help
 		${EXIT} 1
 	fi
-	if [ -n "$_pname" -a -n "$_bname" ]; then
-		_error "-b or -p cannot be used at the same time"
+	if [ -n "$_pname" -a -n "$_bname" ] ||
+	   [ -n "$_fname" -a -n "$_bname" ] ||
+	   [ -n "$_fname" -a -n "$_pname" ]; then
+		_error "-b, -p and -f cannot be used at the same time"
 		destroy-help
 		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
+	if [ -n "$_fname" ]; then
+		if [ "$_force" = "YES" ] || [ "$_recursive" = "YES" ] ; then
+			_info "Destroy fscomps will ignore force and recursive"
+		fi
+		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp/$_fname" ; then
+			_error "$_fname is not a fscomp"
+			${EXIT} 1
+		fi
+		_info "Destroying fscomp $_fname"
+		_fscomp_zfs_destroy "$_fname"
+	fi
+
 	if [ -n "$_bname" ]; then
 		# check the base
 		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases/$_bname" ; then

@@ -140,9 +140,10 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-f[Force the pot to stop]' \
+						'-F[Force the pot to stop]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-b[base name]:base name:_pot_bases' \
+						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-r[Recursive destroying]'
 					;;
 				add-fscomp)

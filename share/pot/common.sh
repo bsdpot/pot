@@ -392,9 +392,13 @@ _is_pot()
 		return 2 # false
 	fi
 
-	if [ ! -d "$_pdir/m" ] || [ ! -r "$_pdir/conf/pot.conf" ] || [ ! -r "$_pdir/conf/fscomp.conf" ]; then
+	if [ ! -d "$_pdir/m" ] || [ ! -r "$_pdir/conf/pot.conf" ] ; then
 		_qerror "Some component of the pot $_pname is missing"
 		return 3 # false
+	fi
+	if [ "$( _get_pot_type $_pname )" = "multi" ] && [ ! -r "$_pdir/conf/fscomp.conf" ]; then
+		_qerror "Some component of the pot $_pname is missing"
+		return 4 # false
 	fi
 	return 0 # true
 }
@@ -649,26 +653,28 @@ _pot_umount()
 
 	_umount "$_jdir/m/tmp"
 	_umount "$_jdir/m/dev"
-	tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
-	while read -r line ; do
-		_dset=$( echo "$line" | awk '{print $1}' )
-		_mnt_p=$( echo "$line" | awk '{print $2}' )
-		_opt=$( echo "$line" | awk '{print $3}' )
-		if [ "$_opt" = "zfs-remount" ]; then
-			_node=${POT_FS_ROOT}/jails/$_pname/$(basename "$_dset")
-			zfs set mountpoint="$_node" "$_dset"
-			if _zfs_exist "$_dset" "$_node" ; then
-				# the information are correct - move the mountpoint
-				_debug "stop: the dataset $_dset is mounted at $_node"
+	if [ -e "$_jdir/conf/fscomp.conf" ]; then
+		tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
+		while read -r line ; do
+			_dset=$( echo "$line" | awk '{print $1}' )
+			_mnt_p=$( echo "$line" | awk '{print $2}' )
+			_opt=$( echo "$line" | awk '{print $3}' )
+			if [ "$_opt" = "zfs-remount" ]; then
+				_node=${POT_FS_ROOT}/jails/$_pname/$(basename "$_dset")
+				zfs set mountpoint="$_node" "$_dset"
+				if _zfs_exist "$_dset" "$_node" ; then
+					# the information are correct - move the mountpoint
+					_debug "stop: the dataset $_dset is mounted at $_node"
+				else
+					# mountpoint not moved
+					_error "Dataset $_dset moved to $_node (Fix it manually)"
+				fi
 			else
-				# mountpoint not moved
-				_error "Dataset $_dset moved to $_node (Fix it manually)"
+				_umount "$_mnt_p"
 			fi
-		else
-			_umount "$_mnt_p"
-		fi
-	done < "$_tmpfile"
-	rm "$_tmpfile"
+		done < "$_tmpfile"
+		rm "$_tmpfile"
+	fi
 }
 
 pot-cmd()

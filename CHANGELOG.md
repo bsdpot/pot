@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - destroy: option -f (force) is now -F
 
+### Fixed
+- is_pot: improve support to single pots, that don't have fscomp.conf file
+ 
 ## [0.5.9] 2018-12-16
 ### Added
 - Add support to RC FreeBSD version

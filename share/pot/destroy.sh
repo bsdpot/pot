@@ -25,6 +25,7 @@ _zfs_dataset_destroy()
 		_zopt="-v"
 	fi
 	zfs destroy -r $_zopt "$_dset"
+	return $?
 }
 
 # $1 pot name
@@ -70,6 +71,7 @@ _fscomp_zfs_destroy()
 	_fname=$1
 	_fdset=${POT_ZFS_ROOT}/fscomp/$_fname
 	_zfs_dataset_destroy "$_fdset"
+	return $?
 }
 
 pot-destroy()
@@ -138,6 +140,7 @@ pot-destroy()
 		fi
 		_info "Destroying fscomp $_fname"
 		_fscomp_zfs_destroy "$_fname"
+		${EXIT} $?
 	fi
 
 	if [ -n "$_bname" ]; then

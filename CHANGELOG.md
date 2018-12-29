@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - destroy: option -f can be used to delete/destroy a fscomp (no recursive support yet)
+- vnet-start: add support to VPN and custom pf configuration
 
 ### Changed
 - destroy: option -f (force) is now -F

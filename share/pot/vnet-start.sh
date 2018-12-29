@@ -35,7 +35,7 @@ pot-vnet-start()
 	done
 
 	# Check configuration
-	if [ -z "${POT_NETWORK}" -o -z "${POT_GATEWAY}" ]; then
+	if [ -z "${POT_NETWORK}" ] || [ -z "${POT_GATEWAY}" ]; then
 		_error "No network or gateway defined"
 		exit 1
 	fi
@@ -63,8 +63,7 @@ pot-vnet-start()
 		else
 			_debug "Bridge created $_bridge"
 		fi
-		ifconfig $_bridge inet $POT_GATEWAY netmask $POT_NETMASK
-		if [ $? -ne 0 ]; then
+		if ! ifconfig "$_bridge" inet "$POT_GATEWAY" netmask "$POT_NETMASK" ; then
 			_error "Error during bridge configuration ($_bridge)"
 		else
 			_debug "Bridge $_bridge configured with IP $POT_GATEWAY netmask $POT_NETMASK"
@@ -86,6 +85,23 @@ pot-vnet-start()
 		echo "nat on \$ext_if from \$localnet to any -> (\$ext_if)"
 	) > $_pfrules
 
+	# add vpn support
+	if [ -n "$POT_VPN_EXTIF" ] && [ -n "$POT_VPN_NETWORKS" ]; then
+		for net in $POT_VPN_NETWORKS ; do
+			echo "nat on $POT_VPN_EXTIF from \$localnet to $net -> ($POT_VPN_EXTIF)" >> $_pfrules
+		done
+	fi
+
+	# add pf rules
+	if [ "$(sysrc -n pf_enable)" = "YES" ]; then
+		_rules_file="$( sysrc -n pf_rules )"
+		if [ -n "$_rules_file" ]; then
+				cat "$_rules_file" >> $_pfrules
+		fi
+	fi
+
+	echo "pass from \$localnet to any keep state" >> $_pfrules
+	# load the rules
 	pfctl -F nat -f $_pfrules
 	if _is_verbose ; then
 		pfctl -s nat

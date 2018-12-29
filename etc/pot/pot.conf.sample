@@ -30,3 +30,9 @@
 
 # IP of the DNS
 # POT_DNS_IP=10.192.0.2
+
+# VPN support
+
+# name of the tunnel network interface
+# POT_VPN_EXTIF=tun0
+# POT_VPN_NETWORKS=192.168.0.0/16

@@ -342,12 +342,12 @@ _is_vnet_up()
 	_bridge=$(_pot_bridge)
 	if [ -z "$_bridge" ]; then
 		return 1 # false
+	elif [ ! -c /dev/pf ]; then
+		return 1 # false
+	elif [ -z "$(pfctl -s nat)" ]; then
+		return 1 # false
 	else
-		if [ ! -c /dev/pf ]; then
-			return 1 # false
-		else
-			return 0 # true
-		fi
+		return 0 # true
 	fi
 }
 

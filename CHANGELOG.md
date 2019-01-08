@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - is_pot: improve support to single pots, that don't have fscomp.conf file
+- create-base: fix regression introduced on 0.5.9 (RC support and create -F removal)
  
 ## [0.5.9] 2018-12-16
 ### Added

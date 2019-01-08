@@ -48,7 +48,11 @@ _cb_tar_dir()
 {
 	# shellcheck disable=SC2039
 	local _rel _bname _mnt
-	_rel=$1
+	if echo "$1" | grep -q "RC" ; then
+		_rel="$1"
+	else
+		_rel="$1"-RELEASE
+	fi
 	_bname=$2
 	_mnt="${POT_FS_ROOT}/bases/${_bname}"
 	(
@@ -93,7 +97,7 @@ _cb_base_pot()
 	_pname="base-$_tmp"
 	_info "Create the related pot [$_pname]"
 	if ! _is_pot "$_pname" quiet ; then
-		pot-cmd create -F -l 0 -b "$_bname" -p "$_pname"
+		pot-cmd create -l 0 -b "$_bname" -p "$_pname"
 	fi
 	_debug "Taking a snapshot fo $_pname"
 	pot-cmd snapshot -a -p "$_pname"

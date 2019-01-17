@@ -73,7 +73,7 @@ _show_running_pots()
 	# shellcheck disable=SC2039
 	local _jdir _pots _p
 	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs basename | tr '\n' ' ' )
+	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
 		if _is_pot_running "$_p" ; then
 			_show_pot "$_p"
@@ -86,7 +86,7 @@ _show_all_pots()
 	# shellcheck disable=SC2039
 	local _jdir _pots _p
 	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs basename | tr '\n' ' ' )
+	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
 		_show_pot "$_p"
 	done

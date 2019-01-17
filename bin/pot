@@ -147,11 +147,11 @@ case "${CMD}" in
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert|purge-snapshots)
 		pot-cmd "${CMD}" "$@"
-		exit 0
+		exit $?
 		;;
 	run)
 		pot-cmd term -f "$@"
-		exit 0
+		exit $?
 		;;
 	*)
 		usage

@@ -49,8 +49,12 @@ _pot_zfs_destroy()
 			${EXIT} 1
 		fi
 	fi
-	_zfs_dataset_destroy "$_jdset"
+	if ! _zfs_dataset_destroy "$_jdset" ; then
+		_error "zfs failed to destroy the dataset $_jdset"
+		return 1 # false
+	fi
 	rm -f /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
+	return $?
 }
 
 # $1 base name
@@ -61,6 +65,7 @@ _base_zfs_destroy()
 	_bname=$1
 	_bdset=${POT_ZFS_ROOT}/bases/$_bname
 	_zfs_dataset_destroy "$_bdset"
+	return $?
 }
 
 # $1 base name
@@ -169,12 +174,12 @@ pot-destroy()
 		fi
 		_info "Destroying base $_bname"
 		_base_zfs_destroy "$_bname"
-		return 0
+		${EXIT} $?
 	fi
 	if [ -n "$_pname" ]; then
 		if ! _is_pot "$_pname" ; then
 			_error "pot $_pname not found"
-			return 1 # false
+			${EXIT} 1 # false
 		fi
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "0" ]; then
 			# if single we can remove a level 0 pot
@@ -187,13 +192,13 @@ pot-destroy()
 							_pot_zfs_destroy "$_p" $_force
 						else
 							_error "$_pname is used at least by another pot ($_p) - use option -r to destroy it recursively"
-							return 1
+							${EXIT} 1
 						fi
 					fi
 				done
 			else
 				_error "The pot $_pname has level 0. Please destroy the related base insted"
-				return 1
+				${EXIT} 1
 			fi
 		fi
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "1" ]; then
@@ -205,7 +210,7 @@ pot-destroy()
 						_pot_zfs_destroy "$_p" $_force
 					else
 						_error "$_pname is used at least by one level 2 pot - use option -r to destroy it recursively"
-						return 1
+						${EXIT} 1
 					fi
 				fi
 			done

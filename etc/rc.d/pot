@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # PROVIDE: pot
-# REQUIRE: LOGIN
+# REQUIRE: NETWORKING syslogd pf
+# BEFORE: ntpdate
 # KEYWORD: shutdown nojail
 
 . /etc/rc.subr

@@ -393,11 +393,11 @@ _is_pot()
 	fi
 
 	if [ ! -d "$_pdir/m" ] || [ ! -r "$_pdir/conf/pot.conf" ] ; then
-		_qerror "Some component of the pot $_pname is missing"
+		_qerror "$2" "Some component of the pot $_pname is missing"
 		return 3 # false
 	fi
 	if [ "$( _get_pot_type $_pname )" = "multi" ] && [ ! -r "$_pdir/conf/fscomp.conf" ]; then
-		_qerror "Some component of the pot $_pname is missing"
+		_qerror "$2" "Some component of the pot $_pname is missing"
 		return 4 # false
 	fi
 	return 0 # true

@@ -180,10 +180,16 @@ pot-destroy()
 		if ! _is_pot "$_pname" quiet ; then
 			if _zfs_dataset_valid "${POT_ZFS_ROOT}/jails/$_pname" && [ "$_force" = "YES" ] ; then
 				# we can destroy forcibly
-				_pot_zfs_destroy "$_p" "$_force"
+				if ! _pot_zfs_destroy "$_pname" "$_force" ; then
+					_error "Failed to destroy pot $_pname"
+					${EXIT} 1
+				else
+					_info "Forcibly destroyed pot $_pname"
+					${EXIT} 0
+				fi
 			else
 				_is_pot "$_pname"
-				_error "pot $_pname not found"
+				_error "pot $_pname not found or corrupted. Try to use the -F flag"
 				${EXIT} 1 # false
 			fi
 		fi

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - rc.d: changed order, to start pot before ntpdate
+- destroy: extend the usage of -F to be able to destroy corrupted pots
 
 ### Fixed
 - destroy: fix return code

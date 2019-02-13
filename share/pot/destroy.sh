@@ -177,9 +177,15 @@ pot-destroy()
 		${EXIT} $?
 	fi
 	if [ -n "$_pname" ]; then
-		if ! _is_pot "$_pname" ; then
-			_error "pot $_pname not found"
-			${EXIT} 1 # false
+		if ! _is_pot "$_pname" quiet ; then
+			if _zfs_dataset_valid "${POT_ZFS_ROOT}/jails/$_pname" && [ "$_force" = "YES" ] ; then
+				# we can destroy forcibly
+				_pot_zfs_destroy "$_p" "$_force"
+			else
+				_is_pot "$_pname"
+				_error "pot $_pname not found"
+				${EXIT} 1 # false
+			fi
 		fi
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "0" ]; then
 			# if single we can remove a level 0 pot

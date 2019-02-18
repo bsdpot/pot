@@ -237,6 +237,22 @@ _zfs_last_snap()
 	return 0 # true
 }
 
+# check if the snapshot of the pot does exist
+# $1 pot name
+# $2 snapshot name
+_is_zfs_pot_snap()
+{
+	# shellcheck disable=SC2039
+	local _pname _snap _dset
+	_pname=$1
+	_snap=$2
+	if zfs list -t snap "${POT_ZFS_ROOT}/jails/${_pname}@${_snap}" 2>/dev/null ; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 # tested
 _pot_bridge()
 {
@@ -302,6 +318,7 @@ _get_pot_lvl()
 # $1 pot name
 _get_pot_type()
 {
+	# shellcheck disable=SC2039
 	local _type
 	_type="$( _get_conf_var "$1" pot.type )"
 	if [ -z "$_type" ]; then

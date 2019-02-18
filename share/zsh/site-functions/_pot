@@ -203,6 +203,12 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-a[all snapshots, instead of the old ones]'
 					;;
+				export)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-s[snapshot]::_normal'
 				top)
 					_arguments \
 						'-h[Show help]' \
@@ -240,6 +246,7 @@ _pot_cmds() {
 	'list:List elements'
 	'show:Show pot resources'
 	'info:Show info on pot'
+	'top:Show processes (top) running in the pot'
 	'init:Init ZFS'
 	'de-init:Remove all ZFS datasets'
 	'vnet-start:Start the vnet configuration'
@@ -265,6 +272,7 @@ _pot_cmds() {
 	'revert:Restore the last snapshot of a pot'
 	'rollback:Restore the last snapshot of a pot'
 	'purge-snapshots:Remove old or all snapshots'
+	'export:Export a single-type pot'
 	)
 	_describe 'command' commands
 }

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- export: new command. export generates a compressed file with the entire pot in it. It works only for single type pot
+
 ### Changed
 - rc.d: changed order, to start pot before ntpdate
 - destroy: extend the usage of -F to be able to destroy corrupted pots

@@ -142,6 +142,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|set-cmd|\
+	export|\
 	export-ports|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\

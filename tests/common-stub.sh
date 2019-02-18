@@ -5,6 +5,19 @@ EXIT="return"
 # common stubs
 . monitor.sh
 
+##### recognized pots
+# name					running	type	level	ip			vnet
+# test-pot				no		multi	1		inherit		undef
+# test-pot-2			no		multi	2		10.1.2.3	yes
+# test-pot-run			yes		multi	1		undef		undef
+# test-pot-run-2		yes		multi	2		undef		undef
+# test-pot-0			no		multi	0		inherit		undef
+# test-pot-nosnap		no		multi	1		inherit		undef
+# test-pot-single		no		single	0		10.1.2.3	yes
+# test-pot-single-run	yes		single	0		undef		yes
+# test-pot-3			?		?		?		10.1.2.3	no
+
+
 _error()
 {
 	__monitor ERROR "$@"

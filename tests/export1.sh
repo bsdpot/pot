@@ -21,6 +21,14 @@ _is_zfs_pot_snap()
 	fi
 }
 
+_zfs_last_snap()
+{
+	__monitor ZFSLASTSNAP "$@"
+	if [ "$1" = "/jails/test-pot-single" ]; then
+		echo 1234321
+	fi
+}
+
 # app specific stubs
 export-help()
 {
@@ -135,6 +143,7 @@ test_pot_export_040()
 	assertEquals "_is_zfs_pot_snap calls" "0" "$ISZFSSNAP_CALLS"
 	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
 }
 
 test_pot_export_041()
@@ -148,14 +157,16 @@ test_pot_export_041()
 	assertEquals "_is_zfs_pot_snap arg2" "1234" "$ISZFSSNAP_CALL1_ARG2"
 	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "1234" "$EXPORTS_CALL1_ARG2"
 }
 
 setUp()
 {
 	common_setUp
 	HELP_CALLS=0
-	EXPORTS_CALLS=0
 	ISZFSSNAP_CALLS=0
+	ZFSLASTSNAP_CALLS=0
+	EXPORTS_CALLS=0
 	EXPORTS_CALL1_ARG1=""
 }
 

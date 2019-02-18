@@ -18,9 +18,6 @@ _export_pot()
 	_pname="$1"
 	_snap="$2"
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
-	if [ -z "$_snap" ]; then
-		_snap="$(_zfs_last_snap "$_dset" )"
-	fi
 	if ! zfs send -R "${_dset}"@"${_snap}" | xz > "${_pname}@${_snap}.xz" ; then
 		rm -f "${_pname}@${_snap}.xz"
 		return 1 # false
@@ -77,10 +74,17 @@ pot-export()
 			export-help
 			${EXIT} 1
 		fi
+	else
+		_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
+		if [ -z "$_snap" ]; then
+			_error "pot $_pname has no snapshots - please use pot snapshot for that"
+			${EXIT} 1
+		fi
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
+	_info "exporting $_pname @ $_snap"
 	_export_pot "$_pname" "$_snap"
 	return $?
 }

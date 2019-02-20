@@ -18,11 +18,14 @@ _zfs_dataset_valid()
 	__monitor ZDVALID "$@"
 	case "$1" in 
 		zpot/jails/test-pot|\
-		zpot/jails/test-pot-2|\
 		zpot/jails/test-pot/usr.local|\
-		zpot/jails/new-pot/usr.local|\
 		zpot/jails/test-pot/custom|\
-		zpot/jails/test-pot-2/custom)
+		zpot/jails/test-pot-2|\
+		zpot/jails/test-pot-2/custom|\
+		zpot/jails/new-pot/usr.local|\
+		zpot/jails/test-pot-single|\
+		zpot/jails/test-pot-single/m|\
+		zpot/jails/new-pot-single/m)
 			return 0 # true
 			;;
 	esac
@@ -59,6 +62,20 @@ test_rn_zfs_002()
 	assertEquals "zfs c4 args" "rename" "${ZFS_CALL4_ARG1}"
 	assertEquals "zfs c4 args" "zpot/jails/test-pot-2" "${ZFS_CALL4_ARG2}"
 	assertEquals "zfs c4 args" "zpot/jails/new-pot-2" "${ZFS_CALL4_ARG3}"
+}
+
+test_rn_zfs_003()
+{
+	_rn_zfs test-pot-single new-pot-single
+	assertEquals "_zfs_dataset_valid calls" "3" "${ZDVALID_CALLS}"
+	assertEquals "zfs calls" "6" "${ZFS_CALLS}"
+	assertEquals "zfs c1 args" "umount" "${ZFS_CALL1_ARG1}"
+	assertEquals "zfs c1 args" "zpot/jails/test-pot-single/m" "${ZFS_CALL1_ARG3}"
+	assertEquals "zfs c3 args" "umount" "${ZFS_CALL3_ARG1}"
+	assertEquals "zfs c3 args" "zpot/jails/test-pot-single" "${ZFS_CALL3_ARG3}"
+	assertEquals "zfs c4 args" "rename" "${ZFS_CALL4_ARG1}"
+	assertEquals "zfs c4 args" "zpot/jails/test-pot-single" "${ZFS_CALL4_ARG2}"
+	assertEquals "zfs c4 args" "zpot/jails/new-pot-single" "${ZFS_CALL4_ARG3}"
 }
 
 setUp()

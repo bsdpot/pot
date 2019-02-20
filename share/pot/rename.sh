@@ -1,9 +1,10 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 rename-help()
 {
-	echo "pot rename [-h][-v][-a] [-p potname|-f fscomp]"
+	echo "pot rename [-h][-v] -p OldPotName -n NewPotName"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p oldname : the previous pot name'
@@ -12,6 +13,7 @@ rename-help()
 
 _rn_conf()
 {
+	# shellcheck disable=SC2039
 	local _pname _newname _cdir
 	_pname=$1
 	_newname=$2
@@ -21,7 +23,7 @@ _rn_conf()
 	if [ -w /usr/local/etc/syslog.d/"${_pname}".conf ]; then
 		mv /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/syslog.d/"${_newname}".conf
 		sed -i '' "s/$_pname.log/$_newname.log/" /usr/local/etc/syslog.d/"${_newname}".conf
-		touch /var/log/pot/$_newname.log
+		touch "/var/log/pot/$_newname.log"
 		service syslogd reload
 	fi
 	if [ -w /usr/local/etc/newsyslog.conf.d/"${_pname}".conf ]; then
@@ -32,48 +34,70 @@ _rn_conf()
 
 _rn_zfs()
 {
-	local _pname _newname _cdir
+	# shellcheck disable=SC2039
+	local _pname _newname _dset _nset _type
 	_pname=$1
 	_newname=$2
 	_dset=${POT_ZFS_ROOT}/jails/$_pname
 	_nset=${POT_ZFS_ROOT}/jails/$_newname
-#sudo zfs umount zroot/pot/jails/dns1/usr.local 
-#sudo zfs set mountpoint=/opt/pot/jails/dns2/usr.local zroot/pot/jails/dns2/usr.local
-#sudo zfs umount zroot/pot/jails/dns1/custom   
-#sudo zfs set mountpoint=/opt/pot/jails/dns2/custom zroot/pot/jails/dns2/custom
-#sudo zfs umount zroot/pot/jails/dns1       
-	if _zfs_dataset_valid "$_dset/usr.local" ; then
-		_debug "Preparing $_dset/usr.local"
-		zfs umount -f "$_dset/usr.local"
-		zfs set mountpoint="${POT_FS_ROOT}/jails/$_newname/usr.local" "$_dset/usr.local"
-	fi
-	if _zfs_dataset_valid "$_dset/custom" ; then
-		_debug "Preparing $_dset/custom"
-		zfs umount -f "$_dset/custom"
-		zfs set mountpoint="${POT_FS_ROOT}/jails/$_newname/custom" "$_dset/custom"
-	fi
-	if _zfs_dataset_valid "$_dset" ; then
-		_debug "Preparing $_dset"
-		zfs umount -f "$_dset"
-	fi
-#sudo zfs rename zroot/pot/jails/dns1 zroot/pot/jails/dns2
-	_debug "Renaming $_dset in $_nset"
-	zfs rename "$_dset" "$_nset"
+	_type=$( _get_pot_type "$_pname" )
+	if [ "$_type" = "multi" ]; then
+	#sudo zfs umount zroot/pot/jails/dns1/usr.local
+	#sudo zfs set mountpoint=/opt/pot/jails/dns2/usr.local zroot/pot/jails/dns2/usr.local
+	#sudo zfs umount zroot/pot/jails/dns1/custom
+	#sudo zfs set mountpoint=/opt/pot/jails/dns2/custom zroot/pot/jails/dns2/custom
+	#sudo zfs umount zroot/pot/jails/dns1
+		if _zfs_dataset_valid "$_dset/usr.local" ; then
+			_debug "Preparing $_dset/usr.local"
+			zfs umount -f "$_dset/usr.local"
+			zfs set mountpoint="${POT_FS_ROOT}/jails/$_newname/usr.local" "$_dset/usr.local"
+		fi
+		if _zfs_dataset_valid "$_dset/custom" ; then
+			_debug "Preparing $_dset/custom"
+			zfs umount -f "$_dset/custom"
+			zfs set mountpoint="${POT_FS_ROOT}/jails/$_newname/custom" "$_dset/custom"
+		fi
+		if _zfs_dataset_valid "$_dset" ; then
+			_debug "Preparing $_dset"
+			zfs umount -f "$_dset"
+		fi
+	#sudo zfs rename zroot/pot/jails/dns1 zroot/pot/jails/dns2
+		_debug "Renaming $_dset in $_nset"
+		zfs rename "$_dset" "$_nset"
 
-#sudo zfs mount zroot/pot/jails/dns2
-	_debug "Mount $_nset"
-	zfs mount "$_nset"
-#sudo zfs mount zroot/pot/jails/dns2/custom
-#sudo zfs mount zroot/pot/jails/dns2/usr.local
-	zfs mount "$_nset/custom"
-	if _zfs_dataset_valid "$_nset/usr.local" ; then
-		zfs mount "$_nset/usr.local"
+	#sudo zfs mount zroot/pot/jails/dns2
+		_debug "Mount $_nset"
+		zfs mount "$_nset"
+	#sudo zfs mount zroot/pot/jails/dns2/custom
+	#sudo zfs mount zroot/pot/jails/dns2/usr.local
+		zfs mount "$_nset/custom"
+		if _zfs_dataset_valid "$_nset/usr.local" ; then
+			zfs mount "$_nset/usr.local"
+		fi
+	else # type single
+		if _zfs_dataset_valid "$_dset/m" ; then
+			_debug "Preparing $_dset/m"
+			zfs umount -f "$_dset/m"
+			zfs set mountpoint="${POT_FS_ROOT}/jails/$_newname/m" "$_dset/m"
+		fi
+		if _zfs_dataset_valid "$_dset" ; then
+			_debug "Preparing $_dset"
+			zfs umount -f "$_dset"
+		fi
+		_debug "Renaming $_dset in $_nset"
+		zfs rename "$_dset" "$_nset"
+		_debug "Mount $_nset"
+		zfs mount "$_nset"
+		if _zfs_dataset_valid "$_nset/m" ; then
+			zfs mount "$_nset/m"
+		fi
 	fi
 }
 
 # rename also on all lvl2 and dependencies
 _rn_recursive()
 {
+	# shellcheck disable=SC2039
 	local _pname _newname _pots _cdir
 	_pname=$1
 	_newname=$2
@@ -86,38 +110,31 @@ _rn_recursive()
 	done
 }
 
+# shellcheck disable=SC2039
 pot-rename()
 {
 	local _pname _newname
 	_pname=
 	_newname=
-	if ! args=$(getopt hvp:n: "$@") ; then
-		rename-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvp:n:" _o ; do
+		case "$_o" in
+		h)
 			rename-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-p)
-			_pname="$2"
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		-n)
-			_newname="$2"
-			shift 2
+		n)
+			_newname="$OPTARG"
 			;;
-		--)
-			shift
-			break
-			;;
+		*)
+			rename-help
+			${EXIT} 1
 		esac
 	done
 	if [ -z "$_pname" ]; then

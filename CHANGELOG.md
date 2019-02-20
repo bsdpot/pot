@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - destroy: fix return code
+- rename: fix single pot support
 
 ## [0.5.10] 2019-01-15
 ### Added

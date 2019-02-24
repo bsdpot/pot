@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - export: new command. export generates a compressed file with the entire pot in it. It works only for single type pot
+- POT_CACHE: a place to cache pot images. It's a variable of pot.conf
+- import: new command. import create a new pot based on an image generated via export
 
 ### Changed
 - rc.d: changed order, to start pot before ntpdate

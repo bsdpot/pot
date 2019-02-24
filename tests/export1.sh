@@ -144,9 +144,23 @@ test_pot_export_040()
 	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1234321" "$EXPORTS_CALL1_ARG3"
 }
 
 test_pot_export_041()
+{
+	pot-export -p test-pot-single -t v1.0
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_zfs_pot_snap calls" "0" "$ISZFSSNAP_CALLS"
+	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "v1.0" "$EXPORTS_CALL1_ARG3"
+}
+
+test_pot_export_042()
 {
 	pot-export -p test-pot-single -s 1234
 	assertEquals "Exit rc" "0" "$?"
@@ -158,6 +172,22 @@ test_pot_export_041()
 	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1234" "$EXPORTS_CALL1_ARG3"
+}
+
+test_pot_export_043()
+{
+	pot-export -p test-pot-single -s 1234 -t 1.0
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_zfs_pot_snap calls" "1" "$ISZFSSNAP_CALLS"
+	assertEquals "_is_zfs_pot_snap arg1" "test-pot-single" "$ISZFSSNAP_CALL1_ARG1"
+	assertEquals "_is_zfs_pot_snap arg2" "1234" "$ISZFSSNAP_CALL1_ARG2"
+	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "1234" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
 }
 
 setUp()
@@ -168,6 +198,8 @@ setUp()
 	ZFSLASTSNAP_CALLS=0
 	EXPORTS_CALLS=0
 	EXPORTS_CALL1_ARG1=""
+	EXPORTS_CALL1_ARG2=""
+	EXPORTS_CALL1_ARG3=""
 }
 
 . shunit/shunit2

@@ -7,6 +7,8 @@
 # It is also important to know where the root dataset is mounted
 # POT_FS_ROOT=/opt/pot
 
+# This is the cache used to import/export pots
+# POT_CACHE=/var/cache/pot
 
 # Internal Virtual Network configuration
 

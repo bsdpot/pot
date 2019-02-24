@@ -1,35 +1,33 @@
 #!/bin/sh
+:
 
+# TODO
+# check the return code of all commands
+
+# shellcheck disable=SC2039
 init-help()
 {
 	echo 'pot init [-h][-v]'
-	echo '  -h -- print this help'
+	echo '  -h print this help'
 	echo '  -v verbose'
 }
 
-
+# shellcheck disable=SC2039
 pot-init()
 {
-	args=$(getopt hv $*)
-	if [ $? -ne 0 ]; then
-		init-help
-		exit 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hv" _o ; do
+		case "$_o" in
+		h)
 			init-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		--)
-			shift
-			break
-			;;
+		*)
+			init-help
+			${EXIT} 1
 		esac
 	done
 
@@ -43,15 +41,16 @@ pot-init()
 			return 1 # false
 		fi
 		# create the pot root
-		zfs create -o mountpoint=${POT_FS_ROOT} -o canmount=off -o compression=lz4 -o atime=off ${POT_ZFS_ROOT}
+		_debug "creating ${POT_ZFS_ROOT} file system (mountpoint ${POT_FS_ROOT}"
+		zfs create -o mountpoint="${POT_FS_ROOT}" -o canmount=off -o compression=lz4 -o atime=off "${POT_ZFS_ROOT}"
 	else
 		_info "${POT_ZFS_ROOT} already present"
 	fi
 
 	# create the root directory
-	if [ ! -d ${POT_FS_ROOT} ]; then
-		mkdir -p ${POT_FS_ROOT}
-		if [ ! -d ${POT_FS_ROOT} ]; then
+	if [ ! -d "${POT_FS_ROOT}" ]; then
+		mkdir -p "${POT_FS_ROOT}"
+		if [ ! -d "${POT_FS_ROOT}" ]; then
 			_error "Not able to create the dir ${POT_FS_ROOT}"
 			return 1 # false
 		fi
@@ -59,15 +58,23 @@ pot-init()
 
 	# create mandatory datasets
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" ; then
-		zfs create ${POT_ZFS_ROOT}/bases
+		_debug "creating ${POT_ZFS_ROOT}/bases"
+		zfs create "${POT_ZFS_ROOT}/bases"
 	fi
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" ; then
-		zfs create ${POT_ZFS_ROOT}/jails
+		_debug "creating ${POT_ZFS_ROOT}/jails"
+		zfs create "${POT_ZFS_ROOT}/jails"
 	fi
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
-		zfs create ${POT_ZFS_ROOT}/fscomp
+		_debug "creating ${POT_ZFS_ROOT}/fscomp"
+		zfs create "${POT_ZFS_ROOT}/fscomp"
 	fi
 
+	# check the cache directory
+	if [ ! -d "${POT_CACHE}" ]; then
+		_debug "creating the cache directory ${POT_CACHE}"
+		mkdir -p "${POT_CACHE}"
+	fi
 	# create mandatory directories for logs
 	mkdir -p /usr/local/etc/syslog.d
 	mkdir -p /usr/local/etc/newsyslog.conf.d

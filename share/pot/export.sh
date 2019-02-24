@@ -1,5 +1,10 @@
 #!/bin/sh
 :
+# TODO
+# Add a -D option to change the destination directory
+# Add a way to directly upload the compressed file
+# Add a way to change compression utility
+# Add a way to change compression level
 
 # shellcheck disable=SC2039
 export-help() {
@@ -7,19 +12,25 @@ export-help() {
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'
+	echo '  -t tag : the tag to be used as suffix in the filename'
+	echo '           if no tag is specified, tha snapshot will be used as suffix'
 	echo '  -s snapshot : by default, the last snapshot is taken.'
 	echo '                this option allows to use a different snapshot'
 }
 
+# $1 : pot name
+# $2 : snapshot
+# $3 : tag name
 _export_pot()
 {
 	# shellcheck disable=SC2039
-	local _pname _dset _snap
+	local _pname _dset _snap _tag
 	_pname="$1"
 	_snap="$2"
+	_tag="$3"
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
-	if ! zfs send -R "${_dset}"@"${_snap}" | xz > "${_pname}@${_snap}.xz" ; then
-		rm -f "${_pname}@${_snap}.xz"
+	if ! zfs send -R "${_dset}"@"${_snap}" | xz -T 0 > "${_pname}_${_tag}.xz" ; then
+		rm -f "${_pname}@${_tag}.xz"
 		return 1 # false
 	else
 		return 0 # true
@@ -29,11 +40,12 @@ _export_pot()
 # shellcheck disable=SC2039
 pot-export()
 {
-	local _pname _snap
+	local _pname _snap _tag
 	_pname=
 	_snap=
+	_tag=
 	OPTIND=1
-	while getopts "hvp:s:" _o ; do
+	while getopts "hvp:s:t:" _o ; do
 		case "$_o" in
 		h)
 			export-help
@@ -47,6 +59,9 @@ pot-export()
 			;;
 		s)
 			_snap="$OPTARG"
+			;;
+		t)
+			_tag="$OPTARG"
 			;;
 		*)
 			export-help
@@ -81,10 +96,13 @@ pot-export()
 			${EXIT} 1
 		fi
 	fi
+	if [ -z "$_tag" ]; then
+		_tag="$_snap"
+	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_info "exporting $_pname @ $_snap"
-	_export_pot "$_pname" "$_snap"
+	_info "exporting $_pname @ $_snap to ${_pname}_${_tag}.xz"
+	_export_pot "$_pname" "$_snap" "$_tag"
 	return $?
 }

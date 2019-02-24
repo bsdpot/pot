@@ -208,7 +208,14 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
+						'-t[tag name]::_normal' \
 						'-s[snapshot]::_normal'
+				import)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-t[tag name]::_normal'
 				top)
 					_arguments \
 						'-h[Show help]' \
@@ -273,6 +280,7 @@ _pot_cmds() {
 	'rollback:Restore the last snapshot of a pot'
 	'purge-snapshots:Remove old or all snapshots'
 	'export:Export a single-type pot'
+	'import:Import a single-type pot'
 	)
 	_describe 'command' commands
 }

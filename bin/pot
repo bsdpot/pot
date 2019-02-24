@@ -55,15 +55,15 @@ fi
 . "${_POT_INCLUDE}/common.sh"
 
 # loading configuration
-if [ -r $_POT_ETC/pot.default.conf ]; then
-	. $_POT_ETC/pot.default.conf
+if [ -r "$_POT_ETC/pot.default.conf" ]; then
+	. "$_POT_ETC/pot.default.conf"
 else
 	_error "Fatal error! Not able to find default configuration file on $_POT_ETC"
 	exit 1
 fi
 
-if [ -r $_POT_ETC/pot.conf ]; then
-	. $_POT_ETC/pot.conf
+if [ -r "$_POT_ETC/pot.conf" ]; then
+	. "$_POT_ETC/pot.conf"
 fi
 
 usage() {
@@ -101,6 +101,8 @@ Commands:
 	snap/snapshot -- Take a snapshot of a pot
 	rollback/revert -- Restore the last snapshot
 	purge-snapshots -- Remove old/all snapshots
+	export -- Export a pot to a file
+	import -- Import a pot from a file or a URL
 EOF
 }
 
@@ -142,7 +144,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|set-cmd|\
-	export|\
+	export|import|\
 	export-ports|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\

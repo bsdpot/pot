@@ -189,7 +189,7 @@ _cj_conf()
 		echo "pot.dns=${_dns}"
 		echo "pot.cmd=sh /etc/rc"
 		echo "host.hostname=\"${_pname}.$( hostname )\""
-		if echo "$_baseos" | grep -c "RC" ; then
+		if echo "$_baseos" | grep -qc "RC" ; then
 			echo "osrelease=\"${_baseos}\""
 		else
 			echo "osrelease=\"${_baseos}-RELEASE\""
@@ -198,7 +198,7 @@ _cj_conf()
 			echo "ip4=inherit"
 			echo "vnet=false"
 		else
-			if [ $_staticip = "YES" ]; then
+			if [ "$_staticip" = "YES" ]; then
 				echo "ip4=${_ip}"
 				echo "vnet=false"
 			else

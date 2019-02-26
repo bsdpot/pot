@@ -54,6 +54,24 @@ conf_setUp()
 		echo "host.hostname=\"test-pot-single-run.test\""
 		echo "pot.potbase="
 	} > /tmp/jails/test-pot-single-run/conf/pot.conf
+	
+	/bin/mkdir -p /tmp/jails/test-pot-vnet-ip4/conf
+	touch /tmp/jails/test-pot-vnet-ip4/conf/fscomp.conf
+	{
+		echo "pot.level=0"
+		echo "pot.type=single"
+		echo "pot.base=12.0"
+		echo "pot.potbase="
+		echo "pot.dns=inherit"
+		echo "pot.cmd=sh /etc/rc"
+		echo "host.hostname=\"test-pot-vnet-ip4.test\""
+		echo "0"
+		echo "osrelease=\"12.0-RELEASE\""
+		echo "ip4=10.192.0.3"
+		echo "vnet=true"
+		echo "pot.export.ports=80 443"
+	} > /tmp/jails/test-pot-vnet-ip4/conf/pot.conf
+	
 }
 
 conf_tearDown()

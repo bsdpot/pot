@@ -279,7 +279,7 @@ _get_conf_var()
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_var="$2"
-	_value="$( grep "$_var" "$_cdir/pot.conf" | tr -d ' \t"' | cut -f2 -d'=' )"
+	_value="$( grep "^$_var=" "$_cdir/pot.conf" | tr -d ' \t"' | cut -f2 -d'=' )"
 	echo "$_value"
 }
 

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - destroy: fix return code
 - rename: fix single pot support
+- get_conf_var: using a better RE to avoid to detect variables value in pot names (Thanks to Johan Hendriks to report)
 
 ## [0.5.10] 2019-01-15
 ### Added

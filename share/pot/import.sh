@@ -35,11 +35,13 @@ _fetch_pot()
 		fi
 	fi
 	if [ ! -r "${POT_CACHE}/$_filename.skein" ]; then
-		if ! fetch "$_URL/$_filename" --output "${POT_CACHE}/$_filename.skein" ; then
+		if ! fetch "$_URL/$_filename.skein" --output "${POT_CACHE}/$_filename.skein" ; then
 			return 1 # false
 		fi
 	fi
-	if skein1024 "${POT_CACHE}/$_filename" | cmp "${POT_CACHE}/$_filename.skein" - ; then
+	if skein1024 -q "${POT_CACHE}/$_filename" | cmp "${POT_CACHE}/$_filename.skein" - ; then
+		_debug "Hash confirmed"
+	else
 		_error "The image and its hash do not overlap"
 		return 1 # false
 	fi

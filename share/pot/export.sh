@@ -40,7 +40,7 @@ _export_pot()
 	elif [ ! -r "${_file}" ]; then
 		return 1 # fasle
 	else
-		skein1024 "${_file}" > "${_file}.skein"
+		skein1024 -q "${_file}" > "${_file}.skein"
 		return 0 # true
 	fi
 }

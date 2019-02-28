@@ -1,10 +1,8 @@
 #!/bin/sh
 :
 # TODO
-# Add a -D option to change the destination directory
 # Add a way to directly upload the compressed file
 # Add a way to change compression utility
-# Add a way to change compression level
 
 # shellcheck disable=SC2039
 export-help() {
@@ -16,22 +14,31 @@ export-help() {
 	echo '           if no tag is specified, tha snapshot will be used as suffix'
 	echo '  -s snapshot : by default, the last snapshot is taken.'
 	echo '                this option allows to use a different snapshot'
+	echo '  -D directory : where to store the compressed file with the pot'
+	echo '  -l compression-level : from 0 (fast) to 9 (best). Defaul level 6. (man xz for more information)'
 }
 
 # $1 : pot name
 # $2 : snapshot
 # $3 : tag name
+# $4 : target directory - where to write the file
+# $5 : compression level
 _export_pot()
 {
 	# shellcheck disable=SC2039
-	local _pname _dset _snap _tag
+	local _pname _dset _snap _tag _dir _file _clvl
 	_pname="$1"
 	_snap="$2"
 	_tag="$3"
+	_dir="$4"
+	_clvl="$5"
+	_file="${_dir}/${_pname}_${_tag}.xz"
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
-	if ! zfs send -R "${_dset}"@"${_snap}" | xz -T 0 > "${_pname}_${_tag}.xz" ; then
-		rm -f "${_pname}@${_tag}.xz"
+	if ! zfs send -R "${_dset}"@"${_snap}" | xz -"${_clvl}" -T 0 > "${_file}" ; then
+		rm -f "${_file}"
 		return 1 # false
+	elif [ ! -r "${_file}" ]; then
+		return 1 # fasle
 	else
 		return 0 # true
 	fi
@@ -40,12 +47,14 @@ _export_pot()
 # shellcheck disable=SC2039
 pot-export()
 {
-	local _pname _snap _tag
+	local _pname _snap _tag _dir
 	_pname=
 	_snap=
 	_tag=
+	_dir="."
+	_clvl=6
 	OPTIND=1
-	while getopts "hvp:s:t:" _o ; do
+	while getopts "hvp:s:t:D:l:" _o ; do
 		case "$_o" in
 		h)
 			export-help
@@ -62,6 +71,22 @@ pot-export()
 			;;
 		t)
 			_tag="$OPTARG"
+			;;
+		D)
+			_dir="$OPTARG"
+			if [ ! -d "$_dir" ]; then
+				_error "$_dir is not a directory"
+				${EXIT} 1
+			fi
+			;;
+		l)
+			if echo "$OPTARG" | grep -q '^[0-9]$' ; then
+				_clvl="$OPTARG"
+			else
+				_error "$OPTARG is an invalid compression level"
+				export-help
+				${EXIT} 1
+			fi
 			;;
 		*)
 			export-help
@@ -102,7 +127,7 @@ pot-export()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_info "exporting $_pname @ $_snap to ${_pname}_${_tag}.xz"
-	_export_pot "$_pname" "$_snap" "$_tag"
+	_info "exporting $_pname @ $_snap to ${_dir}/${_pname}_${_tag}.xz"
+	_export_pot "$_pname" "$_snap" "$_tag" "${_dir}" "${_clvl}"
 	return $?
 }

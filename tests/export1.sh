@@ -134,6 +134,33 @@ test_pot_export_027()
 	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
 }
 
+test_pot_export_028()
+{
+	# directory doesn't exist
+	pot-export -p test-pot-single -D asdfasdf
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
+}
+
+test_pot_export_029()
+{
+	# wrong compression level
+	pot-export -p test-pot-single -l max
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
+}
+
+test_pot_export_030()
+{
+	# wrong compression level
+	pot-export -p test-pot-single -l 10
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
+}
+
 test_pot_export_040()
 {
 	pot-export -p test-pot-single
@@ -145,6 +172,7 @@ test_pot_export_040()
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1234321" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
 }
 
 test_pot_export_041()
@@ -158,6 +186,7 @@ test_pot_export_041()
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "v1.0" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
 }
 
 test_pot_export_042()
@@ -173,6 +202,7 @@ test_pot_export_042()
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1234" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
 }
 
 test_pot_export_043()
@@ -188,8 +218,24 @@ test_pot_export_043()
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
 }
 
+test_pot_export_044()
+{
+	pot-export -p test-pot-single -s 1234 -t 1.0 -D /tmp
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_zfs_pot_snap calls" "1" "$ISZFSSNAP_CALLS"
+	assertEquals "_is_zfs_pot_snap arg1" "test-pot-single" "$ISZFSSNAP_CALL1_ARG1"
+	assertEquals "_is_zfs_pot_snap arg2" "1234" "$ISZFSSNAP_CALL1_ARG2"
+	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "1234" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "/tmp" "$EXPORTS_CALL1_ARG4"
+}
 setUp()
 {
 	common_setUp

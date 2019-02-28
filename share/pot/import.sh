@@ -30,8 +30,20 @@ _fetch_pot()
 		_URL="$3"
 	fi
 	if [ ! -r "${POT_CACHE}/$_filename" ]; then
-		fetch "$_URL/$_filename" --output "${POT_CACHE}/$_filename"
+		if ! fetch "$_URL/$_filename" --output "${POT_CACHE}/$_filename" ; then
+			return 1 # false
+		fi
 	fi
+	if [ ! -r "${POT_CACHE}/$_filename.skein" ]; then
+		if ! fetch "$_URL/$_filename" --output "${POT_CACHE}/$_filename.skein" ; then
+			return 1 # false
+		fi
+	fi
+	if skein1024 "${POT_CACHE}/$_filename" | cmp "${POT_CACHE}/$_filename.skein" - ; then
+		_error "The image and its hash do not overlap"
+		return 1 # false
+	fi
+	return 0 # false
 }
 
 # $1 : remote pot name
@@ -125,7 +137,11 @@ pot-import()
 		${EXIT} 1
 	fi
 	_info "importing $_rpname @ $_tag as $_pname"
-	_fetch_pot "$_rpname" "$_tag" "$_URL"
-	_import_pot "$_rpname" "$_tag" "$_pname"
+	if ! _fetch_pot "$_rpname" "$_tag" "$_URL" ; then
+		${EXIT} 1
+	fi
+	if ! _import_pot "$_rpname" "$_tag" "$_pname" ; then
+		${EXIT} 1
+	fi
 	return $?
 }

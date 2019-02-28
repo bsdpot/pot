@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - export: -D option to change export directory and -l option to change compression level
 - POT_CACHE: a place to cache pot images. It's a variable of pot.conf
 - import: new command. import create a new pot based on an image generated via export
+- import-export: add skein has verification support
 
 ### Changed
 - rc.d: changed order, to start pot before ntpdate

@@ -233,7 +233,7 @@ _js_start()
 	else
 		_ip=$( _get_conf_var $_pname ip4 )
 		if [ "$_ip" = "inherit" ]; then
-			_param="$_param ip4=inherit"
+			_param="$_param ip4=inherit ip6=inherit"
 		else
 			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
 		fi

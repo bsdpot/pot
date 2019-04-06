@@ -210,12 +210,14 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'-t[tag name]::_normal' \
 						'-s[snapshot]::_normal'
+					;;
 				import)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-t[tag name]::_normal'
+					;;
 				top)
 					_arguments \
 						'-h[Show help]' \

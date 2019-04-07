@@ -75,6 +75,17 @@ _is_uid0()
 	fi
 }
 
+# tested
+# check if the argument is an absolute pathname
+_is_absolute_path()
+{
+	if [ "$1" = "${1#/}" ]; then
+		return 1 # false
+	else
+		return 0 # false
+	fi
+}
+
 # validate some values of the configuration files
 # $1 quiet / no _error messages are emitted
 _conf_check()
@@ -197,8 +208,12 @@ _pot_zfs_snap_full()
 		if [ "$_opt" = "ro" ]; then
 			continue
 		fi
-		_debug "snapshot of $_dset"
-		zfs snapshot "${_dset}@${_snaptag}"
+		if _is_absolute_path "$_dset" ; then
+			_debug "Skip $_dset, it's not a dataset"
+		else
+			_debug "snapshot of $_dset"
+			zfs snapshot "${_dset}@${_snaptag}"
+		fi
 	done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
 }
 
@@ -632,19 +647,28 @@ _pot_mount()
 				return 1 # false
 			fi
 		else
-			_node=$( _get_zfs_mountpoint "$_dset" )
-			if [ ! -d "$_mnt_p" ]; then
-				_debug "start: creating the missing mountpoint $_mnt_p"
-				if ! mkdir "$_mnt_p" ; then
-					_error "Error creating the missing mountpoint $_mnt_p"
-					return 1
+			if _is_absolute_path "$_dset" ; then
+				if ! mount_nullfs -o "${_opt:-rw}" "$_dset" "$_mnt_p" ; then
+					_error "Error mounting $_dset on $_mnt_p"
+					return 1 # false
+				else
+					_debug "mount $_mnt_p"
 				fi
-			fi
-			if ! mount_nullfs -o "${_opt:-rw}" "$_node" "$_mnt_p" ; then
-				_error "Error mounting $_node"
-				return 1 # false
 			else
-				_debug "mount $_mnt_p"
+				_node=$( _get_zfs_mountpoint "$_dset" )
+				if [ ! -d "$_mnt_p" ]; then
+					_debug "start: creating the missing mountpoint $_mnt_p"
+					if ! mkdir "$_mnt_p" ; then
+						_error "Error creating the missing mountpoint $_mnt_p"
+						return 1
+					fi
+				fi
+				if ! mount_nullfs -o "${_opt:-rw}" "$_node" "$_mnt_p" ; then
+					_error "Error mounting $_node"
+					return 1 # false
+				else
+					_debug "mount $_mnt_p"
+				fi
 			fi
 		fi
 	done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"

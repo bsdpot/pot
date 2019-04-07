@@ -1,16 +1,18 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 add-fscomp-help()
 {
-	echo "pot add-fscomp [-h][-v] -f fscomp -p pot -m mnt"
+	echo "pot add-fscomp [-h][-v] -p pot -m mnt -f fscomp | -d directory"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -f fscomp : the fs component to be added'
-	echo '  -e : the fscomp is an external zfs dataset'
+	echo '  -e : the fscomp is an external dataset'
+	echo '  -d directory : the directory that has to be mounted in the pot (absolute pathname)'
 	echo '  -p pot : the working pot'
 	echo '  -m mnt : the mount point inside the pot'
-	echo '  -w : '"don't use nullfs, but change the zfs mountpoint (DANGEROUS)"
+	echo '  -w : '"don't use nullfs, but change the zfs mountpoint (potentially DANGEROUS)"
 	echo '  -r : mount the fscomp in read-only'
 }
 
@@ -21,6 +23,7 @@ add-fscomp-help()
 # $5 option
 _fscomp_validation()
 {
+	# shellcheck disable=SC2039
 	local _pname _fscomp _mnt_p _ext _opt
 	_pname="$1"
 	_fscomp="$2"
@@ -41,6 +44,7 @@ _fscomp_validation()
 # $2 mount point
 _mountpoint_validation()
 {
+	# shellcheck disable=SC2039
 	local _pname _mnt_p _mpdir _mounted
 	_pname="$1"
 	_mnt_p="$2"
@@ -75,6 +79,7 @@ _mountpoint_validation()
 # $5 mount option (zfs-remount, ro)
 _add_f_to_p()
 {
+	# shellcheck disable=SC2039
 	local _fscomp _pname _mnt_p _pdir _ext _opt _zfscomp _node
 	_fscomp="$1"
 	_pname="$2"
@@ -108,13 +113,40 @@ _add_f_to_p()
 	fi
 }
 
+# $1 directory
+# $2 pot
+# $3 mount point
+# $4 mount option (zfs-remount, ro)
+_add_d_to_p()
+{
+	# shellcheck disable=SC2039
+	local _dir _pname _mnt_p _pdir _opt
+	_dir="$1"
+	_pname="$2"
+	# Removing the trailing /
+	_mnt_p="${3#/}"
+	_opt="${4}"
+	_pdir=$POT_FS_ROOT/jails/$_pname
+	_debug "add directory:$_dir mnt_p:$_pdir/m/$_mnt_p opt:$_opt"
+	if [ -z "$_opt" ]; then
+		${ECHO} "$_dir $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
+	else
+		${ECHO} "$_dir $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
+	fi
+	if _is_pot_running "$_pname" ; then
+		if ! mount_nullfs -o "${_opt:-rw}" "$_dir" "$_pdir/m/$_mnt_p" ; then
+			_error "Error mounting $_dir on $_pname"
+		else
+			_debug "Mounted $_dir on $_pname"
+		fi
+	fi
+}
+
+# shellcheck disable=SC2039
 pot-add-fscomp()
 {
-	local _pname _fscomp _mnt_p _ext _remount _readonly _opt
-	if ! args=$(getopt hvf:p:m:ewr "$@") ; then
-		add-fscomp-help
-		${EXIT} 1
-	fi
+	local _pname _fscomp _mnt_p _ext _remount _readonly _opt _dir
+	OPTIND=1
 	_fscomp=
 	_pname=
 	_mnt_p=
@@ -122,54 +154,56 @@ pot-add-fscomp()
 	_remount="NO"
 	_readonly="NO"
 	_opt=
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	_dir=
+	while getopts "hvf:p:m:ewrd:" _o ; do
+		case "$_o" in
+		h)
 			add-fscomp-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-f)
-			_fscomp="$2"
-			shift 2
+		f)
+			_fscomp="$OPTARG"
 			;;
-		-e)
+		d)
+			_dir="$OPTARG"
+			;;
+		e)
 			_ext="external"
-			shift
 			;;
-		-p)
-			_pname="$2"
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		-m)
-			_mnt_p="$2"
-			shift 2
+		m)
+			_mnt_p="$OPTARG"
 			;;
-		-w)
+		w)
 			_remount="YES"
-			shift
 			;;
-		-r)
+		r)
 			_readonly="YES"
-			shift
 			;;
-		--)
-			shift
-			break
+		*)
+			add-fscomp-help
+			${EXIT} 1
 			;;
 		esac
 	done
+
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		add-fscomp-help
 		${EXIT} 1
 	fi
-	if [ -z "$_fscomp" ]; then
-		_error "A fs component is mandatory"
+	if [ -z "$_fscomp" ] && [ -z "$_dir" ]; then
+		_error "A fs component or a directory are mandatory"
+		add-fscomp-help
+		${EXIT} 1
+	fi
+	if [ -n "$_fscomp" ] && [ -n "$_dir" ]; then
+		_error "-f and -d options are mutually exclusive"
 		add-fscomp-help
 		${EXIT} 1
 	fi
@@ -178,7 +212,7 @@ pot-add-fscomp()
 		add-fscomp-help
 		${EXIT} 1
 	fi
-	if [ "${_mnt_p}" = "${_mnt_p#/}" ]; then
+	if ! _is_absolute_path "$_mnt_p" ; then
 		_error "The mount point has to be an absolute pathname"
 		${EXIT} 1
 	fi
@@ -188,6 +222,11 @@ pot-add-fscomp()
 	fi
 
 	if [ "$_remount" = "YES" ]; then
+		if [ -n "$_dir" ]; then
+			_error "Remount cannot be used with directories, but with fscomp only"
+			add-fscomp-help
+			${EXIT} 1
+		fi
 		_opt="zfs-remount"
 		if [ "$_ext" = "external" ]; then
 			_error "External fscomp cannot be remounted: -e and -w option are mututally exclusive"
@@ -204,17 +243,37 @@ pot-add-fscomp()
 			_opt="ro"
 		fi
 	fi
-	if [ "$_ext" = "external" ]; then
-		if ! _zfs_dataset_valid "$_fscomp" ; then
-			_error "fscomp $_fscomp is not a valid ZFS dataset"
+	# TODO: chech that the external fscomp is not already part of the pot
+	if [ -n "$_fscomp" ]; then
+		if [ "$_ext" = "external" ]; then
+			if ! _zfs_dataset_valid "$_fscomp" ; then
+				_error "fscomp $_fscomp is not valid"
+				add-fscomp-help
+				${EXIT} 1
+			fi
+		else
+			if ! _zfs_dataset_valid "$POT_ZFS_ROOT/fscomp/$_fscomp" ; then
+				_error "fscomp $_fscomp is not valid"
+				add-fscomp-help
+				${EXIT} 1
+			fi
+		fi
+	fi
+	# TODO: check that the directory is not in the pot
+	# TODO: check that the directory doesn't conflict with anything already mounted
+	if [ -n "$_dir" ]; then
+		if [ ! -d "$_dir" ]; then
+			_error "$_dir is not a directory"
 			add-fscomp-help
 			${EXIT} 1
 		fi
-	else
-		if ! _zfs_dataset_valid "$POT_ZFS_ROOT/fscomp/$_fscomp" ; then
-			_error "fscomp $_fscomp is not valid"
+		if ! _is_absolute_path "$_dir" ; then
+			_error "$_fscomp has to be an absolute pathname (start with /)"
 			add-fscomp-help
 			${EXIT} 1
+		fi
+		if [ "$_ext" = "external" ]; then
+			_info "-e option is ignored with -d"
 		fi
 	fi
 	if ! _is_pot "$_pname" ; then
@@ -225,12 +284,16 @@ pot-add-fscomp()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	if ! _fscomp_validation "$_pname" "$_fscomp" "$_mnt_p" $_ext $_opt ; then
+	if [ -n "$_fscomp" ] && ! _fscomp_validation "$_pname" "$_fscomp" "$_mnt_p" $_ext $_opt ; then
 		${EXIT} 1
 	fi
 	if ! _mountpoint_validation "$_pname" "$_mnt_p" ; then
 		_error "The mountpoint is not valid!"
 		${EXIT} 1
 	fi
-	_add_f_to_p "$_fscomp" "$_pname" "$_mnt_p" $_ext $_opt
+	if [ -n "$_fscomp" ]; then
+		_add_f_to_p "$_fscomp" "$_pname" "$_mnt_p" $_ext $_opt
+	else
+		_add_d_to_p "$_dir" "$_pname" "$_mnt_p" $_opt
+	fi
 }

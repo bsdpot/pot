@@ -208,6 +208,18 @@ test_is_potnet_available()
 	assertNotEquals "$?" "0"
 }
 
+test_is_absolute_path()
+{
+	_is_absolute_path
+	assertEquals "$?" "1"
+
+	_is_absolute_path "../blah"
+	assertEquals "$?" "1"
+
+	_is_absolute_path "/blah"
+	assertEquals "$?" "0"
+}
+
 setUp()
 {
 	_POT_VERBOSITY=1

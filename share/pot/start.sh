@@ -235,7 +235,11 @@ _js_start()
 		if [ "$_ip" = "inherit" ]; then
 			_param="$_param ip4=inherit ip6=inherit"
 		else
-			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
+			if potnet ip4check "$_ip" ; then
+				_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
+			else
+				_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"
+			fi
 		fi
 	fi
 	jail -c -J "/tmp/${_pname}.jail.conf" $_param command=$_cmd

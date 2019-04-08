@@ -627,6 +627,11 @@ pot-create()
 					${EXIT} 1
 				fi
 			fi
+		else
+			if ! potnet ipcheck -H "$_ipaddr" ; then
+				_error "$_ipaddr is not a valid IPv4 or IPv6 address"
+				${EXIT} 1
+			fi
 		fi
 	fi
 	if [ "$_dns" = "pot" ]; then

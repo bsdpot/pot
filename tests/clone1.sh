@@ -20,6 +20,9 @@ potnet()
 			return 0 # true
 		fi
 	fi
+	if [ "$1" = "ipcheck" ]; then
+		return 0 # true
+	fi
 	return 1 # false
 }
 

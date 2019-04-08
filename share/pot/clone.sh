@@ -259,6 +259,11 @@ pot-clone()
 			_error "$_potbase has a static IP; the auto keyword is valid only in the internal network"
 			${EXIT} 1
 		fi
+	elif [ "$_ipaddr" != "inherit" ]; then
+		if ! potnet ipcheck -H "$_ipaddr" ; then
+			_error "$_ipaddr is not a vliad IPv4 or IPv6 address"
+			${EXIT} 1
+		fi
 	fi
 	# check ip4 configuration compatibility
 	if [ "$_ipaddr" = "inherit" ] && [ "$_pb_ipaddr" != "inherit" ]; then

@@ -13,6 +13,9 @@ potnet()
 			return 0 # true
 		fi
 	fi
+	if [ "$1" = "ipcheck" ]; then
+		return 0 # true
+	fi
 	return 1 # false
 }
 # UUT
@@ -588,7 +591,6 @@ test_pot_create_063()
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
-	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
 test_pot_create_064()

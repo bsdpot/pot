@@ -140,9 +140,9 @@ pot-show()
 			;;
 		esac
 	done
-	if { [ -n "$_pname" ] && [ -n "$_all" ]; } ||
-		{ [ -n "$_pname" ] && [ -n "$_running" ]; } ||
-		{ [ -n "$_all" ] && [ -n "$_running" ]; }; then
+	if ( [ -n "$_pname" ] && [ -n "$_all" ] ) ||
+		( [ -n "$_pname" ] && [ -n "$_running" ] ) ||
+		( [ -n "$_all" ] && [ -n "$_running" ] ); then
 		_error "-p -r -a are mutually exclusive"
 		show-help
 		${EXIT} 1

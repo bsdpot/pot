@@ -1,11 +1,13 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 show-help()
 {
 	echo "pot show [-hv] [-a|-p potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -q quiet'
 	echo '  -a all pots'
 	echo '  -r all running pots (default)'
 	echo '  -p potname select the pot by name'
@@ -57,7 +59,7 @@ _show_pot_run()
 		printf "\\tvirtual memory  : %s\\n" "$_vm"
 		printf "\\tphysical memory : %s\\n" "$_pm"
 	fi
-	_ip="$( _get_conf_var $_pname ip4)"
+	_ip="$( _get_conf_var "$_pname" ip4)"
 	if [ "$_ip" != "inherit" ]; then
 		if pfctl -s nat -P | grep -qF \ ${_ip}\  ; then
 			printf "\\n\\tNetwork port redirection\\n"
@@ -71,12 +73,17 @@ _show_pot_run()
 _show_running_pots()
 {
 	# shellcheck disable=SC2039
-	local _jdir _pots _p
+	local _jdir _pots _p _q
+	_q=$1
 	_jdir="${POT_FS_ROOT}/jails/"
 	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
 		if _is_pot_running "$_p" ; then
-			_show_pot "$_p"
+			if [ "$_q" = "YES" ]; then
+				echo "$_p"
+			else
+				_show_pot "$_p"
+			fi
 		fi
 	done
 }
@@ -84,14 +91,20 @@ _show_running_pots()
 _show_all_pots()
 {
 	# shellcheck disable=SC2039
-	local _jdir _pots _p
+	local _jdir _pots _p _q
+	_q=$1
 	_jdir="${POT_FS_ROOT}/jails/"
 	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots; do
-		_show_pot "$_p"
+		if [ "$_q" = "YES" ]; then
+			echo "$_p"
+		else
+			_show_pot "$_p"
+		fi
 	done
 }
 
+# shellcheck disable=SC2039
 pot-show()
 {
 	# shellcheck disable=SC2039
@@ -99,43 +112,37 @@ pot-show()
 	_pname=
 	_running=
 	_all=
-	if ! args=$(getopt hvp:ar "$@") ; then
-		show-help
-		${EXIT} 1
-	fi
-	# shellcheck disable=SC2086
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	_quiet="NO"
+	while getopts "hvp:arq" _o ; do
+		case "$_o" in
+		h)
 			show-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-p)
+		p)
 			_pname="$2"
-			shift 2
 			;;
-		-r)
+		r)
 			_running="YES2"
-			shift
 			;;
-		-a)
+		a)
 			_all="YES"
-			shift
 			;;
-		--)
-			shift
-			break
+		q)
+			_quiet="YES"
+			;;
+		*)
+			show-help
+			${EXIT} 1
 			;;
 		esac
 	done
-	if ( [ -n "$_pname" ] && [ -n "$_all" ] ) || 
-		( [ -n "$_pname" ] && [ -n "$_running" ] ) || 
-		( [ -n "$_all" ] && [ -n "$_running" ] ); then
+	if { [ -n "$_pname" ] && [ -n "$_all" ]; } ||
+		{ [ -n "$_pname" ] && [ -n "$_running" ]; } ||
+		{ [ -n "$_all" ] && [ -n "$_running" ]; }; then
 		_error "-p -r -a are mutually exclusive"
 		show-help
 		${EXIT} 1
@@ -146,9 +153,9 @@ pot-show()
 		_running="YES"
 	fi
 	if [ -n "$_all" ]; then
-		_show_all_pots
+		_show_all_pots $_quiet
 	elif [ -n "$_running" ]; then
-		_show_running_pots
+		_show_running_pots $_quiet
 	else
 		if ! _is_pot "$_pname" ; then
 			_error "$_pname is not a valid pot"

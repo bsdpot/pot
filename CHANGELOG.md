@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - add-fscomp: add option -d, to allow to mount generic directories into a pot (-d and -f are mutual)
+- show: add -q flag, to only show pot names
 
 ### Changed
 - inherit network: added ipv6 support (automatic)

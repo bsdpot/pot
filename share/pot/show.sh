@@ -113,6 +113,7 @@ pot-show()
 	_running=
 	_all=
 	_quiet="NO"
+	OPTIND=1
 	while getopts "hvp:arq" _o ; do
 		case "$_o" in
 		h)
@@ -123,7 +124,7 @@ pot-show()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
 		p)
-			_pname="$2"
+			_pname="$OPTARG"
 			;;
 		r)
 			_running="YES2"

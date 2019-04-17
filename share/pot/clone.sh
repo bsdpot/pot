@@ -4,7 +4,7 @@
 # shellcheck disable=SC2039
 clone-help()
 {
-	echo "pot clone [-hv] -p potname -P basepot [-i ipaddr]"
+	echo "pot clone [-hvf] -p potname -P basepot [-i ipaddr]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -P potname : the pot to be cloned (template)'

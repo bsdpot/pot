@@ -2,7 +2,7 @@
 
 create-fscomp-help()
 {
-	echo "pot create-fscomp [-h][-v] -f name"
+	echo "pot create-fscomp [-hv] -f name"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -f name : the fs component name (mandatory)'

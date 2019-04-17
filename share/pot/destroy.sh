@@ -4,7 +4,7 @@
 # shellcheck disable=SC2039
 destroy-help()
 {
-	echo "pot destroy [-hvfr] [-p potname|-b basename]"
+	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -F force the stop and destroy'

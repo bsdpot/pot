@@ -3,7 +3,7 @@
 # supported releases
 set-rss-help()
 {
-	echo "pot set-rss [-hv] -p pot -P rssPot"
+	echo "pot set-rss [-hv] -p pot -C cpuset -M memory"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'

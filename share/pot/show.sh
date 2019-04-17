@@ -4,7 +4,7 @@
 # shellcheck disable=SC2039
 show-help()
 {
-	echo "pot show [-hv] [-a|-p potname]"
+	echo "pot show [-hvq] [-a|-r|-p potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -q quiet'

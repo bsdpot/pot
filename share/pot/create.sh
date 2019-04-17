@@ -2,12 +2,12 @@
 
 create-help()
 {
-	echo "pot create [-hv] -p potname [-i ipaddr] [-l lvl] [-f flavour|-F]"
+	echo "pot create [-hv] -p potname [-i ipaddr] [-s] [-l lvl] [-f flavour]"
 	echo '  [-b base | -P basepot ] [-d dns] [-t type]'
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p potname : the pot name (mandatory)'
-	echo '  -l lvl : pot level'
+	echo '  -l lvl : pot level (only for type multi)'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
 	echo '  -i ipaddr : an ip address or the keyword auto or the keyword inherit'

@@ -4,7 +4,7 @@
 # shellcheck disable=SC2039
 add-fscomp-help()
 {
-	echo "pot add-fscomp [-h][-v] -p pot -m mnt -f fscomp | -d directory"
+	echo "pot add-fscomp [-hvwer] -p pot -m mnt -f fscomp | -d directory"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -f fscomp : the fs component to be added'

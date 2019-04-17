@@ -4,7 +4,7 @@
 # shellcheck disable=SC2039
 export-ports-help()
 {
-	echo "pot export-ports [-hv] -p pot -P rssPot"
+	echo "pot export-ports [-hv] -p pot [-S] -e port ..."
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'

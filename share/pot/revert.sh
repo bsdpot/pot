@@ -3,7 +3,7 @@
 # supported releases
 revert-help()
 {
-	echo "pot revert [-h][-v][-f] [potname]"
+	echo "pot revert [-hva] -p potname|-f fscomp"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -a all components of a pot'

@@ -6,7 +6,7 @@
 
 # shellcheck disable=SC2039
 export-help() {
-	echo "pot export [-hv] -p pot [-s snapshot]"
+	echo "pot export [-hv] -p pot [-s snapshot] [-t tag] [-D directory] [-l level]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'

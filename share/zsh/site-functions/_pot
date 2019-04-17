@@ -48,7 +48,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-f[Force stop of all running pots]'
 					;;
-				version) 
+				version|ps) 
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
@@ -58,6 +58,7 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-q[Quiet output]' \
 						'-p[List pots]' \
 						'-b[List bases]' \
 						'-f[List fscomps]' \
@@ -76,9 +77,16 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-q[Quiet output]' \
 						'-a[All pots]' \
 						'-r[All running pots]' \
 						'-p[pot name]:pot name:_pot_pots'
+					;;
+				create-dns)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-b[base name]:base name:_normal'
 					;;
 				create-base) 
 					_arguments \
@@ -152,6 +160,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
+						'-d[directory name]:directory name:_normal' \
 						'-m[Mountpoint]::_normal' \
 						'-e[External dataset]' \
 						'-w[Move ZFS mountpoint]' \
@@ -209,14 +218,17 @@ _pot() {
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-t[tag name]::_normal' \
-						'-s[snapshot]::_normal'
+						'-s[snapshot]::_normal' \
+						'-D[target directory]:target directory:_normal' \
+						'-l[compression level]:compression level:(0 1 2 3 4 5 6 7 8 9)'
 					;;
 				import)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-t[tag name]::_normal'
+						'-t[tag name]::_normal' \
+						'-U[URL]:URL:_normal'
 					;;
 				top)
 					_arguments \
@@ -256,6 +268,7 @@ _pot_cmds() {
 	'show:Show pot resources'
 	'info:Show info on pot'
 	'top:Show processes (top) running in the pot'
+	'ps:Show running pots'
 	'init:Init ZFS'
 	'de-init:Remove all ZFS datasets'
 	'vnet-start:Start the vnet configuration'

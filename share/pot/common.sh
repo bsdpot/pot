@@ -4,6 +4,9 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
+_POT_RW_ATTRIBUTES="start-at-boot"
+_POT_RO_ATTRIBUTES=""
+
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1
 __POT_MSG_DBG=2
@@ -516,7 +519,7 @@ _is_cmd_flavorable()
 	local _cmd
 	_cmd=$1
 	case $_cmd in
-		add-dep|add-fscomp|\
+		add-dep|add-fscomp|set-attribute|\
 		set-rss|export-ports)
 			return 0
 			;;

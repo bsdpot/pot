@@ -188,6 +188,22 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'-c[command]::_normal'
 					;;
+				set-attr|set-attribute)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-A[attribute]:attribute:(start-at-boot)' \
+						'-V[value]:value:_normal'
+					;;
+				get-attr|get-attribute)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-A[attribute]:attribute:(start-at-boot)' \
+						'-q[Quiet output]'
+					;;
 				export-ports)
 					_arguments \
 						'-h[Show help]' \
@@ -261,7 +277,7 @@ _pot_cmds() {
 	commands=(
 	'help:Show help'
 	'version:Show version'
-	'config:Show config values'
+	'config:Show framework config values'
 	'top:Run top in pot'
 	'ls:List elements'
 	'list:List elements'
@@ -277,13 +293,17 @@ _pot_cmds() {
 	'create:Create a new pot'
 	'clone:Clone a pot'
 	'clone-fscomp:Clone a fs component'
-	'promote:Promote a cloned pot'
+	'promote:Promote a cloned pot -- DEPRECATED'
 	'rename:Rename a pot'
 	'destroy:Destroy a pot'
 	'add-fscomp:Add a fs component to a pot'
 	'add-dep:Add a dependency to a pot'
 	'set-rss:Set a resource constraint to a pot'
 	'set-cmd:Set the initial command of a pot'
+	'set-attr:Set the value of a pot attribute'
+	'set-attribute:Set the value of a pot attribute'
+	'get-attr:Get the value of a pot attribute'
+	'get-attribute:Get the value of a pot attribute'
 	'export-ports:export ports of a pot'
 	'start:Start a pot'
 	'stop:Stop a pot'

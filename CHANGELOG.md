@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - add-fscomp: add option -d, to allow to mount generic directories into a pot (-d and -f are mutual)
 - show: add -q flag, to only show pot names
+- set-attribute: to set pot attributes (options/flags/configurations)
+- get-attribute: to get pot attributes (options/flags/configurations)
 
 ### Changed
 - inherit network: added ipv6 support (automatic)
 - static IP network: added ipv6 support
+
+### Deprecated
+- pot_list: in rc.cont pot_list is not supported anymore. Please use the start-at-boot attribute
 
 ### Fixed
 - syntax error in zsh autocompletion

@@ -73,10 +73,12 @@ Usage: pot command [options]
 Commands:
 	help	-- Show help
 	version -- Show the pot version
-	config  -- Show pot configuration
+	config  -- Show pot framework configuration
+	ls/list	-- List of the installed pots
 	show	-- Show pot information
 	info    -- Print minimal information on a pot
-	ls/list	-- List of the installed pots
+	top     -- Run the unix top in the pot
+    ps      -- Show running pots
 	init	-- Initialize the ZFS layout
 	de-init	-- Deinstall pot from your system
 	vnet-start -- Start the vnet configuration
@@ -92,12 +94,13 @@ Commands:
 	add-dep -- Add a dependency
 	set-rss -- Set a resource constraint
 	set-cmd -- Set the command to start the pot
+    set-attr -- Set a pot's attribute
+    get-attr -- Get a pot's attribute
 	export-ports -- Let export tcp ports
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)
 	term -- Start a terminal in a pot
 	run -- Start and open a terminal in a pot
-	top -- Run the unix top in the pot
 	snap/snapshot -- Take a snapshot of a pot
 	rollback/revert -- Restore the last snapshot
 	purge-snapshots -- Remove old/all snapshots
@@ -127,6 +130,12 @@ case "${CMD}" in
 	snap)
 		CMD=snapshot
 		;;
+	set-attr)
+		CMD=set-attribute
+		;;
+	get-attr)
+		CMD=get-attribute
+		;;
 esac
 
 case "${CMD}" in
@@ -145,7 +154,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|create-dns|\
 	add-fscomp|destroy|add-dep|set-rss|set-cmd|\
 	export|import|\
-	export-ports|\
+	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert|purge-snapshots)

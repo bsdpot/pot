@@ -78,7 +78,7 @@ Commands:
 	show	-- Show pot information
 	info    -- Print minimal information on a pot
 	top     -- Run the unix top in the pot
-    ps      -- Show running pots
+	ps      -- Show running pots
 	init	-- Initialize the ZFS layout
 	de-init	-- Deinstall pot from your system
 	vnet-start -- Start the vnet configuration
@@ -94,8 +94,8 @@ Commands:
 	add-dep -- Add a dependency
 	set-rss -- Set a resource constraint
 	set-cmd -- Set the command to start the pot
-    set-attr -- Set a pot's attribute
-    get-attr -- Get a pot's attribute
+	set-attr -- Set a pot's attribute
+	get-attr -- Get a pot's attribute
 	export-ports -- Let export tcp ports
 	start -- Start a jail (pot)
 	stop -- Stop a jail (pot)

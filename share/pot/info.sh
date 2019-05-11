@@ -1,6 +1,7 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 info-help()
 {
 	echo "pot info [-hvqr] -p pname"
@@ -14,34 +15,35 @@ info-help()
 # $1 pot name
 _info_pot()
 {
+	# shellcheck disable=SC2039
 	local _pname _cdir _lvl _ports _type
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_lvl=$( _get_conf_var $_pname pot.level)
+	_lvl=$( _get_conf_var "$_pname" pot.level)
 	_type=$( _get_conf_var "$_pname" pot.type)
-	printf "pot name : %s\n" $_pname
+	printf "pot name : %s\n" "$_pname"
 	printf "\ttype : %s\n" "$_type"
-	printf "\tbase : %s\n" "$( _get_conf_var $_pname pot.base)"
+	printf "\tbase : %s\n" "$( _get_conf_var "$_pname" pot.base)"
 	printf "\tlevel : %s\n" "$_lvl"
-	if [ $_lvl -eq 2 ]; then
-		printf "\tbase pot : %s\n" "$( _get_conf_var $_pname pot.potbase)"
+	if [ "$_lvl" -eq 2 ]; then
+		printf "\tbase pot : %s\n" "$( _get_conf_var "$_pname" pot.potbase)"
 	fi
-	printf "\tip4 : %s\n" "$( _get_conf_var $_pname ip4)"
-	if _is_verbose && [ "$( _get_conf_var $_pname ip4)" != "inherit" ]; then
-		_ports="$( _get_pot_export_static_ports $_pname )"
+	printf "\tip4 : %s\n" "$( _get_conf_var "$_pname" ip4)"
+	if _is_verbose && [ "$( _get_conf_var "$_pname" ip4)" != "inherit" ]; then
+		_ports="$( _get_pot_export_static_ports "$_pname" )"
 		if [ -z "$_ports" ]; then
 			printf "\t\tno ports exported (static)\n"
 		else
-			printf "\t\tstatically exported ports: $_ports\n"
+			printf "\t\tstatically exported ports: %s\n" "$_ports"
 		fi
-		_ports="$( _get_pot_export_ports $_pname )"
+		_ports="$( _get_pot_export_ports "$_pname" )"
 		if [ -z "$_ports" ]; then
 			printf "\t\tno ports exported (dynamic)\n"
 		else
-			printf "\t\tdynamically exported ports: $_ports\n"
+			printf "\t\tdynamically exported ports: %s\n" "$_ports"
 		fi
 	fi
-	if _is_pot_running $_pname ; then
+	if _is_pot_running "$_pname" ; then
 		printf "\tactive : true\n"
 	else
 		printf "\tactive : false\n"
@@ -55,46 +57,43 @@ _info_pot()
 		printf "\tsnapshot:\n"
 		_print_pot_snaps "$_pname"
 	fi
+	printf "\tattributes:\n"
+	for _a in $_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES ; do
+		_value=$( _get_conf_var "$_pname" "pot.attr.$_a")
+		printf "\t\t%s: %s\n" "$_a" "$_value"
+	done
 	echo
 }
 
+# shellcheck disable=SC2039
 pot-info()
 {
 	local _pname _quiet _run
 	_pname=""
 	_quiet="NO"
 	_run="NO"
-	args=$(getopt hvqp:r $*)
-	if [ $? -ne 0 ]; then
-		info-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvqp:r" _o ; do
+		case "$_o" in
+		h)
 			info-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-q)
+		q)
 			_quiet="YES"
-			shift
 			;;
-		-p)
-			_pname="$2"
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		-r)
+		r)
 			_run="YES"
-			shift
 			;;
-		--)
-			shift
-			break
+		*)
+			info-help
+			${EXIT} 1
 			;;
 		esac
 	done
@@ -108,7 +107,7 @@ pot-info()
 		info-help
 		${EXIT} 1
 	fi
-	if ! _is_pot $_pname quiet ; then
+	if ! _is_pot "$_pname" quiet ; then
 		if [ "$_quiet" != "YES" ]; then
 			_error "$_pname is not a pot"
 			info-help
@@ -117,7 +116,7 @@ pot-info()
 	fi
 	if [ "$_quiet" = "YES" ]; then
 		if [ "$_run" = "YES" ]; then
-			if _is_pot_running $_pname ; then
+			if _is_pot_running "$_pname" ; then
 				${EXIT} 0
 			else
 				${EXIT} 1
@@ -126,5 +125,5 @@ pot-info()
 			${EXIT} 0
 		fi
 	fi
-	_info_pot $_pname
+	_info_pot "$_pname"
 }

@@ -79,7 +79,7 @@ _ls_fscomp()
 	local _fdir _fscomps _q
 	_q=$1
 	_fdir="${POT_FS_ROOT}/fscomp/"
-	_fscomps=$( ls -d "$_fdir"/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_fscomps=$( zfs list -d 1 -Ho name "${POT_ZFS_ROOT}/fscomp" | sed '1d' | xargs -I {} basename {} | tr '\n' ' ' )
 	if [ "$_q" = "quiet" ]; then
 		for _f in $_fscomps; do
 			 echo "$_f"

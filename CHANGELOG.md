@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - syntax error in zsh autocompletion
+- ls fscomp: using zfs instead of ls (if a fscomp is re-mounted, the mountpoint is not in /opt/pot/fscomp anymore)
 
 ## [0.5.11] 2019-03-04
 ### Added

@@ -149,12 +149,12 @@ pot-create-base()
 		_bname=$_rel
 		_info "Automatically use $_rel as base name"
 	fi
-	if [ "$_bname" != "$_rel" ] && _is_in_list "$_bname" $_POT_RELEASES ; then
+	if [ "$_bname" != "$_rel" ] && _is_valid_release "$_bname" ; then
 		_error "$_bname has the name of another valid release and that's forbidden"
 		create-base-help
 		${EXIT} 1
 	fi
-	if _is_base $_bname quiet ; then
+	if _is_base "$_bname" quiet ; then
 		_error "$_bname already exist"
 		${EXIT} 1
 	fi

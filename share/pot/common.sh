@@ -560,15 +560,49 @@ _is_potnet_available()
 	fi
 }
 
-# supported releases
-: ${_POT_RELEASES:="10.1 10.3 10.4 11.0 11.1 11.2 12.0"}
+# tested (common7)
+_map_archs()
+{
+	if [ -z "$1" ]; then
+		return
+	fi
+	case "$1" in
+		amd64)
+			echo amd64-amd64
+			;;
+		i386)
+			echo i386-i386
+			;;
+		*)
+			# TODO Add more arhitectures
+			;;
+	esac
+}
 
+# tested (common7)
+_get_valid_releases()
+{
+	local _arch _file_prefix
+	_arch="$( sysctl -n hw.machine_arch )"
+	_file_prefix="$(_map_archs "$_arch" )"
+	if [ -z "$_file_prefix" ]; then
+		echo
+	fi
+	releases="$( find /usr/local/share/freebsd/MANIFESTS -type f -name "${_file_prefix}-*" | sed s%/usr/local/share/freebsd/MANIFESTS/"${_file_prefix}"-%% | sort -V | sed 's/-RELEASE//' | tr '\n' ' ' )"
+	echo "$releases"
+}
+
+# tested (common7)
 _is_valid_release()
 {
 	# shellcheck disable=SC2039
-	local _rel
+	local _rel _releases
+	if [ -z "$1" ]; then
+		return 1 # false
+	fi
 	_rel="$1"
-	if _is_in_list "$_rel" $_POT_RELEASES ; then
+	_releases="$( _get_valid_releases )"
+	if _is_in_list "$_rel" $_releases ; then
 		return 0 # true
 	else
 		return 1 # false

@@ -10,13 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - show: add -q flag, to only show pot names
 - set-attribute: to set pot attributes (options/flags/configurations)
 - get-attribute: to get pot attributes (options/flags/configurations)
+- FreeBSD version usable to create a pot are all the ones listed in the FreeBSD MANIFEST
 
 ### Changed
 - inherit network: added ipv6 support (automatic)
 - static IP network: added ipv6 support
 
 ### Deprecated
-- pot_list: in rc.cont pot_list is not supported anymore. Please use the start-at-boot attribute
+- pot_list: in rc.conf pot_list is not supported anymore. Please use the start-at-boot attribute
 
 ### Fixed
 - syntax error in zsh autocompletion

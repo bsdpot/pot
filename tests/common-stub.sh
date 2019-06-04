@@ -205,6 +205,18 @@ _fscomp_zfs_snap()
 	__monitor FSCOMPZFSSNAP "$@"
 }
 
+_is_valid_release()
+{
+	case "$1" in
+		10.1|10.4|11.0|11.1)
+		   return 0 # true
+		   ;;
+	   *)
+		   return 1 # false
+		   ;;
+   esac
+}
+
 common_setUp()
 {
 	_POT_VERBOSITY=1

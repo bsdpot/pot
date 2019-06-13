@@ -235,7 +235,7 @@ _js_start()
 		if [ "$_ip" = "inherit" ]; then
 			_param="$_param ip4=inherit ip6=inherit"
 		else
-			if potnet ip4check "$_ip" ; then
+			if potnet ip4check -H "$_ip" ; then
 				_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
 			else
 				_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"

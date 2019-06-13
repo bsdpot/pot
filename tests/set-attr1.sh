@@ -137,6 +137,18 @@ test_pot_set_attr_020()
 	assertEquals "_set_attr arg2" "ON" "$STARTBOOT_CALL1_ARG2"
 }
 
+test_pot_set_attr_021()
+{
+	pot-set-attribute -p test-pot -A persistent -V ON
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_set_attr calls" "1" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr arg1" "test-pot" "$STARTBOOT_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "ON" "$STARTBOOT_CALL1_ARG2"
+}
+
 setUp()
 {
 	common_setUp

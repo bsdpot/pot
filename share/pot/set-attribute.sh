@@ -9,7 +9,7 @@ set-attr-help()
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'
 	echo '  -A attribute : one of those attributes:'
-	echo '      '"$_ATTRIBUTES"
+	echo '      '"$_POT_RW_ATTRIBUTES"
 	echo '  -V value : the new value for the attribute'
 }
 
@@ -45,6 +45,30 @@ _set_start_at_boot()
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
 	sed -i '' -e "/^pot.attr.start-at-boot=.*/d" "$_cdir/pot.conf"
 	echo "pot.attr.start-at-boot=$_value" >> "$_cdir/pot.conf"
+}
+
+_set_persistent()
+{
+	# shellcheck disable=SC2039
+	local _pname _value _cdir
+	_pname=$1
+	_value=$2
+	if ! _value=$(_normalize_true_false "$_value") ; then
+		_error "value $_value is not a valid boolean value"
+		set-attr-help
+		${EXIT} 1
+	fi
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	sed -i '' -e "/^pot.attr.start-at-boot=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.persistent=$_value" >> "$_cdir/pot.conf"
+}
+
+_ignored_parameter()
+{
+	# shellcheck disable=SC2039
+	local _attr
+	_attr=$1
+ 	_debug "The attribute $_attr is not implemented anymore and it will be ignored"
 }
 
 # shellcheck disable=SC2039
@@ -110,6 +134,13 @@ pot-set-attribute()
 	case $_attr in
 		"start-at-boot")
 			_cmd=_set_start_at_boot
+			;;
+		"persistent")
+			_cmd=_set_persistent
+			;;
+		*)
+			_ignored_parameter "$_attr"
+			${EXIT} 0
 			;;
 	esac
 

@@ -10,7 +10,7 @@ get-attr-help()
 	echo '  -q quiet'
 	echo '  -p pot : the working pot'
 	echo '  -A attribute : one of those attributes:'
-	echo '      '"$_ATTRIBUTES"
+	echo '      '"$_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES"
 }
 
 # shellcheck disable=SC2039

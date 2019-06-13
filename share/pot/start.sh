@@ -217,8 +217,13 @@ _js_start()
 	_cmd="$( _js_get_cmd "$_pname" )"
 	_iface=
 	_param="allow.set_hostname=false allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
-	_param="$_param allow.chflags exec.clean"
-	_param="$_param mount.devfs persist exec.stop=sh,/etc/rc.shutdown"
+	_param="$_param allow.chflags exec.clean mount.devfs"
+	if [ "$(_get_conf_var "$_pname" "pot.attr.persistent")" = "NO" ]; then
+		_param="$_param nopersist"
+	else
+		_param="$_param persist"
+	fi
+	_param="$_param exec.stop=sh,/etc/rc.shutdown"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_hostname="$( _get_conf_var $_pname host.hostname )"
 	_osrelease="$( _get_conf_var $_pname osrelease )"

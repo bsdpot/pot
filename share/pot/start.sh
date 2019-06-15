@@ -25,7 +25,7 @@ start-cleanup()
 		return
 	fi
 	if [ -n "$2" ]; then
-		ifconfig $2 destroy
+		ifconfig ${2}a destroy
 	fi
 	pot-cmd stop $_pname
 }
@@ -212,13 +212,14 @@ _js_get_cmd()
 # $1 jail name
 _js_start()
 {
-	local _pname _jdir _iface _hostname _osrelease _param _ip _cmd
+	local _pname _jdir _iface _hostname _osrelease _param _ip _cmd _persist
 	_pname="$1"
 	_cmd="$( _js_get_cmd "$_pname" )"
 	_iface=
+	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	_param="allow.set_hostname=false allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags exec.clean mount.devfs"
-	if [ "$(_get_conf_var "$_pname" "pot.attr.persistent")" = "NO" ]; then
+	if [ "$_persist" = "NO" ]; then
 		_param="$_param nopersist"
 	else
 		_param="$_param persist"
@@ -250,10 +251,15 @@ _js_start()
 	jail -c -J "/tmp/${_pname}.jail.conf" $_param command=$_cmd
 	sleep 1
 	if ! _is_pot_running "$_pname" ; then
-		start-cleanup $_pname ${_iface}a
-		return 1
+		start-cleanup "$_pname" "${_iface}"
+		if [ "$_persist" = "NO" ]; then
+			return 0
+		else
+			return 1
+		fi
 	fi
 	_js_rss "$_pname"
+	_info "The pot ${_pname} started"
 }
 
 pot-start()
@@ -337,8 +343,6 @@ pot-start()
 	if ! _js_start $_pname ; then
 		_error "$_pname failed to start"
 		return 1
-	else
-		_info "The pot "${_pname}" started"
 	fi
 	return 0
 }

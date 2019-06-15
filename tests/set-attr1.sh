@@ -19,6 +19,11 @@ _set_start_at_boot()
 	__monitor STARTBOOT "$@"
 }
 
+_set_persistent()
+{
+	__monitor PERSISTENT "$@"
+}
+
 test_pot_set_attr_001()
 {
 	pot-set-attribute
@@ -144,9 +149,9 @@ test_pot_set_attr_021()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "1" "$STARTBOOT_CALLS"
-	assertEquals "_set_attr arg1" "test-pot" "$STARTBOOT_CALL1_ARG1"
-	assertEquals "_set_attr arg2" "ON" "$STARTBOOT_CALL1_ARG2"
+	assertEquals "_set_attr calls" "1" "$PERSISTENT_CALLS"
+	assertEquals "_set_attr arg1" "test-pot" "$PERSISTENT_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "ON" "$PERSISTENT_CALL1_ARG2"
 }
 
 setUp()
@@ -156,6 +161,9 @@ setUp()
 	STARTBOOT_CALLS=0
 	STARTBOOT_CALL1_ARG=
 	STARTBOOT_CALL2_ARG=
+	PERSISTENT_CALLS=0
+	PERSISTENT_CALL1_ARG=
+	PERSISTENT_CALL2_ARG=
 }
 
 . shunit/shunit2

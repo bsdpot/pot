@@ -39,15 +39,11 @@ _js_stop()
 				ifconfig "${POT_EXTIF}" "$_ip" -alias
 			fi
 		fi
-		return $?
 	fi
-	# to be user that I'm cleaning everything
+	# to be sure that I'm cleaning everything
 	if [ -n "$( _get_pot_export_ports $_pname)" ]; then
 		_debug "Remove redirection rules from the firewall"
-		_pfrules="/tmp/pot_pfrules"
-		pfctl -s nat -P > $_pfrules
-		sed -i '' "/ $_ip /d" $_pfrules
-		pfctl -f $_pfrules
+		pfctl -a "pot-rdr/$_pname" -F nat
 	fi
 	return 0 # true
 }

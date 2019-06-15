@@ -57,8 +57,7 @@ pot-vnet-start()
 	# if bridge0 doesn't exist yet
 	_bridge=$(_pot_bridge)
 	if [ -z "$_bridge" ]; then
-		_bridge=$(ifconfig bridge create)
-		if [ $? -ne 0 ]; then
+		if _bridge=$(ifconfig bridge create) ; then
 			_error "Bridge not created"
 		else
 			_debug "Bridge created $_bridge"
@@ -74,37 +73,28 @@ pot-vnet-start()
 
 	# load pf module
 	kldload -n pf
-	# firewall rules
-	_pfrules="/tmp/pot_pfrules"
-	if [ -w "$_pfrules" ]; then
-		rm -f $_pfrules
+	_nat_rules="/tmp/pot_pf_nat_rules"
+	if [ -w "$_nat_rules" ]; then
+		rm -f "$_nat_rules"
 	fi
+	# NAT rules
 	(
 		echo "ext_if = \"${POT_EXTIF}\""
 		echo "localnet = \"${POT_NETWORK}\""
 		echo "nat on \$ext_if from \$localnet to any -> (\$ext_if)"
-	) > $_pfrules
+	) > $_nat_rules
 
 	# add vpn support
 	if [ -n "$POT_VPN_EXTIF" ] && [ -n "$POT_VPN_NETWORKS" ]; then
 		for net in $POT_VPN_NETWORKS ; do
-			echo "nat on $POT_VPN_EXTIF from \$localnet to $net -> ($POT_VPN_EXTIF)" >> $_pfrules
+			echo "nat on $POT_VPN_EXTIF from \$localnet to $net -> ($POT_VPN_EXTIF)" >> $_nat_rules
 		done
 	fi
 
-	# add pf rules
-	if [ "$(sysrc -n pf_enable)" = "YES" ]; then
-		_rules_file="$( sysrc -n pf_rules )"
-		if [ -n "$_rules_file" ]; then
-				cat "$_rules_file" >> $_pfrules
-		fi
-	fi
-
-	echo "pass from \$localnet to any keep state" >> $_pfrules
+	pfctl -a pot-nat -f $_nat_rules
 	# load the rules
-	pfctl -F nat -f $_pfrules
 	if _is_verbose ; then
-		pfctl -s nat
+		pfctl -s nat -a pot-nat
 	fi
 	pfctl -e
 }

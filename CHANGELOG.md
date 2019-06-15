@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - inherit network: added ipv6 support (automatic)
 - static IP network: added ipv6 support
+- pf: adopt anchor with relevant changes in nat rules namagement
 
 ### Deprecated
 - pot_list: in rc.conf pot_list is not supported anymore. Please use the start-at-boot attribute

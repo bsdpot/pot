@@ -80,6 +80,17 @@ pot-init()
 	mkdir -p /usr/local/etc/newsyslog.conf.d
 	mkdir -p /var/log/pot
 
+	# add proper syslogd flags and restart it
 	sysrc syslogd_flags="-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
+	# service syslogd restart
+
+	# Add pot anchors if needed
+	if [ "$(grep -c '^nat-anchor pot-nat$' /etc/pf.conf )" -eq 1 ] && [ "$(grep -c '^rdr-anchor "pot-rdr/\*"$' /etc/pf.conf )" -eq 1 ] ; then
+		_debug "pf alredy properly configured"
+	else
+		sed -i '' '/^nat-anchor pot-nat$/d' /etc/pf.conf
+		sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' /etc/pf.conf
+		printf "%s\n" 0a "nat-anchor pot-nat" "rdr-anchor \"pot-rdr/*\"" . x | ex /etc/pf.conf
+	fi
 }
 

@@ -117,31 +117,34 @@ _js_export_static_ports()
 	_pname=$1
 	_ip="$( _get_conf_var $_pname ip4 )"
 	_ports="$( _get_pot_export_static_ports $_pname )"
-	_pfrules="/tmp/pot_pfrules"
+	_pfrules="/tmp/pot_${_pname}_pfrules_static"
 	if [ -z "$_ports" ]; then
 		return
 	fi
-	pfctl -s nat -P > $_pfrules
+	rm -f $_pfrules
 	for _port in $_ports ; do
 		_debug "Redirect: from $POT_EXTIF : $_port to $_ip : $_port"
 		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_port -> $_ip port $_port" >> $_pfrules
 		_excl_list="$_excl_list $_port"
 	done
-	pfctl -s rules -P >> $_pfrules
-	pfctl -f $_pfrules
+	pfctl -a pot-rdr/$_pname -f $_pfrules
 }
 
 # $1: exclude list
 _js_get_free_rnd_port()
 {
-	local _min _max exc_ports used_ports rdr_ports rand
+	local _min _max excl_ports used_ports rdr_ports rand
 	excl_ports="$1"
 	_min=$( sysctl -n net.inet.ip.portrange.reservedhigh )
 	_min=$(( _min + 1 ))
 	_max=$( sysctl -n net.inet.ip.portrange.first )
 	_max=$(( _max - 1 ))
 	used_ports="$(sockstat -p ${_min}-${_max} -4l | awk '!/USER/ { n=split($6,a,":"); if ( n == 2 ) { print a[2]; }}' | sort -u)"
-	rdr_ports="$(pfctl -s nat -P | awk '/rdr/ { n=split($0,a," "); for(i=1;i<=n;i++) { if (a[i] == "=" ) { print a[i+1];break;}}}')"
+	anchors="$(pfctl -a pot-rdr -s Anchors)"
+	for a in $anchors ; do
+		new_ports="$( pfctl -a $a -s nat -P | awk '/rdr/ { n=split($0,a," "); for(i=1;i<=n;i++) { if (a[i] == "=" ) { print a[i+1];break;}}}')"
+		rdr_ports="$rdr_ports $new_ports"
+	done
 	rand=$_min
 	while [ $rand -le $_max ]; do
 		for p in $excl_ports $used_ports $rdr_ports ; do
@@ -162,19 +165,18 @@ _js_export_ports()
 	_pname=$1
 	_ip="$( _get_conf_var $_pname ip4 )"
 	_ports="$( _get_pot_export_ports $_pname )"
-	_pfrules="/tmp/pot_pfrules"
+	_pfrules="/tmp/pot_${_pname}_pfrules"
 	if [ -z "$_ports" ]; then
 		return
 	fi
-	pfctl -s nat -P > $_pfrules
+	rm -f $_pfrules
 	for _port in $_ports ; do
 		_random_port=$( _js_get_free_rnd_port "$_excl_list" )
 		_debug "Redirect: from $POT_EXTIF : $_random_port to $_ip : $_port"
 		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_random_port -> $_ip port $_port" >> $_pfrules
 		_excl_list="$excl_list $_random_port"
 	done
-	pfctl -s rules -P >> $_pfrules
-	pfctl -f $_pfrules
+	pfctl -a pot-rdr/$_pname -f $_pfrules
 }
 
 # $1 jail name

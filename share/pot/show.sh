@@ -61,9 +61,9 @@ _show_pot_run()
 	fi
 	_ip="$( _get_conf_var "$_pname" ip4)"
 	if [ "$_ip" != "inherit" ]; then
-		if pfctl -s nat -P | grep -qF \ ${_ip}\  ; then
+		if pfctl -a "pot-rdr/$_pname" -s nat -P | grep -qF \ ${_ip}\  ; then
 			printf "\\n\\tNetwork port redirection\\n"
-			pfctl -s nat -P | grep -F \ ${_ip}\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
+			pfctl -a "pot-rdr/$_pname" -s nat -P | grep -F \ ${_ip}\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
 				printf "\\t\\t%s\\n" "$rule"
 			done
 		fi

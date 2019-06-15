@@ -379,7 +379,7 @@ _is_vnet_up()
 		return 1 # false
 	elif [ ! -c /dev/pf ]; then
 		return 1 # false
-	elif [ -z "$(pfctl -s nat)" ]; then
+	elif [ -z "$(pfctl -s nat -a pot-nat)" ]; then
 		return 1 # false
 	else
 		return 0 # true

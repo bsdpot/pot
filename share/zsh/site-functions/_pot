@@ -193,7 +193,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-A[attribute]:attribute:(start-at-boot persistent)' \
+						'-A[attribute]:attribute:(start-at-boot persistent no-rc-script)' \
 						'-V[value]:value:_normal'
 					;;
 				get-attr|get-attribute)
@@ -201,7 +201,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-A[attribute]:attribute:(start-at-boot persistent)' \
+						'-A[attribute]:attribute:(start-at-boot persistent no-rc-script)' \
 						'-q[Quiet output]'
 					;;
 				export-ports)

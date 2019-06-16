@@ -69,5 +69,14 @@ pot-ps()
 			;;
 		esac
 	done
+	if [ -z "$_q" ]; then
+		if ! _is_uid0 quiet ; then
+			_info "Need privileges to read internal network status"
+		elif _is_vnet_up ; then
+			_info "Internal network up"
+		else
+			_info "Internal network down"
+		fi
+	fi
 	_ps_pots "$_q"
 }

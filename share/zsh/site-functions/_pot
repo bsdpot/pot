@@ -154,6 +154,14 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-r[Recursive destroying]'
 					;;
+				add-file)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-f[source file]:source file:_normal' \
+						'-m[destination]:destination:_normal'
+					;;
 				add-fscomp)
 					_arguments \
 						'-h[Show help]' \
@@ -296,7 +304,8 @@ _pot_cmds() {
 	'promote:Promote a cloned pot -- DEPRECATED'
 	'rename:Rename a pot'
 	'destroy:Destroy a pot'
-	'add-fscomp:Add a fs component to a pot'
+	'add-file:Add a file to a pot'
+	'add-fscomp:Add a fs component or a directory to a pot'
 	'add-dep:Add a dependency to a pot'
 	'set-rss:Set a resource constraint to a pot'
 	'set-cmd:Set the initial command of a pot'

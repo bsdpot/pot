@@ -90,7 +90,8 @@ Commands:
 	promote -- Promote a cloned pot -- DEPRECATED
 	rename -- Rename a pot
 	destroy -- Destroy a pot
-	add-fscomp -- Add a fs component to a pot
+	add-file -- Add a file to a pot
+	add-fscomp -- Add a fs component or a directory to a pot
 	add-dep -- Add a dependency
 	set-rss -- Set a resource constraint
 	set-cmd -- Set the command to start the pot
@@ -152,7 +153,7 @@ case "${CMD}" in
 	list|info|ps|top|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
-	add-fscomp|destroy|add-dep|set-rss|set-cmd|\
+	add-file|add-fscomp|destroy|add-dep|set-rss|set-cmd|\
 	export|import|\
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\

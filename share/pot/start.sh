@@ -254,7 +254,6 @@ _js_start()
 		_param="$_param vnet vnet.interface=${_iface}b"
 		_js_export_static_ports "$_pname"
 		_js_export_ports "$_pname"
-		#_param="$_param exec.poststop=pfctl,-F,nat,-a,pot-rdr/$_pname"
 	else
 		_ip=$( _get_conf_var $_pname ip4 )
 		if [ "$_ip" = "inherit" ]; then

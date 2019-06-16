@@ -23,13 +23,6 @@ _js_stop()
 		fi
 		_debug "Stop the pot $_pname"
 		jail -r "$_pname"
-		if [ -n "$( _get_pot_export_ports $_pname)" ]; then
-			_debug "Remove redirection rules from the firewall"
-			_pfrules="/tmp/pot_pfrules"
-			pfctl -s nat -P > $_pfrules
-			sed -i '' "/ $_ip /d" $_pfrules
-			pfctl -f $_pfrules
-		fi
 		if [ -n "$_epair" ]; then
 			_debug "Remove ${_epair%b}[a|b] network interfaces"
 			ifconfig "${_epair%b}"a destroy
@@ -57,6 +50,18 @@ _js_rm_resolv()
 	if [ -f $_jdir/m/etc/resolv.conf ]; then
 		rm -f $_jdir/m/etc/resolv.conf
 	fi
+}
+
+_epair_cleanup()
+{
+	local _epairs_a _epairs_b
+	_epairs_b="$(ifconfig | grep '^epair[0-9][0-9]*b' | sed 's/:.*$//' | sort)"
+	_epairs_a="$(ifconfig | grep '^epair[0-9][0-9]*a' | sed 's/:.*$//' | sort)"
+	for _e in $_epairs_b ; do
+		if _is_in_list ${_e%b}a $_epairs_a ; then
+			ifconfig $_e destroy
+		fi
+	done
 }
 
 pot-stop()
@@ -106,4 +111,5 @@ pot-stop()
 	fi
 	_js_rm_resolv $_pname
 	_pot_umount "$_pname"
+	_epair_cleanup
 }

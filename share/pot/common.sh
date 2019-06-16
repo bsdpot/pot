@@ -4,7 +4,7 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot persistent"
+_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script"
 _POT_RO_ATTRIBUTES=""
 
 __POT_MSG_ERR=0

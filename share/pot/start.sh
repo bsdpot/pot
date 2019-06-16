@@ -102,12 +102,20 @@ _js_vnet()
 	ifconfig ${_epair} up
 	ifconfig $_bridge addm ${_epair}
 	_ip=$( _get_conf_var $_pname ip4 )
-	# set the network configuration in the pot's rc.conf
-	if [ -w ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf ]; then
-		sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+	## if norcscript - write a ad-hoc one
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		touch ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		chmod a+x ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		echo "ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		echo "route add default $POT_GATEWAY" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+	else # use rc scripts
+		# set the network configuration in the pot's rc.conf
+		if [ -w ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf ]; then
+			sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+		fi
+		echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+		sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$POT_GATEWAY"
 	fi
-	echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
-	sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$POT_GATEWAY"
 }
 
 # $1 pot name
@@ -211,12 +219,20 @@ _js_get_cmd()
 	echo "$_value"
 }
 
+
+_js_norc()
+{
+	local _pname
+	_pname="$1"
+	_cmd="$(_js_get_cmd $_pname)"
+	echo $_cmd >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+}
+
 # $1 jail name
 _js_start()
 {
 	local _pname _jdir _iface _hostname _osrelease _param _ip _cmd _persist
 	_pname="$1"
-	_cmd="$( _js_get_cmd "$_pname" )"
 	_iface=
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	_param="allow.set_hostname=false allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
@@ -238,6 +254,7 @@ _js_start()
 		_param="$_param vnet vnet.interface=${_iface}b"
 		_js_export_static_ports "$_pname"
 		_js_export_ports "$_pname"
+		#_param="$_param exec.poststop=pfctl,-F,nat,-a,pot-rdr/$_pname"
 	else
 		_ip=$( _get_conf_var $_pname ip4 )
 		if [ "$_ip" = "inherit" ]; then
@@ -249,6 +266,12 @@ _js_start()
 				_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"
 			fi
 		fi
+	fi
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		_js_norc "$_pname"
+		_cmd=/tmp/tinirc
+	else
+		_cmd="$( _js_get_cmd "$_pname" )"
 	fi
 	jail -c -J "/tmp/${_pname}.jail.conf" $_param command=$_cmd
 	sleep 1

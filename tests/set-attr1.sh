@@ -24,6 +24,11 @@ _set_persistent()
 	__monitor PERSISTENT "$@"
 }
 
+_set_no_rc_script()
+{
+	__monitor NORCSCRIPT "$@"
+}
+
 test_pot_set_attr_001()
 {
 	pot-set-attribute
@@ -154,6 +159,18 @@ test_pot_set_attr_021()
 	assertEquals "_set_attr arg2" "ON" "$PERSISTENT_CALL1_ARG2"
 }
 
+test_pot_set_attr_022()
+{
+	pot-set-attribute -p test-pot -A no-rc-script -V ON
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_set_attr calls" "1" "$NORCSCRIPT_CALLS"
+	assertEquals "_set_attr arg1" "test-pot" "$NORCSCRIPT_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "ON" "$NORCSCRIPT_CALL1_ARG2"
+}
+
 setUp()
 {
 	common_setUp
@@ -164,6 +181,9 @@ setUp()
 	PERSISTENT_CALLS=0
 	PERSISTENT_CALL1_ARG=
 	PERSISTENT_CALL2_ARG=
+	NORCSCRIPT_CALLS=0
+	NORCSCRIPT_CALL1_ARG=
+	NORCSCRIPT_CALL2_ARG=
 }
 
 . shunit/shunit2

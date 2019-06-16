@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - get-attribute: to get pot attributes (options/flags/configurations)
 - FreeBSD version usable to create a pot are all the ones listed in the FreeBSD MANIFEST
 - attributes: add persistent attribute to jail
+- attributes: add no-rc-script attribute to start a pot without a rc script
 
 ### Changed
 - inherit network: added ipv6 support (automatic)

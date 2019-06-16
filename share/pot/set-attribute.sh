@@ -59,8 +59,24 @@ _set_persistent()
 		${EXIT} 1
 	fi
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
-	sed -i '' -e "/^pot.attr.start-at-boot=.*/d" "$_cdir/pot.conf"
+	sed -i '' -e "/^pot.attr.persistent=.*/d" "$_cdir/pot.conf"
 	echo "pot.attr.persistent=$_value" >> "$_cdir/pot.conf"
+}
+
+_set_no_rc_script()
+{
+	# shellcheck disable=SC2039
+	local _pname _value _cdir
+	_pname=$1
+	_value=$2
+	if ! _value=$(_normalize_true_false "$_value") ; then
+		_error "value $_value is not a valid boolean value"
+		set-attr-help
+		${EXIT} 1
+	fi
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	sed -i '' -e "/^pot.attr.no-rc-script=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.no-rc-script=$_value" >> "$_cdir/pot.conf"
 }
 
 _ignored_parameter()
@@ -137,6 +153,9 @@ pot-set-attribute()
 			;;
 		"persistent")
 			_cmd=_set_persistent
+			;;
+		"no-rc-script")
+			_cmd=_set_no_rc_script
 			;;
 		*)
 			_ignored_parameter "$_attr"

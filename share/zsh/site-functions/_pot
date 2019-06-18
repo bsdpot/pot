@@ -250,9 +250,22 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-p[pot name]:pot name:_pot_pots' \
+						'-p[pot name]:pot name:' \
 						'-t[tag name]::_normal' \
+						'-a[allocation id]::_normal' \
 						'-U[URL]:URL:_normal'
+					;;
+				execute)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:' \
+						'-t[tag name]::_normal' \
+						'-a[allocation id]::_normal' \
+						'-n[the new pot name]::_normal' \
+						'-U[URL]:URL:_normal' \
+						'*-e[port to be exported]::_normal' \
+						'-c[command]::_normal'
 					;;
 				top)
 					_arguments \
@@ -325,6 +338,7 @@ _pot_cmds() {
 	'purge-snapshots:Remove old or all snapshots'
 	'export:Export a single-type pot'
 	'import:Import a single-type pot'
+	'execute:Import and launch a pot - designed for jail orchestrator'
 	)
 	_describe 'command' commands
 }

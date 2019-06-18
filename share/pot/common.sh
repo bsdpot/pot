@@ -458,6 +458,27 @@ _is_flavour()
 	return 1 # false
 }
 
+
+# $1 the number to test
+_is_port_number()
+{
+	# shellcheck disable=SC2039
+	local _port
+	_port=$1
+	if [ -z "$_port" ]; then
+		return 1
+	fi
+	# check if it's a number
+	if [ -n "$( echo "$_port" | sed 's/[0-9][0-9]*//' )" ]; then
+		return 1
+	fi
+	# check if it's a 16 bit number
+	if [ "$_port" -le 0 ] || [ "$_port" -gt 65535 ]; then
+		return 1 # false
+	fi
+	return 0
+}
+
 # $1 the element to search
 # $2.. the list
 # tested

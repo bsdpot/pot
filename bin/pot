@@ -107,6 +107,7 @@ Commands:
 	purge-snapshots -- Remove old/all snapshots
 	export -- Export a pot to a file
 	import -- Import a pot from a file or a URL
+	execute -- Import and launch a pot - designed for jail orchestrator
 EOF
 }
 
@@ -154,7 +155,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-file|add-fscomp|destroy|add-dep|set-rss|set-cmd|\
-	export|import|\
+	export|import|execute|\
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\

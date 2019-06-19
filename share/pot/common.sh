@@ -469,7 +469,7 @@ _is_port_number()
 		return 1
 	fi
 	# check if it's a number
-	if [ -n "$( echo "$_port" | sed 's/[0-9][0-9]*//' )" ]; then
+	if ! expr "$_port" : "[0-9][0-9]*" >/dev/null 2>&1; then
 		return 1
 	fi
 	# check if it's a 16 bit number

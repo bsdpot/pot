@@ -85,11 +85,16 @@ pot-init()
 	# service syslogd restart
 
 	# Add pot anchors if needed
-	if [ "$(grep -c '^nat-anchor pot-nat$' /etc/pf.conf )" -eq 1 ] && [ "$(grep -c '^rdr-anchor "pot-rdr/\*"$' /etc/pf.conf )" -eq 1 ] ; then
+	if [ -r /etc/pf.conf ] && [ "$(grep -c '^nat-anchor pot-nat$' /etc/pf.conf )" -eq 1 ] && [ "$(grep -c '^rdr-anchor "pot-rdr/\*"$' /etc/pf.conf )" -eq 1 ] ; then
 		_debug "pf alredy properly configured"
 	else
-		sed -i '' '/^nat-anchor pot-nat$/d' /etc/pf.conf
-		sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' /etc/pf.conf
+		if [ -w /etc/pf.conf ]; then
+			# delete incomplete/broken ancory entries - just in case
+			sed -i '' '/^nat-anchor pot-nat$/d' /etc/pf.conf
+			sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' /etc/pf.conf
+		else
+			touch /etc/pf.conf
+		fi
 		printf "%s\n" 0a "nat-anchor pot-nat" "rdr-anchor \"pot-rdr/*\"" . x | ex /etc/pf.conf
 	fi
 }

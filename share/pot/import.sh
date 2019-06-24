@@ -6,7 +6,7 @@
 
 # shellcheck disable=SC2039
 import-help() {
-	echo "pot import [-hv] -p pot -t tag -U URL"
+	echo "pot import [-hv] -p pot -t tag -a aID -U URL"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the remote pot name'

@@ -10,6 +10,16 @@ ls()
 LS_EOL
 }
 
+SED=sed_stub
+sed_stub()
+{
+	if [ "$(uname)" = "Linux" ]; then
+		sed -i'' "$3" "$4"
+	else
+		sed "$@"
+	fi
+}
+
 # UUT
 . ../share/pot/rename.sh
 

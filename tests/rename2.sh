@@ -1,6 +1,15 @@
 #!/bin/sh
 
 # system utilities stubs
+SED=sed_stub
+sed_stub()
+{
+	if [ "$(uname)" = "Linux" ]; then
+		sed -i'' "$3" "$4"
+	else
+		sed "$@"
+	fi
+}
 
 # UUT
 . ../share/pot/rename.sh
@@ -10,6 +19,7 @@
 . conf-stub.sh
 
 # app specific stubs
+
 
 test_rn_conf_001()
 {

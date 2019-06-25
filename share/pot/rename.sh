@@ -18,17 +18,17 @@ _rn_conf()
 	_pname=$1
 	_newname=$2
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
-	sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"
-	sed -i '' -e "s%host.hostname=\"${_pname}%host.hostname=\"${_newname}%g" "$_cdir/pot.conf"
+	${SED} -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"
+	${SED} -i '' -e "s%host.hostname=\"${_pname}%host.hostname=\"${_newname}%g" "$_cdir/pot.conf"
 	if [ -w /usr/local/etc/syslog.d/"${_pname}".conf ]; then
 		mv /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/syslog.d/"${_newname}".conf
-		sed -i '' "s/$_pname.log/$_newname.log/" /usr/local/etc/syslog.d/"${_newname}".conf
+		${SED} -i '' "s/$_pname.log/$_newname.log/" /usr/local/etc/syslog.d/"${_newname}".conf
 		touch "/var/log/pot/$_newname.log"
 		service syslogd reload
 	fi
 	if [ -w /usr/local/etc/newsyslog.conf.d/"${_pname}".conf ]; then
 		mv /usr/local/etc/newsyslog.conf.d/"${_pname}".conf /usr/local/etc/newsyslog.conf.d/"${_newname}".conf
-		sed -i '' "s%pot/$_pname.log%pot/$_newname.log%" /usr/local/etc/newsyslog.conf.d/"${_newname}".conf
+		${SED} -i '' "s%pot/$_pname.log%pot/$_newname.log%" /usr/local/etc/newsyslog.conf.d/"${_newname}".conf
 	fi
 }
 
@@ -104,9 +104,9 @@ _rn_recursive()
 	_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	for _p in $_pots ; do
 		_cdir=${POT_FS_ROOT}/jails/$_p/conf
-		sed -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"
-		sed -i '' -e "s/^pot.potbase=$_pname$/pot.potbase=$_newname/" "$_cdir/pot.conf"
-		sed -i '' -e "s/^pot.depend=$_pname$/pot.depend=$_newname/" "$_cdir/pot.conf"
+		${SED} -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"
+		${SED} -i '' -e "s/^pot.potbase=$_pname$/pot.potbase=$_newname/" "$_cdir/pot.conf"
+		${SED} -i '' -e "s/^pot.depend=$_pname$/pot.depend=$_newname/" "$_cdir/pot.conf"
 	done
 }
 

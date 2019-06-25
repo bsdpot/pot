@@ -74,8 +74,8 @@ pot-vnet-start()
 	# load pf module
 	kldload -n pf
 	# check anchors
-	if [ -z "$( pfctl -s Anchors | grep -F '^[ \t]*pot-nat$' )" ] ||
-		[ -z "$( pfctl -s Anchors | grep -F '^[ \t]*pot-rdr$' )" ]; then
+	if pfctl -s Anchors | grep -q -F '^[ \t]*pot-nat$' ||
+		pfctl -s Anchors | grep -F '^[ \t]*pot-rdr$' ; then
 		_debug "Pot anchors are missing - load pf.conf"
 		pfctl -f pf.conf
 	fi

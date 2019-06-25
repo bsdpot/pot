@@ -127,7 +127,7 @@ pot-show()
 			_pname="$OPTARG"
 			;;
 		r)
-			_running="YES2"
+			_running="YES"
 			;;
 		a)
 			_all="YES"

@@ -77,7 +77,7 @@ pot-vnet-start()
 	if ! pfctl -s Anchors | grep -q '^[ \t]*pot-nat$' ||
 		! pfctl -s Anchors | grep -q '^[ \t]*pot-rdr$' ; then
 		_debug "Pot anchors are missing - load pf.conf"
-		pfctl -f pf.conf
+		pfctl -f /etc/pf.conf
 	fi
 	_nat_rules="/tmp/pot_pf_nat_rules"
 	if [ -w "$_nat_rules" ]; then

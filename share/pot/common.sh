@@ -381,6 +381,8 @@ _is_vnet_up()
 		return 1 # false
 	elif pfctl -s Anchors | grep -q -F '^[ \t]*pot-nat$' ; then
 		return 1 # false
+	elif pfctl -s Anchors | grep -q -F '^[ \t]*pot-rdr$' ; then
+		return 1 # false
 	elif [ -z "$(pfctl -s nat -a pot-nat)" ]; then
 		return 1 # false
 	else

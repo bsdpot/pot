@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - init: make pf.conf more robust
+- vnet-start: make pf start more robust, in case pf as service is not up
 
 ## [0.6.0] 2019-06-23
 ### Added

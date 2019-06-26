@@ -14,7 +14,7 @@ SED=sed_stub
 sed_stub()
 {
 	if [ "$(uname)" = "Linux" ]; then
-		sed -i'' "$3" "$4"
+		sed -i'' "$3" "$4" "$5"
 	else
 		sed "$@"
 	fi

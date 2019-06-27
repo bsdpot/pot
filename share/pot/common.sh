@@ -483,6 +483,27 @@ _is_port_number()
 	return 0
 }
 
+# the -e option argument
+_is_export_port_valid()
+{
+	# shellcheck disable=SC2039
+	local _pot_port _host_port
+	_pot_port="$( echo "${1}" | cut -d':' -f 1)"
+	if [ "$1" = "${_pot_port}" ]; then
+		if ! _is_port_number "$OPTARG" ; then
+			return 1 # false
+		fi
+	else
+		_host_port="$( echo "${1}" | cut -d':' -f 2)"
+		if ! _is_port_number "$_pot_port" ; then
+			return 1 # false
+		fi
+		if ! _is_port_number "$_host_port" ; then
+			return 1 # false
+		fi
+	fi
+}
+
 # $1 the element to search
 # $2.. the list
 # tested

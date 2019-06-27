@@ -19,17 +19,12 @@ export-ports-help()
 _export_ports()
 {
 	# shellcheck disable=SC2039
-	local _pname _ports _static
+	local _pname _ports
 	_pname="$1"
 	_ports="$2"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
-	if [ "$_static" = "YES" ]; then
-		sed -i '' -e "/pot.export.static.ports=.*/d" "$_cdir/pot.conf"
-		echo "pot.export.static.ports=$_ports" >> "$_cdir/pot.conf"
-	else
-		sed -i '' -e "/pot.export.ports=.*/d" "$_cdir/pot.conf"
-		echo "pot.export.ports=$_ports" >> "$_cdir/pot.conf"
-	fi
+	sed -i '' -e "/pot.export.ports=.*/d" "$_cdir/pot.conf"
+	echo "pot.export.ports=$_ports" >> "$_cdir/pot.conf"
 }
 
 # shellcheck disable=SC2039
@@ -53,25 +48,10 @@ pot-export-ports()
 			_pname="$OPTARG"
 			;;
 		e)
-			_pot_port="$( echo "${OPTARG}" | cut -d':' -f 1)"
-			if [ "$OPTARG" = "${_pot_port}" ]; then
-				if ! _is_port_number "$OPTARG" ; then
-					_error "$OPTARG is not a valid port number"
-					export-ports-help
-					${EXIT} 1
-				fi
-			else
-				_host_port="$( echo "${OPTARG}" | cut -d':' -f 2)"
-				if ! _is_port_number "$_pot_port" ; then
-					_error "$_pot_port is not a valid port number"
-					export-ports-help
-					${EXIT} 1
-				fi
-				if ! _is_port_number "$_host_port" ; then
-					_error "$_host_port is not a valid port number"
-					export-ports-help
-					${EXIT} 1
-				fi
+			if ! _is_export_port_valid "${OPTARG}" ; then
+				_error "$OPTARG is not a valid port number"
+				export-ports-help
+				${EXIT} 1
 			fi
 			if [ -z "$_ports" ]; then
 				_ports="$OPTARG"

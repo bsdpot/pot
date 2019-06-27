@@ -48,7 +48,7 @@ pot-execute()
 			_tpname="$OPTARG"
 			;;
 		e)
-			if ! _is_port_number "$OPTARG" ; then
+			if ! _is_export_port_valid "$OPTARG" ; then
 				_error "$OPTARG is not a valid port number"
 				execute-help
 				${EXIT} 1

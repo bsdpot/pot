@@ -83,8 +83,6 @@ pot name : mypot
 	base : 11.2
 	level : 0
 	ip4 : inherit
-		no ports exported (static)
-		no ports exported (dynamic)
 	active : true
 	datasets:
 		mypot/m
@@ -205,13 +203,13 @@ The option `-i` can be omitted, because `inherit` is the default value.
 The `inherit` type means that `mypot` will reuse the same network stack of the host machine.
 This network type works pretty well when your `pot` doesn't provide any network services, but it uses the network's host as client, like a `pot` created to build applications.
 
-### Network configuration: IPv4 alias
+### Network configuration: IPv4 or IPv6 alias
 If your host system has a static IP and you can use multiple static IP, you can assign one of those addition IP addresses to your `pot`s via the static/external IPv4.
 **NOTE** Be sure that in the `pot` configuration file (`/usr/local/etc/pot/pot.conf`) you have correctly set the variable `POT_EXTIF`; this network interface will be used for the network activity and IP address assignment.
 For example, your system has 192.168.178.20/24 as IP address and your network administrator reserved you the additional IP address 192.168.178.200.
 To assing the latter IP address to your `pot` you can create it with the following command:
 ```console
-# pot create -p mypot -t single -b 11.2 -i 192.168.178.200
+# pot create -p mypot -t single -b 11.2 -i 192.168.178.200 -s
 # pot start mypot
 # pot info -vp mypot
 ```
@@ -290,3 +288,20 @@ pot mypot
 		192.168.178.20 port 1024 -> 10.192.0.3 port 80
 		192.168.178.20 port 1025 -> 10.192.0.3 port 443
 ```
+
+To map the network services to a specific port, instead of leaving the decision to `pot`, the following syntax can be used:
+```console
+# pot export-ports -p mypot -e 80:30080 -e 443:30443
+# pot start mypot
+# pot show -p mypot
+pot mypot
+	disk usage      : 266M
+	virtual memory  : 33M
+	physical memory : 17M
+
+	Network port redirection
+		192.168.178.20 port 30080 -> 10.192.0.11 port 80
+		192.168.178.20 port 30443 -> 10.192.0.11 port 443
+
+```
+

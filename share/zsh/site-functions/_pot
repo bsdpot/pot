@@ -236,6 +236,13 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-a[all snapshots, instead of the old ones]'
 					;;
+				update-config)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-a[all pots]'
+					;;
 				export)
 					_arguments \
 						'-h[Show help]' \
@@ -339,6 +346,7 @@ _pot_cmds() {
 	'export:Export a single-type pot'
 	'import:Import a single-type pot'
 	'execute:Import and launch a pot - designed for jail orchestrator'
+	'update-config:Update the configuration of a pot'
 	)
 	_describe 'command' commands
 }

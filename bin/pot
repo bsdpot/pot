@@ -108,6 +108,7 @@ Commands:
 	export -- Export a pot to a file
 	import -- Import a pot from a file or a URL
 	execute -- Import and launch a pot - designed for jail orchestrator
+	update-config -- Update the configuration of a pot
 EOF
 }
 
@@ -159,7 +160,7 @@ case "${CMD}" in
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
-	snapshot|revert|purge-snapshots)
+	snapshot|revert|purge-snapshots|update-config)
 		pot-cmd "${CMD}" "$@"
 		exit $?
 		;;

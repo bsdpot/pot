@@ -118,25 +118,6 @@ _js_vnet()
 	fi
 }
 
-# $1 pot name
-_js_export_static_ports()
-{
-	local _pname _ip _ports _random_port _excl_list
-	_pname=$1
-	_ip="$( _get_conf_var $_pname ip4 )"
-	_ports="$( _get_pot_export_static_ports $_pname )"
-	_pfrules="/tmp/pot_${_pname}_pfrules_static"
-	if [ -z "$_ports" ]; then
-		return
-	fi
-	rm -f $_pfrules
-	for _port in $_ports ; do
-		_debug "Redirect: from $POT_EXTIF : $_port to $_ip : $_port"
-		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_port -> $_ip port $_port" >> $_pfrules
-		_excl_list="$_excl_list $_port"
-	done
-	pfctl -a pot-rdr/$_pname -f $_pfrules
-}
 
 # $1: exclude list
 _js_get_free_rnd_port()
@@ -169,7 +150,7 @@ _js_get_free_rnd_port()
 # $1 pot name
 _js_export_ports()
 {
-	local _pname _ip _ports _random_port _excl_list
+	local _pname _ip _ports _excl_list _pot_port _host_port
 	_pname=$1
 	_ip="$( _get_conf_var $_pname ip4 )"
 	_ports="$( _get_pot_export_ports $_pname )"
@@ -179,10 +160,14 @@ _js_export_ports()
 	fi
 	rm -f $_pfrules
 	for _port in $_ports ; do
-		_random_port=$( _js_get_free_rnd_port "$_excl_list" )
-		_debug "Redirect: from $POT_EXTIF : $_random_port to $_ip : $_port"
-		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_random_port -> $_ip port $_port" >> $_pfrules
-		_excl_list="$excl_list $_random_port"
+		_pot_port="$( echo "${_port}" | cut -d':' -f 1)"
+		_host_port="$( echo "${_port}" | cut -d':' -f 2)"
+		if [ "$_pot_port" = "$_port" ]; then
+			_host_port=$( _js_get_free_rnd_port "$_excl_list" )
+		fi
+		_debug "Redirect: from $POT_EXTIF : $_host_port to $_ip : $_port"
+		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_host_port -> $_ip port $_pot_port" >> $_pfrules
+		_excl_list="$_excl_list $_host_port"
 	done
 	pfctl -a pot-rdr/$_pname -f $_pfrules
 }
@@ -252,7 +237,6 @@ _js_start()
 		_iface="$( _js_create_epair )"
 		_js_vnet "$_pname" "$_iface"
 		_param="$_param vnet vnet.interface=${_iface}b"
-		_js_export_static_ports "$_pname"
 		_js_export_ports "$_pname"
 	else
 		_ip=$( _get_conf_var $_pname ip4 )
@@ -334,6 +318,13 @@ pot-start()
 		_debug "pot $_pname is already running"
 		return 0
 	fi
+	## detect obsolete config parameter
+	if [ -n "$(_get_conf_var "$_pname" "pot.export.static.ports")" ]; then
+		_error "Configuration file for $_pname contains obsole elements"
+		_error "Please run pot update-config -p $_pname to fix"
+		return 1
+	fi
+
 	if ! _is_uid0 ; then
 		return 1
 	fi

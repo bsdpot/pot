@@ -94,7 +94,7 @@ test_pot_export_ports_025()
 
 test_pot_export_ports_026()
 {
-	pot-export-ports -p test-pot -e port
+	pot-export-ports -p test-pot -e http
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
@@ -137,6 +137,51 @@ test_pot_export_ports_029()
 	assertEquals "_export_ports calls" "0" "$EXPORTS_CALLS"
 }
 
+test_pot_export_ports_030()
+{
+	pot-export-ports -p test-pot -e 80:
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "0" "$EXPORTS_CALLS"
+}
+
+test_pot_export_ports_031()
+{
+	pot-export-ports -p test-pot -e :80
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "0" "$EXPORTS_CALLS"
+}
+
+test_pot_export_ports_032()
+{
+	pot-export-ports -p test-pot -e 80:100000
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "0" "$EXPORTS_CALLS"
+}
+
+test_pot_export_ports_033()
+{
+	pot-export-ports -p test-pot -e 100000:80
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "0" "$EXPORTS_CALLS"
+}
+
+#test_pot_export_ports_034()
+#{
+#	pot-export-ports -p test-pot -e 80:80:
+#	assertEquals "Exit rc" "1" "$?"
+#	assertEquals "Help calls" "1" "$HELP_CALLS"
+#	assertEquals "Error calls" "1" "$ERROR_CALLS"
+#	assertEquals "_export_ports calls" "0" "$EXPORTS_CALLS"
+#}
+
 test_pot_export_ports_040()
 {
 	pot-export-ports -p test-pot -e 80
@@ -145,7 +190,7 @@ test_pot_export_ports_040()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
-	assertEquals "_export_ports arg3" "80" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export_ports arg2" "80" "$EXPORTS_CALL1_ARG2"
 }
 
 test_pot_export_ports_041()
@@ -156,7 +201,29 @@ test_pot_export_ports_041()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
-	assertEquals "_export_ports arg3" "80 443" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export_ports arg2" "80 443" "$EXPORTS_CALL1_ARG2"
+}
+
+test_pot_export_ports_042()
+{
+	pot-export-ports -p test-pot -e 80:8080
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg2" "80:8080" "$EXPORTS_CALL1_ARG2"
+}
+
+test_pot_export_ports_043()
+{
+	pot-export-ports -p test-pot -e 80:8080 -e 443:30443
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg2" "80:8080 443:30443" "$EXPORTS_CALL1_ARG2"
 }
 
 setUp()

@@ -10,7 +10,8 @@ export-ports-help()
 	echo '  -p pot : the working pot'
 	echo '  -e port : the tcp port'
 	echo '            This option can be repeated multiple time, to export more ports'
-	echo '  -S The port is exported statically: the host will use the same port used by the pot'
+	echo '            -e 80 will export port 80 using an available port'
+	echo '            -e 80:30000 will export port 80 using port 30000'
 }
 
 # $1 pot
@@ -20,8 +21,7 @@ _export_ports()
 	# shellcheck disable=SC2039
 	local _pname _ports _static
 	_pname="$1"
-	_static="$2"
-	_ports="$3"
+	_ports="$2"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
 	if [ "$_static" = "YES" ]; then
 		sed -i '' -e "/pot.export.static.ports=.*/d" "$_cdir/pot.conf"
@@ -35,12 +35,12 @@ _export_ports()
 # shellcheck disable=SC2039
 pot-export-ports()
 {
-	local _pname _ports _static
+	local _pname _ports _pot_port _host_port
 	_pname=
 	_ports=
-	_static="NO"
 	OPTIND=1
-	while getopts "hvp:e:S" _o ; do
+
+	while getopts "hvp:e:" _o ; do
 		case "$_o" in
 		h)
 			export-ports-help
@@ -53,19 +53,31 @@ pot-export-ports()
 			_pname="$OPTARG"
 			;;
 		e)
-			if ! _is_port_number "$OPTARG" ; then
-				_error "$OPTARG is not a valid port number"
-				export-ports-help
-				${EXIT} 1
+			_pot_port="$( echo "${OPTARG}" | cut -d':' -f 1)"
+			if [ "$OPTARG" = "${_pot_port}" ]; then
+				if ! _is_port_number "$OPTARG" ; then
+					_error "$OPTARG is not a valid port number"
+					export-ports-help
+					${EXIT} 1
+				fi
+			else
+				_host_port="$( echo "${OPTARG}" | cut -d':' -f 2)"
+				if ! _is_port_number "$_pot_port" ; then
+					_error "$_pot_port is not a valid port number"
+					export-ports-help
+					${EXIT} 1
+				fi
+				if ! _is_port_number "$_host_port" ; then
+					_error "$_host_port is not a valid port number"
+					export-ports-help
+					${EXIT} 1
+				fi
 			fi
 			if [ -z "$_ports" ]; then
 				_ports="$OPTARG"
 			else
 				_ports="$_ports $OPTARG"
 			fi
-			;;
-		S)
-			_static="YES"
 			;;
 		*)
 			export-ports-help
@@ -94,5 +106,5 @@ pot-export-ports()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	_export_ports "$_pname" "$_static" "$_ports"
+	_export_ports "$_pname" "$_ports"
 }

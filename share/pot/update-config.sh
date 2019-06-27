@@ -46,6 +46,28 @@ _update_one_pot()
 		_debug "pot.attr.start-at-boot=NO"
 		echo "pot.attr.start-at-boot=NO" >> "$_conf"
 	fi
+
+	# convert pot.export.static.ports=80 to the new format pot.export.ports=80:80
+	# being aware that pot.export.ports may already exist
+	if [ -z "$(_get_conf_var "$_pname" "pot.export.static.ports")" ]; then
+		_debug "converting exported static ports using the new format"
+		_static_ports="$( _get_conf_var "$_pname" "pot.export.static.ports")"
+		${SED} -i '' -e "/pot.export.static.ports=.*/d" "$_conf"
+		_new_ports=
+		for p in $_static_ports ; do
+			if [ -z "$_new_ports" ]; then
+				_new_ports="$p:$p"
+			else
+				_new_ports="$_new_ports $p:$p"
+			fi
+		done
+		if [ -n "$(_get_conf_var "$_pname" "pot.export.ports")" ]; then
+			_ports="$(_get_conf_var "$_pname" "pot.export.ports")"
+			_new_ports="$_ports $_new_ports"
+			${SED} -i '' -e "/pot.export.ports=.*/d" "$_conf"
+		fi
+		echo "pot.export.ports=$_new_ports" >> "$_conf"
+	fi
 }
 
 pot-update-config()

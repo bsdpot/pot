@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - update-config: new command that will update a pot configuration
 
+### Changed
+- export-ports: removed -S for static port export
+- export-ports: add the ability to associate any host port to a pot port to be exported using pot_port:host_port format
+
 ## [0.6.1] 2019-06-25
 ### Fixed
 - init: make pf.conf more robust

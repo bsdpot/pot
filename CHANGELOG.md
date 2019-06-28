@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - update-config: new command that will update a pot configuration
+- execute: an orchestration oriented command that imports and automatically set several settings on a pot
 
 ### Changed
 - export-ports: removed -S for static port export

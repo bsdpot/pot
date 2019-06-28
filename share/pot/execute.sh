@@ -4,30 +4,36 @@
 # shellcheck disable=SC2039
 execute-help()
 {
-	echo "pot execute [-h] -p pot"
+	echo "pot execute [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd [-e port]"
 	echo '  -h print this help'
+	echo '  -h verbose'
 	echo '  -p pot : the pot image'
 	echo '  -U URL : the base URL where to find the image file'
 	echo '  -t tag : the tag of the pot'
 	echo '  -a aID : the allocation ID'
-	echo '  -n potname : the new potname (used instaed of pot_tag)'
+	echo '  -n potname : the new potname (used instead of pot_tag)'
 	echo '  -c cmd : the command line to start the container'
 	echo '  -e port : the tcp port'
 	echo '            This option can be repeated multiple time, to export more ports'
+	echo '  -S : start immediately the newly generated pot'
 }
 
 pot-execute()
 {
 	# shellcheck disable=SC2039
-	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname
+	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start
 	_pname=
 	_ports=
+	_auto_start="NO"
 	OPTIND=1
-	while getopts "hp:U:t:c:e:a:n:" _o ; do
+	while getopts "hvp:U:t:c:e:a:n:S" _o ; do
 		case "$_o" in
 		h)
 			execute-help
 			${EXIT} 0
+			;;
+		v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
 		p)
 			_pname="$OPTARG"
@@ -58,6 +64,9 @@ pot-execute()
 			else
 				_ports="$_ports $OPTARG"
 			fi
+			;;
+		S)
+			_auto_start="YES"
 			;;
 		*)
 			execute-help
@@ -127,10 +136,15 @@ pot-execute()
 			_error "Couldn't export ports $_ports - ignoring"
 		fi
 	fi
-	if ! pot-cmd start "$_new_pname" ; then
-		_error "pot $_new_pname failed to start"
-		pot-cmd stop "$_new_pname"
-		${EXIT} 1
+	if [ "$_auto_start" = "YES" ]; then
+		_debug "Auto starting the pot $_new_pname"
+		if ! pot-cmd start "$_new_pname" ; then
+			_error "pot $_new_pname failed to start"
+			pot-cmd stop "$_new_pname"
+			${EXIT} 1
+		fi
+	else
+		_info "Prepared the pot $_new_pname"
 	fi
 	return 0
 }

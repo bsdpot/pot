@@ -217,8 +217,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'*-e[port to be exported]::_normal' \
-						'-S[Static export]'
+						'*-e[port to be exported]::_normal'
 					;;
 				snap|snapshot|revert|rollback)
 					_arguments \
@@ -266,6 +265,7 @@ _pot() {
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-S[auto start]' \
 						'-p[pot name]:pot name:' \
 						'-t[tag name]::_normal' \
 						'-a[allocation id]::_normal' \

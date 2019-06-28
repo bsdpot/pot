@@ -107,7 +107,7 @@ Commands:
 	purge-snapshots -- Remove old/all snapshots
 	export -- Export a pot to a file
 	import -- Import a pot from a file or a URL
-	execute -- Import and launch a pot - designed for jail orchestrator
+	prepare/execute -- Import and prepare a pot - designed for jail orchestrator
 	update-config -- Update the configuration of a pot
 EOF
 }
@@ -139,6 +139,9 @@ case "${CMD}" in
 	get-attr)
 		CMD=get-attribute
 		;;
+	execute)
+		CMD=prepare
+		;;
 esac
 
 case "${CMD}" in
@@ -156,7 +159,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	add-file|add-fscomp|destroy|add-dep|set-rss|set-cmd|\
-	export|import|execute|\
+	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\

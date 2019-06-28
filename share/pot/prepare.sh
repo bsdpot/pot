@@ -2,9 +2,9 @@
 :
 
 # shellcheck disable=SC2039
-execute-help()
+prepare-help()
 {
-	echo "pot execute [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd [-e port]"
+	echo "pot prepare [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd [-e port]"
 	echo '  -h print this help'
 	echo '  -h verbose'
 	echo '  -p pot : the pot image'
@@ -18,7 +18,7 @@ execute-help()
 	echo '  -S : start immediately the newly generated pot'
 }
 
-pot-execute()
+pot-prepare()
 {
 	# shellcheck disable=SC2039
 	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start
@@ -29,7 +29,7 @@ pot-execute()
 	while getopts "hvp:U:t:c:e:a:n:S" _o ; do
 		case "$_o" in
 		h)
-			execute-help
+			prepare-help
 			${EXIT} 0
 			;;
 		v)
@@ -56,7 +56,7 @@ pot-execute()
 		e)
 			if ! _is_export_port_valid "$OPTARG" ; then
 				_error "$OPTARG is not a valid port number"
-				execute-help
+				prepare-help
 				${EXIT} 1
 			fi
 			if [ -z "$_ports" ]; then
@@ -69,24 +69,24 @@ pot-execute()
 			_auto_start="YES"
 			;;
 		*)
-			execute-help
+			prepare-help
 			${EXIT} 1
 		esac
 	done
 
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
-		execute-help
+		prepare-help
 		${EXIT} 1
 	fi
 	if [ -z "$_tag" ]; then
 		_error "A tag is mandatory"
-		execute-help
+		prepare-help
 		${EXIT} 1
 	fi
 	if [ -z "$_allocation_tag" ]; then
 		_error "An allocation id is mandatory"
-		execute-help
+		prepare-help
 		${EXIT} 1
 	fi
 	_imported_pname="${_pname}_${_tag}_${_allocation_tag}"
@@ -98,7 +98,7 @@ pot-execute()
 	_new_pname="$(echo "$_new_pname" | tr '.' '_')"
 	if _is_pot "$_new_pname" quiet ; then
 		_error "A pot with name $_new_pname already exists"
-		execute-help
+		prepare-help
 		${EXIT} 1
 	fi
 	if ! pot-cmd import -U "$_URL" -t "$_tag" -p "$_pname" -a "$_allocation_tag" ; then

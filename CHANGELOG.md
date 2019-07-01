@@ -9,11 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - update-config: new command that will update a pot configuration
 - execute: an orchestration oriented command that imports and automatically set several settings on a pot
 - prepare: new command, taking the place of execute
+- copy-in: new command, to copy files or directory inside a pot (generalized replacement of add-file)
 
 ### Changed
 - export-ports: removed -S for static port export
 - export-ports: add the ability to associate any host port to a pot port to be exported using pot_port:host_port format
 - execute: an alias for prepare
+
+### Deprecated
+- add-file: deprecated, replaced by the more general new copy-in command
 
 ## [0.6.1] 2019-06-25
 ### Fixed

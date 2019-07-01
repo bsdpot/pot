@@ -59,6 +59,12 @@ pot-add-file()
 		esac
 	done
 
+	echo '##############################'
+	echo '#   add-file is deprecated   #'
+	echo '##############################'
+	echo '# Please use copy-in instead #'
+	echo '##############################'
+
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		add-file-help

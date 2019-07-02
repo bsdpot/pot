@@ -380,6 +380,26 @@ _is_vnet_up()
 	fi
 }
 
+# $1 fscomp name
+# $2 quiet / no _error messages are emitted (sometimes usefult)
+# tested
+_is_fscomp()
+{
+	local _fscomp _fdir _fdset
+	_fscomp="$1"
+	_fdir="${POT_FS_ROOT}/fscomp/$_fscomp"
+	_fdset="${POT_ZFS_ROOT}/fscomp/$_fscomp"
+	if [ ! -d "$_fdir" ]; then
+		_qerror "$2" "fscomp $_fscomp not found"
+		return 1
+	fi
+	if ! _zfs_dataset_valid "$_fdset" ; then
+		_qerror "$2" "dataset $_fdset for fscomp $_fscomp not found"
+		return 2
+	fi
+	return 0
+}
+
 # $1 base name
 # $2 quiet / no _error messages are emitted (sometimes usefult)
 # tested
@@ -556,6 +576,7 @@ _is_cmd_flavorable()
 	_cmd=$1
 	case $_cmd in
 		add-dep|add-fscomp|set-attribute|\
+		copy-in|mount-in|\
 		set-rss|export-ports)
 			return 0
 			;;

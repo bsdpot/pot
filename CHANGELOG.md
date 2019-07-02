@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - execute: an orchestration oriented command that imports and automatically set several settings on a pot
 - prepare: new command, taking the place of execute
 - copy-in: new command, to copy files or directory inside a pot (generalized replacement of add-file)
+- mount-in: new command, to mount a directory, a zfs dataset or a fscomp inside a pot (replacement for add-fscomp)
 
 ### Changed
 - export-ports: removed -S for static port export
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Deprecated
 - add-file: deprecated, replaced by the more general new copy-in command
+- add-fscomp: deprecated, replaces by the more general new mount-in command
 
 ## [0.6.1] 2019-06-25
 ### Fixed

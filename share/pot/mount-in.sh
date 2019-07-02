@@ -2,42 +2,41 @@
 :
 
 # shellcheck disable=SC2039
-add-fscomp-help()
+mount-in-help()
 {
-	echo "pot add-fscomp [-hvwer] -p pot -m mnt -f fscomp | -d directory"
+	echo "pot mount-in [-hvwr] -p pot -m mnt -f fscomp | -d directory | -z dataset"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -f fscomp : the fs component to be added'
-	echo '  -e : the fscomp is an external dataset'
-	echo '  -d directory : the directory that has to be mounted in the pot (absolute pathname)'
 	echo '  -p pot : the working pot'
+	echo '  -f fscomp : the fs component to be mounted'
+	echo '  -z zfs dataset : the zfs dataset to be mounted'
+	echo '  -d directory : the directory that has to be mounted in the pot (absolute pathname)'
 	echo '  -m mnt : the mount point inside the pot'
-	echo '  -w : '"don't use nullfs, but change the zfs mountpoint (potentially DANGEROUS)"
-	echo '  -r : mount the fscomp in read-only'
+	echo '  -w : '"don't use nullfs, but change the zfs mountpoint [usable only with -z and -f](potentially DANGEROUS)"
+	echo '  -r : mount in read-only'
 }
 
 # $1 pot
-# $2 fscomp
-# $3 mount point
-# $4 extern dataset
-# $5 option
-_fscomp_validation()
+# $2 mount point
+_is_mountpoint_used()
 {
 	# shellcheck disable=SC2039
-	local _pname _fscomp _mnt_p _ext _opt
+	local _pname _mnt_p _proot
 	_pname="$1"
-	_fscomp="$2"
-	_mnt_p="${3#/}"
-	_ext="$4"
-	_opt="$5"
-	_conf="${POT_FS_ROOT}/jails/${_pname}/conf/fscomp.conf"
-	# Here I should check the existing configuration, to see if the new fscomp is not colliding
-	## check if the mount_point is already used
-	if [ $(grep -c " $POT_FS_ROOT/jails/$_pname/m/$_mnt_p$" "$_conf") -ne 0 ]; then
-		_error "the mount point $_mnt_p is already in use"
-		return 1
+	_mnt_p="${2#/}"
+	_conf=$POT_FS_ROOT/jails/$_pname/conf/fscomp.conf
+	_proot=$POT_FS_ROOT/jails/$_pname/m
+	if grep -q " $_proot/$_mnt_p$" "$_conf" || 
+		grep -q " $_proot/$_mnt_p " "$_conf" ; then
+		# mount point already used
+		return 0 # true
 	fi
-	return 0
+	if grep -q "$_proot/$_mnt_p " "$_conf" ; then
+		# mountpoint used as source directory ?? wtf
+		_error "The mountpoint is already used as source directory mount-in"
+		return 0 # true
+	fi
+	return 1 # false, mountpoint not used
 }
 
 # $1 pot
@@ -50,6 +49,10 @@ _mountpoint_validation()
 	_mnt_p="$2"
 	_mpdir=$POT_FS_ROOT/jails/$_pname/m
 	_mounted=false # false
+	if _is_mountpoint_used "$_pname" "$_mnt_p" ; then
+		_error "The mount point $_mnt_p is already in use"
+		return 1 # false
+	fi
 	if ! _is_pot_running "$_pname" ; then
 		_mounted=true # true
 		if ! _pot_mount "$_pname" ; then
@@ -72,38 +75,51 @@ _mountpoint_validation()
 	return 0 # true
 }
 
-# $1 fscomp
-# $2 pot
-# $3 mount point
-# $4 external/NO
-# $5 mount option (zfs-remount, ro)
-_add_f_to_p()
+_directory_validation()
 {
 	# shellcheck disable=SC2039
-	local _fscomp _pname _mnt_p _pdir _ext _opt _zfscomp _node
-	_fscomp="$1"
+	local _pname _dir  _proot _conf
+	_pname="$1"
+	_dir="$2"
+	_proot=$POT_FS_ROOT/jails/$_pname
+	_conf=$POT_FS_ROOT/jails/$_pname/conf/fscomp.conf
+	if [ "$_dir" != "${_dir%$_proot}" ]; then
+		# dir is inside the pot
+		return 1 # false
+	fi
+	if grep -q "$_dir " "$_conf" ; then
+		# the directory is already used
+		return 1 # false
+	fi
+	return 0 # true
+
+}
+
+# $1 zfs dataset
+# $2 pot
+# $3 mount point
+# $4 mount option (zfs-remount, ro)
+_mount_dataset()
+{
+	# shellcheck disable=SC2039
+	local _dset _pname _mnt_p _pdir _opt
+	_dset="$1"
 	_pname="$2"
 	# Removing the trailing /
 	_mnt_p="${3#/}"
-	_ext="${4}"
-	_opt="${5}"
+	_opt="${4}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
-	if [ "$_ext" = "external" ]; then
-		_zfscomp="$_fscomp"
-	else
-		_zfscomp="$POT_ZFS_ROOT/fscomp/$_fscomp"
-	fi
-	_debug "add fscomp:$_zfscomp mnt_p:$_pdir/m/$_mnt_p opt:$_opt"
+	_debug "mount zfs dataset:$_dset mnt_p:$_pdir/m/$_mnt_p opt:$_opt"
 	if [ -z "$_opt" ]; then
-		${ECHO} "$_zfscomp $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
+		${ECHO} "$_dset $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
 	else
-		${ECHO} "$_zfscomp $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
+		${ECHO} "$_dset $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
 	fi
 	if _is_pot_running "$_pname" ; then
 		if [ "$_opt" = "zfs-remount" ]; then
-			zfs set mountpoint="$_pdir/m/$_mnt_p" "$_zfscomp"
+			zfs set mountpoint="$_pdir/m/$_mnt_p" "$_dset"
 		else
-			_node=$( _get_zfs_mountpoint "$_zfscomp" )
+			_node=$( _get_zfs_mountpoint "$_dset" )
 			if ! mount_nullfs -o "${_opt:-rw}" "$_node" "$_pdir/m/$_mnt_p" ; then
 				_error "Error mounting $_node on $_pname"
 			else
@@ -116,8 +132,8 @@ _add_f_to_p()
 # $1 directory
 # $2 pot
 # $3 mount point
-# $4 mount option (zfs-remount, ro)
-_add_d_to_p()
+# $4 mount option (ro)
+_mount_dir()
 {
 	# shellcheck disable=SC2039
 	local _dir _pname _mnt_p _pdir _opt
@@ -143,22 +159,22 @@ _add_d_to_p()
 }
 
 # shellcheck disable=SC2039
-pot-add-fscomp()
+pot-mount-in()
 {
 	local _pname _fscomp _mnt_p _ext _remount _readonly _opt _dir
 	OPTIND=1
-	_fscomp=
 	_pname=
 	_mnt_p=
-	_ext="NO"
 	_remount="NO"
 	_readonly="NO"
 	_opt=
 	_dir=
-	while getopts "hvf:p:m:ewrd:" _o ; do
+	_fscomp=
+	_dset=
+	while getopts "hvf:d:z:p:m:wr" _o ; do
 		case "$_o" in
 		h)
-			add-fscomp-help
+			mount-in-help
 			${EXIT} 0
 			;;
 		v)
@@ -170,8 +186,8 @@ pot-add-fscomp()
 		d)
 			_dir="$OPTARG"
 			;;
-		e)
-			_ext="external"
+		z)
+			_dset="$OPTARG"
 			;;
 		p)
 			_pname="$OPTARG"
@@ -186,36 +202,40 @@ pot-add-fscomp()
 			_readonly="YES"
 			;;
 		*)
-			add-fscomp-help
+			mount-in-help
 			${EXIT} 1
 			;;
 		esac
 	done
 
-	echo '###############################'
-	echo '#   add-fscomp is deprecated  #'
-	echo '###############################'
-	echo '# Please use mount-in instead #'
-	echo '###############################'
-
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
-		add-fscomp-help
+		mount-in-help
 		${EXIT} 1
 	fi
-	if [ -z "$_fscomp" ] && [ -z "$_dir" ]; then
-		_error "A fs component or a directory are mandatory"
-		add-fscomp-help
+	if [ -z "$_fscomp" ] && [ -z "$_dir" ] && [ -z "$_dset" ] ; then
+		_error "One of -f|-d|-z option has to be used"
+		mount-in-help
 		${EXIT} 1
 	fi
 	if [ -n "$_fscomp" ] && [ -n "$_dir" ]; then
 		_error "-f and -d options are mutually exclusive"
-		add-fscomp-help
+		mount-in-help
+		${EXIT} 1
+	fi
+	if [ -n "$_fscomp" ] && [ -n "$_dset" ]; then
+		_error "-f and -z options are mutually exclusive"
+		mount-in-help
+		${EXIT} 1
+	fi
+	if [ -n "$_dir" ] && [ -n "$_dset" ]; then
+		_error "-d and -z options are mutually exclusive"
+		mount-in-help
 		${EXIT} 1
 	fi
 	if [ -z "$_mnt_p" ]; then
 		_error "A mount point is mandatory"
-		add-fscomp-help
+		mount-in-help
 		${EXIT} 1
 	fi
 	if ! _is_absolute_path "$_mnt_p" ; then
@@ -230,15 +250,11 @@ pot-add-fscomp()
 	if [ "$_remount" = "YES" ]; then
 		if [ -n "$_dir" ]; then
 			_error "Remount cannot be used with directories, but with fscomp only"
-			add-fscomp-help
+			mount-in-help
 			${EXIT} 1
 		fi
 		_opt="zfs-remount"
-		if [ "$_ext" = "external" ]; then
-			_error "External fscomp cannot be remounted: -e and -w option are mututally exclusive"
-			add-fscomp-help
-			${EXIT} 1
-		fi
+		# TODO: investigate
 		if [ "$_readonly" = "YES" ]; then
 			_info "Readonly and remount are mutually exclusive: readonly considered, remount ignored"
 			_remount="NO"
@@ -249,57 +265,58 @@ pot-add-fscomp()
 			_opt="ro"
 		fi
 	fi
-	# TODO: chech that the external fscomp is not already part of the pot
 	if [ -n "$_fscomp" ]; then
-		if [ "$_ext" = "external" ]; then
-			if ! _zfs_dataset_valid "$_fscomp" ; then
-				_error "fscomp $_fscomp is not valid"
-				add-fscomp-help
-				${EXIT} 1
-			fi
-		else
-			if ! _zfs_dataset_valid "$POT_ZFS_ROOT/fscomp/$_fscomp" ; then
-				_error "fscomp $_fscomp is not valid"
-				add-fscomp-help
-				${EXIT} 1
-			fi
+		if ! _is_fscomp "$_fscomp" ; then
+			_error "fscomp $_fscomp is not valid"
+			mount-in-help
+			${EXIT} 1
 		fi
 	fi
-	# TODO: check that the directory is not in the pot
+	if [ -n "$_dset" ]; then
+		if ! _zfs_dataset_valid "$_dset" ; then
+			_error "dataset $_dset is not valid"
+			mount-in-help
+			${EXIT} 1
+		fi
+	fi
 	# TODO: check that the directory doesn't conflict with anything already mounted
 	if [ -n "$_dir" ]; then
 		if [ ! -d "$_dir" ]; then
 			_error "$_dir is not a directory"
-			add-fscomp-help
+			mount-in-help
 			${EXIT} 1
 		fi
 		if ! _is_absolute_path "$_dir" ; then
-			_error "$_fscomp has to be an absolute pathname (start with /)"
-			add-fscomp-help
-			${EXIT} 1
+			if ! _dir="$(realpath -q "$_dir")" > /dev/null ; then
+				_error "Not able to convert $_dir as an absolute pathname"
+				mount-in-help
+				${EXIT} 1
+			fi
 		fi
-		if [ "$_ext" = "external" ]; then
-			_info "-e option is ignored with -d"
+		if ! _directory_validation "$_pname" "$_dir" ; then
+			_error "Directory $_dir not valid, already used or already part of the pot"
+			${EXIT} 1
 		fi
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
-		add-fscomp-help
+		mount-in-help
 		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
-	fi
-	if [ -n "$_fscomp" ] && ! _fscomp_validation "$_pname" "$_fscomp" "$_mnt_p" $_ext $_opt ; then
 		${EXIT} 1
 	fi
 	if ! _mountpoint_validation "$_pname" "$_mnt_p" ; then
 		_error "The mountpoint is not valid!"
 		${EXIT} 1
 	fi
+	if [ -n "$_dir" ]; then
+		_mount_dir "$_dir" "$_pname" "$_mnt_p" $_opt
+	fi
+	if [ -n "$_dset" ]; then
+		_mount_dataset "$_dset" "$_pname" "$_mnt_p" $_opt
+	fi
 	if [ -n "$_fscomp" ]; then
-		_add_f_to_p "$_fscomp" "$_pname" "$_mnt_p" $_ext $_opt
-	else
-		_add_d_to_p "$_dir" "$_pname" "$_mnt_p" $_opt
+		_mount_dataset "$POT_ZFS_ROOT/fscomp/$_fscomp" "$_pname" "$_mnt_p" $_opt
 	fi
 }

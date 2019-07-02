@@ -94,6 +94,17 @@ _is_base()
 	return 1 # false
 }
 
+_is_fscomp()
+{
+	__monitor ISFSCOMP "$@"
+	case "$1" in
+		test-fscomp)
+			return 0 # true
+			;;
+	esac
+	return 1 # false
+}
+
 _is_flavour()
 {
 	case $1 in
@@ -228,6 +239,7 @@ common_setUp()
 	ISPOT_CALLS=0
 	ISPOTRUN_CALLS=0
 	ISBASE_CALLS=0
+	ISFSCOMP_CALLS=0
 	GETCONFVAR_CALLS=0
 	GETPOTBASE_CALLS=0
 	ZFSEXIST_CALLS=0

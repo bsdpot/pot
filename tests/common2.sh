@@ -28,6 +28,10 @@ fi
 				return 1 # false
 			elif ${TEST} "$3" = "/bases/base-test-nodset" ]; then
 				return 1 # false
+			elif ${TEST} "$3" = "/fscomp/fscomp-test" ]; then
+				return 1 # false
+			elif ${TEST} "$3" = "/fscomp/fscomp-test-nodset" ]; then
+				return 1 # false
 			else
 				return 0 # true
 			fi
@@ -73,6 +77,9 @@ _zfs_dataset_valid()
 		return 0 # true
 	fi
 	if ${TEST} "$1" = "/bases/base-test" ]; then
+		return 0
+	fi
+	if ${TEST} "$1" = "/fscomp/fscomp-test" ]; then
 		return 0
 	fi
 	return 1 # false
@@ -121,6 +128,21 @@ test_is_base()
 	assertEquals "2" "$?"
 
 	_is_base base-test
+	assertEquals "0" "$?"
+}
+
+test_is_fscomp()
+{
+	_is_fscomp
+	assertEquals "1" "$?"
+
+	_is_fscomp nofscomp
+	assertEquals "1" "$?"
+
+	_is_fscomp fscomp-test-nodset
+	assertEquals "2" "$?"
+
+	_is_fscomp fscomp-test
 	assertEquals "0" "$?"
 }
 

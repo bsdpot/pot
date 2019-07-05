@@ -165,6 +165,12 @@ test_is_cmd_flavorable_01()
 
 	_is_cmd_flavorable create -p help
 	assertNotEquals "$?" "0"
+
+	_is_cmd_flavorable add-fscomp
+	assertNotEquals "$?" "0"
+
+	_is_cmd_flavorable add-file
+	assertNotEquals "$?" "0"
 }
 
 test_is_cmd_flavorable_02()
@@ -178,7 +184,10 @@ test_is_cmd_flavorable_02()
 	_is_cmd_flavorable set-rss
 	assertEquals "$?" "0"
 
-	_is_cmd_flavorable add-fscomp
+	_is_cmd_flavorable copy-in
+	assertEquals "$?" "0"
+
+	_is_cmd_flavorable mount-in
 	assertEquals "$?" "0"
 }
 

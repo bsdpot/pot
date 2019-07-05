@@ -87,13 +87,10 @@ Commands:
 	create -- Create a new pot (jail)
 	clone -- Clone a pot creating a new one
 	clone-fscomp - Clone a fscomp
-	promote -- Promote a cloned pot -- DEPRECATED
 	rename -- Rename a pot
 	destroy -- Destroy a pot
 	copy-in -- Copy a file or a directory into a pot
 	mount-in -- Mount a directory, a zfs dataset or a fscomp into a pot
-	add-file -- Add a file to a pot
-	add-fscomp -- Add a fs component or a directory to a pot
 	add-dep -- Add a dependency
 	set-rss -- Set a resource constraint
 	set-cmd -- Set the command to start the pot

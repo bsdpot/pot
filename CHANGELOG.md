@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Quickstart Guide: rework the guide using mount-in and copy-in, listing all possibilities
+- README: remove the introduction and pointing to the Quickstart guide instead
+
+### Removed
+- promote: after a long deprecation time, promote has been deleted
+- add-fscomp: removed, mount-in is its more generic replacement
+- add-file: removed, copy-in is its more generic replacement
 
 ## [0.7.0] 2019-07-04
 ### Added

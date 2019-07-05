@@ -575,7 +575,7 @@ _is_cmd_flavorable()
 	local _cmd
 	_cmd=$1
 	case $_cmd in
-		add-dep|add-fscomp|set-attribute|\
+		add-dep|set-attribute|\
 		copy-in|mount-in|\
 		set-rss|export-ports)
 			return 0

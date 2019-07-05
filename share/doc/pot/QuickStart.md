@@ -137,12 +137,9 @@ The snapshot can be used to revert all the modifications occurred between the ti
 The revert command will automatically select the newest snapshot available.
 ## Attach a "volume" to your pot
 Let's say that you want to attach a pre-existent "volume" to your `pot`.
-To do that, there is one limitation and 2 possible ways.
+There are several way to do that, depending on what your volume is.
 
-### Limitation
-The "volume" that you can attach to a `pot` has to be a ZFS dataset. You cannot attach a generic directory or a disk partition. You can attach ZFS datasets only.
-
-### First way: fscomp
+### First volume type: fscomp
 To support users managing ZFS datasets for `pot`, the concept of `fscomp` (AKA file system component) is introduced.
 You can create a file system component in the `pot` ecosystem, that can be attached to one or more `pot`s.
 
@@ -158,31 +155,56 @@ A list of available `fscomp`s can be obtained with the command:
 ```console
 # pot ls -f
 ```
-To attach your new `fscomp` to a `pot`, you can use the command:
+To mount your new `fscomp` to a `pot`, you can use the command:
 ```console
-# pot add-fscomp -p mypot -f myfscomp -m /mnt
+# pot mount-in -p mypot -f myfscomp -m /mnt
 # pot info -p mypot -v
 ```
 The `-m` mandatory option represents the mountpoint (absolute pathname) inside the `pot`.
 
 The advantage of this approach, is that `fscomp` are recognized by the `pot` framework, and a set of features is provided, like snapshot, rollback and clone.
 
-### Second way: an already existent dataset
+### Second volume type: an already existent dataset
 It could happen that you want to attach to a `pot` a pre-existing ZFS dataset and you don't want to create an emtpy `fscomp` and move all data there.
 
 To add and external ZFS dataset, the command would be:
 ```console
-# pot add-fscomp -p mypot -m /mnt -f zroot/mydataset -e
+# pot mount-in -p mypot -m /mnt -z zroot/mydataset
 ```
-The main difference is the presence of the flag `-e` (external) and the argument of the option `-f` is not a `fscomp` name anymore, but a generic valid ZFS dataset.
+The only difference is the different option used (`-z` instead of `-f`)  and the argument of the option is not a `fscomp` name, but a generic valid ZFS dataset.
+
+### Third volume type: a generic directory
+There two ways to make external directories available in a `pot`: mount them or copy them.
+The decision to mount or to copy is to the user to take, with obvious pros and cons.
+
+To mount a directory, the command would be:
+```console
+# pot mount-in -p mypot -m /mnt -d mydir
+```
+The directory `mydir` will be mounted at `/mnt`
+
+To copy a directory, the command would be:
+```console
+# pot copy-in -p mypot -s mydir -d /mnt
+```
+The directory `mydir` (and all its file) will be copied in `/mnt`, creating the directory `/mnt/mydir`
+
+### Forth volume type: a single file
+For single files, only the copy option is available.
+```console
+# pot copy-in -p mypot -s myfile -d /mnt
+```
+The file `myfile` will be copied in `/mnt`.
+
 ### Common consideration
-The `add-fscomp` command will change the configuration of the `pot`; the `fscomp` will be mounted when the `pot` starts and unmounted when the `pot` stops.
-A `fscomp` can be used with multiple `pot`s. Potential problems, like concurrent access to the same files, cannot be managed by `pot` and are left to the user.
+The `mount-int` command will change the configuration of the `pot`; the "volume" will be automatically mounted when the `pot` starts and unmounted when the `pot` stops.
+If you run `mount-in` when the `pot` is already running, the "volume" is mounted on the fly.
+A "volume" can be used with multiple `pot`s. Potential problems, like concurrent access to the same files, cannot be managed by `pot` and are left to the user.
 
 In order to mitigate concurrency access to the same `fscomp`, the option `-r` is introduced:
 ```console
-# pot add-fscomp -p mypot-ro -f myfscomp -m /mnt -r
-# pot add-fscomp -p mypot-rw -f myfscomp -m /mnt
+# pot mount-in -p mypot-ro -f myfscomp -m /mnt -r
+# pot mount-in -p mypot-rw -f myfscomp -m /mnt
 ```
 This option will inform the framework to mount `myfscomp` in `mypot-ro` in read-only mode, while in `mypot-rw` that same `myfscomp` is mounted in read-write mode.
 

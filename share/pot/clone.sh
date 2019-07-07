@@ -9,7 +9,7 @@ clone-help()
 	echo '  -v verbose'
 	echo '  -P potname : the pot to be cloned (template)'
 	echo '  -p potname : the new pot name'
-	echo '  -i ipaddr : an ip address'
+	echo '  -i ipaddr : an ip address (if applicable)'
 	echo '  -f : automatically take snapshots of dataset that has no one'
 }
 
@@ -149,25 +149,28 @@ _cj_zfs()
 
 # $1 pot name
 # $2 pot-base name
+# $2 network type
 # $3 ip
 _cj_conf()
 {
-	local _pname _potbase _ip
+	# shellcheck disable=SC2039
+	local _pname _potbase _ip _network_type
 	_pname=$1
 	_potbase=$2
-	_ip=$3
+	_network_type=$3
+	_ip=$4
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
 	if [ ! -d "$_pdir/conf" ]; then
 		mkdir -p "$_pdir/conf"
 	fi
-	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | grep -v ^ip4 > "$_pdir/conf/pot.conf"
-	sysrc -f "${_pdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" /dev/null
-	(
-		echo "host.hostname=\"${_pname}.$( hostname )\""
-		echo "ip4=$_ip"
-	) >> "$_pdir/conf/pot.conf"
-	if [ "$_ip" != "inherit" ]; then
+	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | grep -v ^ip > "$_pdir/conf/pot.conf"
+	echo "host.hostname=\"${_pname}.$( hostname )\"" >> "$_pdir/conf/pot.conf"
+	if [ -n "$_ip" ]; then
+		sysrc -f "${_pdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" /dev/null
+		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
+	fi
+	if [ "$_network_type" != "inherit" ]; then
 		(
 			echo +"$_ip"
 			echo '*.*		'"/var/log/pot/${_pname}.log"
@@ -184,9 +187,9 @@ _cj_conf()
 # shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _pb_vnet _autosnap _pb_type
+	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _pb_vnet _autosnap _pb_type _pb_network_type
 	_pname=
-	_ipaddr=inherit
+	_ipaddr=
 	_potbase=
 	_pb_ipaddr=
 	_pblvl=0
@@ -247,40 +250,55 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
-	_pb_ipaddr="$( _get_conf_var "$_potbase" ip4 )"
-	_pb_vnet="$( _get_conf_var "$_potbase" vnet )"
+	_pb_network_type="$( _get_pot_network_type "$_potbase" )"
+	if [ -z "$_pb_network_type" ] ; then
+		_error "Configuration file for $_potbase contains obsolete elements"
+		_error "Please run pot update-config -p $_potbase to fix"
+		${EXIT} 1
+	fi
+#	_pb_ipaddr="$( _get_conf_var "$_potbase" ip )"
+#	_pb_vnet="$( _get_conf_var "$_potbase" vnet )"
 	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
 	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
-	if [ "$_ipaddr" = "auto" ] ; then
-		if [ "$_pb_vnet" = "true" ]; then
-			_ipaddr="$(potnet next)"
-			_debug "-i auto: assigned $_ipaddr"
-		else
-			_error "$_potbase has a static IP; the auto keyword is valid only in the internal network"
+	if [ "$_pb_network_type" = "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
+		_ipaddr="$(potnet next)"
+		_debug "-i auto: assigned $_ipaddr"
+	elif [ "$_pb_network_type" != "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
+		_error "$_potbase has network type $_pb_network_type - keyword auto not compatible"
+		${EXIT} 1
+	fi
+	case "$_pb_network_type" in
+	"inherit")
+		if [ -n "$_ipaddr" ]; then
+			_error "$_potbase has network type inherit - -i $_ipaddr doesn't apply"
+			clone-help
 			${EXIT} 1
 		fi
-	elif [ "$_ipaddr" != "inherit" ]; then
+		;;
+	"alias")
+		if [ -z "$_ipaddr" ]; then
+			_error "-i is mandator for alias network type"
+			clone-help
+			${EXIT} 1
+		fi
 		if ! potnet ipcheck -H "$_ipaddr" ; then
-			_error "$_ipaddr is not a vliad IPv4 or IPv6 address"
+			_error "$_ipaddr is not an IPv4 nor IPv6 address"
 			${EXIT} 1
 		fi
-	fi
-	# check ip4 configuration compatibility
-	if [ "$_ipaddr" = "inherit" ] && [ "$_pb_ipaddr" != "inherit" ]; then
-		_error "$_potbase has IP $_pb_ipaddr Provide a new IP for $_pname with the option -i"
-		clone-help
-		${EXIT} 1
-	fi
-	if [ "$_pb_ipaddr" = "inherit" ] && [ "$_ipaddr" != "inherit" ]; then
-		_error "$_potbase has no IP, so $_pname cannot have -i $_ipaddr or auto"
-		clone-help
-		${EXIT} 1
-	fi
-	if [ "$_pb_ipaddr" = "$_ipaddr" ] && [ "$_ipaddr" != "inherit" ]; then
-		_error "$_ipaddr is areadly used by $_potbase, please use a different IP or -i auto"
-		clone-help
-		${EXIT} 1
-	fi
+		;;
+	"public-bridge")
+		if [ -z "$_ipaddr" ]; then
+			_error "$_ipaddr is mandator for alias network type"
+			clone-help
+			${EXIT} 1
+		fi
+		if ! potnet validate -H "$_ipaddr" ; then
+			_error "$_ipaddr is not a valid IP address for the public bridge"
+			clone-help
+			${EXIT} 1
+		fi
+		;;
+	esac
 	if [ "$_pblvl" = "0" ] && [ "$_pb_type" != "single" ]; then
 		_error "Level 0 pots cannot be cloned"
 		clone-help
@@ -292,7 +310,7 @@ pot-clone()
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_potbase" "$_ipaddr" ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_pb_network_type" "$_ipaddr" ; then
 		${EXIT} 1
 	fi
 }

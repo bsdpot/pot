@@ -6,6 +6,7 @@
 
 _POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script"
 _POT_RO_ATTRIBUTES=""
+_POT_NETWORK_TYPES="inherit alias public-bridge"
 
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1
@@ -336,12 +337,17 @@ _get_pot_type()
 }
 
 # $1 pot name
+_get_pot_network_type()
+{
+	_get_conf_var "$1" network_type
+}
+
+# $1 pot name
 _is_ip_inherit()
 {
 	local _pname _val
 	_pname="$1"
-	_val="$( _get_conf_var $_pname ip4 )"
-	if [ "$_val" = "inherit" ]; then
+	if [ "$(_get_pot_network_type $_pname )" = "inherit" ]; then
 		return 0 # true
 	else
 		return 1 # false

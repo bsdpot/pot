@@ -68,6 +68,24 @@ _update_one_pot()
 		fi
 		echo "pot.export.ports=$_new_ports" >> "$_conf"
 	fi
+
+	# convert ip4 and static entries with the new network_type and ip
+	if [ -n "$(_get_conf_var "$_pname" "ip4")" ]; then
+		_debug "converting the network configuration using the new format"
+		_ip4="$(_get_conf_var "$_pname" "ip4")"
+		_vnet="$(_get_conf_var "$_pname" "vnet")"
+		${SED} -i '' -e "/ip4=.*/d" "$_conf"
+		if [ "$_ip4" = "inherit" ]; then
+			echo "network_type=inherit" >> "$_conf"
+		else
+			if [ "$_vnet" = "false" ]; then
+				echo "network_type=alias" >> "$_conf"
+			else
+				echo "network_type=public-bridge" >> "$_conf"
+			fi
+			echo "ip=$_ip4" >> "$_conf"
+		fi
+	fi
 }
 
 pot-update-config()

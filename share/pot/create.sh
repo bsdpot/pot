@@ -1,8 +1,10 @@
 #!/bin/sh
+:
 
+# shellcheck disable=SC2039
 create-help()
 {
-	echo "pot create [-hv] -p potname [-i ipaddr] [-s] [-l lvl] [-f flavour]"
+	echo "pot create [-hv] -p potname [-n network-type] [-i ipaddr] [-l lvl] [-f flavour]"
 	echo '  [-b base | -P basepot ] [-d dns] [-t type]'
 	echo '  -h print this help'
 	echo '  -v verbose'
@@ -10,13 +12,16 @@ create-help()
 	echo '  -l lvl : pot level (only for type multi)'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
-	echo '  -i ipaddr : an ip address or the keyword auto or the keyword inherit'
-	echo '  -s : static ip address'
 	echo '  -d dns : one between inherit(default) or pot'
 	echo '  -f flavour : flavour to be used'
 	echo '  -t type: single or multi (default multi)'
-    echo '         single: the pot is based on a unique ZFS dataset'	
-    echo '         multi: the pot is composed by a classical collection of 3 ZFS dataset'	
+	echo '         single: the pot is based on a unique ZFS dataset'
+	echo '         multi: the pot is composed by a classical collection of 3 ZFS dataset'
+	echo '  -n network-type: one of those'
+	echo '         inherit: inherit the host network stack (default)'
+	echo '         alias: use a static ip as alias configured directly to the host NIC'
+	echo '         public-bridge: use the internal commonly public bridge'
+	echo '  -i ipaddr : an ip address or the keyword auto (if compatible with the network-type'
 }
 
 # $1 pot name
@@ -117,21 +122,22 @@ _cj_zfs()
 
 # $1 pot name
 # $2 base name
-# $3 ip
-# $4 static_ip
+# $3 network type
+# $4 ip
 # $5 level
 # $6 dns
 # $7 type
 # $8 pot-base name
 _cj_conf()
 {
-	local _pname _base _ip _staticip _lvl _jdir _bdir _potbase _dns _type
-	local _pblvl _pbpb
+	# shellcheck disable=SC2039
+	local _pname _base _ip _network_type _lvl _jdir _bdir _potbase _dns _type _pblvl _pbpb
+	# shellcheck disable=SC2039
 	local _jdset _bdset _pbdset _baseos
 	_pname=$1
 	_base=$2
-	_ip=$3
-	_staticip=$4
+	_network_type=$3
+	_ip=$4
 	_lvl=$5
 	_dns=$6
 	_type=$7
@@ -194,18 +200,23 @@ _cj_conf()
 		else
 			echo "osrelease=\"${_baseos}-RELEASE\""
 		fi
-		if [ "$_ip" = "inherit" ]; then
-			echo "ip4=inherit"
+		echo "pot.attr.no-rc-script=NO"
+		echo "pot.attr.presistent=YES"
+		echo "pot.attr.start-at-boot=NO"
+		echo "network_type=$_network_type"
+		case $_network_type in
+		"inherit")
 			echo "vnet=false"
-		else
-			if [ "$_staticip" = "YES" ]; then
-				echo "ip4=${_ip}"
-				echo "vnet=false"
-			else
-				echo "ip4=${_ip}"
-				echo "vnet=true"
-			fi
-		fi
+			;;
+		"alias")
+			echo "vnet=false"
+			echo "ip=${_ip}"
+			;;
+		"public-bridge")
+			echo "vnet=true"
+			echo "ip=${_ip}"
+			;;
+		esac
 		if [ "${_dns}" = "pot" ]; then
 			echo "pot.depend=${POT_DNS_NAME}"
 		fi
@@ -251,6 +262,7 @@ _cj_internal_conf()
 		${SED} -i '' 's/^.*adjkerntz.*$/# &/g' "${_etcdir}/crontab"
 	fi
 
+	# TODO: to be verified
 	# add remote syslogd capability, if not inherit
 	if [ "$_ip" != "inherit" ]; then
 		# configure syslog in the pot
@@ -335,120 +347,101 @@ _cj_single_install()
 
 pot-create()
 {
-	local _pname _ipaddr _lvl _base _flv _potbase
-	local _dns _staticip _type _new_lvl
+	# shellcheck disable=SC2039
+	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type
+	OPTIND=1
+	_type="multi"
+	_network_type="inherit"
 	_pname=
 	_base=
-	_ipaddr=inherit
+	_ipaddr=
 	_lvl=1
 	_new_lvl=
 	_flv=
 	_potbase=
 	_dns=inherit
-	_staticip="NO"
-	_type="multi"
-	if ! args=$(getopt hvp:i:sl:b:f:P:d:t: "$@") ; then
-		create-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	while getopts "hvp:t:n:i:l:b:f:P:d:" _o ; do
+		case "$_o" in
+		h)
 			create-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-p)
-			_pname=$2
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		-i)
-			if [ "$2" = "auto" ]; then
-				if ! _is_potnet_available ; then
-				   _error "potnet is not available! It's needed by -i auto"
-					${EXIT} 1
-				fi
-				_ipaddr="auto"
+		t)
+			if [ "$OPTARG" = "multi" ] || [ "$OPTARG" = "single" ]; then
+				_type="$OPTARG"
 			else
-				# if $(potnet validate $2) then
-				_ipaddr=$2
-			fi
-			shift 2
-			;;
-		-s)
-			_staticip="YES"
-			shift
-			;;
-		-l)
-			_lvl=$2
-			_new_lvl=$2
-			shift 2
-			;;
-		-t)
-			if [ "$2" = "multi" ] || [ "$2" = "single" ]; then
-				_type="$2"
-			else
-				_error "Type $2 not supported"
+				_error "Type $OPTARG not supported"
 				create-help
 				${EXIT} 1
 			fi
-			shift 2
 			;;
-		-b)
-			_base=$2
-			shift 2
-			;;
-		-P)
-			_potbase=$2
-			shift 2
-			;;
-		-f)
-			if ! _is_flavourdir ; then
-				_error "The flavour dir is missing"
+		n)
+			if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
+				_error "Network type $OPTARG not recognized"
+				create-help
 				${EXIT} 1
 			fi
-			if _is_flavour "$2" ; then
-				if [ -z "$_flv" ]; then
-					_flv=$2
-				else
-					_flv="$_flv $2"
-				fi
-			else
-				_error "The flavour $2 not found"
-				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
-				${EXIT} 1
-			fi
-			shift 2
+			_network_type="$OPTARG"
 			;;
-		-d)
-			case $2 in
+		i)
+			_ipaddr="$OPTARG"
+			;;
+		l)
+			_lvl="$OPTARG"
+			_new_lvl="$OPTARG"
+			;;
+		b)
+			_base=$OPTARG
+			;;
+		P)
+			_potbase=$OPTARG
+			;;
+		d)
+			case $OPTARG in
 				"inherit")
 					;;
 				"pot")
 					_dns=pot
 					;;
 				*)
-					_error "The dns $2 is not a valid option: choose between inherit or pot"
+					_error "The dns $OPTARG is not a valid option: choose between inherit or pot"
 					create-help
 					${EXIT} 1
 			esac
-			shift 2
 			;;
-		--)
-			shift
-			break
+		f)
+			if ! _is_flavourdir ; then
+				_error "The flavour dir is missing"
+				${EXIT} 1
+			fi
+			if _is_flavour "$OPTARG" ; then
+				if [ -z "$_flv" ]; then
+					_flv=$OPTARG
+				else
+					_flv="$_flv $OPTARG"
+				fi
+			else
+				_error "The flavour $OPTARG not found"
+				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
+				${EXIT} 1
+			fi
+			;;
+		*)
+			create-help
+			${EXIT} 1
 			;;
 		esac
 	done
-
 	# check options consitency
 	if [ "$_type" = "single" ]; then
 		if [ -n "$_new_lvl" ] && [ "$_new_lvl" != "0" ]; then
-			_error "single pot level can only be zero (omit -l option"
+			_error "single pot level can only be zero (omit -l option)"
 			create-help
 			${EXIT} 1
 		fi
@@ -596,44 +589,52 @@ pot-create()
 		_error "pot $_pname already exists"
 		${EXIT} 1
 	fi
-	if [ "$_ipaddr" = "inherit" ] && [ $_staticip = "YES" ]; then
-		_info "-s option is ignored if -i is inherit"
-		_staticip="NO"
-	fi
-	if [ "$_ipaddr" = "auto" ] && [ $_staticip = "YES" ]; then
-		_info "-s option is currently ignored if -i is auto"
-		_staticip="NO"
-	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	if [ "$_ipaddr" = "auto" ]; then
-		_ipaddr="$(potnet next)"
-		_debug "-i auto: assigned $_ipaddr"
-	fi
-	if [ "$_ipaddr" != "inherit" ]; then
-		if [ "$_staticip" != "YES" ]; then
-			if ! _is_vnet_available ; then
-				_error "This kernel doesn't support VIMAGE! No vnet possible"
+	case "$_network_type" in
+	"inherit")
+		if [ -n "$_ipaddr" ]; then
+			_info "option -i is ignored when network type is inherit"
+		fi
+		_ipaddr="inherit"
+		;;
+	"alias")
+		if [ -z "$_ipaddr" ]; then
+			_error "option -i is mandatory with network type is alias"
+			${EXIT} 1
+		elif [ "$_ipaddr" = "auto" ]; then
+			_error "-i auto not usable with network type alias - a real IP address has to be provided"
+			${EXIT} 1
+		elif ! potnet ipcheck -H "$_ipaddr" ; then
+			_error "$_ipaddr is not a valid IPv4 or IPv6 address"
+			${EXIT} 1
+		fi
+		;;
+	"public-bridge")
+		if ! _is_vnet_available ; then
+			_error "This kernel doesn't support VIMAGE! No vnet possible"
+			${EXIT} 1
+		fi
+		if ! _is_vnet_up ; then
+			_info "No pot bridge found! Calling vnet-start to fix the issue"
+			pot-cmd vnet-start
+		fi
+		if [ "$_ipaddr" = "auto" ]; then
+			if ! _is_potnet_available ; then
+			   _error "potnet is not available! It's needed by -i auto"
 				${EXIT} 1
 			fi
-			if ! _is_vnet_up ; then
-				_info "No pot bridge found! Calling vnet-start to fix the issue"
-				pot-cmd vnet-start
-			fi
-			if [ "$_ipaddr" != "auto" ]; then
-				if ! potnet validate -H "$_ipaddr" 2> /dev/null ; then
-					_error "The $_ipaddr IP is not valid - run potnet validate -H $_ipaddr for more invormation"
-					${EXIT} 1
-				fi
-			fi
+			_ipaddr="$(potnet next)"
+			_debug "-i auto: assigned $_ipaddr"
 		else
-			if ! potnet ipcheck -H "$_ipaddr" ; then
-				_error "$_ipaddr is not a valid IPv4 or IPv6 address"
+			if ! potnet validate -H "$_ipaddr" 2> /dev/null ; then
+				_error "The $_ipaddr IP is not valid - run potnet validate -H $_ipaddr for more invormation"
 				${EXIT} 1
 			fi
 		fi
-	fi
+		;;
+	esac
 	if [ "$_dns" = "pot" ]; then
 		if ! _is_vnet_available ; then
 			_error "This kernel doesn't support VIMAGE! No vnet possible (needed by the dns)"
@@ -644,21 +645,20 @@ pot-create()
 			pot-cmd create-dns
 		fi
 	fi
-	if _is_verbose ; then
-		_info "Option summary"
-		_info "pname : $_pname"
-		_info "type  : $_type"
-		_info "base  : $_base"
-		_info "lvl   : $_lvl"
-		_info "dns   : $_dns"
-		_info "pbase : $_potbase"
-		_info "ip    : $_ipaddr"
-		_info "ip alias : $_staticip"
-	fi
+	_info "Creating a new pot"
+	_info "pot name    : $_pname"
+	_info "type        : $_type"
+	_info "base        : $_base"
+	_info "pot_base    : $_potbase"
+	_info "level       : $_lvl"
+	_info "network-type: $_network_type"
+	_info "ip          : $_ipaddr"
+	_info "dns         : $_dns"
 	if ! _cj_zfs "$_pname" "$_type" "$_lvl" "$_base" "$_potbase" ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_base" "$_ipaddr" "$_staticip" "$_lvl" "$_dns" "$_type" "$_potbase" ; then
+	# echo _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_potbase"
+	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_potbase" ; then
 		${EXIT} 1
 	fi
 	if [ "$_type" = "single" ]; then

@@ -22,7 +22,10 @@ _ls_info_pot()
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_lvl=$( _get_conf_var "$_pname" pot.level)
 	printf "pot name : %s\\n" "$_pname"
-	printf "\\tip4 : %s\\n" "$( _get_conf_var "$_pname" ip4)"
+	printf "\\tnetwork : %s\\n" "$( _get_conf_var "$_pname" network_type)"
+	if [ "$( _get_conf_var "$_pname" network_type)" != "inherit" ]; then
+		printf "\\tip : %s\\n" "$( _get_conf_var "$_pname" ip)"
+	fi
 	if _is_pot_running "$_pname" ; then
 		printf "\\tactive : true\\n"
 	else

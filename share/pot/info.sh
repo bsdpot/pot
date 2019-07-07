@@ -28,13 +28,16 @@ _info_pot()
 	if [ "$_lvl" -eq 2 ]; then
 		printf "\tbase pot : %s\n" "$( _get_conf_var "$_pname" pot.potbase)"
 	fi
-	printf "\tip4 : %s\n" "$( _get_conf_var "$_pname" ip4)"
-	if _is_verbose && [ "$( _get_conf_var "$_pname" ip4)" != "inherit" ]; then
-		_ports="$( _get_pot_export_ports "$_pname" )"
-		if [ -z "$_ports" ]; then
-			printf "\t\tno ports exported\n"
-		else
-			printf "\t\texported ports: %s\n" "$_ports"
+	printf "\tnetwork_type : %s\n" "$( _get_pot_network_type "$_pname" )"
+	if [ "$( _get_pot_network_type "$_pname" )" != "inherit" ]; then
+		printf "\tip : %s\n" "$( _get_conf_var "$_pname" ip)"
+		if _is_verbose ; then
+			_ports="$( _get_pot_export_ports "$_pname" )"
+			if [ -z "$_ports" ]; then
+				printf "\t\tno ports exported\n"
+			else
+				printf "\t\texported ports: %s\n" "$_ports"
+			fi
 		fi
 	fi
 	if _is_pot_running "$_pname" ; then

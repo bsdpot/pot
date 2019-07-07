@@ -101,7 +101,7 @@ _js_vnet()
 	_epairb="${2}b"
 	ifconfig ${_epair} up
 	ifconfig $_bridge addm ${_epair}
-	_ip=$( _get_conf_var $_pname ip4 )
+	_ip=$( _get_conf_var $_pname ip )
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		touch ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
@@ -152,7 +152,7 @@ _js_export_ports()
 {
 	local _pname _ip _ports _excl_list _pot_port _host_port
 	_pname=$1
-	_ip="$( _get_conf_var $_pname ip4 )"
+	_ip="$( _get_conf_var $_pname ip )"
 	_ports="$( _get_pot_export_ports $_pname )"
 	_pfrules="/tmp/pot_${_pname}_pfrules"
 	if [ -z "$_ports" ]; then
@@ -216,6 +216,7 @@ _js_norc()
 # $1 jail name
 _js_start()
 {
+	# shellcheck disable=SC2039
 	local _pname _jdir _iface _hostname _osrelease _param _ip _cmd _persist
 	_pname="$1"
 	_iface=
@@ -233,23 +234,25 @@ _js_start()
 	_osrelease="$( _get_conf_var $_pname osrelease )"
 	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
 	_param="$_param path=${_jdir}/m"
-	if _is_pot_vnet "$_pname" ; then
+	_ip=$( _get_conf_var $_pname ip )
+	case "$( _get_conf_var "$_pname" network_type )" in
+	"inherit")
+		_param="$_param ip4=inherit ip6=inherit"
+		;;
+	"alias")
+		if potnet ip4check -H "$_ip" ; then
+			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
+		else
+			_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"
+		fi
+		;;
+	"public-bridge")
 		_iface="$( _js_create_epair )"
 		_js_vnet "$_pname" "$_iface"
 		_param="$_param vnet vnet.interface=${_iface}b"
 		_js_export_ports "$_pname"
-	else
-		_ip=$( _get_conf_var $_pname ip4 )
-		if [ "$_ip" = "inherit" ]; then
-			_param="$_param ip4=inherit ip6=inherit"
-		else
-			if potnet ip4check -H "$_ip" ; then
-				_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
-			else
-				_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"
-			fi
-		fi
-	fi
+		;;
+	esac
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		_js_norc "$_pname"
 		_cmd=/tmp/tinirc
@@ -319,8 +322,9 @@ pot-start()
 		return 0
 	fi
 	## detect obsolete config parameter
-	if [ -n "$(_get_conf_var "$_pname" "pot.export.static.ports")" ]; then
-		_error "Configuration file for $_pname contains obsole elements"
+	if [ -n "$(_get_conf_var "$_pname" "pot.export.static.ports")" ] || 
+		[ -n "$(_get_conf_var "$_pname" "ip4")" ]; then
+		_error "Configuration file for $_pname contains obsolete elements"
 		_error "Please run pot update-config -p $_pname to fix"
 		return 1
 	fi

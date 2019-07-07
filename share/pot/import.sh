@@ -55,7 +55,7 @@ _fetch_pot()
 _import_pot()
 {
 	# shellcheck disable=SC2039
-	local _pname _rpname _tag _filename _vnet _ip4 _newip
+	local _pname _rpname _tag _filename _network_type _vnet _ip _newip
 	_rpname="$1"
 	_tag="$2"
 	_pname="$3"
@@ -70,21 +70,24 @@ _import_pot()
 	sed -i '' -e "s%^host.hostname=.*$%host.hostname=${_hostname}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 
 	# network rework
-	_vnet="$( _get_conf_var "$_pname" vnet )"
-	_ip4="$( _get_conf_var "$_pname" ip4 )"
-
-	if [ "$_ip4" = "inherit" ]; then
-		_debug "ip4 set to inherit, nothing to rework"
-	else
+	_network_type="$( _get_pot_network_type "$_pname" )"
+	case "$_network_type" in
+	"inherit")
+		_debug "network_type set to inherit, nothing to rework"
+		;;
+	"alias")
+		_error "Static IP not supported by import. Moving the pot to the internal network"
+		${SED} -i '' -e "s%^vnet=.*$%vnet=true%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 		_newip="$(potnet next)"
-		sed -i '' -e "s%^ip4=.*$%ip4=${_newip}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-		if [ "$_vnet" = "true" ]; then
-			_info "Assigning new IP: $_newip"
-		else
-			_error "Static IP not supported by import. Moving the pot to the internal network"
-			sed -i '' -e "s%^vnet=.*$%vnet=true%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-		fi
-	fi
+		sed -i '' -e "s%^ip=.*$%ip=${_newip}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+		_info "Assigning new IP: $_newip"
+		;;
+	"public-network")
+		_newip="$(potnet next)"
+		sed -i '' -e "s%^ip=.*$%ip=${_newip}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+		_info "Assigning new IP: $_newip"
+		;;
+	esac
 }
 
 # shellcheck disable=SC2039

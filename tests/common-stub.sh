@@ -6,16 +6,16 @@ EXIT="return"
 . monitor.sh
 
 ##### recognized pots
-# name					running	type	level	ip			vnet
-# test-pot				no		multi	1		inherit		undef
-# test-pot-2			no		multi	2		10.1.2.3	yes
-# test-pot-run			yes		multi	1		undef		undef
-# test-pot-run-2		yes		multi	2		undef		undef
-# test-pot-0			no		multi	0		inherit		undef
-# test-pot-nosnap		no		multi	1		inherit		undef
-# test-pot-single		no		single	0		10.1.2.3	yes
-# test-pot-single-run	yes		single	0		undef		yes
-# test-pot-3			?		?		?		10.1.2.3	no
+# name					running	type	level	ip			vnet	network_type
+# test-pot				no		multi	1		inherit		undef	inherit
+# test-pot-2			no		multi	2		10.1.2.3	yes		public-bridge
+# test-pot-run			yes		multi	1		undef		undef	undef
+# test-pot-run-2		yes		multi	2		undef		undef	undef
+# test-pot-0			no		multi	0		inherit		undef	inherit
+# test-pot-nosnap		no		multi	1		inherit		undef	inherit
+# test-pot-single		no		single	0		10.1.2.3	yes		public-bridge
+# test-pot-single-run	yes		single	0		undef		yes		public-bridge
+# test-pot-3			?		?		?		10.1.2.3	no		alias
 
 
 _error()
@@ -143,14 +143,28 @@ _get_conf_var()
 			;;
 		esac
 		;;
-	"ip4")
+	"ip")
 		case $1 in
 		test-pot|test-pot-0)
-			echo "inherit"
+			echo ""
 			;;
 		test-pot-2|test-pot-3|\
 		test-pot-single)
 			echo "10.1.2.3"
+			;;
+		esac
+		;;
+	"network_type")
+		case $1 in
+		test-pot|test-pot-0)
+			echo "inherit"
+			;;
+		test-pot-3)
+			echo "alias"
+			;;
+		test-pot-2|test-pot-single-run|\
+		test-pot-single)
+			echo "public-bridge"
 			;;
 		esac
 		;;

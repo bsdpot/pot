@@ -67,7 +67,8 @@ conf_setUp()
 		echo "host.hostname=\"test-pot-vnet-ip4.test\""
 		echo "0"
 		echo "osrelease=\"12.0-RELEASE\""
-		echo "ip4=10.192.0.3"
+		echo "ip=10.192.0.3"
+		echo "network_type=public-network"
 		echo "vnet=true"
 		echo "pot.export.ports=80 443"
 	} > /tmp/jails/test-pot-vnet-ip4/conf/pot.conf

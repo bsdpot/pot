@@ -16,7 +16,7 @@ _js_stop()
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
-	_ip=$( _get_conf_var $_pname ip4 )
+	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
 		if _is_pot_vnet "$_pname" ; then
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
@@ -27,7 +27,8 @@ _js_stop()
 			_debug "Remove ${_epair%b}[a|b] network interfaces"
 			ifconfig "${_epair%b}"a destroy
 		else
-			if [ "$_ip" != inherit ]; then
+			if [ "$_network_type" = "alias" ]; then
+				_ip=$( _get_conf_var "$_pname" ip )
 				_debug "Remove the $_ip alias"
 				ifconfig "${POT_EXTIF}" "$_ip" -alias
 			fi

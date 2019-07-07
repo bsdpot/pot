@@ -16,7 +16,7 @@ potnet()
 		return 0 # true
 	fi
 	if [ "$1" = "validate" ] && [ "$2" = "-H" ] ; then
-		if [ "$3" = "10.192.123.123" ] || [ "$3" = "10.1.2.3" ]; then
+		if [ "$3" = "10.123.123.123" ] || [ "$3" = "10.1.2.4" ]; then
 			return 0 # true
 		fi
 	fi
@@ -136,6 +136,7 @@ test_pot_clone_003()
 
 test_pot_clone_004()
 {
+	# missing -i parameter
 	pot-clone -p new-pot -P test-pot-2
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
@@ -147,6 +148,7 @@ test_pot_clone_004()
 
 test_pot_clone_005()
 {
+	# test-pot has inherit network type
 	pot-clone -p new-pot -P test-pot -i 10.1.2.3
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
@@ -158,6 +160,7 @@ test_pot_clone_005()
 
 test_pot_clone_006()
 {
+	# ip address already in use
 	pot-clone -p new-pot -P test-pot-2 -i 10.1.2.3
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
@@ -193,6 +196,7 @@ test_pot_clone_021()
 	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
 	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "" "$CJCONF_CALL1_ARG4"
 }
 
 test_pot_clone_022()
@@ -208,7 +212,8 @@ test_pot_clone_022()
 	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
 	assertEquals "_cj_conf arg1" "new-pot-2" "$CJCONF_CALL1_ARG1"
 	assertEquals "_cj_conf arg2" "test-pot-2" "$CJCONF_CALL1_ARG2"
-	assertEquals "_cj_conf arg3" "10.1.2.4" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.1.2.4" "$CJCONF_CALL1_ARG4"
 }
 
 test_pot_clone_023()
@@ -226,6 +231,7 @@ test_pot_clone_023()
 	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
 	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "" "$CJCONF_CALL1_ARG4"
 }
 
 test_pot_clone_024()
@@ -241,7 +247,8 @@ test_pot_clone_024()
 	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
 	assertEquals "_cj_conf arg1" "new-pot-2" "$CJCONF_CALL1_ARG1"
 	assertEquals "_cj_conf arg2" "test-pot-2" "$CJCONF_CALL1_ARG2"
-	assertEquals "_cj_conf arg3" "10.123.123.123" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
 }
 
 test_pot_clone_040()
@@ -257,7 +264,8 @@ test_pot_clone_040()
 	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
 	assertEquals "_cj_conf arg1" "new-pot-single" "$CJCONF_CALL1_ARG1"
 	assertEquals "_cj_conf arg2" "test-pot-single" "$CJCONF_CALL1_ARG2"
-	assertEquals "_cj_conf arg3" "10.123.123.123" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
 }
 
 setUp()
@@ -265,6 +273,7 @@ setUp()
 	common_setUp
 	CJZFS_CALLS=0
 	CJCONF_CALLS=0
+	CJCONF_CALL1_ARG4=
 	HELP_CALLS=0
 }
 

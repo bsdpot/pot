@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
+- create: rework how to configure the newtork type of a pot
 - Quickstart Guide: rework the guide using mount-in and copy-in, listing all possibilities
 - README: remove the introduction and pointing to the Quickstart guide instead
 

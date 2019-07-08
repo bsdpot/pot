@@ -33,7 +33,7 @@ _source_validation()
 # shellcheck disable=SC2039
 pot-copy-in()
 {
-	local _pname _source _destination _to_be_umount
+	local _pname _source _destination _to_be_umount _rc
 	OPTIND=1
 	_pname=
 	_destination=
@@ -106,10 +106,13 @@ pot-copy-in()
 	fi
 	if cp "$_cp_opt" "$_source" "${POT_FS_ROOT}/jails/$_pname/m/$_destination" ; then
 		_debug "Source $_source copied in the pot $_pname"
+		_rc=0
 	else
 		_error "Source $_source NOT copied because of an error"
+		_rc=1
 	fi
 	if [ "$_to_be_umount" = "1" ]; then
 		_pot_umount "$_pname"
 	fi
+	${EXIT} $_rc
 }

@@ -312,11 +312,14 @@ pot-mount-in()
 	fi
 	if [ -n "$_dir" ]; then
 		_mount_dir "$_dir" "$_pname" "$_mnt_p" $_opt
+		return $?
 	fi
 	if [ -n "$_dset" ]; then
 		_mount_dataset "$_dset" "$_pname" "$_mnt_p" $_opt
+		return $?
 	fi
 	if [ -n "$_fscomp" ]; then
 		_mount_dataset "$POT_ZFS_ROOT/fscomp/$_fscomp" "$_pname" "$_mnt_p" $_opt
+		return $?
 	fi
 }

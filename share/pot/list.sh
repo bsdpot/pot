@@ -47,10 +47,9 @@ _ls_info_pot()
 
 _ls_pots()
 {
-	local _jdir _pots _q
+	local _pots _q
 	_q=$1
-	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$(  ls -d "$_jdir"/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$( _get_pot_list )
 	for _p in $_pots; do
 		if [ "$_q" = "quiet" ]; then
 			echo "$_p"

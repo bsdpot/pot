@@ -818,6 +818,11 @@ _pot_umount()
 	fi
 }
 
+_get_pot_list()
+{
+	ls -d "${POT_FS_ROOT}/jails/"*/ 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
+}
+
 pot-cmd()
 {
 	local _cmd _func

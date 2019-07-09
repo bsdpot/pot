@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- update-config: implemented -a flag to update all pot configurations in one run
+
 ### Changed
 - create: rework how to configure the newtork type of a pot
 - Quickstart Guide: rework the guide using mount-in and copy-in, listing all possibilities

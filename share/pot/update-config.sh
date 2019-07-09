@@ -12,6 +12,17 @@ update-config-help()
 }
 
 # $1 pname
+_get_conf_static_ports()
+{
+	# shellcheck disable=SC2039
+	local _pname _cdir _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_value="$( grep "^pot.export.static.ports=" "$_cdir/pot.conf" | cut -f2 -d'=' )"
+	echo "$_value"
+}
+
+# $1 pname
 _update_one_pot()
 {
 	# shellcheck disable=SC2039
@@ -49,9 +60,9 @@ _update_one_pot()
 
 	# convert pot.export.static.ports=80 to the new format pot.export.ports=80:80
 	# being aware that pot.export.ports may already exist
-	if [ -z "$(_get_conf_var "$_pname" "pot.export.static.ports")" ]; then
+	if [ -n "$(_get_conf_static_ports "$_pname")" ]; then
 		_debug "converting exported static ports using the new format"
-		_static_ports="$( _get_conf_var "$_pname" "pot.export.static.ports")"
+		_static_ports="$( _get_conf_static_ports "$_pname")"
 		${SED} -i '' -e "/pot.export.static.ports=.*/d" "$_conf"
 		_new_ports=
 		for p in $_static_ports ; do
@@ -61,8 +72,8 @@ _update_one_pot()
 				_new_ports="$_new_ports $p:$p"
 			fi
 		done
-		if [ -n "$(_get_conf_var "$_pname" "pot.export.ports")" ]; then
-			_ports="$(_get_conf_var "$_pname" "pot.export.ports")"
+		if [ -n "$(_get_pot_export_ports "$_pname")" ]; then
+			_ports="$(_get_pot_export_ports "$_pname")"
 			_new_ports="$_ports $_new_ports"
 			${SED} -i '' -e "/pot.export.ports=.*/d" "$_conf"
 		fi
@@ -86,6 +97,20 @@ _update_one_pot()
 			echo "ip=$_ip4" >> "$_conf"
 		fi
 	fi
+}
+
+_update_all_pots()
+{
+	# shellcheck disable=SC2039
+	local _pots
+	_pots="$( _get_pot_list )"
+	for _pname in $_pots ; do
+		if ! _update_one_pot "$_pname" ; then
+			return 1
+		else
+			_debug "Updated $_pname configuration"
+		fi
+	done
 }
 
 pot-update-config()
@@ -125,7 +150,7 @@ pot-update-config()
 			${EXIT} 1
 		fi
 	elif [ "$_all" = "YES" ]; then
-		if ! update_all_pots ; then
+		if ! _update_all_pots ; then
 			${EXIT} 1
 		fi
 	else 

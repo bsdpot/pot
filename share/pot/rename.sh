@@ -19,7 +19,8 @@ _rn_conf()
 	_newname=$2
 	_cdir=${POT_FS_ROOT}/jails/$_pname/conf
 	${SED} -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"
-	${SED} -i '' -e "s%host.hostname=\"${_pname}%host.hostname=\"${_newname}%g" "$_cdir/pot.conf"
+	${SED} -i '' -e "/^host.hostname=.*/d" "$_cdir/pot.conf"
+	echo "host.hostname=\"${_newname}.$( hostname )\"" >> "$_cdir/pot.conf"
 	if [ -w /usr/local/etc/syslog.d/"${_pname}".conf ]; then
 		mv /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/syslog.d/"${_newname}".conf
 		${SED} -i '' "s/$_pname.log/$_newname.log/" /usr/local/etc/syslog.d/"${_newname}".conf

@@ -195,7 +195,7 @@ _cj_conf()
 		echo "pot.dns=${_dns}"
 		echo "pot.cmd=sh /etc/rc"
 		echo "host.hostname=\"${_pname}.$( hostname )\""
-		if echo "$_baseos" | grep -qc "RC" ; then
+		if echo "$_baseos" | grep -q "RC" ; then
 			echo "osrelease=\"${_baseos}\""
 		else
 			echo "osrelease=\"${_baseos}-RELEASE\""

@@ -19,7 +19,10 @@ sed_stub()
 . conf-stub.sh
 
 # app specific stubs
-
+hostname()
+{
+	echo "test"
+}
 
 test_rn_conf_001()
 {

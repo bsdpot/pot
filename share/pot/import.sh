@@ -67,7 +67,8 @@ _import_pot()
 
 	# pot.conf modifications
 	_hostname="${_pname}.$( hostname )"
-	sed -i '' -e "s%^host.hostname=.*$%host.hostname=${_hostname}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+	${SED} -i '' -e "/^host.hostname=.*/d" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+	echo "host.hostname=\"${_hostname}.$( hostname )\"" >> "$_cdir/pot.conf"
 
 	# network rework
 	_network_type="$( _get_pot_network_type "$_pname" )"
@@ -82,7 +83,7 @@ _import_pot()
 		sed -i '' -e "s%^ip=.*$%ip=${_newip}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 		_info "Assigning new IP: $_newip"
 		;;
-	"public-network")
+	"public-bridge")
 		_newip="$(potnet next)"
 		sed -i '' -e "s%^ip=.*$%ip=${_newip}%" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 		_info "Assigning new IP: $_newip"
@@ -158,5 +159,5 @@ pot-import()
 	if ! _import_pot "$_rpname" "$_tag" "$_pname" ; then
 		${EXIT} 1
 	fi
-	return $?
+	return 0
 }

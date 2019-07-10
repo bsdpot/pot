@@ -480,7 +480,7 @@ test_pot_create_042()
 
 test_pot_create_060()
 {
-	pot-create -p new-pot -b 11.1 -n inherit
+	pot-create -p new-pot -b 11.1 -N inherit
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -509,7 +509,7 @@ test_pot_create_060()
 
 test_pot_create_061()
 {
-	pot-create -p new-pot -b 11.1 -n inherit -s
+	pot-create -p new-pot -b 11.1 -N inherit -s
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
@@ -522,7 +522,7 @@ test_pot_create_061()
 
 test_pot_create_062()
 {
-	pot-create -p new-pot -b 11.1 -n public-bridge -i 10.1.2.3
+	pot-create -p new-pot -b 11.1 -N public-bridge -i 10.1.2.3
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -551,7 +551,7 @@ test_pot_create_062()
 
 test_pot_create_063()
 {
-	pot-create -p new-pot -b 11.1 -n alias -i 10.1.2.3
+	pot-create -p new-pot -b 11.1 -N alias -i 10.1.2.3
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -579,7 +579,7 @@ test_pot_create_063()
 
 test_pot_create_064()
 {
-	pot-create -p new-pot -b 11.1 -n public-bridge -i auto
+	pot-create -p new-pot -b 11.1 -N public-bridge -i auto
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -609,7 +609,7 @@ test_pot_create_064()
 test_pot_create_065()
 {
 	# -s is ignored in this case
-	pot-create -p new-pot -b 11.1 -n alias -i auto
+	pot-create -p new-pot -b 11.1 -N alias -i auto
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
@@ -663,7 +663,7 @@ test_pot_create_081()
 
 test_pot_create_082()
 {
-	pot-create -p new-pot -b 11.1 -n public-bridge -i 10.1.2.3 -d pot
+	pot-create -p new-pot -b 11.1 -N public-bridge -i 10.1.2.3 -d pot
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -691,7 +691,7 @@ test_pot_create_082()
 
 test_pot_create_083()
 {
-	pot-create -p new-pot -b 11.1 -n alias -i 10.1.2.3 -d pot
+	pot-create -p new-pot -b 11.1 -N alias -i 10.1.2.3 -d pot
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -826,7 +826,7 @@ test_pot_create_120()
 
 test_pot_create_121()
 {
-	pot-create -p new-pot -b 11.1 -t single -n public-bridge -i 10.1.2.3
+	pot-create -p new-pot -b 11.1 -t single -N public-bridge -i 10.1.2.3
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"

@@ -17,7 +17,7 @@ create-help()
 	echo '  -t type: single or multi (default multi)'
 	echo '         single: the pot is based on a unique ZFS dataset'
 	echo '         multi: the pot is composed by a classical collection of 3 ZFS dataset'
-	echo '  -n network-type: one of those'
+	echo '  -N network-type: one of those'
 	echo '         inherit: inherit the host network stack (default)'
 	echo '         alias: use a static ip as alias configured directly to the host NIC'
 	echo '         public-bridge: use the internal commonly public bridge'
@@ -360,7 +360,7 @@ pot-create()
 	_flv=
 	_potbase=
 	_dns=inherit
-	while getopts "hvp:t:n:i:l:b:f:P:d:" _o ; do
+	while getopts "hvp:t:N:i:l:b:f:P:d:" _o ; do
 		case "$_o" in
 		h)
 			create-help
@@ -381,7 +381,7 @@ pot-create()
 				${EXIT} 1
 			fi
 			;;
-		n)
+		N)
 			if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
 				_error "Network type $OPTARG not recognized"
 				create-help

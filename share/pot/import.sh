@@ -6,12 +6,11 @@
 
 # shellcheck disable=SC2039
 import-help() {
-	echo "pot import [-hv] -p pot -t tag -a aID -U URL"
+	echo "pot import [-hv] -p pot -t tag -U URL"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the remote pot name'
 	echo '  -t tag : the tag of the pot'
-	echo '  -a aID : the allocation ID for the pot'
 	echo '  -U URL : the base URL where to find the image file'
 }
 
@@ -94,13 +93,12 @@ _import_pot()
 # shellcheck disable=SC2039
 pot-import()
 {
-	local _rpname _tag _URL _pname _allocation_tag
+	local _rpname _tag _URL _pname
 	_rpname=
 	_tag=
 	_URL=
-	_allocation_tag=
 	OPTIND=1
-	while getopts "hvp:t:U:a:" _o ; do
+	while getopts "hvp:t:U:" _o ; do
 		case "$_o" in
 		h)
 			import-help
@@ -118,9 +116,6 @@ pot-import()
 		U)
 			_URL="$OPTARG"
 			;;
-		a)
-			_allocation_tag="$OPTARG"
-			;;
 		*)
 			import-help
 			${EXIT} 1
@@ -137,12 +132,7 @@ pot-import()
 		import-help
 		${EXIT} 1
 	fi
-	if [ -z "$_allocation_tag" ]; then
-		_error "A allocation id is mandatory"
-		import-help
-		${EXIT} 1
-	fi
-	_pname="${_rpname}_${_tag}_${_allocation_tag}"
+	_pname="${_rpname}_${_tag}"
 	_pname="$(echo "$_pname" | tr '.' '_')"
 	if _is_pot "$_pname" quiet ; then
 		_error "pot $_pname is already present"

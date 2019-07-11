@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create: rework how to configure the newtork type of a pot
 - Quickstart Guide: rework the guide using mount-in and copy-in, listing all possibilities
 - README: remove the introduction and pointing to the Quickstart guide instead
+- import: removed -a option, not really needed during import
+- prepare: optimized, importing once and using clone instead of import+rename every time
 
 ### Removed
 - promote: after a long deprecation time, promote has been deleted

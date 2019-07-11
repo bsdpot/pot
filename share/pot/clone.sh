@@ -72,6 +72,7 @@ _cj_zfs()
 		fi
 		_debug "clone $_dset@$_snap into $_jdset/m"
 		zfs clone -o mountpoint="$_pdir/m" "$_dset@$_snap" "$_jdset/m"
+		touch "$_pdir/conf/fscomp.conf"
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )
 			_mnt_p=$( echo "$line" | awk '{print $2}' )
@@ -154,7 +155,7 @@ _cj_zfs()
 _cj_conf()
 {
 	# shellcheck disable=SC2039
-	local _pname _potbase _ip _network_type
+	local _pname _potbase _ptype _ip _network_type
 	_pname=$1
 	_potbase=$2
 	_network_type=$3
@@ -167,7 +168,14 @@ _cj_conf()
 	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | grep -v ^ip > "$_pdir/conf/pot.conf"
 	echo "host.hostname=\"${_pname}.$( hostname )\"" >> "$_pdir/conf/pot.conf"
 	if [ -n "$_ip" ]; then
-		sysrc -f "${_pdir}/custom/etc/rc.conf" "syslogd_flags=-vv -s -b $_ip" /dev/null
+	    _ptype="$( _get_conf_var "$_pname" pot.type )"
+		if [ "$_ptype" = "multi" ]; then
+			_rc_conf="${_pdir}/custom/etc/rc.conf"
+		else
+			_rc_conf="${_pdir}/m/etc/rc.conf"
+		fi
+		touch "${_rc_conf}"
+		sysrc -f "${_rc_conf}" "syslogd_flags=-vv -s -b $_ip" > /dev/null
 		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
 	fi
 	if [ "$_network_type" != "inherit" ]; then
@@ -187,11 +195,10 @@ _cj_conf()
 # shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pb_ipaddr _pblvl _pb_vnet _autosnap _pb_type _pb_network_type
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type
 	_pname=
 	_ipaddr=
 	_potbase=
-	_pb_ipaddr=
 	_pblvl=0
 	_autosnap="NO"
 	OPTIND=1
@@ -256,8 +263,6 @@ pot-clone()
 		_error "Please run pot update-config -p $_potbase to fix"
 		${EXIT} 1
 	fi
-#	_pb_ipaddr="$( _get_conf_var "$_potbase" ip )"
-#	_pb_vnet="$( _get_conf_var "$_potbase" vnet )"
 	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
 	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
 	if [ "$_pb_network_type" = "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then

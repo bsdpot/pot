@@ -89,10 +89,10 @@ pot-prepare()
 		prepare-help
 		${EXIT} 1
 	fi
-	_imported_pname="${_pname}_${_tag}_${_allocation_tag}"
+	_imported_pname="${_pname}_${_tag}"
 	_imported_pname="$(echo "$_imported_pname" | tr '.' '_')"
 	if [ -z "$_tpname" ]; then
-		_tpname="${_pname}_${_tag}"
+		_tpname="${_imported_pname}"
 	fi
 	_new_pname="${_tpname}_${_allocation_tag}"
 	_new_pname="$(echo "$_new_pname" | tr '.' '_')"
@@ -101,21 +101,22 @@ pot-prepare()
 		prepare-help
 		${EXIT} 1
 	fi
-	if ! pot-cmd import -U "$_URL" -t "$_tag" -p "$_pname" -a "$_allocation_tag" ; then
-		_error "pot import failed"
-		pot-cmd stop "$_imported_pname"
-		${EXIT} 1
-	fi
 	if ! _is_pot "$_imported_pname" quiet ; then
-		_error "imported pot is weirdly not found after import - cannot proceed"
-		pot-cmd destroy -p "$_imported_pname"
-		${EXIT} 1
+		if ! pot-cmd import -U "$_URL" -t "$_tag" -p "$_pname" ; then
+			_error "pot import failed"
+			pot-cmd stop "$_imported_pname"
+			${EXIT} 1
+		fi
+		if ! _is_pot "$_imported_pname" quiet ; then
+			_error "imported pot is weirdly not found after import - cannot proceed"
+			pot-cmd destroy -p "$_imported_pname"
+			${EXIT} 1
+		fi
+	else
+		_debug "pot $_imported_pname already imported - reusing it"
 	fi
-	if [ "${_imported_pname}" = "${_new_pname}" ]; then
-		_debug "Rename not needed, -n missing or using the same name"
-	elif ! pot-cmd rename -p "${_imported_pname}" -n "${_new_pname}" ; then
-		_error "Not able to rename imported pot as $_new_pname"
-		pot-cmd destroy -p "$_imported_pname"
+	if ! pot-cmd clone -P "${_imported_pname}" -p "${_new_pname}" -i auto ; then
+		_error "Not able to clone imported pot as $_new_pname"
 	fi
 	if [ -n "$_cmd" ]; then
 		if ! pot-cmd set-cmd -p "$_new_pname" -c "$_cmd" ; then

@@ -1,6 +1,7 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 set-rss-help()
 {
 	echo "pot set-rss [-hv] -p pot -C cpuset -M memory"
@@ -8,7 +9,7 @@ set-rss-help()
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'
 	echo '  -C cpuset : the cpu set'
-	echo '  -M memory : max memory usable'
+	echo '  -M memory : max memory usable (integer values)'
 }
 
 # $1 pot
@@ -16,32 +17,55 @@ set-rss-help()
 # $3 rss limit
 _set_rss()
 {
+	# shellcheck disable=SC2039
 	local _rssname _rsslimit _pname _cdir
 	_pname="$1"
 	_rssname="$2"
 	_rsslimit="$3"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
-	sed -i '' -e "/pot.rss.$_rssname=.*/d" $_cdir/pot.conf
+	${SED} -i '' -e "/pot.rss.$_rssname=.*/d" $_cdir/pot.conf
 	echo "pot.rss.$_rssname=$_rsslimit" >> $_cdir/pot.conf
 }
 
 # $1 cpu limit
 _cpuset_validation()
 {
+	# shellcheck disable=SC2039
 	local _cpuset
 	_cpuset="$1"
-	cpuset -l $_cpuset ls>/dev/null 2>/dev/null
-	if [ $? -ne 0 ]; then
+	if ! cpuset -l $_cpuset ls>/dev/null 2>/dev/null ; then
 		_debug "cpuset $_cpuset is not valid"
 		return 1 # false
 	fi
 	return 0 # true
 }
 
+# $1 the amount of memory
+_memory_validation()
+{
+	: # Implement
+	# shellcheck disable=SC2039
+	local _number
+	if ! echo "$1" | grep -q -E '^[0-9]+[bBkKmMgG]?$' ; then
+		_error "$1 is not a valid memory constraint"
+		return 1
+	fi
+	_number="$( echo "$1" | sed 's/[bBkKmMgG]$//')"
+	if ! echo "$_number" | grep -q -E '^[0-9]+' ; then
+		_error "$1 has wrong suffix or format"
+		return 1
+	fi
+	if echo "$_number" | grep -q '^00*$' ; then
+		_error "Memory constraint has to be greater than zero"
+		return 1
+	fi
+	return 0
+}
 # $1 pot
 # $2 cpuset list
 _set_cpu()
 {
+	# shellcheck disable=SC2039
 	local _pname _cpuset
 	_pname=$1
 	_cpuset=$2
@@ -54,6 +78,7 @@ _set_cpu()
 
 _set_memory()
 {
+	# shellcheck disable=SC2039
 	local _pname _memory
 	_pname=$1
 	_memory=$2
@@ -62,40 +87,38 @@ _set_memory()
 
 pot-set-rss()
 {
+	# shellcheck disable=SC2039
 	local _pname _cpuset _memory
 	_pname=
 	_cpuset=
 	_memory=
-	if ! args=$(getopt hvp:C:M: "$@") ; then
-		set-rss-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvp:C:M:" _o ; do
+		case "$_o" in
+		h)
 			set-rss-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-p)
-			_pname="$2"
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		-C)
-			_cpuset="$2"
-			shift 2
+		C)
+			_cpuset="$OPTARG"
 			;;
-		-M)
-			_memory="$2"
-			shift 2
+		M)
+			if _memory_validation "$OPTARG"  ; then
+				_memory="$OPTARG"
+			else
+				set-rss-help
+				${EXIT} 1
+			fi
 			;;
-		--)
-			shift
-			break
+		*)
+			set-rss-help
+			${EXIT} 1
 			;;
 		esac
 	done

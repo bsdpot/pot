@@ -97,6 +97,36 @@ test_pot_set_rss_002()
 	assertEquals "_set_rss calls" "0" "$ADDRSS_CALLS"
 }
 
+test_pot_set_rss_003()
+{
+	pot-set-rss -p test-pot -M 200Megabyte
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_set_rss calls" "0" "$ADDRSS_CALLS"
+
+	setUp
+	pot-set-rss -p test-pot -M 10000000T
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_set_rss calls" "0" "$ADDRSS_CALLS"
+
+	setUp
+	pot-set-rss -p test-pot -M 00M
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_set_rss calls" "0" "$ADDRSS_CALLS"
+
+	setUp
+	pot-set-rss -p test-pot -M 1.5G
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_set_rss calls" "0" "$ADDRSS_CALLS"
+}
+
 test_pot_set_rss_020()
 {
 	pot-set-rss -p test-no-pot -C 0

@@ -93,6 +93,7 @@ Commands:
 	mount-in -- Mount a directory, a zfs dataset or a fscomp into a pot
 	add-dep -- Add a dependency
 	set-rss -- Set a resource constraint
+	get-rss -- Get the current resource usage
 	set-cmd -- Set the command to start the pot
 	set-attr -- Set a pot's attribute
 	get-attr -- Get a pot's attribute
@@ -158,7 +159,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	copy-in|mount-in|\
-	add-file|add-fscomp|destroy|add-dep|set-rss|set-cmd|\
+	destroy|add-dep|set-rss|get-rss|set-cmd|\
 	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\

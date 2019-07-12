@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - update-config: implemented -a flag to update all pot configurations in one run
+- get-rss: show the current resources usage (output available in json)
 
 ### Changed
 - create: rework how to configure the newtork type of a pot

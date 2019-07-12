@@ -4,7 +4,7 @@
 # shellcheck disable=SC2039
 create-help()
 {
-	echo "pot create [-hv] -p potname [-n network-type] [-i ipaddr] [-l lvl] [-f flavour]"
+	echo "pot create [-hv] -p potname [-N network-type] [-i ipaddr] [-l lvl] [-f flavour]"
 	echo '  [-b base | -P basepot ] [-d dns] [-t type]'
 	echo '  -h print this help'
 	echo '  -v verbose'
@@ -21,7 +21,7 @@ create-help()
 	echo '         inherit: inherit the host network stack (default)'
 	echo '         alias: use a static ip as alias configured directly to the host NIC'
 	echo '         public-bridge: use the internal commonly public bridge'
-	echo '  -i ipaddr : an ip address or the keyword auto (if compatible with the network-type'
+	echo '  -i ipaddr : an ip address or the keyword auto (if compatible with the network-type)'
 }
 
 # $1 pot name

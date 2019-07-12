@@ -218,7 +218,7 @@ test_pot_clone_022()
 
 test_pot_clone_023()
 {
-	pot-clone -p new-pot -P test-pot -f
+	pot-clone -p new-pot -P test-pot -F
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"

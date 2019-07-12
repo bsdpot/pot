@@ -620,7 +620,7 @@ pot-create()
 			_info "No pot bridge found! Calling vnet-start to fix the issue"
 			pot-cmd vnet-start
 		fi
-		if [ "$_ipaddr" = "auto" ]; then
+		if [ "$_ipaddr" = "auto" ] || [ -z "$_ipaddr" ]; then
 			if ! _is_potnet_available ; then
 			   _error "potnet is not available! It's needed by -i auto"
 				${EXIT} 1

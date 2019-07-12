@@ -129,8 +129,9 @@ _pot() {
 						'-v[Verbose output]' \
 						'-p[pot name]::_normal' \
 						'-P[pot reference]:pot reference name:_pot_pots' \
+						'-N[network type]:network type:(inherit alias public-bridge)' \
 						'-i[network config]::_normal' \
-						'-f[force snapshot of the pot reference]' 
+						'-F[force snapshot of the pot reference]' 
 					;;
 				rename)
 					_arguments \

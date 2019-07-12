@@ -30,7 +30,11 @@ _js_stop()
 			if [ "$_network_type" = "alias" ]; then
 				_ip=$( _get_conf_var "$_pname" ip )
 				_debug "Remove the $_ip alias"
-				ifconfig "${POT_EXTIF}" "$_ip" -alias
+				if potnet ip4check -H "$_ip" ; then
+					ifconfig "${POT_EXTIF}" inet "$_ip" -alias
+				else
+					ifconfig "${POT_EXTIF}" inet6 "$_ip" -alias
+				fi
 			fi
 		fi
 	fi

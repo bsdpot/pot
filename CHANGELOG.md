@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - README: remove the introduction and pointing to the Quickstart guide instead
 - import: removed -a option, not really needed during import
 - prepare: optimized, importing once and using clone instead of import+rename every time
+- clone: add -N option, to change network type while cloning
 
 ### Removed
 - promote: after a long deprecation time, promote has been deleted

@@ -4,13 +4,14 @@
 # shellcheck disable=SC2039
 clone-help()
 {
-	echo "pot clone [-hvf] -p potname -P basepot [-i ipaddr]"
+	echo "pot clone [-hvF] -p potname -P basepot [-i ipaddr]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -P potname : the pot to be cloned (template)'
 	echo '  -p potname : the new pot name'
-	echo '  -i ipaddr : an ip address (if applicable)'
-	echo '  -f : automatically take snapshots of dataset that has no one'
+	echo '  -N network-type : new network type of the cloned pot'
+	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
+	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 
 # $1 pot name
@@ -165,8 +166,23 @@ _cj_conf()
 	if [ ! -d "$_pdir/conf" ]; then
 		mkdir -p "$_pdir/conf"
 	fi
-	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | grep -v ^ip > "$_pdir/conf/pot.conf"
+	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | \
+		grep -v ^ip | grep -v ^vnet | grep -v ^network_type > "$_pdir/conf/pot.conf"
 	echo "host.hostname=\"${_pname}.$( hostname )\"" >> "$_pdir/conf/pot.conf"
+	echo "network_type=$_network_type" >> "$_pdir/conf/pot.conf"
+	case "$_network_type" in
+	"inherit")
+		echo "vnet=false" >> "$_pdir/conf/pot.conf"
+		;;
+	"alias")
+		echo "vnet=false" >> "$_pdir/conf/pot.conf"
+		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
+		;;
+	"public-bridge")
+		echo "vnet=true" >> "$_pdir/conf/pot.conf"
+		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
+		;;
+	esac
 	if [ -n "$_ip" ]; then
 	    _ptype="$( _get_conf_var "$_pname" pot.type )"
 		if [ "$_ptype" = "multi" ]; then
@@ -176,7 +192,6 @@ _cj_conf()
 		fi
 		touch "${_rc_conf}"
 		sysrc -f "${_rc_conf}" "syslogd_flags=-vv -s -b $_ip" > /dev/null
-		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
 	fi
 	if [ "$_network_type" != "inherit" ]; then
 		(
@@ -195,14 +210,14 @@ _cj_conf()
 # shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type
 	_pname=
 	_ipaddr=
 	_potbase=
 	_pblvl=0
 	_autosnap="NO"
 	OPTIND=1
-	while getopts "hvp:i:P:f" _o ; do
+	while getopts "hvp:i:P:FN:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -214,19 +229,21 @@ pot-clone()
 			p)
 				_pname=$OPTARG
 				;;
-			i)
-				if [ "$OPTARG" = "auto" ]; then
-					if ! _is_potnet_available ; then
-					   _error "potnet is not available! It's needed by -i auto"
-						${EXIT} 1
-					fi
+			N)
+				if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
+					_error "Network type $OPTARG not recognized"
+					clone-help
+					${EXIT} 1
 				fi
+				_network_type="$OPTARG"
+				;;
+			i)
 				_ipaddr=$OPTARG
 				;;
 			P)
 				_potbase=$OPTARG
 				;;
-			f)
+			F)
 				_autosnap="YES"
 				shift
 				;;
@@ -263,16 +280,18 @@ pot-clone()
 		_error "Please run pot update-config -p $_potbase to fix"
 		${EXIT} 1
 	fi
-	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
-	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
-	if [ "$_pb_network_type" = "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
+	if [ -z "$_network_type" ]; then
+		_network_type="$_pb_network_type"
+	fi
+
+	if [ "$_network_type" = "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
 		_ipaddr="$(potnet next)"
 		_debug "-i auto: assigned $_ipaddr"
-	elif [ "$_pb_network_type" != "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
-		_error "$_potbase has network type $_pb_network_type - keyword auto not compatible"
+	elif [ "$_network_type" != "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
+		_error "Keyword auto not compatible with network type $_network_type"
 		${EXIT} 1
 	fi
-	case "$_pb_network_type" in
+	case "$_network_type" in
 	"inherit")
 		if [ -n "$_ipaddr" ]; then
 			_error "$_potbase has network type inherit - -i $_ipaddr doesn't apply"
@@ -304,6 +323,8 @@ pot-clone()
 		fi
 		;;
 	esac
+	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
+	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
 	if [ "$_pblvl" = "0" ] && [ "$_pb_type" != "single" ]; then
 		_error "Level 0 pots cannot be cloned"
 		clone-help
@@ -315,7 +336,7 @@ pot-clone()
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_potbase" "$_pb_network_type" "$_ipaddr" ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" ; then
 		${EXIT} 1
 	fi
 }

@@ -14,19 +14,9 @@ set-attr-help()
 	__monitor HELP "$@"
 }
 
-_set_start_at_boot()
+_set_boolean_attribute()
 {
-	__monitor STARTBOOT "$@"
-}
-
-_set_persistent()
-{
-	__monitor PERSISTENT "$@"
-}
-
-_set_no_rc_script()
-{
-	__monitor NORCSCRIPT "$@"
+	__monitor SETATTR "$@"
 }
 
 test_pot_set_attr_001()
@@ -36,7 +26,7 @@ test_pot_set_attr_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -bv
@@ -44,7 +34,7 @@ test_pot_set_attr_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -b bb
@@ -52,7 +42,7 @@ test_pot_set_attr_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -h
@@ -60,7 +50,7 @@ test_pot_set_attr_001()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 }
 
 test_pot_set_attr_002()
@@ -70,7 +60,7 @@ test_pot_set_attr_002()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -A start-at-boot
@@ -78,7 +68,7 @@ test_pot_set_attr_002()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -V ON
@@ -86,7 +76,7 @@ test_pot_set_attr_002()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 }
 
 test_pot_set_attr_003()
@@ -96,7 +86,7 @@ test_pot_set_attr_003()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -p test-pot -A start-at-boot
@@ -104,7 +94,7 @@ test_pot_set_attr_003()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 
 	setUp
 	pot-set-attribute -p test-pot -V ON
@@ -112,7 +102,7 @@ test_pot_set_attr_003()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 }
 
 test_pot_set_attr_004()
@@ -122,7 +112,7 @@ test_pot_set_attr_004()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 }
 
 test_pot_set_attr_005()
@@ -132,7 +122,7 @@ test_pot_set_attr_005()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "0" "$STARTBOOT_CALLS"
+	assertEquals "_set_attr calls" "0" "$SETATTR_CALLS"
 }
 
 test_pot_set_attr_020()
@@ -142,9 +132,10 @@ test_pot_set_attr_020()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "1" "$STARTBOOT_CALLS"
-	assertEquals "_set_attr arg1" "test-pot" "$STARTBOOT_CALL1_ARG1"
-	assertEquals "_set_attr arg2" "ON" "$STARTBOOT_CALL1_ARG2"
+	assertEquals "_set_attr calls" "1" "$SETATTR_CALLS"
+	assertEquals "_set_attr arg1" "test-pot" "$SETATTR_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "start-at-boot" "$SETATTR_CALL1_ARG2"
+	assertEquals "_set_attr arg3" "ON" "$SETATTR_CALL1_ARG3"
 }
 
 test_pot_set_attr_021()
@@ -154,9 +145,9 @@ test_pot_set_attr_021()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "1" "$PERSISTENT_CALLS"
-	assertEquals "_set_attr arg1" "test-pot" "$PERSISTENT_CALL1_ARG1"
-	assertEquals "_set_attr arg2" "ON" "$PERSISTENT_CALL1_ARG2"
+	assertEquals "_set_attr arg1" "test-pot" "$SETATTR_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "persistent" "$SETATTR_CALL1_ARG2"
+	assertEquals "_set_attr arg3" "ON" "$SETATTR_CALL1_ARG3"
 }
 
 test_pot_set_attr_022()
@@ -166,24 +157,31 @@ test_pot_set_attr_022()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_set_attr calls" "1" "$NORCSCRIPT_CALLS"
-	assertEquals "_set_attr arg1" "test-pot" "$NORCSCRIPT_CALL1_ARG1"
-	assertEquals "_set_attr arg2" "ON" "$NORCSCRIPT_CALL1_ARG2"
+	assertEquals "_set_attr arg1" "test-pot" "$SETATTR_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "no-rc-script" "$SETATTR_CALL1_ARG2"
+	assertEquals "_set_attr arg3" "ON" "$SETATTR_CALL1_ARG3"
+}
+
+test_pot_set_attr_023()
+{
+	pot-set-attribute -p test-pot -A procfs -V ON
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_set_attr arg1" "test-pot" "$SETATTR_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "procfs" "$SETATTR_CALL1_ARG2"
+	assertEquals "_set_attr arg3" "ON" "$SETATTR_CALL1_ARG3"
 }
 
 setUp()
 {
 	common_setUp
 	HELP_CALLS=0
-	STARTBOOT_CALLS=0
-	STARTBOOT_CALL1_ARG=
-	STARTBOOT_CALL2_ARG=
-	PERSISTENT_CALLS=0
-	PERSISTENT_CALL1_ARG=
-	PERSISTENT_CALL2_ARG=
-	NORCSCRIPT_CALLS=0
-	NORCSCRIPT_CALL1_ARG=
-	NORCSCRIPT_CALL2_ARG=
+	SETATTR_CALLS=0
+	SETATTR_CALL1_ARG1=
+	SETATTR_CALL1_ARG2=
+	SETATTR_CALL1_ARG3=
 }
 
 . shunit/shunit2

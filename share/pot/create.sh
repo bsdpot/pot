@@ -203,6 +203,7 @@ _cj_conf()
 		echo "pot.attr.no-rc-script=NO"
 		echo "pot.attr.persistent=YES"
 		echo "pot.attr.start-at-boot=NO"
+		echo "pot.attr.procfs=NO"
 		echo "network_type=$_network_type"
 		case $_network_type in
 		"inherit")

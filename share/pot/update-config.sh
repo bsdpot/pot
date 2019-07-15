@@ -57,6 +57,10 @@ _update_one_pot()
 		_debug "pot.attr.start-at-boot=NO"
 		echo "pot.attr.start-at-boot=NO" >> "$_conf"
 	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.procfs")" ]; then
+		_debug "pot.attr.persistent=NO"
+		echo "pot.attr.persistent=NO" >> "$_conf"
+	fi
 
 	# convert pot.export.static.ports=80 to the new format pot.export.ports=80:80
 	# being aware that pot.export.ports may already exist

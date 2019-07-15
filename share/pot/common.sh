@@ -4,7 +4,7 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script"
+_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs"
 _POT_RO_ATTRIBUTES=""
 _POT_NETWORK_TYPES="inherit alias public-bridge"
 
@@ -778,6 +778,14 @@ _pot_mount()
 	else
 		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
 	fi
+	if [ "$(_get_conf_var "$_pname" "pot.attr.procfs")" = "YES" ]; then
+		if ! mount -t procfs procfs "${POT_FS_ROOT}/jails/$_pname/m/proc" ; then
+			_error "Error mounting procfs"
+			return 1
+		else
+			_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/proc"
+		fi
+	fi
 	return 0 # true
 }
 
@@ -794,6 +802,9 @@ _pot_umount()
 
 	_umount "$_jdir/m/tmp"
 	_umount "$_jdir/m/dev"
+	if [ "$(_get_conf_var "$_pname" "pot.attr.procfs")" = "YES" ]; then
+		_umount "$_jdir/m/proc"
+	fi
 	if [ -e "$_jdir/conf/fscomp.conf" ]; then
 		tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
 		while read -r line ; do

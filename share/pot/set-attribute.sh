@@ -31,52 +31,24 @@ _normalize_true_false() {
 	esac
 }
 
-_set_start_at_boot()
+# $1 pot name
+# $2 attribute name
+# $3 value
+_set_boolean_attribute()
 {
 	# shellcheck disable=SC2039
 	local _pname _value _cdir
 	_pname=$1
-	_value=$2
+	_attr=$2
+	_value=$3
 	if ! _value=$(_normalize_true_false "$_value") ; then
 		_error "value $_value is not a valid boolean value"
 		set-attr-help
 		${EXIT} 1
 	fi
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
-	sed -i '' -e "/^pot.attr.start-at-boot=.*/d" "$_cdir/pot.conf"
-	echo "pot.attr.start-at-boot=$_value" >> "$_cdir/pot.conf"
-}
-
-_set_persistent()
-{
-	# shellcheck disable=SC2039
-	local _pname _value _cdir
-	_pname=$1
-	_value=$2
-	if ! _value=$(_normalize_true_false "$_value") ; then
-		_error "value $_value is not a valid boolean value"
-		set-attr-help
-		${EXIT} 1
-	fi
-	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
-	sed -i '' -e "/^pot.attr.persistent=.*/d" "$_cdir/pot.conf"
-	echo "pot.attr.persistent=$_value" >> "$_cdir/pot.conf"
-}
-
-_set_no_rc_script()
-{
-	# shellcheck disable=SC2039
-	local _pname _value _cdir
-	_pname=$1
-	_value=$2
-	if ! _value=$(_normalize_true_false "$_value") ; then
-		_error "value $_value is not a valid boolean value"
-		set-attr-help
-		${EXIT} 1
-	fi
-	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
-	sed -i '' -e "/^pot.attr.no-rc-script=.*/d" "$_cdir/pot.conf"
-	echo "pot.attr.no-rc-script=$_value" >> "$_cdir/pot.conf"
+	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
 }
 
 _ignored_parameter()
@@ -84,7 +56,7 @@ _ignored_parameter()
 	# shellcheck disable=SC2039
 	local _attr
 	_attr=$1
- 	_debug "The attribute $_attr is not implemented anymore and it will be ignored"
+	_info "The attribute $_attr is not implemented and it will be ignored"
 }
 
 # shellcheck disable=SC2039
@@ -148,14 +120,12 @@ pot-set-attribute()
 		${EXIT} 1
 	fi
 	case $_attr in
-		"start-at-boot")
-			_cmd=_set_start_at_boot
-			;;
-		"persistent")
-			_cmd=_set_persistent
-			;;
-		"no-rc-script")
-			_cmd=_set_no_rc_script
+		"start-at-boot"|\
+		"persistent"|\
+		"no-rc-script"|\
+		"fdescfs"|\
+		"procfs")
+			_cmd=_set_boolean_attribute
 			;;
 		*)
 			_ignored_parameter "$_attr"
@@ -163,7 +133,7 @@ pot-set-attribute()
 			;;
 	esac
 
-	if ! $_cmd "$_pname" "$_value" ; then
+	if ! $_cmd "$_pname" "$_attr" "$_value" ; then
 		return 1 # false
 	fi
 	return 0

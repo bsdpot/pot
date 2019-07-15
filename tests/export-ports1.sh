@@ -184,45 +184,45 @@ test_pot_export_ports_033()
 
 test_pot_export_ports_040()
 {
-	pot-export-ports -p test-pot -e 80
+	pot-export-ports -p test-pot-2 -e 80
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
-	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg1" "test-pot-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export_ports arg2" "80" "$EXPORTS_CALL1_ARG2"
 }
 
 test_pot_export_ports_041()
 {
-	pot-export-ports -p test-pot -e 80 -e 443
+	pot-export-ports -p test-pot-2 -e 80 -e 443
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
-	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg1" "test-pot-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export_ports arg2" "80 443" "$EXPORTS_CALL1_ARG2"
 }
 
 test_pot_export_ports_042()
 {
-	pot-export-ports -p test-pot -e 80:8080
+	pot-export-ports -p test-pot-2 -e 80:8080
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
-	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg1" "test-pot-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export_ports arg2" "80:8080" "$EXPORTS_CALL1_ARG2"
 }
 
 test_pot_export_ports_043()
 {
-	pot-export-ports -p test-pot -e 80:8080 -e 443:30443
+	pot-export-ports -p test-pot-2 -e 80:8080 -e 443:30443
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
-	assertEquals "_export_ports arg1" "test-pot" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg1" "test-pot-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export_ports arg2" "80:8080 443:30443" "$EXPORTS_CALL1_ARG2"
 }
 

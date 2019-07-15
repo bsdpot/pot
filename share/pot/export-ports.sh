@@ -4,6 +4,7 @@
 # shellcheck disable=SC2039
 export-ports-help()
 {
+	echo "pot export-ports configure the pot export ports - network type public-bridge only"
 	echo "pot export-ports [-hv] -p pot [-S] -e port ..."
 	echo '  -h print this help'
 	echo '  -v verbose'
@@ -19,7 +20,7 @@ export-ports-help()
 _export_ports()
 {
 	# shellcheck disable=SC2039
-	local _pname _ports
+	local _pname _ports _cdir
 	_pname="$1"
 	_ports="$2"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
@@ -30,7 +31,7 @@ _export_ports()
 # shellcheck disable=SC2039
 pot-export-ports()
 {
-	local _pname _ports _pot_port _host_port
+	local _pname _ports
 	_pname=
 	_ports=
 	OPTIND=1
@@ -73,6 +74,11 @@ pot-export-ports()
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "$_pname is not a valid pot name"
+		export-ports-help
+		${EXIT} 1
+	fi
+	if [ "$(_get_pot_network_type "$_pname")" != "public-bridge" ]; then
+		_error "Only public-bridge is currently supported"
 		export-ports-help
 		${EXIT} 1
 	fi

@@ -263,7 +263,7 @@ _pot() {
 						'-t[tag name]::_normal' \
 						'-U[URL]:URL:_normal'
 					;;
-				prepare|execute)
+				prepare)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
@@ -273,6 +273,8 @@ _pot() {
 						'-a[allocation id]::_normal' \
 						'-n[the new pot name]::_normal' \
 						'-U[URL]:URL:_normal' \
+						'-N[network type]:network type:(inherit alias public-bridge)' \
+						'-i[network config]::_normal' \
 						'*-e[port to be exported]::_normal' \
 						'-c[command]::_normal'
 					;;
@@ -348,7 +350,6 @@ _pot_cmds() {
 	'export:Export a single-type pot'
 	'import:Import a single-type pot'
 	'prepare:Import and prepare a pot - designed for jail orchestrator'
-	'execute:Import and prepare a pot - designed for jail orchestrator'
 	'update-config:Update the configuration of a pot'
 	)
 	_describe 'command' commands

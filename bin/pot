@@ -107,7 +107,7 @@ Commands:
 	purge-snapshots -- Remove old/all snapshots
 	export -- Export a pot to a file
 	import -- Import a pot from a file or a URL
-	prepare/execute -- Import and prepare a pot - designed for jail orchestrator
+	prepare -- Import and prepare a pot - designed for jail orchestrator
 	update-config -- Update the configuration of a pot
 EOF
 }
@@ -138,9 +138,6 @@ case "${CMD}" in
 		;;
 	get-attr)
 		CMD=get-attribute
-		;;
-	execute)
-		CMD=prepare
 		;;
 esac
 

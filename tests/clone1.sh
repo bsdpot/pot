@@ -136,8 +136,8 @@ test_pot_clone_003()
 
 test_pot_clone_004()
 {
-	# missing -i parameter
-	pot-clone -p new-pot -P test-pot-2
+	# missing -i parameter when needed
+	pot-clone -p new-pot -P test-pot-3
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"

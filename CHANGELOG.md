@@ -16,11 +16,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - import: removed -a option, not really needed during import
 - prepare: optimized, importing once and using clone instead of import+rename every time
 - clone: add -N option, to change network type while cloning
+- prepare: add -N option, to change network type while preparing
 
 ### Removed
 - promote: after a long deprecation time, promote has been deleted
 - add-fscomp: removed, mount-in is its more generic replacement
 - add-file: removed, copy-in is its more generic replacement
+- execute: remove this alias of prepare
 
 ## [0.7.0] 2019-07-04
 ### Added

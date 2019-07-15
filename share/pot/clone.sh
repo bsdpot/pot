@@ -287,6 +287,9 @@ pot-clone()
 	if [ "$_network_type" = "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
 		_ipaddr="$(potnet next)"
 		_debug "-i auto: assigned $_ipaddr"
+	elif [ "$_network_type" = "public-bridge" ] && [ -z "$_ipaddr" ] ; then
+		 _ipaddr="$(potnet next)"
+		 _debug "automatically assigning $_ipaddr"
 	elif [ "$_network_type" != "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
 		_error "Keyword auto not compatible with network type $_network_type"
 		${EXIT} 1
@@ -311,11 +314,6 @@ pot-clone()
 		fi
 		;;
 	"public-bridge")
-		if [ -z "$_ipaddr" ]; then
-			_error "$_ipaddr is mandator for alias network type"
-			clone-help
-			${EXIT} 1
-		fi
 		if ! potnet validate -H "$_ipaddr" ; then
 			_error "$_ipaddr is not a valid IP address for the public bridge"
 			clone-help

@@ -119,6 +119,7 @@ pot-list()
 	local _obj _q
 	_obj="pots"
 	_q=
+	OPTIND=1
 	while getopts "hvbfFapq" _o ; do
 		case "$_o" in
 		h)

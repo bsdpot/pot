@@ -30,8 +30,7 @@ _ps_pots()
 	# shellcheck disable=SC2039
 	local _jdir _pots _q _p
 	_q="$1"
-	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( find "$_jdir/" -type d -mindepth 1 -maxdepth 1 -exec basename {} \; | tr '\n' ' ' )
+	_pots="$( _get_pot_list )"
 	for _p in $_pots; do
 		_ps_pot "$_p" "$_q"
 	done

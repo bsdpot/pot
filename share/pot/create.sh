@@ -197,6 +197,8 @@ _cj_conf()
 		echo "host.hostname=\"${_pname}.$( hostname )\""
 		if echo "$_baseos" | grep -q "RC" ; then
 			echo "osrelease=\"${_baseos}\""
+		elif echo "$_baseos" | grep -q "RELEASE" ; then
+			echo "osrelease=\"${_baseos}\""
 		else
 			echo "osrelease=\"${_baseos}-RELEASE\""
 		fi

@@ -1,6 +1,7 @@
 #!/bin/sh
+:
 
-# supported releases
+# shellcheck disable=SC2039
 add-dep-help()
 {
 	echo "pot add-dep [-hv] -p pot -P depPot"
@@ -14,6 +15,7 @@ add-dep-help()
 # $2 depPot
 _add_dependency()
 {
+	# shellcheck disable=SC2039
 	local _depPot _pname _cdir
 	_pname="$1"
 	_depPot="$2"
@@ -23,38 +25,33 @@ _add_dependency()
 
 pot-add-dep()
 {
-	local _pname _depPot _mnt_p
-	if ! args=$(getopt hvP:p: "$@") ; then
-		add-dep-help
-		${EXIT} 1
-	fi
+	# shellcheck disable=SC2039
+	local _pname _depPot
 	_depPot=
 	_pname=
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvp:P:" _o ; do
+		case "$_o" in
+		h)
 			add-dep-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-P)
-			_depPot="$2"
-			shift 2
+		P)
+			_depPot="$OPTARG"
 			;;
-		-p)
-			_pname="$2"
-			shift 2
+		p)
+			_pname="$OPTARG"
 			;;
-		--)
-			shift
-			break
+		*)
+			add-dep-help
+			${EXIT} 1
 			;;
 		esac
 	done
+
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		add-dep-help

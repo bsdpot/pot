@@ -35,37 +35,28 @@ pot-clone-fscomp()
 	local _pname _ipaddr _potbase _pb_ipaddr
 	_fscomp=
 	_cfscomp=
-	args=$(getopt hvf:F: $*)
-	if [ $? -ne 0 ]; then
-		clone-fscomp-help
-		${EXIT} 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvf:F:" _o ; do
+		case "$_o" in
+		h)
 			clone-fscomp-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-f)
-			_fscomp=$2
-			shift 2
+		f)
+			_fscomp=$OPTARG
 			;;
-		-F)
-			_cfscomp=$2
-			shift 2
+		F)
+			_cfscomp=$OPTARG
 			;;
-		--)
-			shift
-			break
+		*)
+			clone-fscomp-help
+			${EXIT} 1
 			;;
 		esac
 	done
-
 	# parameter validation
 	if [ -z "$_fscomp" ]; then
 		_error "fscomp name is missing (option -f)"

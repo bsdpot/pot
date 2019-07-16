@@ -119,74 +119,61 @@ pot-list()
 	local _obj _q
 	_obj="pots"
 	_q=
-	if ! args=$(getopt hvbfFapq "$@") ; then
-		list-help
-		${EXIT} 1
-	fi
-	# shellcheck disable=SC2086
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	while getopts "hvbfFapq" _o ; do
+		case "$_o" in
+		h)
 			list-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-q)
+		q)
 			_q="quiet"
-			shift
 			;;
-		-p)
+		p)
 			if [ "$_obj" != "pots" ]; then
 				_error "Options -b -p -f -F -a are mutually exclusive" 
 				list-help
 				${EXIT} 1
 			fi
 			_obj="ppots"
-			shift
 			;;
-		-b)
+		b)
 			if [ "$_obj" != "pots" ]; then
 				_error "Options -b -p -f -F -a are mutually exclusive" 
 				list-help
 				${EXIT} 1
 			fi
 			_obj="bases"
-			shift
 			;;
-		-f)
+		f)
 			if [ "$_obj" != "pots" ]; then
 				_error "Options -b -p -f -F -a are mutually exclusive" 
 				list-help
 				${EXIT} 1
 			fi
 			_obj="fscomp"
-			shift
 			;;
-		-F)
+		F)
 			if [ "$_obj" != "pots" ]; then
 				_error "Options -b -p -f -F -a are mutually exclusive" 
 				list-help
 				${EXIT} 1
 			fi
 			_obj="flavour"
-			shift
 			;;
-		-a)
+		a)
 			if [ "$_obj" != "pots" ]; then
 				_error "Options -b -p -f -F -a are mutually exclusive" 
 				list-help
 				${EXIT} 1
 			fi
 			_obj="all"
-			shift
 			;;
-		--)
-			shift
-			break
+		*)
+			list-help
+			${EXIT} 1
 			;;
 		esac
 	done

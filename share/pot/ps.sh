@@ -13,11 +13,11 @@ ps-help()
 _ps_pot()
 {
 	# shellcheck disable=SC2039
-	local _pname _q
+	local _pname _quiet
 	_pname=$1
-	_q=$2
+	_quiet=$2
 	if _is_pot_running "$_pname" ; then
-		if [ "$_q" = "quiet" ]; then
+		if [ "$_quiet" = "quiet" ]; then
 			echo "$_pname"
 			return
 		fi
@@ -28,11 +28,11 @@ _ps_pot()
 _ps_pots()
 {
 	# shellcheck disable=SC2039
-	local _jdir _pots _q _p
-	_q="$1"
+	local _jdir _pots _quiet _p
+	_quiet="$1"
 	_pots="$( _get_pot_list )"
 	for _p in $_pots; do
-		_ps_pot "$_p" "$_q"
+		_ps_pot "$_p" "$_quiet"
 	done
 }
 
@@ -40,35 +40,27 @@ _ps_pots()
 pot-ps()
 {
 	# shellcheck disable=SC2039
-	local _q
-	_q=
-	if ! args=$(getopt hvq "$@") ; then
-		ps-help
-		${EXIT} 1
-	fi
-	# shellcheck disable=SC2086
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	local _quiet
+	_quiet=
+	OPTIND=1
+	while getopts "hvq" _o ; do
+		case "$_o" in
+		h)
 			ps-help
-			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-q)
-			_q="quiet"
-			shift
+		q)
+			_quiet="quiet"
 			;;
-		--)
-			shift
-			break
+		*)
+			ps-help
+			${EXIT} 1
 			;;
 		esac
 	done
-	if [ -z "$_q" ]; then
+	if [ -z "$_quiet" ]; then
 		if ! _is_uid0 quiet ; then
 			_info "Need privileges to read internal network status"
 		elif _is_vnet_up ; then
@@ -77,5 +69,5 @@ pot-ps()
 			_info "Internal network down"
 		fi
 	fi
-	_ps_pots "$_q"
+	_ps_pots "$_quiet"
 }

@@ -22,6 +22,10 @@ _pot_flavours() {
         _values "pot flavors" ${${(f)"$(${service} ls -qF)"}%% *}
 }
 
+_pot_attributes() {
+	_values "pot attributes" 'start-at-boot' 'persistent' 'no-rc-script' 'procfs' 'prunable'
+}
+
 _pot() {
 	_arguments \
 		'1: :_pot_cmds' \
@@ -150,6 +154,13 @@ _pot() {
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
 						'-r[Recursive destroying]'
 					;;
+				prune)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-q[Quiet outpu]' \
+						'-n[dry-run]'
+					;;
 				copy-in)
 					_arguments \
 						'-h[Show help]' \
@@ -204,7 +215,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-A[attribute]:attribute:(start-at-boot persistent no-rc-script procfs)' \
+						'-A[attribute]:attribute:_pot_attributes' \
 						'-V[value]:value:_normal'
 					;;
 				get-attr|get-attribute)
@@ -212,7 +223,7 @@ _pot() {
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-A[attribute]:attribute:(start-at-boot persistent no-rc-script procfs)' \
+						'-A[attribute]:attribute:_pot_attributes' \
 						'-q[Quiet output]'
 					;;
 				export-ports)
@@ -327,6 +338,7 @@ _pot_cmds() {
 	'clone-fscomp:Clone a fs component'
 	'rename:Rename a pot'
 	'destroy:Destroy a pot'
+	'prune:Destroy not running prunable pots'
 	'copy-in:Copy a file or a directory into a pot'
 	'mount-in:Mount a directory, a zfs dataset or a fscomp into a pot'
 	'add-dep:Add a dependency to a pot'

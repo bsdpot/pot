@@ -58,8 +58,12 @@ _update_one_pot()
 		echo "pot.attr.start-at-boot=NO" >> "$_conf"
 	fi
 	if [ -z "$(_get_conf_var "$_pname" "pot.attr.procfs")" ]; then
-		_debug "pot.attr.persistent=NO"
-		echo "pot.attr.persistent=NO" >> "$_conf"
+		_debug "pot.attr.procfs=NO"
+		echo "pot.attr.procfs=NO" >> "$_conf"
+	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.prunable")" ]; then
+		_debug "pot.attr.prunable=NO"
+		echo "pot.attr.prunable=NO" >> "$_conf"
 	fi
 
 	# convert pot.export.static.ports=80 to the new format pot.export.ports=80:80

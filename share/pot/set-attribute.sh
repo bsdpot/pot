@@ -124,7 +124,8 @@ pot-set-attribute()
 		"persistent"|\
 		"no-rc-script"|\
 		"fdescfs"|\
-		"procfs")
+		"procfs"|\
+		"prunable")
 			_cmd=_set_boolean_attribute
 			;;
 		*)

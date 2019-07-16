@@ -89,6 +89,7 @@ Commands:
 	clone-fscomp - Clone a fscomp
 	rename -- Rename a pot
 	destroy -- Destroy a pot
+	prune   -- Destroy not running prunable pots
 	copy-in -- Copy a file or a directory into a pot
 	mount-in -- Mount a directory, a zfs dataset or a fscomp into a pot
 	add-dep -- Add a dependency
@@ -155,7 +156,7 @@ case "${CMD}" in
 	list|info|ps|top|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
-	copy-in|mount-in|\
+	copy-in|mount-in|prune|\
 	destroy|add-dep|set-rss|get-rss|set-cmd|\
 	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\

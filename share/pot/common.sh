@@ -4,7 +4,7 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs"
+_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs prunable"
 _POT_RO_ATTRIBUTES=""
 _POT_NETWORK_TYPES="inherit alias public-bridge"
 

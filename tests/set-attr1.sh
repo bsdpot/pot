@@ -174,6 +174,18 @@ test_pot_set_attr_023()
 	assertEquals "_set_attr arg3" "ON" "$SETATTR_CALL1_ARG3"
 }
 
+test_pot_set_attr_023()
+{
+	pot-set-attribute -p test-pot -A prunable -V ON
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_set_attr arg1" "test-pot" "$SETATTR_CALL1_ARG1"
+	assertEquals "_set_attr arg2" "prunable" "$SETATTR_CALL1_ARG2"
+	assertEquals "_set_attr arg3" "ON" "$SETATTR_CALL1_ARG3"
+}
+
 setUp()
 {
 	common_setUp

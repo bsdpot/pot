@@ -28,10 +28,10 @@ _ps_pot()
 _ps_pots()
 {
 	# shellcheck disable=SC2039
-	local _jdir _pots _quiet _p
+	local _pots _quiet _p
 	_quiet="$1"
 	_pots="$( _get_pot_list )"
-	for _p in $_pots; do
+	for _p in $_pots ; do
 		_ps_pot "$_p" "$_quiet"
 	done
 }
@@ -47,6 +47,7 @@ pot-ps()
 		case "$_o" in
 		h)
 			ps-help
+			${EXIT} 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))

@@ -22,6 +22,11 @@ _ps_pots()
 	__monitor PSPOTS "$@"
 }
 
+_is_vnet_up()
+{
+	return 0 # true
+}
+
 test_pot_ps_001()
 {
 	pot-ps -b bb

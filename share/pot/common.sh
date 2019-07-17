@@ -778,14 +778,6 @@ _pot_mount()
 	else
 		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
 	fi
-	if [ "$(_get_conf_var "$_pname" "pot.attr.procfs")" = "YES" ]; then
-		if ! mount -t procfs procfs "${POT_FS_ROOT}/jails/$_pname/m/proc" ; then
-			_error "Error mounting procfs"
-			return 1
-		else
-			_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/proc"
-		fi
-	fi
 	return 0 # true
 }
 

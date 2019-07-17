@@ -213,27 +213,38 @@ _js_norc()
 	echo $_cmd >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
 }
 
+_bg_start()
+{
+	local _pname _persist
+	_pname=$1
+	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
+	sleep 3
+	if [ "$_persist" = "NO" ]; then
+		jail -m name="$_pname" nopersist
+	fi
+	_js_rss "$_pname"
+}
+
 # $1 jail name
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _jdir _iface _hostname _osrelease _param _ip _cmd _persist
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _bgstart
 	_pname="$1"
 	_iface=
-	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
-	_param="allow.set_hostname=false allow.mount allow.mount.fdescfs allow.raw_sockets allow.socket_af allow.sysvipc"
+	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags exec.clean mount.devfs"
-	if [ "$_persist" = "NO" ]; then
-		_param="$_param nopersist"
-	else
-		_param="$_param persist"
+	if [ "$(_get_conf_var "$_pname" "pot.attr.procfs")" = "YES" ]; then
+		_param="$_param mount.procfs"
 	fi
-	_param="$_param exec.stop=sh,/etc/rc.shutdown"
-	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_hostname="$( _get_conf_var $_pname host.hostname )"
 	_osrelease="$( _get_conf_var $_pname osrelease )"
 	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
-	_param="$_param path=${_jdir}/m"
+	_param="$_param path=${POT_FS_ROOT}/jails/$_pname/m"
+	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
+	if [ "$_persist" != "NO" ]; then
+		_param="$_param persist"
+	fi
 	_ip=$( _get_conf_var $_pname ip )
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"inherit")
@@ -259,6 +270,8 @@ _js_start()
 	else
 		_cmd="$( _js_get_cmd "$_pname" )"
 	fi
+	_bg_start "$_pname" &
+	_info "Starting the pot $_pname"
 	jail -c -J "/tmp/${_pname}.jail.conf" $_param command=$_cmd
 	sleep 1
 	if ! _is_pot_running "$_pname" ; then
@@ -269,46 +282,35 @@ _js_start()
 			return 1
 		fi
 	fi
-	_js_rss "$_pname"
-	_info "The pot ${_pname} started"
 }
 
 pot-start()
 {
 	local _pname _snap
 	_snap=none
-	args=$(getopt hvsS $*)
-	if [ $? -ne 0 ]; then
-		start-help
-		return 1
-	fi
-
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvsS" _o ; do
+		case "$_o" in
+		h)
 			start-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-s)
+		s)
 			_snap=normal
-			shift
 			;;
-		-S)
+		S)
 			_snap=full
-			shift
 			;;
-		--)
-			shift
-			break
+		*)
+			start-help
+			${EXIT} 1
 			;;
 		esac
 	done
-	_pname=$1
+	_pname="$( eval echo \$$OPTIND)"
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		start-help
@@ -328,11 +330,9 @@ pot-start()
 		_error "Please run pot update-config -p $_pname to fix"
 		return 1
 	fi
-
 	if ! _is_uid0 ; then
 		return 1
 	fi
-
 	if _is_pot_vnet $_pname ; then
 		if ! _is_vnet_available ; then
 			_error "This kernel doesn't support VIMAGE! No vnet possible - abort"

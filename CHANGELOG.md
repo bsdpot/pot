@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - add-file: removed, copy-in is its more generic replacement
 - execute: remove this alias of prepare
 
+### Fixed
+- start: if the start command doesn't go in background, rss and persist weren't managed
+
 ## [0.7.0] 2019-07-04
 ### Added
 - update-config: new command that will update a pot configuration

@@ -17,13 +17,12 @@ This settings will take effect at the next reboot.
 **NOTE4**: One of the 3 network configuration need `VNET(9)`, the network subsystem virtualization infrastructure, enabled in the kernel.
 On FreeBSD 12 and later, this kernel feature is already enabled and you don't need to do anything.
 On FreeBSD 11.x, you have to rebuild the kernel, enabling the VIMAGE options, following the instruction reported [here](https://www.freebsd.org/doc/handbook/kernelconfig.html)
-FreeBSD 10.x is not tested as host system.
 ## Install `pot`
 The installation process is pretty straightforward:
 ```console
 # pkg install -y pot
 ```
-That's it, `pot` is installed, but we're not yet ready.
+That's it, `pot` and its dependencies are installed, but we're not yet ready.
 #### Configuration [Optional]
 Under the folder `/usr/local/etc/pot` you'll find two files:
 * `pot.default.conf`
@@ -87,6 +86,12 @@ pot name : mypot
 	datasets:
 		mypot/m
 	snapshot:
+	attributes:
+		start-at-boot: NO
+		persistent: YES
+		no-rc-script: NO
+		procfs: NO
+		prunable: NO
 ```
 Some explanation of this output:
 * `type`: currently two types of `pot` are supported: `single`, based on one ZFS dataset, and `multi`, based on multiple ZFS dataset.
@@ -96,6 +101,7 @@ Some explanation of this output:
 * `active`: it's a boolean value, that tells you if your `pot` is running or not.
 * `datasets`: single type `pot`s have only one dataset.
 * `snapshot`: the list of snapshots of this `pot`; currently empty.
+* `attributes`: attributes/properties of this this `pot`
 
 If your `pot` is running, runtime information can be obtained via:
 ```console
@@ -197,7 +203,7 @@ For single files, only the copy option is available.
 The file `myfile` will be copied in `/mnt`.
 
 ### Common consideration
-The `mount-int` command will change the configuration of the `pot`; the "volume" will be automatically mounted when the `pot` starts and unmounted when the `pot` stops.
+The `mount-in` command will change the configuration of the `pot`; the "volume" will be automatically mounted when the `pot` starts and unmounted when the `pot` stops.
 If you run `mount-in` when the `pot` is already running, the "volume" is mounted on the fly.
 A "volume" can be used with multiple `pot`s. Potential problems, like concurrent access to the same files, cannot be managed by `pot` and are left to the user.
 
@@ -212,39 +218,39 @@ This option will inform the framework to mount `myfscomp` in `mypot-ro` in read-
 During the creation phase, it's possible to specify which type of network our `pot` should use.
 `pot` supports three different type of network configurations:
 * inherit
-* IPv4 alias on the host network interface
-* IPv4 address on the internal virtual network
+* alias (IPv4 or IPv6) n the host network interface
+* IPv4 address on the public internal virtual network
 
-By default, `inherit` is chosen.
+By default, `inherit` is the chosen one.
 ### Network configuration: inherit
 To use the `inherit` network type, a `pot` can be created with the following command:
 ```console
-# pot create -p mypot -t single -b 11.2 -i inherit
+# pot create -p mypot -t single -b 11.2 -N inherit
 ```
-The option `-i` can be omitted, because `inherit` is the default value.
+The option `-N` can be omitted, because `inherit` is the default value.
 The `inherit` type means that `mypot` will reuse the same network stack of the host machine.
-This network type works pretty well when your `pot` doesn't provide any network services, but it uses the network's host as client, like a `pot` created to build applications.
+This network type works pretty well when your `pot` doesn't provide/export any network services, but it uses the network's host as client, like a `pot` created to build applications.
 
 ### Network configuration: IPv4 or IPv6 alias
-If your host system has a static IP and you can use multiple static IP, you can assign one of those addition IP addresses to your `pot`s via the static/external IPv4.
-**NOTE** Be sure that in the `pot` configuration file (`/usr/local/etc/pot/pot.conf`) you have correctly set the variable `POT_EXTIF`; this network interface will be used for the network activity and IP address assignment.
+If your host is a network that support static IPs, you can assign one static IP address to your `pot` via this network configuration type.
+**NOTE** Be sure that in the `pot` configuration file (`/usr/local/etc/pot/pot.conf`) you have correctly set the variable `POT_EXTIF`; this network interface is the one used to route the network traffic and to assign the IP address.
 For example, your system has 192.168.178.20/24 as IP address and your network administrator reserved you the additional IP address 192.168.178.200.
 To assing the latter IP address to your `pot` you can create it with the following command:
 ```console
-# pot create -p mypot -t single -b 11.2 -i 192.168.178.200 -s
+# pot create -p mypot -t single -b 11.2 -N alias -i 192.168.178.200
 # pot start mypot
 # pot info -vp mypot
 ```
 The alias 192.168.178.200 will be assigned to the network interface during the start phase.
 Now, your `pot` is bound to the address 192.168.178.200
 When the `pot` is stopped, the alias will be automatically removed from the inferface.
-More information about alias are available in the `man` page of `ifconfig(8)`
+More information about alias addresses on network interfaces are available in the `man` page of `ifconfig(8)`
 
-### Network configuration: IPv4 virtual network
-Thanks to `VNET(9)`, `pot` supports an IPv4 virtual network. This network is configured in configuration file (`/usr/local/etc/pot/pot.conf`), so be sure to have it properly configured.
-`pot` supports only one virtual network, so all `pot`s will share it.
+### Network configuration: public virtual network bridge
+Thanks to `VNET(9)`, `pot` supports an IPv4 virtual network. This network is configured in configuration file (`/usr/local/etc/pot/pot.conf`), so be sure you have it properly configured.
+At the moment, `pot` supports only one big public virtual network, represented by a shared network bridge, so all `pot`s will share it.
 
-To help `pot` and users to deal with the internal virtual network an additional package is required, installable via:
+To help the `pot` framework and all users to manage the public virtual network, an additional package is required, normally automatically installed as dependency of the package `pot`. It's also manually installable via:
 ```console
 # pkg install potnet
 ```
@@ -261,7 +267,7 @@ Addresses already taken:
 	10.192.0.1	default gateway
 	10.192.0.2	dns
 ```
-The output is from my configuration, your addresses can differ, depending on the configuration values you have adopted.
+The output is from my configuration (and also the default one), however your address' range can differ, depending on the configuration values you have adopted.
 
 Optionally, you can start the virtual network via the command:
 ```console
@@ -269,11 +275,11 @@ Optionally, you can start the virtual network via the command:
 ```
 This command will create and configure the network interfaces properly and will activate `pf` to perform NAT on the virtual network.
 
-**NOTE** This command is automatically executed when a `pot` needs the virtual network. There is no need to run it manually.
+**NOTE** This command is automatically executed when a `pot` is configured to use the public virtual network. There is no need to run it manually.
 
 The following command will create a `pot` running on the internal network:
 ```console
-# pot create -p mypot -t single -b 11.2 -i auto
+# pot create -p mypot -t single -b 11.2 -N public-bridge -i auto
 # pot run mypot
 root@mypot:~ # ping 1.1.1.1
 [..]
@@ -285,11 +291,11 @@ Commands like `pot info -p mypot` and `potnet show` will show you exactly which 
 
 If you prefer to assign a specific IP address of your virtual network, you can just do:
 ```console
-# pot create -p mypot -t single -b 11.2 -i 10.192.0.10
+# pot create -p mypot -t single -b 11.2 -N public-bridge -i 10.192.0.10
 ```
-`pot` will verify if the IP address is free to use.
-#### Export services
-The virtual network is not visible outside the host machine, becuase of the pf's NAT.
+`pot` will verify if the IP address is available and free to be used.
+#### Export network services with the internal network
+The virtual network is not visible outside the host machine, becuase it's based on NAT of the pf's NAT.
 To make your network services running in your `pot` visible outside the TCP/UDP, desired ports have to be exported/redirected.
 `pot` provides a command to tell which port has to be exported.
 ```console
@@ -326,4 +332,4 @@ pot mypot
 		192.168.178.20 port 30443 -> 10.192.0.11 port 443
 
 ```
-
+However, there is no guarantee that the choosen ports are available.

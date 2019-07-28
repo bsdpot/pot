@@ -683,7 +683,9 @@ _fetch_freebsd()
 		_rel="$1"-RELEASE
 	fi
 
-	fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz
+	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
+		fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz
+	fi
 
 	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
 		return 1 # false

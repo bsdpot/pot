@@ -91,8 +91,7 @@ test_fetch_freebsd_002()
 	# No Manifest file
 	_fetch_freebsd 8.1
 	assertEquals "return code" "1" "$?"
-	assertEquals "fetch calls" "1" "$FETCH_CALLS"
-	assertEquals "fetch arg4" "/tmp/8.1-RELEASE_base.txz" "$FETCH_CALL1_ARG4"
+	assertEquals "fetch calls" "0" "$FETCH_CALLS"
 	assertEquals "error calls" "1" "$ERROR_CALLS"
 }
 
@@ -101,8 +100,7 @@ test_fetch_freebsd_003()
 	# Wrong sha
 	_fetch_freebsd 12.0
 	assertEquals "return code" "1" "$?"
-	assertEquals "fetch calls" "1" "$FETCH_CALLS"
-	assertEquals "fetch arg4" "/tmp/12.0-RELEASE_base.txz" "$FETCH_CALL1_ARG4"
+	assertEquals "fetch calls" "0" "$FETCH_CALLS"
 	assertEquals "error calls" "1" "$ERROR_CALLS"
 }
 
@@ -111,8 +109,7 @@ test_fetch_freebsd_004()
 	# Everything fine
 	_fetch_freebsd 11.1
 	assertEquals "return code" "0" "$?"
-	assertEquals "fetch calls" "1" "$FETCH_CALLS"
-	assertEquals "fetch arg4" "/tmp/11.1-RELEASE_base.txz" "$FETCH_CALL1_ARG4"
+	assertEquals "fetch calls" "0" "$FETCH_CALLS"
 	assertEquals "error calls" "0" "$ERROR_CALLS"
 }
 
@@ -121,8 +118,7 @@ test_fetch_freebsd_005()
 	# Everything fine
 	_fetch_freebsd 12.0-RC3
 	assertEquals "return code" "0" "$?"
-	assertEquals "fetch calls" "1" "$FETCH_CALLS"
-	assertEquals "fetch arg4" "/tmp/12.0-RC3_base.txz" "$FETCH_CALL1_ARG4"
+	assertEquals "fetch calls" "0" "$FETCH_CALLS"
 	assertEquals "error calls" "0" "$ERROR_CALLS"
 }
 setUp()

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.8.0] 2019-07-30
 ### Added
 - update-config: implemented -a flag to update all pot configurations in one run
 - get-rss: show the current resources usage (output available in json)

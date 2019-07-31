@@ -86,7 +86,7 @@ _is_absolute_path()
 	if [ "$1" = "${1#/}" ]; then
 		return 1 # false
 	else
-		return 0 # false
+		return 0 # true
 	fi
 }
 

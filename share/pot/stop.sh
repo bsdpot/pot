@@ -22,7 +22,7 @@ _js_stop()
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
 		fi
 		_debug "Stop the pot $_pname"
-		jail -r "$_pname"
+		jail -q -r "$_pname"
 		if [ -n "$_epair" ]; then
 			_debug "Remove ${_epair%b}[a|b] network interfaces"
 			ifconfig "${_epair%b}"a destroy

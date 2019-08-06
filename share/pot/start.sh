@@ -175,12 +175,14 @@ _js_export_ports()
 # $1 jail name
 _js_rss()
 {
-	local _pname _jid _cpuset _memory
+	# shellcheck disable=SC2039
+	local _pname _jid _cpus _cpuset _memory
 	_pname=$1
-	_cpuset="$( _get_conf_var $_pname pot.rss.cpuset)"
-	_memory="$( _get_conf_var $_pname pot.rss.memory)"
-	if [ -n "$_cpuset" ]; then
-		_jid="$( jls -j $_pname | sed 1d | awk '{ print $1 }' )"
+	_cpus="$( _get_conf_var "$_pname" pot.rss.cpus)"
+	_memory="$( _get_conf_var "$_pname" pot.rss.memory)"
+	if [ -n "$_cpus" ]; then
+		_jid="$( jls -j "$_pname" | sed 1d | awk '{ print $1 }' )"
+		_cpuset="$( potcpu get-cpu -n $_cpus )"
 		cpuset -l $_cpuset -j $_jid
 	fi
 	if [ -n "$_memory" ]; then
@@ -204,7 +206,6 @@ _js_get_cmd()
 	echo "$_value"
 }
 
-
 _js_norc()
 {
 	local _pname
@@ -215,6 +216,7 @@ _js_norc()
 
 _bg_start()
 {
+	# shellcheck disable=SC2039
 	local _pname _persist
 	_pname=$1
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
@@ -329,6 +331,10 @@ pot-start()
 		_error "Configuration file for $_pname contains obsolete elements"
 		_error "Please run pot update-config -p $_pname to fix"
 		return 1
+	fi
+	if [ -n "$(_get_conf_var "$_pname" "pot.rss.cpuset")" ]; then
+		_info "Found old cpuset rss limitation - it will be ignored"
+		_info "Please run pot update-config -p $_pname to clean up the configuration"
 	fi
 	if ! _is_uid0 ; then
 		return 1

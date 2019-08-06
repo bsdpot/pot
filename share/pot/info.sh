@@ -51,7 +51,7 @@ _info_pot()
 			printf "\\t\\t%s\\n" "$_pname/m"
 		fi
 		_print_pot_fscomp "$_cdir/fscomp.conf"
-		printf "\tsnapshot:\n"
+		printf "\tsnapshots:\n"
 		_print_pot_snaps "$_pname"
 	fi
 	printf "\tattributes:\n"
@@ -59,6 +59,19 @@ _info_pot()
 		_value=$( _get_conf_var "$_pname" "pot.attr.$_a")
 		printf "\t\t%s: %s\n" "$_a" "$_value"
 	done
+	if _is_verbose ; then
+		_cpu="$( _get_conf_var "$_pname" pot.rss.cpus)"
+		_mem="$( _get_conf_var "$_pname" pot.rss.memory)"
+		if [ -n "${_cpu}${_mem}" ]; then
+			printf "\tresource limits:\n"
+			if [ -n "${_cpu}" ]; then
+				printf "\t\tmax amount cpus: %s\n" "$_cpu"
+			fi
+			if [ -n "${_mem}" ]; then
+				printf "\t\tmax amount memory: %s\n" "$_mem"
+			fi
+		fi
+	fi
 	echo
 }
 

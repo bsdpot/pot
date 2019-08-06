@@ -59,6 +59,12 @@ _show_pot_run()
 		printf "\\tvirtual memory  : %s\\n" "$_vm"
 		printf "\\tphysical memory : %s\\n" "$_pm"
 	fi
+	_cpus="$( _get_conf_var "$_pname" pot.rss.cpus)"
+	if [ -n "$_cpus" ]; then
+		printf "\tmax amount of CPUs: %s\n" "$_cpus"
+		_cpu_allocation="$( cpuset -g -j "$_pname" | grep -F -v domain | cut -f 2 -d ':' | tr -d '[:blank:]')"
+		printf "\tallocated CPUs    : %s\n" "$_cpu_allocation"
+	fi
 	_network_type="$(_get_pot_network_type "$_pname" )"
 	_ip="$( _get_conf_var "$_pname" ip)"
 	if [ "$_network_type" = "public-bridge" ]; then

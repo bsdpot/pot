@@ -4,11 +4,11 @@
 # shellcheck disable=SC2039
 set-rss-help()
 {
-	echo "pot set-rss [-hv] -p pot -C cpuset -M memory"
+	echo "pot set-rss [-hv] -p pot -C cpus -M memory"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -p pot : the working pot'
-	echo '  -C cpuset : the cpu set'
+	echo '  -C cpus : the max amount of CPUs'
 	echo '  -M memory : max memory usable (integer values)'
 }
 
@@ -25,19 +25,6 @@ _set_rss()
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
 	${SED} -i '' -e "/pot.rss.$_rssname=.*/d" $_cdir/pot.conf
 	echo "pot.rss.$_rssname=$_rsslimit" >> $_cdir/pot.conf
-}
-
-# $1 cpu limit
-_cpuset_validation()
-{
-	# shellcheck disable=SC2039
-	local _cpuset
-	_cpuset="$1"
-	if ! cpuset -l $_cpuset ls>/dev/null 2>/dev/null ; then
-		_debug "cpuset $_cpuset is not valid"
-		return 1 # false
-	fi
-	return 0 # true
 }
 
 # $1 the amount of memory
@@ -62,16 +49,18 @@ _memory_validation()
 	return 0
 }
 # $1 pot
-# $2 cpuset list
+# $2 cpus amount
 _set_cpu()
 {
 	# shellcheck disable=SC2039
-	local _pname _cpuset
+	local _pname _cpus
 	_pname=$1
-	_cpuset=$2
-	if _cpuset_validation $_cpuset ; then
-		_set_rss "$_pname" cpuset "$_cpuset"
-		return 0 # true
+	_cpus=$2
+	if _is_natural_number $_cpus ; then
+		if [ $_cpus -gt 0 ]; then
+			_set_rss "$_pname" cpus "$_cpus"
+			return 0 # true
+		fi
 	fi
 	return 1 # false
 }
@@ -88,9 +77,9 @@ _set_memory()
 pot-set-rss()
 {
 	# shellcheck disable=SC2039
-	local _pname _cpuset _memory
+	local _pname _cpus _memory
 	_pname=
-	_cpuset=
+	_cpus=
 	_memory=
 	OPTIND=1
 	while getopts "hvp:C:M:" _o ; do
@@ -106,7 +95,7 @@ pot-set-rss()
 			_pname="$OPTARG"
 			;;
 		C)
-			_cpuset="$OPTARG"
+			_cpus="$OPTARG"
 			;;
 		M)
 			if _memory_validation "$OPTARG"  ; then
@@ -132,7 +121,7 @@ pot-set-rss()
 		set-rss-help
 		${EXIT} 1
 	fi
-	if [ -z "${_cpuset}${_memory}" ]; then
+	if [ -z "${_cpus}${_memory}" ]; then
 		_error "One resource has to be specified (-C or -M)"
 		set-rss-help
 		${EXIT} 1
@@ -140,9 +129,9 @@ pot-set-rss()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	if [ -n "$_cpuset" ]; then
-		if ! _set_cpu "$_pname" "$_cpuset" ; then
-			_error "cpuset $_cpuset not valid!"
+	if [ -n "$_cpus" ]; then
+		if ! _set_cpu "$_pname" "$_cpus" ; then
+			_error "$_cpus is a not valid amount of CPUs!"
 			${EXIT} 1
 		fi
 	fi

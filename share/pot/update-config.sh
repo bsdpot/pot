@@ -105,6 +105,13 @@ _update_one_pot()
 			echo "ip=$_ip4" >> "$_conf"
 		fi
 	fi
+
+	# remove the fixed cpuset rss allocation
+	if [ -n "$(_get_conf_var "$_pname" "pot.rss.cpuset")" ]; then
+		_info "Removing cpuset rss allocation: $(_get_conf_var "$_pname" "pot.rss.cpuset")"
+		_info "rss.cpuset has been deprecated; please use the more generic rss.cpus"
+		${SED} -i '' -e "/pot.rss.cpuset=.*/d" "$_conf"
+	fi
 }
 
 _update_all_pots()

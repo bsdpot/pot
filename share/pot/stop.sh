@@ -9,6 +9,18 @@ stop-help()
 	echo '  potname : the jail that has to start'
 }
 
+_js_cpu_rebalance()
+{
+	if ! _tmpfile=$(mktemp -t "potcpu.XXXXXX") ; then
+		_error "not able to create temporary file - umount failed"
+		return
+	fi
+	potcpu rebalance > "$_tmpfile"
+	while read -r cpuset_cmd ; do
+		eval "$cpuset_cmd"
+	done < "$_tmpfile"
+}
+
 # $1 pot name
 _js_stop()
 {

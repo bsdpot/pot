@@ -539,6 +539,20 @@ _is_in_list()
 	return 1 # false
 }
 
+# $1 the number to test
+# tested ( common8 )
+_is_natural_number()
+{
+	case "$1" in
+		''|*[!0-9]*)
+			return 1 # false
+			;;
+		*)
+			return 0 # true
+			;;
+	esac
+}
+
 # $1 mountpoint
 # tested
 _is_mounted()
@@ -719,9 +733,13 @@ _print_pot_fscomp()
 # $1 pot name
 _print_pot_snaps()
 {
-	for _s in $( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1" | tr '\n' ' ' ) ; do
-		printf "\\t\\t%s\\n" "$_s"
-	done
+	if [ -z "$( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1")" ]; then
+		printf "\t\tno snapshots\n"
+	else
+		for _s in $( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1" | tr '\n' ' ' ) ; do
+			printf "\\t\\t%s\\n" "$_s"
+		done
+	fi
 }
 
 # $1 pot name

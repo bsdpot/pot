@@ -70,10 +70,13 @@ pot-init()
 		zfs create "${POT_ZFS_ROOT}/fscomp"
 	fi
 
-	# check the cache directory
-	if [ ! -d "${POT_CACHE}" ]; then
-		_debug "creating the cache directory ${POT_CACHE}"
-		mkdir -p "${POT_CACHE}"
+	if ! _zfs_exist "${POT_ZFS_ROOT}/cache" "${POT_CACHE}" ; then
+		_debug "creating ${POT_ZFS_ROOT}/cache mounted as ${POT_CACHE}"
+		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/cache" ; then
+			zfs create "${POT_ZFS_ROOT}/cache"
+		fi
+		zfs set mountpoint="${POT_CACHE}" "${POT_ZFS_ROOT}/cache"
+		zfs set compression=off "${POT_ZFS_ROOT}/cache"
 	fi
 	# create mandatory directories for logs
 	mkdir -p /usr/local/etc/syslog.d

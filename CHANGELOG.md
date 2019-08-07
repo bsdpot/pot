@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Installation Guide: a more detailed guide, that better explains the installation of pot
+
+### Changed
+- POT_CACHE: the cache used by import is now a dataset, child of POT_ZFS_ROOT
+- set-rss: CPU limits is set as maximum amount of CPU. At start, pot decide where to allocate using potcpu
 
 ## [0.8.0] 2019-07-30
 ### Added

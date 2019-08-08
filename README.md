@@ -13,6 +13,18 @@ It is an educational/experimental project, but it's becoming more robust.
 
 The project was presented at FOSDEM 2018: [video mp4](https://video.fosdem.org/2018/K.3.401/pot_container_framework.mp4) [video webm](https://video.fosdem.org/2018/K.3.401/pot_container_framework.webm) [slides (PDF)](https://fosdem.org/2018/schedule/event/pot_container_framework/attachments/slides/2128/export/events/attachments/pot_container_framework/slides/2128/pot_slides.pdf)
 
+### Quickstart guide
+A non-exaustive guide is available in the folder `share/doc/pot`:
+
+* [as Markdown file](https://github.com/pizzamig/pot/blob/master/share/doc/pot/QuickStart.md)
+* [as html](https://people.freebsd.org/~pizzamig/pot/QuickStart.html)
+
+### Installation guide
+An exaustive installation guide is availab in the folder `share/doc/pot`:
+
+* [as Markdown file](https://github.com/pizzamig/pot/blob/master/share/doc/pot/Installation.md)
+* [as html](https://people.freebsd.org/~pizzamig/pot/Installation.html)
+
 ### Online help
 `pot` provide an online help:
 ```
@@ -78,10 +90,4 @@ pot create [-hv] -p potname [-i ipaddr] [-s] [-l lvl] [-f flavour]
          single: the pot is based on a unique ZFS dataset
          multi: the pot is composed by a classical collection of 3 ZFS dataset
 ```
-
-### Quickstart guide
-A non-exaustive guide is available in the folder `share/doc/pot`:
-
-* [as Markdown file](https://github.com/pizzamig/pot/blob/master/share/doc/pot/QuickStart.md) 
-* [as html](https://people.freebsd.org/~pizzamig/pot/QuickStart.html)
 

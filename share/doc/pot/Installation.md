@@ -101,7 +101,7 @@ POT_VPN_NETWORKS="192.168.0.0/24 192.168.10.0/24 10.10.0.0/16"
 
 ## Initialize the environment
 The initialization of the environment will:
-* Create the zfs datasets
+* Create the ZFS datasets
 * Configure `pf(4)` to be aware of the internal virtual network
 
 If you are already using `pf`, I suggest to make a backup of you `pf` configuration file.

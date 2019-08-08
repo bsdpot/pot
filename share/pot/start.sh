@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# supported releases
 start-help()
 {
 	echo "pot start [-h] [potname]"
@@ -217,12 +216,18 @@ _js_norc()
 _bg_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _persist
+	local _pname _persist _conf
 	_pname=$1
+	_conf="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	sleep 3
 	if [ "$_persist" = "NO" ]; then
 		jail -m name="$_pname" nopersist
+	fi
+	if _is_pot_prunable "$_pname" ; then
+		# set-attr cannot be used for read-only attributes
+		${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" "$_conf"
+		echo "pot.attr.to-be-pruned=YES" >> "$_conf"
 	fi
 	_js_rss "$_pname"
 }

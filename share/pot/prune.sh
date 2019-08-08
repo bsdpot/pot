@@ -19,15 +19,17 @@ _prune_pot()
 	_dry_run=$2
 	_quiet=$3
 	if ! _is_pot_running "$_pname" ; then
-		if [ "$( _get_conf_var "$_pname" "pot.attr.prunable" )" = "YES" ]; then
-			_info "Pruning $_pname"
-			if [ "$_dry_run" = "YES" ]; then
-				return
-			fi
-			if ! pot-cmd destroy -p "$_pname" ; then
-				_qerror "$_quiet" "Error while pruning $_pname"
-			else
-				_info "Pruned $_pname"
+		if _is_pot_prunable "$_pname" ; then
+			if [ "$( _get_conf_var "$_pname" "pot.attr.to-be-pruned" )" = "YES" ]; then
+				_info "Pruning $_pname"
+				if [ "$_dry_run" = "YES" ]; then
+					return
+				fi
+				if ! pot-cmd destroy -p "$_pname" ; then
+					_qerror "$_quiet" "Error while pruning $_pname"
+				else
+					_info "Pruned $_pname"
+				fi
 			fi
 		fi
 	fi

@@ -61,6 +61,10 @@ _update_one_pot()
 		_debug "pot.attr.procfs=NO"
 		echo "pot.attr.procfs=NO" >> "$_conf"
 	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.fdescfs")" ]; then
+		_debug "pot.attr.fdescfs=NO"
+		echo "pot.attr.fdescfs=NO" >> "$_conf"
+	fi
 	if [ -z "$(_get_conf_var "$_pname" "pot.attr.prunable")" ]; then
 		_debug "pot.attr.prunable=NO"
 		echo "pot.attr.prunable=NO" >> "$_conf"

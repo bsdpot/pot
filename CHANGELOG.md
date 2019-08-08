@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - POT_CACHE: the cache used by import is now a dataset, child of POT_ZFS_ROOT
 - set-rss: CPU limits is set as maximum amount of CPU. At start, pot decide where to allocate using potcpu
+- prunable: if a pot is prunable, it has to be started at least one to be pruned (flavour counts)
 
 ## [0.8.0] 2019-07-30
 ### Added

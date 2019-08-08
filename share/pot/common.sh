@@ -5,7 +5,7 @@
 : "${SED:=sed}"
 
 _POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs fdescfs prunable"
-_POT_RO_ATTRIBUTES=""
+_POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge"
 
 __POT_MSG_ERR=0
@@ -364,6 +364,19 @@ _is_pot_vnet()
 		return 0 # true
 	else
 		return 1 # false
+	fi
+}
+
+# $1 pot name
+_is_pot_prunable()
+{
+	# shellcheck disable=SC2039
+	local _pname
+	_pname="$1"
+	if [ "$( _get_conf_var "$_pname" "pot.attr.prunable" )" = "YES" ]; then
+		return 0 # true
+	else
+		return 1
 	fi
 }
 

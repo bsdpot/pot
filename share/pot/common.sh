@@ -4,7 +4,7 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs prunable"
+_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs fdescfs prunable"
 _POT_RO_ATTRIBUTES=""
 _POT_NETWORK_TYPES="inherit alias public-bridge"
 
@@ -813,6 +813,9 @@ _pot_umount()
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 
 	_umount "$_jdir/m/tmp"
+	if [ "$(_get_conf_var "$_pname" "pot.attr.fdescfs")" = "YES" ]; then
+		_umount "$_jdir/m/dev/fs"
+	fi
 	_umount "$_jdir/m/dev"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.procfs")" = "YES" ]; then
 		_umount "$_jdir/m/proc"

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Installation Guide: a more detailed guide, that better explains the installation of pot
+- fdescfs attribute: new attribute to mount fdescfs inside the pot
 
 ### Changed
 - POT_CACHE: the cache used by import is now a dataset, child of POT_ZFS_ROOT

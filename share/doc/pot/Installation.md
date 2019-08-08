@@ -56,6 +56,8 @@ This paramater is the ZFS dataset that will be used by `pot` to store whatever w
 If the dataset doesn't exist, it will be created by the initialization command (See the last chapter).
 #### `POT_FS_ROOT` (default `/opt/pot`)
 This parameter is the mountpoint for the `POT_ZFS_ROOT` dataset. You shouldn't use a mountpoint that exists and contains file, otherwise the content will become unreachable.
+#### `POT_CACHE` (default `/var/cache/pot`)
+This parameter specifies the mountpoint of the dataset `POT_ZFS_ROOT/cache`. This dataset is used only to store `pot` images for the `import` and the `prepare`command. The default value is the suggested one.
 
 ### Network parameters
 In order to use network types like `alias` or `public-bridge`, some configuration parameters are needed.
@@ -121,3 +123,16 @@ From your host, you can now ping the virtual network default gateway (always rea
 ```console
 # ping 10.192.0.1
 ```
+
+## Remove the `pot` environment
+In order to remove the `pot` from your system, a command is provided to make it easy:
+```console
+# pot de-init
+```
+This powerful command will remove everything related to `pot` and it cannot be undone.
+
+Even if not mandatory, it would be nice to know why you removed it.
+Please, consider to write a feedback email to pizzamig at FreeBSD dot org
+* What's wrong with `pot`?
+* What's the missing feature I really need?
+* How bad is to use it? How can it be more user-friendly?

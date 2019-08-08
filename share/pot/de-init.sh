@@ -64,8 +64,10 @@ pot-de-init()
 	sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' "$pf_file"
 	# Final message
 	echo "zfs datasets have been removed"
-	echo "pf configuration file should be clean"
+	echo "pf configuration file should be clean (please check $pf_file)"
 	echo "check your rc.conf for potential leftovers variable like:"
 	echo '  syslogd_flags'
 	echo '  pot_enable'
+	echo "Please, consider to write a feedback email to pizzamig at FreeBSD dot org"
+	echo "It gives us the opportunity to learn and improve"
 }

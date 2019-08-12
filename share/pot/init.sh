@@ -73,18 +73,24 @@ pot-init()
 	if ! _zfs_exist "${POT_ZFS_ROOT}/cache" "${POT_CACHE}" ; then
 		_debug "creating ${POT_ZFS_ROOT}/cache mounted as ${POT_CACHE}"
 		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/cache" ; then
-			zfs create "${POT_ZFS_ROOT}/cache"
+			zfs create -o mountpoint="${POT_CACHE}" -o compression=off "${POT_ZFS_ROOT}/cache"
 		fi
-		zfs set mountpoint="${POT_CACHE}" "${POT_ZFS_ROOT}/cache"
-		zfs set compression=off "${POT_ZFS_ROOT}/cache"
 	fi
 	# create mandatory directories for logs
 	mkdir -p /usr/local/etc/syslog.d
 	mkdir -p /usr/local/etc/newsyslog.conf.d
 	mkdir -p /var/log/pot
 
+	if ! potnet config-check ; then
+		_error "The network configuration in the pot configuration file is not valid"
+		${EXIT} 1
+	fi
+	if ! ifconfig "$POT_EXTIF" > /dev/null 2> /dev/null ; then
+		_error "The network interface $POT_EXTIF seems not valid"
+		${EXIT} 1
+	fi
 	# add proper syslogd flags and restart it
-	sysrc syslogd_flags="-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
+	sysrc -q syslogd_flags="-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
 	# service syslogd restart
 
 	# Add pot anchors if needed
@@ -99,7 +105,9 @@ pot-init()
 		else
 			touch "$pf_file"
 		fi
+		echo "auto-magically editing your $_pf_file"
 		printf "%s\n" 0a "nat-anchor pot-nat" "rdr-anchor \"pot-rdr/*\"" . x | ex "$pf_file"
+		echo "Please, check that your PF configuration file $_pf_file is still valid!"
 	fi
 }
 

@@ -26,7 +26,7 @@ If you want to install it using ports, you can
 # cd /usr/ports/sysutils/pot
 # make install clean
 ```
-**NOTE** A dependency of `pot`, called `potnet` is written in Rust. If you install `potnet` via ports, the build dependencies will be built as well, and the build time will take really long time (depending on the power of you system, it could be several hours).
+**NOTE** A dependency of `pot`, called `potnet` is written in Rust. If you install `potnet` via ports, the build dependencies will be built as well, and it can take really long time (depending on the power of you system, it could be several hours).
 
 ## Enable the resource limit database
 One really useful feature, needed to improve the isolation between jail, is the resource limit database.
@@ -79,6 +79,14 @@ Theoretically, the netmask can be derived by the `POT_NETWORK`. For now, this is
 #### `POT_GATEWAY` (default `10.192.0.1`)
 This parameter specifies the IP address that will be used as default gateway in your internal virtual network. It has to be part of the network specified in `POT_NETWORK` and it will be used as default gateway for all `pot`s attached to the internal virtual network (`public-bridge` network type).
 
+#### Network validation
+If you want to check that your network configuration is valid, you can use the utility `potnet`:
+
+```console
+# potnet config-check
+```
+This command will show only the errors.
+
 ### Experimental parameters
 There are other parameters that are used by some experimental features.
 
@@ -102,6 +110,7 @@ POT_VPN_NETWORKS="192.168.0.0/24 192.168.10.0/24 10.10.0.0/16"
 ## Initialize the environment
 The initialization of the environment will:
 * Create the ZFS datasets
+* Validate the network parameters
 * Configure `pf(4)` to be aware of the internal virtual network
 
 If you are already using `pf`, I suggest to make a backup of you `pf` configuration file.

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - get-rss: fix return code when the pot is not valid
+- set-cmd: fix potential double quotes surrouding the command
 
 ## [0.9.0] 2019-08-13
 ### Added

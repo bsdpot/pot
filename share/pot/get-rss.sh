@@ -69,6 +69,7 @@ pot-get-rss()
 	fi
 	if ! _is_pot "$_pname" quiet ; then
 		_error "The pot $_pname is not a valid pot"
+		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1

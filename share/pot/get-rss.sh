@@ -16,22 +16,27 @@ get-rss-help()
 print_rss()
 {
 	# shellcheck disable=SC2039
-	local _rss _pname _json _pcpu _mem _cputime _vmem
+	local _rss _pname _json _pcpu _mem _cputime _vmem _clockrate _cputimecounter _swap
 	_pname=$1
 	_json=$2
+	_clockrate="$( sysctl -n hw.clockrate )"
 	_rss="$( rctl -u jail:"$_pname" )"
 	_pcpu="$( echo "$_rss" | grep ^pcpu | cut -d'=' -f 2 )"
+	_cputimecounter="$( echo "$_rss" | grep ^cputime | cut -d'=' -f 2 )"
 	_mem="$( echo "$_rss" | grep ^memoryuse | cut -d'=' -f 2 )"
 	_vmem="$( echo "$_rss" | grep ^vmemoryuse | cut -d'=' -f 2 )"
-	_cputime="$( echo "$_rss" | grep ^cputime | cut -d'=' -f 2 )"
+	_swap="$( echo "$_rss" | grep ^swapuse | cut -d'=' -f 2 )"
+	_cputime="$( printf "scale=3\n %s * %s / 100\n" "$_clockrate" "$_pcpu" | bc )"
 	if [ "$_json" = "YES" ]; then
-		echo "{ \"ResourceUsage\": { \"MemoryStats\": { \"RSS\" : $_mem }, \"CpuStats\": { \"TotalTicks\": $_cputime, \"Percent\": $_pcpu } } } "
+		echo "{ \"ResourceUsage\": { \"MemoryStats\": { \"RSS\" : $_mem, \"Swap\" : $_swap }, \"CpuStats\": { \"TotalTicks\": $_cputime, \"Percent\": $_pcpu } } } "
 	else
 		echo "Resource usage by the pot $_pname"
-		printf "\\tcpu time (ticks): %s\\n" "$_cputime"
-		printf "\\tpcpu (%%)        : %s\\n" "$_pcpu"
-		printf "\\tvirtual memory  : %s\\n" "$_vmem"
-		printf "\\tphysical memory : %s\\n" "$_mem"
+		printf "\\tcpu time (ticks spent) : %s\\n" "$_cputimecounter"
+		printf "\\tcpu time (MHz)         : %s\\n" "$_cputime"
+		printf "\\tpcpu (%%)               : %s\\n" "$_pcpu"
+		printf "\\tvirtual memory         : %s\\n" "$_vmem"
+		printf "\\tphysical memory        : %s\\n" "$_mem"
+		printf "\\tswap memory            : %s\\n" "$_swap"
 	fi
 }
 

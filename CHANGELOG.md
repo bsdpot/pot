@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - get-rss: fix return code when the pot is not valid
 - set-cmd: fix potential double quotes surrouding the command
+- get-rss: TotalTicks is now expressed in Mhz (pcpu * max cpu Frequency)
+- get-rss: add swap usage statistic
 
 ## [0.9.0] 2019-08-13
 ### Added

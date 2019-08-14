@@ -1,7 +1,5 @@
 #!/bin/sh
 
-EXIT="return"
-
 # system utilities stubs
 
 top()

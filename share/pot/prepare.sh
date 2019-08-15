@@ -74,12 +74,16 @@ pot-prepare()
 			_auto_start="YES"
 			;;
 		N)
+			if [ "$OPTARG" = "host" ]; then
+				_network_type="inherit"
+			else
+				_network_type="$OPTARG"
+			fi
 			if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
 				_error "Network type $OPTARG not recognized"
 				clone-help
 				${EXIT} 1
 			fi
-			_network_type="$OPTARG"
 			;;
 		i)
 			_ipaddr=$OPTARG

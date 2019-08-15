@@ -104,7 +104,6 @@ _js_vnet()
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		touch ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
-		chmod a+x ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
 		echo "ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
 		echo "route add default $POT_GATEWAY" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
 	else # use rc scripts
@@ -210,7 +209,8 @@ _js_norc()
 	local _pname
 	_pname="$1"
 	_cmd="$(_js_get_cmd $_pname)"
-	echo $_cmd >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+	echo $_cmd >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+	chmod a+x "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 }
 
 _bg_start()

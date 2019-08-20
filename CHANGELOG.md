@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - get-rss: TotalTicks is now expressed in Mhz (pcpu * max cpu Frequency)
 - get-rss: add swap usage statistic
 - start: fix tinirc permission if no-rc-script is used with network type different than public-bridge
+- destroy: use -f to remove the 'Device busy' issue
 
 ## [0.9.0] 2019-08-13
 ### Added

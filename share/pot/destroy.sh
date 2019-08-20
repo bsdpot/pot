@@ -24,7 +24,7 @@ _zfs_dataset_destroy()
 	if _is_verbose ; then
 		_zopt="-v"
 	fi
-	zfs destroy -r $_zopt "$_dset"
+	zfs destroy -f -r $_zopt "$_dset"
 	return $?
 }
 

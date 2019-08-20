@@ -58,9 +58,9 @@ pot-vnet-start()
 	_bridge=$(_pot_bridge)
 	if [ -z "$_bridge" ]; then
 		if _bridge=$(ifconfig bridge create) ; then
-			_error "Bridge not created"
-		else
 			_debug "Bridge created $_bridge"
+		else
+			_error "Bridge not created"
 		fi
 		if ! ifconfig "$_bridge" inet "$POT_GATEWAY" netmask "$POT_NETMASK" ; then
 			_error "Error during bridge configuration ($_bridge)"

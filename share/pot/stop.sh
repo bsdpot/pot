@@ -50,6 +50,11 @@ _js_stop()
 			fi
 		fi
 	fi
+	if [ -r "$_jdir/ncat.pid" ]; then
+		pkill -F "$_jdir/ncat.pid" ncat-$_pname
+		rm -f "$_jdir/ncat.pid"
+	fi
+
 	# to be sure that I'm cleaning everything
 	if [ -n "$( _get_pot_export_ports $_pname)" ]; then
 		_debug "Remove redirection rules from the firewall"

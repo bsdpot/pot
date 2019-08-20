@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- localhost-tunnel attribute: new attribute to create a tunnet to redirect traffic from localhost (consul feature)
+
 ### Changed
 - prepare: allow network type "host" as alias for "inherit" (nomad-friendly feature)
+- prepare: set localhost-tunnel automatically (consul-friendly feature)
 
 ### Fixed
 - get-rss: fix return code when the pot is not valid

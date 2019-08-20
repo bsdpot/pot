@@ -125,7 +125,8 @@ pot-set-attribute()
 		"no-rc-script"|\
 		"fdescfs"|\
 		"procfs"|\
-		"prunable")
+		"prunable"|\
+		"localhost-tunnel")
 			_cmd=_set_boolean_attribute
 			;;
 		*)

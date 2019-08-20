@@ -57,7 +57,7 @@ _info_pot()
 	printf "\tattributes:\n"
 	for _a in $_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES ; do
 		_value=$( _get_conf_var "$_pname" "pot.attr.$_a")
-		printf "\t\t%s: %s\n" "$_a" "$_value"
+		printf "\t\t%s: %s\n" "$_a" "${_value:-"NO"}"
 	done
 	if _is_verbose ; then
 		_cpu="$( _get_conf_var "$_pname" pot.rss.cpus)"

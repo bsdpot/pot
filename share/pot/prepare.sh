@@ -159,6 +159,9 @@ pot-prepare()
 	if ! pot-cmd set-attribute -A prunable -V ON -p "$_new_pname" ; then
 		_error "Couldn't enable the no-rc-script attribute - ignoring"
 	fi
+	if ! pot-cmd set-attribute -A localhost-tunnel -V YES -p "$_new_pname" ; then
+		_error "Couldn't enable the localhost-tunnel attribute - ignoring"
+	fi
 	if [ -n "$_ports" ]; then
 		for _p in $_ports ; do
 			_port_args="-e $_p "

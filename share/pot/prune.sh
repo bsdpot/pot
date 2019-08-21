@@ -25,6 +25,7 @@ _prune_pot()
 				if [ "$_dry_run" = "YES" ]; then
 					return
 				fi
+				pot-cmd stop "$_pname"
 				if ! pot-cmd destroy -p "$_pname" ; then
 					_qerror "$_quiet" "Error while pruning $_pname"
 				else

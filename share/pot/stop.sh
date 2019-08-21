@@ -50,16 +50,15 @@ _js_stop()
 			fi
 		fi
 	fi
+	pfctl -a "pot-rdr/$_pname" -F nat -q
+
 	if [ -r "$_jdir/ncat.pid" ]; then
-		pkill -F "$_jdir/ncat.pid" ncat-$_pname
+		pkill -F "$_jdir/ncat.pid" "ncat-$_pname"
 		rm -f "$_jdir/ncat.pid"
+	elif pgrep -q -x "ncat-$_pname" ; then
+		pkill -x "ncat-$_pname"
 	fi
 
-	# to be sure that I'm cleaning everything
-	if [ -n "$( _get_pot_export_ports $_pname)" ]; then
-		_debug "Remove redirection rules from the firewall"
-		pfctl -a "pot-rdr/$_pname" -F nat
-	fi
 	return 0 # true
 }
 

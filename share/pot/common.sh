@@ -873,5 +873,17 @@ pot-cmd()
 	fi
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
-	$_func "$@"
+	case "$_cmd" in
+		create|import|clone)
+			if [ "$_POT_RECURSIVE" = "1" ]; then
+				$_func "$@"
+			else
+				export _POT_RECURSIVE=1
+				lockf -k /tmp/pot-lock-file $_POT_PATHNAME $_cmd "$@"
+			fi
+			;;
+		*)
+			$_func "$@"
+			;;
+	esac
 }

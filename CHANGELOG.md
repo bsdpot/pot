@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - prune: invoke a stop, before the destroy, even if the pot is not runing
+- lockf: introducing lockf to run create, import or clone one at a time
 
 ### Fixed
 - stop: make the pkill on ncat more robust

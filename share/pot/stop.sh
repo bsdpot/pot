@@ -37,6 +37,7 @@ _js_stop()
 		jail -q -r "$_pname"
 		if [ -n "$_epair" ]; then
 			_debug "Remove ${_epair%b}[a|b] network interfaces"
+			sleep 1 # try to avoid a race condition in the epair driver, potentially causing a kernel panic
 			ifconfig "${_epair%b}"a destroy
 		else
 			if [ "$_network_type" = "alias" ]; then

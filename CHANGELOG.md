@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - stop: make the pkill on ncat more robust
+- stop: add a workaround for a race condition in the epair driver
 
 ## [0.9.1] 2019-08-20
 ### Added

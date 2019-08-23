@@ -873,12 +873,5 @@ pot-cmd()
 	fi
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
-	case ${_cmd} in
-		create|clone|import)
-			lockf -k /tmp/pot-potnet-lock "$_func" "$@"
-			;;
-		*)
-			$_func "$@"
-			;;
-	esac
+	$_func "$@"
 }

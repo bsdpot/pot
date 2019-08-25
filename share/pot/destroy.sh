@@ -38,6 +38,12 @@ _pot_zfs_destroy()
 	_force=$2
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	if ! _zfs_dataset_valid "$_jdset" ; then
+		## if a directory is found, just remove if
+		if [ -d "${_POT_FS_ROOT}/jails/$_pname" ]; then
+			_debug "Dataset of $_pname not found, but removing the directory anyway"
+			rm -rf "${_POT_FS_ROOT}/jails/$_pname"
+			return 0 # true
+		fi
 		_error "$_pname not found"
 		return 1 # false
 	fi

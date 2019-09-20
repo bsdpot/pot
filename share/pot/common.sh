@@ -874,7 +874,7 @@ pot-cmd()
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
 	case "$_cmd" in
-		create|import|clone)
+		create|import|clone|create-private-bridge)
 			if [ "$_POT_RECURSIVE" = "1" ]; then
 				$_func "$@"
 			else

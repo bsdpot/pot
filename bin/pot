@@ -156,6 +156,7 @@ case "${CMD}" in
 	list|info|ps|top|\
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
+	create-private-bridge|\
 	copy-in|mount-in|prune|\
 	destroy|add-dep|set-rss|get-rss|set-cmd|\
 	export|import|prepare|\

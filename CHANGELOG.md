@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.9.2] 2019-08-25
 ### Added
 - prune: invoke a stop, before the destroy, even if the pot is not runing
 - lockf: introducing lockf to run create, import or clone one at a time

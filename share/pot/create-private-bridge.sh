@@ -24,13 +24,10 @@ create-bridge()
 		_error "A bridge name $_bname is already defined"
 		${EXIT} 1
 	fi
-	# add the default gateway to the private network
-	_bsize=$(( _bsize + 1 ))
-	if _bnet="$(potnet new-net -s "$_bsize")" ; then
-		echo "net=$_bnet" > "$_bconf"
+	if potnet new-net -s "$_bsize" > "$_bconf" ; then
 		echo "name=$_bname" >> "$_bconf"
 	else
-		_bsize=$(( _bsize - 1 ))
+		rm -f "$_bconf"
 		_error "Not able to get a valid network with size $_bsize"
 		${EXIT} 1
 	fi

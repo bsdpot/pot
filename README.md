@@ -20,10 +20,17 @@ A non-exaustive guide is available in the folder `share/doc/pot`:
 * [as html](https://people.freebsd.org/~pizzamig/pot/QuickStart.html)
 
 ### Installation guide
-An exaustive installation guide is availab in the folder `share/doc/pot`:
+An exaustive installation guide is available in the folder `share/doc/pot`:
 
 * [as Markdown file](https://github.com/pizzamig/pot/blob/master/share/doc/pot/Installation.md)
 * [as html](https://people.freebsd.org/~pizzamig/pot/Installation.html)
+
+#### Nomad pot driver integration
+A driver to allow [nomad](https://www.nomadproject.io) to interact with `pot` has been developed and available [here](https://github.com/trivago/nomad-pot-driver) 
+
+An important step to interact with nomad is to create `pot` images. An introduction guide to images is available in the folder `share/doc/pot`:
+* [as Markdown file](https://github.com/pizzamig/pot/blob/master/share/doc/pot/Images.md)
+* [as html](https://people.freebsd.org/~pizzamig/pot/Images.html)
 
 ### Online help
 `pot` provide an online help:

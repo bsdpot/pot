@@ -31,6 +31,9 @@ _info_pot()
 	printf "\tnetwork_type : %s\n" "$( _get_pot_network_type "$_pname" )"
 	if [ "$( _get_pot_network_type "$_pname" )" != "inherit" ]; then
 		printf "\tip : %s\n" "$( _get_conf_var "$_pname" ip)"
+		if [ "$( _get_pot_network_type "$_pname" )" = "private-bridge" ]; then
+			printf "\tbridge : %s\n" "$( _get_conf_var "$_pname" bridge)"
+		fi
 		if _is_verbose ; then
 			_ports="$( _get_pot_export_ports "$_pname" )"
 			if [ -z "$_ports" ]; then

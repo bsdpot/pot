@@ -6,7 +6,7 @@
 
 _POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs fdescfs prunable localhost-tunnel"
 _POT_RO_ATTRIBUTES="to-be-pruned"
-_POT_NETWORK_TYPES="inherit alias public-bridge"
+_POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1
@@ -407,9 +407,9 @@ _is_bridge()
 	_bridge="$1"
 	if ! _is_in_list "$_bridge" "$( _get_bridge_list )" ; then
 		_qerror "$2" "bridge $_bridge not found"
-		return 1
+		return 1 # false
 	fi
-	return 0
+	return 0 # true
 }
 
 # $1 fscomp name

@@ -400,7 +400,20 @@ _is_vnet_up()
 }
 
 # $1 fscomp name
-# $2 quiet / no _error messages are emitted (sometimes usefult)
+# $2 quiet / no _error messages are emitted (sometimes useful)
+_is_bridge()
+{
+	local _bridge
+	_bridge="$1"
+	if ! _is_in_list "$_bridge" "$( _get_bridge_list )" ; then
+		_qerror "$2" "bridge $_bridge not found"
+		return 1
+	fi
+	return 0
+}
+
+# $1 fscomp name
+# $2 quiet / no _error messages are emitted (sometimes useful)
 # tested
 _is_fscomp()
 {
@@ -420,7 +433,7 @@ _is_fscomp()
 }
 
 # $1 base name
-# $2 quiet / no _error messages are emitted (sometimes usefult)
+# $2 quiet / no _error messages are emitted (sometimes useful)
 # tested
 _is_base()
 {
@@ -444,7 +457,7 @@ _is_base()
 }
 
 # $1 pot name
-# $2 quiet / no _error messages are emitted (sometimes usefult)
+# $2 quiet / no _error messages are emitted (sometimes useful)
 # tested
 _is_pot()
 {
@@ -860,6 +873,11 @@ _pot_umount()
 _get_pot_list()
 {
 	ls -d "${POT_FS_ROOT}/jails/"*/ 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
+}
+
+_get_bridge_list()
+{
+	find "${POT_FS_ROOT}/bridges" -type f -print0 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
 pot-cmd()

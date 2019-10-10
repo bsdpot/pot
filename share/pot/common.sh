@@ -289,6 +289,39 @@ _pot_bridge()
 	done
 }
 
+# $1 bridge name
+_private_bridge()
+{
+	# shellcheck disable=SC2039
+	local _bridges _bridge _bridge_ip
+	_bridge="$1"
+	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	if [ -z "$_bridges" ]; then
+		return
+	fi
+	_bridge_ip="$(_get_bridge_var "$_bridge" gateway)"
+	for _b in $_bridges ; do
+		_ip=$( ifconfig "$_b" inet | awk '/inet/ { print $2 }' )
+		if [ "$_ip" = "$_bridge_ip" ]; then
+			echo "$_b"
+			return
+		fi
+	done
+}
+
+# $1 bridge name
+# $2 var name
+_get_bridge_var()
+{
+	# shellcheck disable=SC2039
+	local _Bname _cfile _var _value
+	_Bname="$1"
+	_cfile="${POT_FS_ROOT}/bridges/$_Bname"
+	_var="$2"
+	_value="$( grep "^$_var=" "$_cfile" | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo "$_value"
+}
+
 # $1 pot name
 # $2 var name
 _get_conf_var()

@@ -116,7 +116,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-f[fscomp name]:fscomp name:_normal'
 					;;
-				create-private-bridge) 
+				create-private-bridge)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \

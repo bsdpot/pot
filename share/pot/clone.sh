@@ -11,6 +11,7 @@ clone-help()
 	echo '  -p potname : the new pot name'
 	echo '  -N network-type : new network type of the cloned pot'
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
+	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 

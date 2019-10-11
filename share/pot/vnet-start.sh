@@ -35,7 +35,7 @@ _private_bridge_start()
 	# shellcheck disable=SC2039
 	local _bridge_name _bridge _gateway _bridge_net
 	_bridge_name="$1"
-	_bridge=$(_private_bridge)
+	_bridge=$(_private_bridge "$_bridge_name")
 	if [ -z "$_bridge" ]; then
 		if _bridge=$(ifconfig bridge create) ; then
 			_debug "Bridge created $_bridge"

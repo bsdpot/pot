@@ -413,10 +413,16 @@ _is_pot_prunable()
 	fi
 }
 
+# $1 bridge name (optional)
 _is_vnet_up()
 {
+	# shellcheck disable=SC2039
 	local _bridge
-	_bridge=$(_pot_bridge)
+	if [ -z "$1" ]; then
+		_bridge=$(_pot_bridge)
+	else
+		_bridge="$( _private_bridge "$1" )"
+	fi
 	if [ -z "$_bridge" ]; then
 		return 1 # false
 	elif [ ! -c /dev/pf ]; then
@@ -432,7 +438,7 @@ _is_vnet_up()
 	fi
 }
 
-# $1 fscomp name
+# $1 bridge name
 # $2 quiet / no _error messages are emitted (sometimes useful)
 _is_bridge()
 {

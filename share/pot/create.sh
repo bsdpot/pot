@@ -146,11 +146,8 @@ _cj_conf()
 	_lvl=$5
 	_dns=$6
 	_type=$7
-	if [ "$_network_type" = "private-bridge" ]; then
-		_bridge_name=$8
-		shift
-	fi
-	_potbase=$8
+	_bridge_name=$8
+	_potbase=$9
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 

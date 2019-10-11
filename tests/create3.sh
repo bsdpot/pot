@@ -107,7 +107,7 @@ test_cj_conf_003()
 	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	_cj_conf new-pot 11.1 inherit inherit 1 inherit multi test-pot
+	_cj_conf new-pot 11.1 inherit inherit 1 inherit multi "" test-pot
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -136,7 +136,7 @@ test_cj_conf_004()
 	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	_cj_conf new-pot 11.1 inherit inherit 2 inherit multi test-pot
+	_cj_conf new-pot 11.1 inherit inherit 2 inherit multi "" test-pot
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -160,7 +160,7 @@ test_cj_conf_004()
 
 test_cj_conf_005()
 {
-	_cj_conf new-pot 11.1 inherit inherit 2 inherit multi test-pot-2
+	_cj_conf new-pot 11.1 inherit inherit 2 inherit multi "" test-pot-2
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"

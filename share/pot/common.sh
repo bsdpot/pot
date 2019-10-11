@@ -916,7 +916,7 @@ _get_pot_list()
 
 _get_bridge_list()
 {
-	find "${POT_FS_ROOT}/bridges" -type f -print0 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
+	find "${POT_FS_ROOT}/bridges" -type f 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
 pot-cmd()

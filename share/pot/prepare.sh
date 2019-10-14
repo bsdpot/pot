@@ -5,7 +5,7 @@
 prepare-help()
 {
 	echo "pot prepare [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd"
-	echo '        [-e port] [-N network-type] [-i ipaddr]'
+	echo '        [-e port] [-N network-type] [-i ipaddr] [-B bridge-name]'
 	echo '  -h print this help'
 	echo '  -h verbose'
 	echo '  -p pot : the pot image'
@@ -19,19 +19,21 @@ prepare-help()
 	echo '  -e port : the tcp port'
 	echo '            This option can be repeated multiple time, to export more ports'
 	echo '  -S : start immediately the newly generated pot'
+	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 }
 
 pot-prepare()
 {
 	# shellcheck disable=SC2039
-	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr
+	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _bridge_name
 	_pname=
 	_ports=
 	_network_type=
 	_ipaddr=
 	_auto_start="NO"
+	_bridge_name=
 	OPTIND=1
-	while getopts "hvp:U:t:c:e:a:n:SN:i:" _o ; do
+	while getopts "hvp:U:t:c:e:a:n:SN:i:B:" _o ; do
 		case "$_o" in
 		h)
 			prepare-help
@@ -79,11 +81,15 @@ pot-prepare()
 			else
 				_network_type="$OPTARG"
 			fi
+			# shellcheck disable=SC2086
 			if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
 				_error "Network type $OPTARG not recognized"
 				clone-help
 				${EXIT} 1
 			fi
+			;;
+		B)
+			_bridge_name="$OPTARG"
 			;;
 		i)
 			_ipaddr=$OPTARG
@@ -106,6 +112,11 @@ pot-prepare()
 	fi
 	if [ -z "$_allocation_tag" ]; then
 		_error "An allocation id is mandatory"
+		prepare-help
+		${EXIT} 1
+	fi
+	if [ "$_network_type" = "private-bridge" ] && [ -z "$_bridge_name" ]; then
+		_error "A bridge name has to be provided if private-bridge is selected as network-type"
 		prepare-help
 		${EXIT} 1
 	fi
@@ -139,9 +150,13 @@ pot-prepare()
 	if [ -n "$_network_type" ]; then
 		_clone_network_opt="-N $_network_type"
 	fi
+	if [ "$_network_type" = "private-bridge" ]; then
+		_clone_network_opt="$_clone_network_opt -B $_bridge_name"
+	fi
 	if [ -n "$_ipaddr" ]; then
 		_clone_network_opt="$_clone_network_opt -i $_ipaddr"
 	fi
+	# shellcheck disable=SC2086
 	if ! pot-cmd clone -P "${_imported_pname}" -p "${_new_pname}" $_clone_network_opt ; then
 		_error "Not able to clone imported pot as $_new_pname"
 	fi
@@ -166,6 +181,7 @@ pot-prepare()
 		for _p in $_ports ; do
 			_port_args="-e $_p "
 		done
+		# shellcheck disable=SC2086
 		if ! pot-cmd export-ports -p "$_new_pname" $_port_args ; then
 			_error "Couldn't export ports $_ports - ignoring"
 		fi

@@ -21,7 +21,11 @@ create-help()
 	echo '         inherit: inherit the host network stack (default)'
 	echo '         alias: use a static ip as alias configured directly to the host NIC'
 	echo '         public-bridge: use the internal commonly public bridge'
+	echo '         private-bridge: use an internal private bridge (with option -B)'
 	echo '  -i ipaddr : an ip address or the keyword auto (if compatible with the network-type)'
+	echo '         auto: usable with public-bridge and private-bridge (default)'
+	echo '         ipaddr: mandatory with alias, usable with public-bridge and private-bridge'
+	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 }
 
 # $1 pot name
@@ -127,13 +131,14 @@ _cj_zfs()
 # $5 level
 # $6 dns
 # $7 type
-# $8 pot-base name
+# $8 private bridge (if network tpye is private_bridge"
+# $8-9 pot-base name
 _cj_conf()
 {
 	# shellcheck disable=SC2039
 	local _pname _base _ip _network_type _lvl _jdir _bdir _potbase _dns _type _pblvl _pbpb
 	# shellcheck disable=SC2039
-	local _jdset _bdset _pbdset _baseos
+	local _jdset _bdset _pbdset _baseos _bridge_name
 	_pname=$1
 	_base=$2
 	_network_type=$3
@@ -141,7 +146,8 @@ _cj_conf()
 	_lvl=$5
 	_dns=$6
 	_type=$7
-	_potbase=$8
+	_bridge_name=$8
+	_potbase=$9
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 
@@ -219,6 +225,11 @@ _cj_conf()
 		"public-bridge")
 			echo "vnet=true"
 			echo "ip=${_ip}"
+			;;
+		"private-bridge")
+			echo "vnet=true"
+			echo "ip=${_ip}"
+			echo "bridge=${_bridge_name}"
 			;;
 		esac
 		if [ "${_dns}" = "pot" ]; then
@@ -352,7 +363,7 @@ _cj_single_install()
 pot-create()
 {
 	# shellcheck disable=SC2039
-	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type
+	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type _private_bridge
 	OPTIND=1
 	_type="multi"
 	_network_type="inherit"
@@ -364,7 +375,8 @@ pot-create()
 	_flv=
 	_potbase=
 	_dns=inherit
-	while getopts "hvp:t:N:i:l:b:f:P:d:" _o ; do
+	_private_bridge=
+	while getopts "hvp:t:N:i:l:b:f:P:d:B:" _o ; do
 		case "$_o" in
 		h)
 			create-help
@@ -392,6 +404,9 @@ pot-create()
 				${EXIT} 1
 			fi
 			_network_type="$OPTARG"
+			;;
+		B)
+			_private_bridge="$OPTARG"
 			;;
 		i)
 			_ipaddr="$OPTARG"
@@ -621,7 +636,7 @@ pot-create()
 			${EXIT} 1
 		fi
 		if ! _is_vnet_up ; then
-			_info "No pot bridge found! Calling vnet-start to fix the issue"
+			_info "No public bridge found! Calling vnet-start to fix the issue"
 			pot-cmd vnet-start
 		fi
 		if [ "$_ipaddr" = "auto" ] || [ -z "$_ipaddr" ]; then
@@ -633,9 +648,35 @@ pot-create()
 			_debug "-i auto: assigned $_ipaddr"
 		else
 			if ! potnet validate -H "$_ipaddr" 2> /dev/null ; then
-				_error "The $_ipaddr IP is not valid - run potnet validate -H $_ipaddr for more invormation"
+				_error "The $_ipaddr IP is not valid - run potnet validate -H $_ipaddr for more information"
 				${EXIT} 1
 			fi
+		fi
+		;;
+	"private-bridge")
+		if ! _is_vnet_available ; then
+			_error "This kernel doesn't support VIMAGE! No vnet possible"
+			${EXIT} 1
+		fi
+		if [ -z "$_private_bridge" ]; then
+			_error "private-bridge network type requires -B option, to specify which private bridge to use"
+			${EXIT} 1
+		fi
+		if ! _is_bridge "$_private_bridge" ; then
+			_error "bridge $_private_bridge is not valid. Have you already created it?"
+			${EXIT} 1
+		fi
+		if [ "$_ipaddr" = "auto" ] || [ -z "$_ipaddr" ]; then
+			if ! _is_potnet_available ; then
+			   _error "potnet is not available! It's needed by -i auto"
+				${EXIT} 1
+			fi
+			_ipaddr="$(potnet next -b "$_private_bridge")"
+			_debug "-i auto: assigned $_ipaddr"
+		fi
+		if ! potnet validate -H "$_ipaddr" -b "$_private_bridge"  2> /dev/null ; then
+			_error "The $_ipaddr IP is not valid for bridge $_private_bridge - run potnet validate -H $_ipaddr -b $_private_bridge for more information"
+			${EXIT} 1
 		fi
 		;;
 	esac
@@ -657,12 +698,13 @@ pot-create()
 	_info "level       : $_lvl"
 	_info "network-type: $_network_type"
 	_info "ip          : $_ipaddr"
+	_info "bridge      : $_private_bridge"
 	_info "dns         : $_dns"
 	if ! _cj_zfs "$_pname" "$_type" "$_lvl" "$_base" "$_potbase" ; then
 		${EXIT} 1
 	fi
 	# echo _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_potbase"
-	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_potbase" ; then
+	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_private_bridge" "$_potbase" ; then
 		${EXIT} 1
 	fi
 	if [ "$_type" = "single" ]; then

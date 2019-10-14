@@ -11,6 +11,7 @@ clone-help()
 	echo '  -p potname : the new pot name'
 	echo '  -N network-type : new network type of the cloned pot'
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
+	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 
@@ -151,16 +152,18 @@ _cj_zfs()
 
 # $1 pot name
 # $2 pot-base name
-# $2 network type
-# $3 ip
+# $3 network type
+# $4 ip
+# $5 bridge name
 _cj_conf()
 {
 	# shellcheck disable=SC2039
-	local _pname _potbase _ptype _ip _network_type
+	local _pname _potbase _ptype _ip _network_type _bridge_name
 	_pname=$1
 	_potbase=$2
 	_network_type=$3
 	_ip=$4
+	_bridge_name=$5
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
 	if [ ! -d "$_pdir/conf" ]; then
@@ -181,6 +184,11 @@ _cj_conf()
 	"public-bridge")
 		echo "vnet=true" >> "$_pdir/conf/pot.conf"
 		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
+		;;
+	"private-bridge")
+		echo "vnet=true" >> "$_pdir/conf/pot.conf"
+		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
+		echo "bridge=$_bridge_name" >> "$_pdir/conf/pot.conf"
 		;;
 	esac
 	if [ -n "$_ip" ]; then
@@ -210,14 +218,15 @@ _cj_conf()
 # shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name
 	_pname=
 	_ipaddr=
 	_potbase=
 	_pblvl=0
 	_autosnap="NO"
+	_bridge_name=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:" _o ; do
+	while getopts "hvp:i:P:FN:B:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -243,9 +252,11 @@ pot-clone()
 			P)
 				_potbase=$OPTARG
 				;;
+			B)
+				_bridge_name=$OPTARG
+				;;
 			F)
 				_autosnap="YES"
-				shift
 				;;
 			*)
 				clone-help
@@ -274,6 +285,17 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
+	if [ "$_network_type" = "private-bridge" ]; then
+		if [ -z "$_bridge_name" ]; then
+			_error "private-bridge network type require a bridge name (-B option)"
+			clone-help
+			${EXIT} 1
+		fi
+		if ! _is_bridge "$_bridge_name" ; then
+			_error "bridge $_bridge_name is not valid. Have you already created it?"
+			${EXIT} 1
+		fi
+	fi
 	_pb_network_type="$( _get_pot_network_type "$_potbase" )"
 	if [ -z "$_pb_network_type" ] ; then
 		_error "Configuration file for $_potbase contains obsolete elements"
@@ -288,9 +310,15 @@ pot-clone()
 		_ipaddr="$(potnet next)"
 		_debug "-i auto: assigned $_ipaddr"
 	elif [ "$_network_type" = "public-bridge" ] && [ -z "$_ipaddr" ] ; then
-		 _ipaddr="$(potnet next)"
-		 _debug "automatically assigning $_ipaddr"
-	elif [ "$_network_type" != "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
+		_ipaddr="$(potnet next)"
+		_debug "automatically assigning $_ipaddr"
+	elif [ "$_network_type" = "private-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
+		_ipaddr="$(potnet next -b "$_bridge_name")"
+		_debug "-i auto: assigned $_ipaddr"
+	elif [ "$_network_type" = "private-bridge" ] && [ -z "$_ipaddr" ] ; then
+		_ipaddr="$(potnet next -b "$_bridge_name")"
+		_debug "automatically assigning $_ipaddr"
+	elif [ "$_ipaddr" = "auto" ] ; then
 		_error "Keyword auto not compatible with network type $_network_type"
 		${EXIT} 1
 	fi
@@ -320,6 +348,13 @@ pot-clone()
 			${EXIT} 1
 		fi
 		;;
+	"private-bridge")
+		if ! potnet validate -H "$_ipaddr" -b "$_bridge_name" ; then
+			_error "$_ipaddr is not a valid IP address for the private bridge $_bridge_name"
+			clone-help
+			${EXIT} 1
+		fi
+		;;
 	esac
 	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
 	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
@@ -334,7 +369,7 @@ pot-clone()
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" ; then
 		${EXIT} 1
 	fi
 }

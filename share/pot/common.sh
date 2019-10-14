@@ -6,7 +6,7 @@
 
 _POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs fdescfs prunable localhost-tunnel"
 _POT_RO_ATTRIBUTES="to-be-pruned"
-_POT_NETWORK_TYPES="inherit alias public-bridge"
+_POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1
@@ -289,6 +289,39 @@ _pot_bridge()
 	done
 }
 
+# $1 bridge name
+_private_bridge()
+{
+	# shellcheck disable=SC2039
+	local _bridges _bridge _bridge_ip
+	_bridge="$1"
+	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	if [ -z "$_bridges" ]; then
+		return
+	fi
+	_bridge_ip="$(_get_bridge_var "$_bridge" gateway)"
+	for _b in $_bridges ; do
+		_ip=$( ifconfig "$_b" inet | awk '/inet/ { print $2 }' )
+		if [ "$_ip" = "$_bridge_ip" ]; then
+			echo "$_b"
+			return
+		fi
+	done
+}
+
+# $1 bridge name
+# $2 var name
+_get_bridge_var()
+{
+	# shellcheck disable=SC2039
+	local _Bname _cfile _var _value
+	_Bname="$1"
+	_cfile="${POT_FS_ROOT}/bridges/$_Bname"
+	_var="$2"
+	_value="$( grep "^$_var=" "$_cfile" | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo "$_value"
+}
+
 # $1 pot name
 # $2 var name
 _get_conf_var()
@@ -380,10 +413,16 @@ _is_pot_prunable()
 	fi
 }
 
+# $1 bridge name (optional)
 _is_vnet_up()
 {
+	# shellcheck disable=SC2039
 	local _bridge
-	_bridge=$(_pot_bridge)
+	if [ -z "$1" ]; then
+		_bridge=$(_pot_bridge)
+	else
+		_bridge="$( _private_bridge "$1" )"
+	fi
 	if [ -z "$_bridge" ]; then
 		return 1 # false
 	elif [ ! -c /dev/pf ]; then
@@ -399,8 +438,21 @@ _is_vnet_up()
 	fi
 }
 
+# $1 bridge name
+# $2 quiet / no _error messages are emitted (sometimes useful)
+_is_bridge()
+{
+	local _bridge
+	_bridge="$1"
+	if ! _is_in_list "$_bridge" "$( _get_bridge_list )" ; then
+		_qerror "$2" "bridge $_bridge not found"
+		return 1 # false
+	fi
+	return 0 # true
+}
+
 # $1 fscomp name
-# $2 quiet / no _error messages are emitted (sometimes usefult)
+# $2 quiet / no _error messages are emitted (sometimes useful)
 # tested
 _is_fscomp()
 {
@@ -420,7 +472,7 @@ _is_fscomp()
 }
 
 # $1 base name
-# $2 quiet / no _error messages are emitted (sometimes usefult)
+# $2 quiet / no _error messages are emitted (sometimes useful)
 # tested
 _is_base()
 {
@@ -444,7 +496,7 @@ _is_base()
 }
 
 # $1 pot name
-# $2 quiet / no _error messages are emitted (sometimes usefult)
+# $2 quiet / no _error messages are emitted (sometimes useful)
 # tested
 _is_pot()
 {
@@ -862,6 +914,11 @@ _get_pot_list()
 	ls -d "${POT_FS_ROOT}/jails/"*/ 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
+_get_bridge_list()
+{
+	find "${POT_FS_ROOT}/bridges" -type f 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
+}
+
 pot-cmd()
 {
 	local _cmd _func
@@ -874,7 +931,7 @@ pot-cmd()
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
 	case "$_cmd" in
-		create|import|clone)
+		create|import|clone|create-private-bridge)
 			if [ "$_POT_RECURSIVE" = "1" ]; then
 				$_func "$@"
 			else

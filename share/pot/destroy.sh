@@ -4,13 +4,14 @@
 # shellcheck disable=SC2039
 destroy-help()
 {
-	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp]"
+	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp|-B bridge]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -F force the stop and destroy'
 	echo '  -p potname : the pot name (mandatory)'
 	echo '  -b basename : the base name (mandatory)'
 	echo '  -f fscomp : the fscomp name (mandatory)'
+	echo '  -B bridge-name : the name of the bridge to be deleted (mandatory)'
 	echo '  -r : destroy recursively all pots based on this base/pot'
 }
 
@@ -88,14 +89,15 @@ _fscomp_zfs_destroy()
 pot-destroy()
 {
 	# shellcheck disable=SC2039
-	local _pname _bname _fname _force _recursive _pots _depPot
+	local _pname _bname _fname _force _recursive _pots _depPot _bridge_name
 	_pname=
 	_bname=
 	_fname=
+	_bridge_name=
 	_force=
 	_recursive="NO"
 	OPTIND=1
-	while getopts "hvrf:p:b:F" _o ; do
+	while getopts "hvrf:p:b:FB:" _o ; do
 		case "$_o" in
 		h)
 			destroy-help
@@ -119,6 +121,9 @@ pot-destroy()
 		f)
 			_fname=$OPTARG
 			;;
+		B)
+			_bridge_name=$OPTARG
+			;;
 		*)
 			destroy-help
 			${EXIT} 1
@@ -126,21 +131,55 @@ pot-destroy()
 		esac
 	done
 
-	if [ -z "$_pname" ] && [ -z "$_bname" ] && [ -z "$_fname" ]; then
-		_error "-b or -p or -f are missing"
+	if [ -z "$_pname" ] && [ -z "$_bname" ] && [ -z "$_fname" ] && [ -z "$_bridge_name" ]; then
+		_error "-b or -p or -f or -B are missing"
 		destroy-help
 		${EXIT} 1
 	fi
-	if [ -n "$_pname" -a -n "$_bname" ] ||
-	   [ -n "$_fname" -a -n "$_bname" ] ||
-	   [ -n "$_fname" -a -n "$_pname" ]; then
-		_error "-b, -p and -f cannot be used at the same time"
+	if [ -n "$_pname" ]; then
+		if [ -n "$_bname" ] || [ -n "$_fname" ] || [ -n "$_bridge_name" ] ; then
+			_error "-b, -p, -f and -B cannot be used at the same time"
+			destroy-help
+			${EXIT} 1
+		fi
+	fi
+	if [ -n "$_bname" ]; then
+		if [ -n "$_fname" ] || [ -n "$_bridge_name" ] ; then
+			_error "-b, -p, -f and -B cannot be used at the same time"
+			destroy-help
+			${EXIT} 1
+		fi
+	fi
+	if [ -n "$_fname" ] && [ -n "$_bridge_name" ] ; then
+		_error "-b, -p, -f and -B cannot be used at the same time"
 		destroy-help
 		${EXIT} 1
 	fi
+
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
+	if [ -n "$_bridge_name" ]; then
+		if [ "$_force" = "YES" ] || [ "$_recursive" = "YES" ] ; then
+			_info "Destroy bridge will ignore force and recursive"
+		fi
+		if ! _is_bridge "$_bridge_name" ; then
+			_error "$_bridge_name is not a valid bridge name"
+			${EXIT} 1
+		fi
+		_pots=$( _get_pot_list )
+		for _p in $_pots ; do
+			_bridge="$( _get_conf_var "$_p" bridge)"
+			if [ "$_bridge" = "$_bridge_name" ]; then
+				_error "the bridge $_bridge_name is still used by the pot $_p - unable to delete"
+				${EXIT} 1
+			fi
+		done
+		_info "Destroying bridge $_bridge_name"
+		rm -f "${POT_ZFS_ROOT}/bridges/$_bridge_name"
+		${EXIT} $?
+	fi
+
 	if [ -n "$_fname" ]; then
 		if [ "$_force" = "YES" ] || [ "$_recursive" = "YES" ] ; then
 			_info "Destroy fscomps will ignore force and recursive"
@@ -162,7 +201,7 @@ pot-destroy()
 		fi
 		if [ "$_recursive" = "YES" ]; then
 			for _lvl in 2 1 0 ; do
-				_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+				_pots=$( _get_pot_list )
 				for _p in $_pots ; do
 					if [ "$( _get_conf_var "$_p" pot.level )" = "$_lvl" ]; then
 						if [ "$( _get_conf_var "$_p" pot.base )" = "$_bname" ]; then
@@ -202,7 +241,7 @@ pot-destroy()
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "0" ]; then
 			# if single we can remove a level 0 pot
 			if [ "$( _get_conf_var "$_pname" pot.type )" = "single" ]; then
-				_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+				_pots=$( _get_pot_list )
 				for _p in $_pots ; do
 					if [ "$( _get_conf_var "$_p" pot.potbase )" = "$_pname" ]; then
 						if [ "$_recursive" = "YES" ]; then
@@ -220,7 +259,7 @@ pot-destroy()
 			fi
 		fi
 		if [ "$( _get_conf_var "$_pname" pot.level )" = "1" ]; then
-			_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+			_pots=$( _get_pot_list )
 			for _p in $_pots ; do
 				if [ "$( _get_conf_var "$_p" pot.potbase )" = "$_pname" ]; then
 					if [ "$_recursive" = "YES" ]; then
@@ -238,7 +277,7 @@ pot-destroy()
 		fi
 
 		## dependency detection
-		_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+		_pots=$( _get_pot_list )
 		for _p in $_pots ; do
 			_depPot="$( _get_conf_var "$_p" pot.depend )"
 			if [ -z "$_depPot" ]; then

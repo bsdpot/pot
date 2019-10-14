@@ -11,6 +11,7 @@ list-help()
 	echo '  -b list bases instead of pots'
 	echo '  -f list fs components instead of pots'
 	echo '  -F list available flavours'
+	echo '  -B list available bridges (newtork type)'
 	echo '  -a list everything (-q not compatible)'
 }
 
@@ -112,6 +113,22 @@ _ls_flavour()
 	fi
 }
 
+_ls_bridges()
+{
+	local _bridges _q
+	_q=$1
+	_bridges=$( _get_bridge_list )
+	if [ "$_q" = "quiet" ]; then
+		for _B in $_bridges; do
+			 echo "$_B"
+		done
+	else
+		for _B in $_bridges; do
+			 echo "bridge: $_B"
+		done
+	fi
+}
+
 # shellcheck disable=SC2039
 pot-list()
 {
@@ -120,7 +137,7 @@ pot-list()
 	_obj="pots"
 	_q=
 	OPTIND=1
-	while getopts "hvbfFapq" _o ; do
+	while getopts "hvbfFapqB" _o ; do
 		case "$_o" in
 		h)
 			list-help
@@ -134,7 +151,7 @@ pot-list()
 			;;
 		p)
 			if [ "$_obj" != "pots" ]; then
-				_error "Options -b -p -f -F -a are mutually exclusive" 
+				_error "Options -b -p -f -F -B -a are mutually exclusive"
 				list-help
 				${EXIT} 1
 			fi
@@ -142,7 +159,7 @@ pot-list()
 			;;
 		b)
 			if [ "$_obj" != "pots" ]; then
-				_error "Options -b -p -f -F -a are mutually exclusive" 
+				_error "Options -b -p -f -F -B -a are mutually exclusive"
 				list-help
 				${EXIT} 1
 			fi
@@ -150,7 +167,7 @@ pot-list()
 			;;
 		f)
 			if [ "$_obj" != "pots" ]; then
-				_error "Options -b -p -f -F -a are mutually exclusive" 
+				_error "Options -b -p -f -F -B -a are mutually exclusive"
 				list-help
 				${EXIT} 1
 			fi
@@ -158,15 +175,24 @@ pot-list()
 			;;
 		F)
 			if [ "$_obj" != "pots" ]; then
-				_error "Options -b -p -f -F -a are mutually exclusive" 
+				_error "Options -b -p -f -F -B -a are mutually exclusive"
 				list-help
 				${EXIT} 1
 			fi
 			_obj="flavour"
 			;;
+		B)
+			if [ "$_obj" != "pots" ]; then
+				_error "Options -b -p -f -F -B -a are mutually exclusive"
+				list-help
+				${EXIT} 1
+			fi
+			_obj="bridges"
+			;;
+
 		a)
 			if [ "$_obj" != "pots" ]; then
-				_error "Options -b -p -f -F -a are mutually exclusive" 
+				_error "Options -b -p -f -F -B -a are mutually exclusive"
 				list-help
 				${EXIT} 1
 			fi
@@ -196,11 +222,15 @@ pot-list()
 		"flavour")
 			_ls_flavour "$_q"
 			;;
+		"bridges")
+			_ls_bridges "$_q"
+			;;
 		"all")
 			_ls_bases
 			_ls_pots
 			_ls_fscomp
 			_ls_flavour
+			_ls_bridges
 			;;
 	esac
 }

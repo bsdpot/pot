@@ -87,6 +87,7 @@ _js_create_epair()
 }
 
 # $1 pot name
+# $2 epair interface
 _js_vnet()
 {
 	local _pname _bridge _epair _epairb _ip
@@ -116,6 +117,40 @@ _js_vnet()
 	fi
 }
 
+# $1 pot name
+# $2 epair interface
+_js_private_vnet()
+{
+	local _pname _bridge_name _bridge _epair _epairb _ip _net_size _gateway
+	_pname=$1
+	_bridge_name="$( _get_conf_var "$_pname" bridge )"
+	if ! _is_vnet_up "$_bridge_name" ; then
+		_debug "No pot bridge found! Calling vnet-start to fix the issue"
+		pot-cmd vnet-start -B "$_bridge_name"
+	fi
+	_bridge="$(_private_bridge "$_bridge_name")"
+	_epair=${2}a
+	_epairb="${2}b"
+	ifconfig ${_epair} up
+	ifconfig $_bridge addm ${_epair}
+	_ip=$( _get_conf_var $_pname ip )
+	_net_size="$(_get_bridge_var "$_bridge_name" net)"
+	_net_size="${_net_size##*/}"
+	_gateway="$(_get_bridge_var "$_bridge_name" gateway)"
+	## if norcscript - write a ad-hoc one
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		touch ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		echo "ifconfig ${_epairb} inet $_ip/$_net_size" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		echo "route add default $_gateway" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+	else # use rc scripts
+		# set the network configuration in the pot's rc.conf
+		if [ -w ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf ]; then
+			sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+		fi
+		echo "ifconfig_${_epairb}=\"inet $_ip/$_net_size\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+		sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$_gateway"
+	fi
+}
 
 # $1: exclude list
 _js_get_free_rnd_port()
@@ -246,7 +281,7 @@ _bg_start()
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _bgstart
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist
 	_pname="$1"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
@@ -280,6 +315,12 @@ _js_start()
 	"public-bridge")
 		_iface="$( _js_create_epair )"
 		_js_vnet "$_pname" "$_iface"
+		_param="$_param vnet vnet.interface=${_iface}b"
+		_js_export_ports "$_pname"
+		;;
+	"private-bridge")
+		_iface="$( _js_create_epair )"
+		_js_private_vnet "$_pname" "$_iface"
 		_param="$_param vnet vnet.interface=${_iface}b"
 		_js_export_ports "$_pname"
 		;;

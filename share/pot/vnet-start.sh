@@ -5,30 +5,74 @@ vnet-start-help()
 	echo 'pot vnet-start [-h][-v]'
 	echo '  -h -- print this help'
 	echo '  -v verbose'
+	echo '  -B bridge-name (opional)'
 }
 
+_public_bridge_start()
+{
+	# shellcheck disable=SC2039
+	local _bridge
+	_bridge=$(_pot_bridge)
+	if [ -z "$_bridge" ]; then
+		if _bridge=$(ifconfig bridge create) ; then
+			_debug "Bridge created $_bridge"
+		else
+			_error "Bridge not created"
+		fi
+		if ! ifconfig "$_bridge" inet "$POT_GATEWAY" netmask "$POT_NETMASK" ; then
+			_error "Error during bridge configuration ($_bridge)"
+		else
+			_debug "Bridge $_bridge configured with IP $POT_GATEWAY netmask $POT_NETMASK"
+		fi
+	else
+		_debug "Bridge $_bridge already present"
+	fi
+}
+
+# $1 bridge_name
+_private_bridge_start()
+{
+	# shellcheck disable=SC2039
+	local _bridge_name _bridge _gateway _bridge_net
+	_bridge_name="$1"
+	_bridge=$(_private_bridge "$_bridge_name")
+	if [ -z "$_bridge" ]; then
+		if _bridge=$(ifconfig bridge create) ; then
+			_debug "Bridge created $_bridge"
+		else
+			_error "Bridge not created"
+		fi
+		_gateway="$(_get_bridge_var "$_bridge_name" gateway)"
+		_bridge_net="$(_get_bridge_var "$_bridge_name" net)"
+		_bridge_net="${_bridge_net##*/}"
+		if ! ifconfig "$_bridge" inet "${_gateway}/${_bridge_net}" ; then
+			_error "Error during bridge configuration ($_bridge)"
+		else
+			_debug "Bridge $_bridge configured with IP ${_gateway}/${_bridge_net}"
+		fi
+	else
+		_debug "Bridge $_bridge already present"
+	fi
+}
 
 pot-vnet-start()
 {
-	local _bridge _pfrules
-	args=$(getopt hv $*)
-	if [ $? -ne 0 ]; then
-		vnet-start-help
-		exit 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	# shellcheck disable=SC2039
+	local _bridge _pfrules _bridge_name
+	OPTIND=1
+	while getopts "hvB:" _o ; do
+		case "$_o" in
+		h)
 			vnet-start-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		--)
-			shift
+		B)
+			_bridge_name="$OPTARG"
+			;;
+		?)
 			break
 			;;
 		esac
@@ -54,21 +98,12 @@ pot-vnet-start()
 		sysctl -qn net.inet.ip.forwarding=1 > /dev/null
 	fi
 	# bridge creation
-	# if bridge0 doesn't exist yet
-	_bridge=$(_pot_bridge)
-	if [ -z "$_bridge" ]; then
-		if _bridge=$(ifconfig bridge create) ; then
-			_debug "Bridge created $_bridge"
-		else
-			_error "Bridge not created"
-		fi
-		if ! ifconfig "$_bridge" inet "$POT_GATEWAY" netmask "$POT_NETMASK" ; then
-			_error "Error during bridge configuration ($_bridge)"
-		else
-			_debug "Bridge $_bridge configured with IP $POT_GATEWAY netmask $POT_NETMASK"
-		fi
+	if [ -z "$_bridge_name" ]; then
+		_public_bridge_start
+	elif _is_bridge "$_bridge_name" quiet ; then
+		_private_bridge_start "$_bridge_name"
 	else
-		_debug "Bridge $_bridge already present"
+		_error "$_bridge_name is not a valid bridge"
 	fi
 
 	# load pf module

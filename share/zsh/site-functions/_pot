@@ -18,6 +18,10 @@ _pot_fscomps() {
         _values "pot flavors" ${${(f)"$(${service} ls -qf)"}%% *}
 }
 
+_pot_bridges() {
+        _values "pot bridges" ${${(f)"$(${service} ls -qB)"}%% *}
+}
+
 _pot_flavours() {
         _values "pot flavors" ${${(f)"$(${service} ls -qF)"}%% *}
 }
@@ -34,10 +38,16 @@ _pot() {
 	case $state in
 		args)
 			case $words[1] in
-				init|vnet-start)
+				init)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]'
+					;;
+				vnet-start)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-B[bridge name]:bridge name:_pot_bridges'
 					;;
 				config) 
 					_arguments \
@@ -66,6 +76,7 @@ _pot() {
 						'-p[List pots]' \
 						'-b[List bases]' \
 						'-f[List fscomps]' \
+						'-B[List bridges]' \
 						'-F[List flavours]' \
 						'-a[List them all]'
 					;;
@@ -105,6 +116,13 @@ _pot() {
 						'-v[Verbose output]' \
 						'-f[fscomp name]:fscomp name:_normal'
 					;;
+				create-private-bridge)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-S[host number]:host number:_normal' \
+						'-B[bridge name]:bridge name:_normal'
+					;;
 				create)
 					_arguments -s \
 						'-h[Show help]' \
@@ -118,6 +136,7 @@ _pot() {
 						'-t[pot type]:type:(multi single)' \
 						'-i[network config]::_normal' \
 						'-d[dns type]:dns types:(inherit pot)' \
+						'-B[bridge name]:bridge name:_pot_bridges' \
 						'*-f[flavour name]:flavour name:_pot_flavours'
 					;;
 				clone-fscomp)
@@ -135,6 +154,7 @@ _pot() {
 						'-P[pot reference]:pot reference name:_pot_pots' \
 						'-N[network type]:network type:(inherit alias public-bridge)' \
 						'-i[network config]::_normal' \
+						'-B[bridge name]:bridge name:_pot_bridges' \
 						'-F[force snapshot of the pot reference]' 
 					;;
 				rename)
@@ -152,6 +172,7 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'-b[base name]:base name:_pot_bases' \
 						'-f[fscomp name]:fscomp name:_pot_fscomps' \
+						'-B[bridge name]:bridge name:_pot_bridges' \
 						'-r[Recursive destroying]'
 					;;
 				prune)
@@ -285,6 +306,7 @@ _pot() {
 						'-n[the new pot name]::_normal' \
 						'-U[URL]:URL:_normal' \
 						'-N[network type]:network type:(inherit alias public-bridge)' \
+						'-B[bridge name]:bridge name:_pot_bridges' \
 						'-i[network config]::_normal' \
 						'*-e[port to be exported]::_normal' \
 						'-c[command]::_normal'
@@ -333,6 +355,7 @@ _pot_cmds() {
 	'vnet-start:Start the vnet configuration'
 	'create-base:Create a new base image'
 	'create-fscomp:Create a new fs component'
+	'create-private-bridge:Create a new private bridge'
 	'create:Create a new pot'
 	'clone:Clone a pot'
 	'clone-fscomp:Clone a fs component'

@@ -15,6 +15,7 @@ init-help()
 # shellcheck disable=SC2039
 pot-init()
 {
+	local pf_file
 	OPTIND=1
 	while getopts "hv" _o ; do
 		case "$_o" in
@@ -69,13 +70,14 @@ pot-init()
 		_debug "creating ${POT_ZFS_ROOT}/fscomp"
 		zfs create "${POT_ZFS_ROOT}/fscomp"
 	fi
-
 	if ! _zfs_exist "${POT_ZFS_ROOT}/cache" "${POT_CACHE}" ; then
 		_debug "creating ${POT_ZFS_ROOT}/cache mounted as ${POT_CACHE}"
 		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/cache" ; then
 			zfs create -o mountpoint="${POT_CACHE}" -o compression=off "${POT_ZFS_ROOT}/cache"
 		fi
 	fi
+	# create the bridges folder
+	mkdir -p "${POT_ZFS_ROOT}/bridges"
 	# create mandatory directories for logs
 	mkdir -p /usr/local/etc/syslog.d
 	mkdir -p /usr/local/etc/newsyslog.conf.d
@@ -105,9 +107,9 @@ pot-init()
 		else
 			touch "$pf_file"
 		fi
-		echo "auto-magically editing your $_pf_file"
+		echo "auto-magically editing your $pf_file"
 		printf "%s\n" 0a "nat-anchor pot-nat" "rdr-anchor \"pot-rdr/*\"" . x | ex "$pf_file"
-		echo "Please, check that your PF configuration file $_pf_file is still valid!"
+		echo "Please, check that your PF configuration file $pf_file is still valid!"
 	fi
 }
 

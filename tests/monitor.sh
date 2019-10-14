@@ -8,7 +8,7 @@ __monitor()
 	shift
 	eval ${M}_CALLS=\$\(\( ${M}_CALLS + 1 \)\)
 	eval C=\$${M}_CALLS
-	while [ -n "$1" ]; do
+	while [ -n "$1" ] || [ -n "$2" ]; do
 		i=$(( i + 1 ))
 		eval ${M}_CALL${C}_ARG${i}=\$1
 		shift

@@ -97,6 +97,7 @@ Commands:
 	set-rss -- Set a resource constraint
 	get-rss -- Get the current resource usage
 	set-cmd -- Set the command to start the pot
+	set-env -- Set environment variabls inside a pot
 	set-attr -- Set a pot's attribute
 	get-attr -- Get a pot's attribute
 	export-ports -- Let export tcp ports
@@ -159,7 +160,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|create-dns|\
 	create-private-bridge|\
 	copy-in|mount-in|prune|\
-	destroy|add-dep|set-rss|get-rss|set-cmd|\
+	destroy|add-dep|set-rss|get-rss|set-cmd|set-env|\
 	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\

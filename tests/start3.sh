@@ -35,6 +35,9 @@ test_js_env_020()
 	assertEquals "env script length" "1" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=value"' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line2" "0" "$( grep -F -c 'export "VAR2=' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$VAR" "value"
 }
 
 test_js_env_021()
@@ -45,6 +48,10 @@ test_js_env_021()
 	assertEquals "env script length" "2" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=value"' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR2=value2"' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$VAR" "value"
+	assertEquals "export validation" "$VAR2" "value2"
 }
 
 test_js_env_022()
@@ -54,6 +61,9 @@ test_js_env_022()
 	assertTrue "env script exists" "[ -e /tmp/pot_environment_test-pot.sh ]"
 	assertEquals "env script length" "1" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=value1 value2"' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$VAR" "value1 value2"
 }
 
 test_js_env_023()
@@ -64,6 +74,10 @@ test_js_env_023()
 	assertEquals "env script length" "2" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=value1 value2"' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR2=value3"' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$VAR" "value1 value2"
+	assertEquals "export validation" "$VAR2" "value3"
 }
 
 test_js_env_024()
@@ -73,6 +87,9 @@ test_js_env_024()
 	assertTrue "env script exists" "[ -e /tmp/pot_environment_test-pot.sh ]"
 	assertEquals "env script length" "1" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "EMPTYVAR="' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$EMPTYVAR" ""
 }
 
 test_js_env_025()
@@ -82,6 +99,9 @@ test_js_env_025()
 	assertTrue "env script exists" "[ -e /tmp/pot_environment_test-pot.sh ]"
 	assertEquals "env script length" "1" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=12*"' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$VAR" "12*"
 }
 
 test_js_env_026()
@@ -92,6 +112,22 @@ test_js_env_026()
 	assertEquals "env script length" "2" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=12*"' /tmp/pot_environment_test-pot.sh)"
 	assertEquals "export line" "1" "$( grep -F -c 'export "VAR2=?h* "' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" "$VAR" "12*"
+	assertEquals "export validation" "$VAR2" "?h* "
+}
+
+test_js_env_027()
+{
+	pot-set-env -p test-pot -E 'VAR=value1 "value2"'
+	_js_env test-pot
+	assertTrue "env script exists" "[ -e /tmp/pot_environment_test-pot.sh ]"
+	assertEquals "env script length" "1" "$( awk 'END {print NR}' /tmp/pot_environment_test-pot.sh)"
+	assertEquals "export line" "1" "$( grep -F -c 'export "VAR=value1 \"value2\""' /tmp/pot_environment_test-pot.sh)"
+
+	. /tmp/pot_environment_test-pot.sh
+	assertEquals "export validation" 'value1 "value2"' "$VAR"
 }
 
 test_js_env_040()

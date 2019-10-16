@@ -87,6 +87,16 @@ EOF_SETENV
 	assertEquals "pot.env args" 'pot.env="VAR2=?h* "' "$(grep "^pot.env=\"VAR2=" /tmp/jails/test-pot/conf/pot.conf)"
 }
 
+test_set_environment_007()
+{
+	cat > /tmp/pot-set-env << EOF_SETENV
+"VAR=value1 \"value2\""
+EOF_SETENV
+	_set_environment test-pot /tmp/pot-set-env
+	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env args" 'pot.env="VAR=value1 \"value2\""' "$(grep "^pot.env=\"VAR=" /tmp/jails/test-pot/conf/pot.conf)"
+}
+
 setUp()
 {
 	conf_setUp

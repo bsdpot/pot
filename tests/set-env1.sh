@@ -189,6 +189,19 @@ test_pot_set_env_046()
 	assertEquals "_tmpfile" '"VAR2=?h* "' "$(sed '2!d' /tmp/pot-set-env)"
 }
 
+test_pot_set_env_027()
+{
+	pot-set-env -p test-pot -E VAR='value1 "value2"'
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_set_environment calls" "1" "$SETENV_CALLS"
+	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
+	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
+	assertEquals "_tmpfile" '"VAR=value1 \"value2\""' "$(sed '1!d' /tmp/pot-set-env)"
+}
+
 test_pot_set_env_060()
 {
 	pot-set-env -p test-pot -E "VAR=value1 value2"

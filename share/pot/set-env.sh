@@ -49,7 +49,8 @@ pot-set-env()
 				set-env-help
 				${EXIT} 1
 			fi
-			echo "\"$OPTARG\"" >> $_tmpfile
+			_tmp="$( echo "$OPTARG" | sed 's%"%\\"%g' )"
+			echo "\"$_tmp\"" >> $_tmpfile
 			_env=1
 			;;
 		p)

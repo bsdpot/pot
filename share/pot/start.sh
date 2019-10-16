@@ -258,6 +258,21 @@ _js_norc()
 	chmod a+x "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 }
 
+_js_env()
+{
+	# shellcheck disable=SC2039
+	local _pname _shfile _cfile
+	_pname="$1"
+	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+	_shfile="/tmp/pot_environment_$_pname.sh"
+	grep '^pot.env=' "$_cfile" | sed 's/^pot.env=/export /g' > "$_shfile"
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		cat "$_shfile" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+	else
+		cp "$_shfile" "${POT_FS_ROOT}/jails/$_pname/m/tmp/environment.sh"
+	fi
+}
+
 _bg_start()
 {
 	# shellcheck disable=SC2039
@@ -325,6 +340,7 @@ _js_start()
 		_js_export_ports "$_pname"
 		;;
 	esac
+	_js_env "$_pname"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		_js_norc "$_pname"
 		_cmd=/tmp/tinirc

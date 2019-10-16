@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- set-env: new command to add environment variable to a pot
 - network-type private-bridge: add a new network layout, to provide private bridges for a group of pots
 - create-private-bridge: new subcommand to define and create a private-bridge
 - create: add option -B, to provide the bridge name if network-type is private-bridge
@@ -13,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - prepare: add option -B, to provide the bridge name if network-type is private-bridge
 - destroy: add option -B, to provide a way to destroy a bridge
 - Image Guide: added a guide about how to create an Image of a pot
+
+### Changed
+- flavorable commands: extend support to set-cmd and set-env
 
 ## [0.9.2] 2019-08-25
 ### Added

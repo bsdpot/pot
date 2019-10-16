@@ -662,7 +662,8 @@ _is_cmd_flavorable()
 	case $_cmd in
 		add-dep|set-attribute|\
 		copy-in|mount-in|\
-		set-rss|export-ports)
+		set-rss|export-ports|\
+		set-cmd|set-env)
 			return 0
 			;;
 	esac

@@ -455,9 +455,11 @@ _is_vnet_up()
 # $2 quiet / no _error messages are emitted (sometimes useful)
 _is_bridge()
 {
-	local _bridge
-	_bridge="$1"
-	if ! _is_in_list "$_bridge" "$( _get_bridge_list )" ; then
+	# shellcheck disable=SC2039
+	local _bname _bconf
+	_bname="$1"
+	_bconf="${POT_FS_ROOT}/bridges/$_bname"
+	if [ -e "$_bconf" ]; then
 		_qerror "$2" "bridge $_bridge not found"
 		return 1 # false
 	fi

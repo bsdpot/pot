@@ -86,7 +86,7 @@ pot-set-rss()
 		case "$_o" in
 		h)
 			set-rss-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -102,37 +102,37 @@ pot-set-rss()
 				_memory="$OPTARG"
 			else
 				set-rss-help
-				${EXIT} 1
+				return 1
 			fi
 			;;
 		*)
 			set-rss-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-rss-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "$_pname is not a valid pot name"
 		set-rss-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "${_cpus}${_memory}" ]; then
 		_error "One resource has to be specified (-C or -M)"
 		set-rss-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	if [ -n "$_cpus" ]; then
 		if ! _set_cpu "$_pname" "$_cpus" ; then
 			_error "$_cpus is a not valid amount of CPUs!"
-			${EXIT} 1
+			return 1
 		fi
 	fi
 	if [ -n "$_memory" ]; then

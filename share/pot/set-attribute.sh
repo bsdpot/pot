@@ -44,7 +44,7 @@ _set_boolean_attribute()
 	if ! _value=$(_normalize_true_false "$_value") ; then
 		_error "value $_value is not a valid boolean value"
 		set-attr-help
-		${EXIT} 1
+		return 1
 	fi
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
 	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
@@ -71,7 +71,7 @@ pot-set-attribute()
 		case "$_o" in
 		h)
 			set-attr-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -87,37 +87,37 @@ pot-set-attribute()
 			;;
 		*)
 			set-attr-help
-			${EXIT} 1
+			return 1
 		esac
 	done
 
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-attr-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_attr" ]; then 
 		_error "Option -A is mandatory"
 		set-attr-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_value" ]; then 
 		_error "Option -V is mandatory"
 		set-attr-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "$_pname is not a valid pot"
 		set-attr-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES ; then
 		_error "$_attr is not a valid attribute"
 		set-attr-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	case $_attr in
 		"start-at-boot"|\
@@ -131,7 +131,7 @@ pot-set-attribute()
 			;;
 		*)
 			_ignored_parameter "$_attr"
-			${EXIT} 0
+			return 0
 			;;
 	esac
 

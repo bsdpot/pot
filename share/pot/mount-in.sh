@@ -175,7 +175,7 @@ pot-mount-in()
 		case "$_o" in
 		h)
 			mount-in-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -203,7 +203,7 @@ pot-mount-in()
 			;;
 		*)
 			mount-in-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
@@ -211,47 +211,47 @@ pot-mount-in()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_fscomp" ] && [ -z "$_dir" ] && [ -z "$_dset" ] ; then
 		_error "One of -f|-d|-z option has to be used"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -n "$_fscomp" ] && [ -n "$_dir" ]; then
 		_error "-f and -d options are mutually exclusive"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -n "$_fscomp" ] && [ -n "$_dset" ]; then
 		_error "-f and -z options are mutually exclusive"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -n "$_dir" ] && [ -n "$_dset" ]; then
 		_error "-d and -z options are mutually exclusive"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_mnt_p" ]; then
 		_error "A mount point is mandatory"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_absolute_path "$_mnt_p" ; then
 		_error "The mount point has to be an absolute pathname"
-		${EXIT} 1
+		return 1
 	fi
 	if [ "${_mnt_p}" = "/" ]; then
 		_error "/ is not a valid mount point"
-		${EXIT} 1
+		return 1
 	fi
 
 	if [ "$_remount" = "YES" ]; then
 		if [ -n "$_dir" ]; then
 			_error "Remount cannot be used with directories, but with fscomp only"
 			mount-in-help
-			${EXIT} 1
+			return 1
 		fi
 		_opt="zfs-remount"
 		# TODO: investigate
@@ -269,14 +269,14 @@ pot-mount-in()
 		if ! _is_fscomp "$_fscomp" ; then
 			_error "fscomp $_fscomp is not valid"
 			mount-in-help
-			${EXIT} 1
+			return 1
 		fi
 	fi
 	if [ -n "$_dset" ]; then
 		if ! _zfs_dataset_valid "$_dset" ; then
 			_error "dataset $_dset is not valid"
 			mount-in-help
-			${EXIT} 1
+			return 1
 		fi
 	fi
 	# TODO: check that the directory doesn't conflict with anything already mounted
@@ -284,31 +284,31 @@ pot-mount-in()
 		if [ ! -d "$_dir" ]; then
 			_error "$_dir is not a directory"
 			mount-in-help
-			${EXIT} 1
+			return 1
 		fi
 		if ! _is_absolute_path "$_dir" ; then
 			if ! _dir="$(realpath -q "$_dir")" > /dev/null ; then
 				_error "Not able to convert $_dir as an absolute pathname"
 				mount-in-help
-				${EXIT} 1
+				return 1
 			fi
 		fi
 		if ! _directory_validation "$_pname" "$_dir" ; then
 			_error "Directory $_dir not valid, already used or already part of the pot"
-			${EXIT} 1
+			return 1
 		fi
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		mount-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	if ! _mountpoint_validation "$_pname" "$_mnt_p" ; then
 		_error "The mountpoint is not valid!"
-		${EXIT} 1
+		return 1
 	fi
 	if [ -n "$_dir" ]; then
 		_mount_dir "$_dir" "$_pname" "$_mnt_p" $_opt

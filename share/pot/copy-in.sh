@@ -41,7 +41,7 @@ pot-copy-in()
 		case "$_o" in
 		h)
 			copy-in-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -57,7 +57,7 @@ pot-copy-in()
 			;;
 		*)
 			copy-in-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
@@ -65,35 +65,35 @@ pot-copy-in()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		copy-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_source" ]; then
 		_error "A source is mandatory"
 		copy-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_destination" ]; then
 		_error "A destination is mandatory"
 		copy-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_absolute_path "$_destination" ; then
 		_error "The destination has to be an absolute pathname"
-		${EXIT} 1
+		return 1
 	fi
 	_destination="${_destination#/}"
 
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		copy-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	if ! _source_validation "$_source" ; then
 		copy-in-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot_running "$_pname" ; then 
 		_pot_mount "$_pname"
@@ -114,5 +114,5 @@ pot-copy-in()
 	if [ "$_to_be_umount" = "1" ]; then
 		_pot_umount "$_pname"
 	fi
-	${EXIT} $_rc
+	return $_rc
 }

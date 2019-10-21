@@ -36,7 +36,7 @@ pot-set-env()
 		case "$_o" in
 		h)
 			set-env-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -47,7 +47,7 @@ pot-set-env()
 				_error "$OPTARG not in a valid form"
 				_error "VARIABLE=value is accetped"
 				set-env-help
-				${EXIT} 1
+				return 1
 			fi
 			_tmp="$( echo "$OPTARG" | sed 's%"%\\"%g' )"
 			echo "\"$_tmp\"" >> $_tmpfile
@@ -58,27 +58,27 @@ pot-set-env()
 			;;
 		?)
 			set-env-help
-			${EXIT} 1
+			return 1
 		esac
 	done
 
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-env-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_env" ]; then
 		_error "A command is mandatory"
 		set-env-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		set-env-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	_set_environment "$_pname" "$_tmpfile"
 	rm "$_tmpfile"

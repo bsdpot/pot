@@ -311,7 +311,7 @@ _cj_flv()
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_debug "Flavour: $_flv"
 	if [ -r ${_POT_FLAVOUR_DIR}/${_flv} ]; then
-		_debug "Adopt $_flv for $_pname"
+		_debug "Executing $_flv pot commands on $_pname"
 		while read -r line ; do
 			if _is_cmd_flavorable $line ; then
 				pot-cmd $line -p $_pname
@@ -321,9 +321,10 @@ _cj_flv()
 		done < ${_POT_FLAVOUR_DIR}/${_flv}
 	fi
 	if [ -x ${_POT_FLAVOUR_DIR}/${_flv}.sh ]; then
-		_debug "Start $_pname pot for the initial bootstrap"
+		_debug "Starting $_pname pot for the initial bootstrap"
 		pot-cmd start $_pname
 		cp -v ${_POT_FLAVOUR_DIR}/${_flv}.sh $_pdir/m/tmp
+		_debug "Executing $_flv script on $_pname"
 		jexec $_pname /tmp/${_flv}.sh $_pname
 		pot-cmd stop $_pname
 	else
@@ -700,6 +701,7 @@ pot-create()
 	_info "ip          : $_ipaddr"
 	_info "bridge      : $_private_bridge"
 	_info "dns         : $_dns"
+	_info "flavours    : $_flv"
 	if ! _cj_zfs "$_pname" "$_type" "$_lvl" "$_base" "$_potbase" ; then
 		${EXIT} 1
 	fi

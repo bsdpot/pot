@@ -40,7 +40,7 @@ pot-set-cmd()
 		case "$_o" in
 		h)
 			set-cmd-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -53,27 +53,27 @@ pot-set-cmd()
 			;;
 		*)
 			set-cmd-help
-			${EXIT} 1
+			return 1
 		esac
 	done
 
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-cmd-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_cmd" ]; then
 		_error "A command is mandatory"
 		set-cmd-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		set-cmd-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	_set_command "$_pname" "$_cmd"
 }

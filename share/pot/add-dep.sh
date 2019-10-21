@@ -34,7 +34,7 @@ pot-add-dep()
 		case "$_o" in
 		h)
 			add-dep-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -47,7 +47,7 @@ pot-add-dep()
 			;;
 		*)
 			add-dep-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
@@ -55,30 +55,30 @@ pot-add-dep()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		add-dep-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "$_depPot" ]; then
 		_error "A dependency pot is mandatory"
 		add-dep-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ "$_pname" = "$_depPot" ]; then
 		_error "a pot cannot be run time dependecy of itself"
 		add-dep-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		add-dep-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_depPot" ; then
 		_error "dependency pot $_depPot is not valid"
 		add-dep-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	_add_dependency "$_pname" "$_depPot"
 }

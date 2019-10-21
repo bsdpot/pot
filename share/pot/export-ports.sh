@@ -40,7 +40,7 @@ pot-export-ports()
 		case "$_o" in
 		h)
 			export-ports-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -52,7 +52,7 @@ pot-export-ports()
 			if ! _is_export_port_valid "${OPTARG}" ; then
 				_error "$OPTARG is not a valid port number"
 				export-ports-help
-				${EXIT} 1
+				return 1
 			fi
 			if [ -z "$_ports" ]; then
 				_ports="$OPTARG"
@@ -62,7 +62,7 @@ pot-export-ports()
 			;;
 		*)
 			export-ports-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
@@ -70,27 +70,27 @@ pot-export-ports()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		export-ports-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "$_pname is not a valid pot name"
 		export-ports-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ "$(_get_pot_network_type "$_pname")" != "public-bridge" ]; then
 		_error "Only public-bridge is currently supported"
 		export-ports-help
-		${EXIT} 1
+		return 1
 	fi
 	if [ -z "${_ports}" ]; then
 		_error "One port has to be specified"
 		export-ports-help
-		${EXIT} 1
+		return 1
 	fi
 	# validate port numbers
 	_debug "Exporting the following ports: $_ports"
 	if ! _is_uid0 ; then
-		${EXIT} 1
+		return 1
 	fi
 	_export_ports "$_pname" "$_ports"
 }

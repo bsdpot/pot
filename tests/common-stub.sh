@@ -6,17 +6,23 @@ EXIT="return"
 . monitor.sh
 
 ##### recognized pots
-# name					running	type	level	ip			vnet	network_type
-# test-pot				no		multi	1		inherit		undef	inherit
-# test-pot-2			no		multi	2		10.1.2.3	yes		public-bridge
-# test-pot-run			yes		multi	1		undef		undef	undef
-# test-pot-run-2		yes		multi	2		undef		undef	undef
-# test-pot-0			no		multi	0		inherit		undef	inherit
-# test-pot-nosnap		no		multi	1		inherit		undef	inherit
-# test-pot-single		no		single	0		10.1.2.3	yes		public-bridge
-# test-pot-single-run	yes		single	0		undef		yes		public-bridge
-# test-pot-3			?		?		?		10.1.2.3	no		alias
+# name						running	type	level	ip			vnet	network_type
+# test-pot					no		multi	1		inherit		undef	inherit
+# test-pot-2				no		multi	2		10.1.2.3	yes		public-bridge
+# test-pot-run				yes		multi	1		undef		undef	undef
+# test-pot-run-2			yes		multi	2		undef		undef	undef
+# test-pot-0				no		multi	0		inherit		undef	inherit
+# test-pot-nosnap			no		multi	1		inherit		undef	inherit
+# test-pot-single			no		single	0		10.1.2.3	yes		public-bridge
+# test-pot-single-run		yes		single	0		undef		yes		public-bridge
+# test-pot-3				no		multi	1		10.1.2.3	no		alias
 
+# test-pot-multi-inherit	no		multi	1					no		inherit
+# test-pot-multi-private	no		multi	1		10.1.3.3	yes		private-bridge
+
+##### recognized bridges
+# name						net				gateway
+# test-bridge				10.1.3.0/28		10.1.3.1
 
 _error()
 {
@@ -62,8 +68,9 @@ _is_pot()
 	case "$1" in
 		test-pot|test-pot-run|\
 		test-pot-2|test-pot-run-2|\
-		test-pot-0|test-pot-nosnap|\
+		test-pot-0|test-pot-nosnap|test-pot-3|\
 		test-pot-single|test-pot-single-run|\
+		test-pot-multi-inherit|test-pot-multi-private|\
 		${POT_DNS_NAME})
 			return 0 # true
 			;;
@@ -121,8 +128,9 @@ _get_conf_var()
 	case "$2" in
 	"pot.level")
 		case "$1" in
-		test-pot|test-pot-run|\
-		test-pot-nosnap)
+		test-pot|test-pot-run|test-pot-3|\
+		test-pot-nosnap|test-pot-multi-inherit|\
+		test-pot-multi-private)
 			echo "1"
 			;;
 		test-pot-2|test-pot-run-2)
@@ -152,11 +160,15 @@ _get_conf_var()
 		test-pot-single)
 			echo "10.1.2.3"
 			;;
+		test-pot-multi-private)
+			echo "10.1.3.3"
+			;;
 		esac
 		;;
 	"network_type")
 		case $1 in
-		test-pot|test-pot-0)
+		test-pot|test-pot-0|\
+		test-pot-multi-inherit)
 			echo "inherit"
 			;;
 		test-pot-3)
@@ -166,13 +178,17 @@ _get_conf_var()
 		test-pot-single)
 			echo "public-bridge"
 			;;
+		test-pot-multi-private)
+			echo "private-bridge"
+			;;
 		esac
 		;;
 	"pot.type")
 		case $1 in
-		test-pot|test-pot-0|\
+		test-pot|test-pot-0|test-pot-3|\
 		test-pot-run|test-pot-nosnap|\
-		test-pot-2|test-pot-run-2)
+		test-pot-2|test-pot-run-2|\
+		test-pot-multi-inherit|test-pot-multi-private)
 			echo "multi"
 			;;
 		test-pot-single|test-pot-single-run)
@@ -181,10 +197,11 @@ _get_conf_var()
 		;;
 	"vnet")
 		case $1 in
-		test-pot-2|test-pot-single|test-pot-single-run)
+		test-pot-2|test-pot-single|test-pot-single-run|\
+		test-pot-multi-private)
 			echo "true"
 			;;
-		test-pot-3)
+		test-pot-3|test-pot-multi-inherit)
 			echo "false"
 			;;
 		esac
@@ -242,6 +259,43 @@ _is_valid_release()
    esac
 }
 
+_is_bridge()
+{
+	case "$1" in
+		test-bridge)
+			return 0 # return true
+			;;
+	esac
+	return 1 # false
+}
+_get_bridge_var()
+{
+	__monitor GETBRIDGEVAR "$@"
+	case "$2" in
+		name)
+			case "$1" in
+				test-bridge)
+					echo "test-bridge"
+					;;
+			esac
+			;;
+		net)
+			case "$1" in
+				test-bridge)
+					echo "10.1.3.0/28"
+					;;
+			esac
+			;;
+		gateway)
+			case "$1" in
+				test-bridge)
+					echo "10.1.3.1"
+					;;
+			esac
+			;;
+	esac
+}
+
 common_setUp()
 {
 	_POT_VERBOSITY=1
@@ -260,5 +314,6 @@ common_setUp()
 	POTZFSSNAP_CALLS=0
 	POTZFSSNAPFULL_CALLS=0
 	FSCOMPZFSSNAP_CALLS=0
+	GETBRIDGEVAR_CALLS=0
 }
 

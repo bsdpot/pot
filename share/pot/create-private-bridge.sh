@@ -1,4 +1,4 @@
-#!/bin/sh
+z!/bin/sh
 :
 
 # shellcheck disable=SC2039
@@ -20,10 +20,6 @@ create-bridge()
 	_bname=$1
 	_bsize=$2
 	_bconf="${POT_FS_ROOT}/bridges/$_bname"
-	if [ -e "$_bconf" ]; then
-		_error "A bridge name $_bname is already defined"
-		${EXIT} 1
-	fi
 	if potnet new-net -s "$_bsize" > "$_bconf" ; then
 		echo "name=$_bname" >> "$_bconf"
 	else
@@ -53,7 +49,7 @@ pot-create-private-bridge()
 		S)
 			_host_amount="$OPTARG"
 			;;
-		*)
+		?)
 			create-private-bridge-help
 			${EXIT} 1
 		esac
@@ -65,6 +61,14 @@ pot-create-private-bridge()
 	fi
 	if [ -z "$_host_amount" ]; then
 		_error "The amount of host is mandatory (-S option)"
+		${EXIT} 1
+	fi
+	if ! _is_potnet_available ; then
+	   _error "potnet is not available! It's needed - cannot proceed"
+		${EXIT} 1
+	fi
+	if _is_bridge "$_bname" quiet ; then
+		_error "A bridge with name $_bname already exists"
 		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then

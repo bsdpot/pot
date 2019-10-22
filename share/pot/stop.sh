@@ -51,7 +51,9 @@ _js_stop()
 			fi
 		fi
 	fi
-	pfctl -a "pot-rdr/$_pname" -F nat -q
+	if [ -c "/dev/pf" ]; then
+		pfctl -a "pot-rdr/$_pname" -F nat -q
+	fi
 
 	if [ -r "$_jdir/ncat.pid" ]; then
 		pkill -F "$_jdir/ncat.pid" "ncat-$_pname"

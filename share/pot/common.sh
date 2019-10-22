@@ -381,8 +381,8 @@ _get_pot_rdr_anchor_name()
 	# shellcheck disable=SC2039
 	local _pname
 	_pname=$1
-	if [ "${#_pname}" -gt "57" ]; then
-		echo "$_pname" | awk '{ truncated = substr($1, length($1)-56); printf("%s", truncated);}'
+	if [ "${#_pname}" -gt "55" ]; then
+		echo "$_pname" | awk '{ truncated = substr($1, length($1)-54); printf("%s", truncated);}' | sed 's/^_//'
 	else
 		echo "$_pname"
 	fi

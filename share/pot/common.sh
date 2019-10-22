@@ -459,7 +459,7 @@ _is_bridge()
 	local _bname _bconf
 	_bname="$1"
 	_bconf="${POT_FS_ROOT}/bridges/$_bname"
-	if [ -e "$_bconf" ]; then
+	if [ ! -e "$_bconf" ]; then
 		_qerror "$2" "bridge $_bridge not found"
 		return 1 # false
 	fi

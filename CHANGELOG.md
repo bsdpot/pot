@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - flavorable commands: extend support to set-cmd and set-env
+- pot-rdr anchor: the name of the anchor is now a truncated pot name (the last 54 characters)
 
 ### Fixed
 - flavorable commands: they cannot exit, but return. create can stop flavour execution otherwise

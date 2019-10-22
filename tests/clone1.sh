@@ -12,10 +12,19 @@ potnet()
 {
 	# no monitor, potnet is called in a subshell
 	if [ "$1" = "next" ]; then
-		echo "10.123.123.123"
+		if [ "$2" = "-b" ] && [ "$3" = "test-bridge" ]; then
+			echo "10.1.3.4"
+		else
+			echo "10.123.123.123"
+		fi
 		return 0 # true
 	fi
 	if [ "$1" = "validate" ] && [ "$2" = "-H" ] ; then
+		if [ "$4" = "-b" ] && [ "$5" = "test-bridge" ]; then
+			if [ "$3" = "10.1.3.4" ]; then
+				return 0 # true
+			fi
+		fi
 		if [ "$3" = "10.123.123.123" ] || [ "$3" = "10.1.2.4" ]; then
 			return 0 # true
 		fi
@@ -266,6 +275,59 @@ test_pot_clone_040()
 	assertEquals "_cj_conf arg2" "test-pot-single" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+}
+
+test_pot_clone_060()
+{
+	pot-clone -p new-pot-public -P test-pot-multi-private -N public-bridge
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-public" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-multi-private" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-public" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-multi-private" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+}
+
+test_pot_clone_061()
+{
+	pot-clone -p new-pot-private -P test-pot-multi-private -N private-bridge -B test-bridge
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-private" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-multi-private" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-private" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-multi-private" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "private-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.1.3.4" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "test-bridge" "$CJCONF_CALL1_ARG5"
+}
+
+test_pot_clone_062()
+{
+	pot-clone -p new-pot-private -P test-pot-3 -N private-bridge -B test-bridge
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-private" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-3" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-private" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-3" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "private-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.1.3.4" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "test-bridge" "$CJCONF_CALL1_ARG5"
 }
 
 setUp()

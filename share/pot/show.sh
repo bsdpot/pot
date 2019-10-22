@@ -44,7 +44,7 @@ _show_pot()
 _show_pot_run()
 {
 	# shellcheck disable=SC2039
-	local _pname _res _vm _pm _ip _network_type
+	local _pname _res _vm _pm _ip _network_type _aname
 	_pname=$1
 	if ! _is_uid0 quiet; then
 		_info "some runtime information requires root privileges"
@@ -68,9 +68,10 @@ _show_pot_run()
 	_network_type="$(_get_pot_network_type "$_pname" )"
 	_ip="$( _get_conf_var "$_pname" ip)"
 	if [ "$_network_type" = "public-bridge" ]; then
-		if pfctl -a "pot-rdr" -s Anchors | grep -q pot-rdr/${_pname}$ ; then
+		_aname="$( _get_pot_rdr_anchor_name "$_pname")"
+		if pfctl -a "pot-rdr" -s Anchors | grep -q "pot-rdr/${_aname}$" ; then
 			printf "\\n\\tNetwork port redirection\\n"
-			pfctl -a "pot-rdr/$_pname" -s nat -P | grep -F \ ${_ip}\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
+			pfctl -a "pot-rdr/$_aname" -s nat -P | grep -F \ ${_ip}\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
 				printf "\\t\\t%s\\n" "$rule"
 			done
 		fi

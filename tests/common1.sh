@@ -229,6 +229,30 @@ test_is_absolute_path()
 	assertEquals "$?" "0"
 }
 
+test_get_pot_rdr_anchor_name_001()
+{
+	_rc="$(_get_pot_rdr_anchor_name "test-pot" )"
+	assertEquals "test-pot" "$_rc"
+}
+
+test_get_pot_rdr_anchor_name_002()
+{
+	_rc="$(_get_pot_rdr_anchor_name "012345678901234567890123456789012345678901234567890123456" )"
+	assertEquals "012345678901234567890123456789012345678901234567890123456" "$_rc"
+}
+
+test_get_pot_rdr_anchor_name_003()
+{
+	_rc="$(_get_pot_rdr_anchor_name "0123456789012345678901234567890123456789012345678901234567" )"
+	assertEquals "123456789012345678901234567890123456789012345678901234567" "$_rc"
+}
+
+test_get_pot_rdr_anchor_name_004()
+{
+	_rc="$(_get_pot_rdr_anchor_name "012345678901234567890123456789012345678901234567890123456789" )"
+	assertEquals "345678901234567890123456789012345678901234567890123456789" "$_rc"
+}
+
 setUp()
 {
 	_POT_VERBOSITY=1

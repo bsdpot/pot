@@ -183,7 +183,7 @@ _js_get_free_rnd_port()
 # $1 pot name
 _js_export_ports()
 {
-	local _pname _ip _ports _excl_list _pot_port _host_port
+	local _pname _ip _ports _excl_list _pot_port _host_port _aname
 	_pname=$1
 	_ip="$( _get_conf_var $_pname ip )"
 	_ports="$( _get_pot_export_ports $_pname )"
@@ -202,7 +202,8 @@ _js_export_ports()
 		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_host_port -> $_ip port $_pot_port" >> $_pfrules
 		_excl_list="$_excl_list $_host_port"
 	done
-	pfctl -a pot-rdr/$_pname -f $_pfrules
+	_aname="$( _get_pot_rdr_anchor_name "$_pname" )"
+	pfctl -a "pot-rdr/$_aname" -f "$_pfrules"
 	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
 	if [ "$_lo_tunnel" = "YES" ]; then
 		_pdir="${POT_FS_ROOT}/jails/$_pname/"

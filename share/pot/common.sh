@@ -376,6 +376,19 @@ _get_pot_network_type()
 }
 
 # $1 pot name
+_get_pot_rdr_anchor_name()
+{
+	# shellcheck disable=SC2039
+	local _pname
+	_pname=$1
+	if [ "${#_pname}" -gt "55" ]; then
+		echo "$_pname" | awk '{ truncated = substr($1, length($1)-54); printf("%s", truncated);}' | sed 's/^__*//'
+	else
+		echo "$_pname"
+	fi
+}
+
+# $1 pot name
 _is_ip_inherit()
 {
 	local _pname _val
@@ -564,7 +577,7 @@ _is_port_number()
 	return 0
 }
 
-# the -e option argument
+# $1: the -e option argument
 _is_export_port_valid()
 {
 	# shellcheck disable=SC2039

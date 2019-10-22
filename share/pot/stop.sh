@@ -24,7 +24,7 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair _ip _pfrules
+	local _pname _jdir _epair _ip _aname
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
@@ -52,7 +52,8 @@ _js_stop()
 		fi
 	fi
 	if [ -c "/dev/pf" ]; then
-		pfctl -a "pot-rdr/$_pname" -F nat -q
+		_aname="$( _get_pot_rdr_anchor_name "$_pname" )"
+		pfctl -a "pot-rdr/$_aname" -F nat -q
 	fi
 
 	if [ -r "$_jdir/ncat.pid" ]; then

@@ -199,8 +199,13 @@ _js_export_ports()
 			_host_port=$( _js_get_free_rnd_port "$_excl_list" )
 		fi
 		_debug "Redirect: from $POT_EXTIF : $_host_port to $_ip : $_pot_port"
-		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_host_port -> $_ip port $_pot_port" >> $_pfrules
+		echo "rdr pass on $POT_EXTIF proto tcp from any to $POT_EXTIF port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
 		_excl_list="$_excl_list $_host_port"
+		if [ -n "$POT_EXTRA_EXTIF" ]; then
+			for extra_netif in $POT_EXTRA_EXTIF ; do
+				echo "rdr pass on $extra_netif proto tcp from any to $extra_netif port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
+			done
+		fi
 	done
 	_aname="$( _get_pot_rdr_anchor_name "$_pname" )"
 	pfctl -a "pot-rdr/$_aname" -f "$_pfrules"

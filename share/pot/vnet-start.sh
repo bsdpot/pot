@@ -126,7 +126,16 @@ pot-vnet-start()
 		echo "nat on \$ext_if from \$localnet to any -> (\$ext_if)"
 	) > $_nat_rules
 
-	# add vpn support
+	# EXTRA_EXTIF NAT rules
+	if [ -n "$POT_EXTRA_EXTIF" ]; then
+		for extra_netif in $POT_EXTRA_EXTIF ; do
+			eval extra_net="\$POT_NETWORK_$extra_netif"
+			if [ -n "$extra_net" ]; then
+				echo "nat on $extra_netif from \$localnet to $extra_net -> ($extra_netif)" >> $_nat_rules
+			fi
+		done
+	fi
+	# VPN NAT rules
 	if [ -n "$POT_VPN_EXTIF" ] && [ -n "$POT_VPN_NETWORKS" ]; then
 		for net in $POT_VPN_NETWORKS ; do
 			echo "nat on $POT_VPN_EXTIF from \$localnet to $net -> ($POT_VPN_EXTIF)" >> $_nat_rules

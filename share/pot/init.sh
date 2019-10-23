@@ -88,9 +88,16 @@ pot-init()
 		${EXIT} 1
 	fi
 	if ! ifconfig "$POT_EXTIF" > /dev/null 2> /dev/null ; then
-		_error "The network interface $POT_EXTIF seems not valid"
+		_error "The network interface $POT_EXTIF seems not valid [POT_EXTIF]"
 		${EXIT} 1
 	fi
+	for extra_netif in $POT_EXTRA_EXTIF ; do
+		if ! ifconfig "$extra_netif" > /dev/null 2> /dev/null ; then
+			_error "The network interface $extra_netif seems not valid [POT_EXTRA_EXTIF]"
+			${EXIT} 1
+		fi
+	done
+
 	# add proper syslogd flags and restart it
 	sysrc -q syslogd_flags="-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
 	# service syslogd restart

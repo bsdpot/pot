@@ -24,6 +24,10 @@
 # The name of the network physical interface, to be used as default gateway
 # POT_EXTIF=em0
 
+# The list of extra network interface, to make other network segments accessible
+# POT_EXTRA_EXTIF=vlan20
+# for each extra interface, a variable is used to sepcify its network segment
+# POT_NETWORK_vlan20=192.168.0.0/16
 
 # DNS on the Internal Virtual Network
 

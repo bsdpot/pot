@@ -1,6 +1,14 @@
 #!/bin/sh
 
 # system utilities stubs
+potnet()
+{
+	case "$4" in
+		"10.1.2.3"|"10.1.2.4"|\
+		"fe00::2"|"::1")
+		return 0 # true
+	esac
+}
 
 # UUT
 . ../share/pot/set-hosts.sh
@@ -145,7 +153,7 @@ test_pot_set_hosts_041()
 
 test_pot_set_hosts_042()
 {
-	pot-set-hosts -p test-pot -H test-pot-2:fe00::1
+	pot-set-hosts -p test-pot -H test-pot-2:fe00::2
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -153,7 +161,7 @@ test_pot_set_hosts_042()
 	assertEquals "_set_hosts calls" "1" "$SETHOSTS_CALLS"
 	assertEquals "_set_hosts arg1" "test-pot" "$SETHOSTS_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-hosts)"
-	assertEquals "_tmpfile" 'fe00::1 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
+	assertEquals "_tmpfile" 'fe00::2 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
 }
 
 test_pot_set_hosts_043()
@@ -171,7 +179,7 @@ test_pot_set_hosts_043()
 
 test_pot_set_hosts_044()
 {
-	pot-set-hosts -p test-pot -H test-pot-2:10.1.2.3 -H test-pot-3:10.1.2.4 -H test-pot-4:::1 -H test-pot-5:fe00::1
+	pot-set-hosts -p test-pot -H test-pot-2:10.1.2.3 -H test-pot-3:10.1.2.4 -H test-pot-4:::1 -H test-pot-5:fe00::2
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -182,7 +190,7 @@ test_pot_set_hosts_044()
 	assertEquals "_tmpfile" '10.1.2.3 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '10.1.2.4 test-pot-3' "$(sed '2!d' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '::1 test-pot-4' "$(sed '3!d' /tmp/pot-set-hosts)"
-	assertEquals "_tmpfile" 'fe00::1 test-pot-5' "$(sed '4!d' /tmp/pot-set-hosts)"
+	assertEquals "_tmpfile" 'fe00::2 test-pot-5' "$(sed '4!d' /tmp/pot-set-hosts)"
 }
 
 setUp()

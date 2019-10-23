@@ -39,37 +39,37 @@ _pot() {
 		args)
 			case $words[1] in
 				init)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]'
 					;;
 				vnet-start)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-B[bridge name]:bridge name:_pot_bridges'
 					;;
 				config) 
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
 						'-g[Element name]:config element name:(fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix)'
 					;;
 				de-init) 
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-f[Force stop of all running pots]'
 					;;
 				version|ps) 
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]'
 					;;
 				list|ls)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
@@ -81,7 +81,7 @@ _pot() {
 						'-a[List them all]'
 					;;
 				info)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
@@ -89,7 +89,7 @@ _pot() {
 						'-r[Check if the pos is running]'
 					;;
 				show)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
@@ -98,26 +98,26 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots'
 					;;
 				create-dns)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-b[base name]:base name:_normal'
+						'-b[base name]:base name:_pot_bases'
 					;;
 				create-base) 
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-r[Release number]:supported releases:(10.1 10.3 10.4 11.0 11.1)' \
 						'-b[base name]:base name:_normal'
 					;;
 				create-fscomp) 
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-f[fscomp name]:fscomp name:_normal'
 					;;
 				create-private-bridge)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-S[host number]:host number:_normal' \
@@ -140,14 +140,14 @@ _pot() {
 						'*-f[flavour name]:flavour name:_pot_flavours'
 					;;
 				clone-fscomp)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-f[fscomp name]::_normal' \
 						'-F[fscomp reference]:fscomp reference name:_pot_fscomps'
 					;;
 				clone)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]::_normal' \
@@ -158,14 +158,14 @@ _pot() {
 						'-F[force snapshot of the pot reference]' 
 					;;
 				rename)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-n[pot new name]::_normal' \
 						'-p[pot old name]:pot old name:_pot_pots'
 					;;
 				destroy)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-F[Force the pot to stop]' \
@@ -176,14 +176,14 @@ _pot() {
 						'-r[Recursive destroying]'
 					;;
 				prune)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet outpu]' \
 						'-n[dry-run]'
 					;;
 				copy-in)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -191,7 +191,7 @@ _pot() {
 						'-d[destination]:destination:_normal'
 					;;
 				mount-in)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -203,14 +203,14 @@ _pot() {
 						'-r[readonly]'
 					;;
 				add-dep)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-P[dependency pot name]:dependency pot name:_pot_pots'
 					;;
 				set-rss)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -218,28 +218,28 @@ _pot() {
 						'-M[Memory size]::_normal'
 					;;
 				get-rss)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-J[JSON output]'
 					;;
 				set-cmd)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-c[command]::_normal'
 					;;
 				set-env)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'*-E[variable list]::_normal'
 					;;
 				set-attr|set-attribute)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -247,7 +247,7 @@ _pot() {
 						'-V[value]:value:_normal'
 					;;
 				get-attr|get-attribute)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -255,14 +255,14 @@ _pot() {
 						'-q[Quiet output]'
 					;;
 				export-ports)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'*-e[port to be exported]::_normal'
 					;;
 				snap|snapshot|revert|rollback)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -270,7 +270,7 @@ _pot() {
 						'-a[also external components]'
 					;;
 				purge-snapshots)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -278,14 +278,14 @@ _pot() {
 						'-a[all snapshots, instead of the old ones]'
 					;;
 				update-config)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-a[all pots]'
 					;;
 				export)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
@@ -295,7 +295,7 @@ _pot() {
 						'-l[compression level]:compression level:(0 1 2 3 4 5 6 7 8 9)'
 					;;
 				import)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:' \
@@ -303,7 +303,7 @@ _pot() {
 						'-U[URL]:URL:_normal'
 					;;
 				prepare)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-S[auto start]' \
@@ -319,7 +319,7 @@ _pot() {
 						'-c[command]::_normal'
 					;;
 				top)
-					_arguments \
+					_arguments -s \
 						'-h[Show help]' \
 						'-p[pot name]:pot name:_pot_pots' \
 					;;

@@ -176,7 +176,7 @@ pot-destroy()
 			fi
 		done
 		_info "Destroying bridge $_bridge_name"
-		rm -f "${POT_ZFS_ROOT}/bridges/$_bridge_name"
+		rm -f "${POT_FS_ROOT}/bridges/$_bridge_name"
 		${EXIT} $?
 	fi
 

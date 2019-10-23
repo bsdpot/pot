@@ -20,7 +20,7 @@ _set_environment()
 	_pname="$1"
 	_tmpfile="$2"
 	_cfile=$POT_FS_ROOT/jails/$_pname/conf/pot.conf
-	sed -i '' -e "/^pot.env=.*/d" "$_cfile"
+	${SED} -i '' -e "/^pot.env=.*/d" "$_cfile"
 	cat "$_tmpfile" | sed 's/.*/pot.env=&/g' >> "$_cfile"
 }
 

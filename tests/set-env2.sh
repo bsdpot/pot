@@ -1,6 +1,15 @@
 #!/bin/sh
 
 # system utilities stubs
+SED=sed_stub
+sed_stub()
+{
+	if [ "$(uname)" = "Linux" ]; then
+		sed -i'' "$3" "$4"
+	else
+		sed "$@"
+	fi
+}
 
 # UUT
 . ../share/pot/set-env.sh

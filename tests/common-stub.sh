@@ -206,6 +206,16 @@ _get_conf_var()
 			;;
 		esac
 		;;
+	"bridge")
+		case $1 in
+		test-pot-multi-private)
+			echo "test-bridge"
+			;;
+		esac
+		;;
+	"host.hostname")
+		echo "$1.test-domain"
+		;;
 	esac
 }
 

@@ -238,6 +238,13 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'*-E[variable list]::_normal'
 					;;
+				set-hosts)
+					_arguments \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'*-H[hosts entry]::_normal'
+					;;
 				set-attr|set-attribute)
 					_arguments -s \
 						'-h[Show help]' \
@@ -376,6 +383,7 @@ _pot_cmds() {
 	'get-rss:Get the current resource usage'
 	'set-cmd:Set the initial command of a pot'
 	'set-env:Set environment variables inside a pot'
+	'set-hosts:Set etc/hosts entries inside a pot'
 	'set-attr:Set the value of a pot attribute'
 	'set-attribute:Set the value of a pot attribute'
 	'get-attr:Get the value of a pot attribute'

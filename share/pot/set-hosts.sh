@@ -20,7 +20,7 @@ _set_hosts()
 	_pname="$1"
 	_tmpfile="$2"
 	_cfile=$POT_FS_ROOT/jails/$_pname/conf/pot.conf
-	sed -i '' -e "/^pot.hosts=.*/d" "$_cfile"
+	${SED} -i '' -e "/^pot.hosts=.*/d" "$_cfile"
 	sed 's/.*/pot.hosts=&/g' "$_tmpfile" >> "$_cfile"
 }
 

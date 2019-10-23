@@ -74,6 +74,28 @@ _js_resolv()
 	return 0
 }
 
+# $1 pot name
+_js_etc_hosts()
+{
+	local _pname _phosts _hostname _bridge_name _cfile
+	_pname="$1"
+	_phosts="${POT_FS_ROOT}/jails/$_pname/m/etc/hosts"
+	_hostname="$( _get_conf_var $_pname host.hostname )"
+	printf "::1 localhost %s %s\n" "$_hostname" "${_hostname%%.*}" > "$_phosts"
+	printf "127.0.0.1 localhost %s %s\n" "$_hostname" "${_hostname%%.*}" >> "$_phosts"
+	case "$( _get_conf_var "$_pname" network_type )" in
+	"public-bridge")
+		potnet etc-hosts >> "$_phosts"
+		;;
+	"private-bridge")
+		_bridge_name="$( _get_conf_var "$_pname" bridge )"
+		potnet etc-hosts -b "$_bridge_name" >> "$_phosts"
+		;;
+	esac
+	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+	grep '^pot.hosts=' "$_cfile" | sed 's/^pot.hosts=//g' >> "$_phosts"
+}
+
 _js_create_epair()
 {
 	local _epair

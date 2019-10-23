@@ -77,8 +77,9 @@ pot-export-ports()
 		export-ports-help
 		return 1
 	fi
-	if [ "$(_get_pot_network_type "$_pname")" != "public-bridge" ]; then
-		_error "Only public-bridge is currently supported"
+	if [ "$(_get_pot_network_type "$_pname")" != "public-bridge" ] &&
+		[ "$(_get_pot_network_type "$_pname")" != "private-bridge" ] ; then
+		_error "Only public-bridge and private-bridge are currently supported"
 		export-ports-help
 		return 1
 	fi
@@ -87,7 +88,6 @@ pot-export-ports()
 		export-ports-help
 		return 1
 	fi
-	# validate port numbers
 	_debug "Exporting the following ports: $_ports"
 	if ! _is_uid0 ; then
 		return 1

@@ -224,6 +224,17 @@ test_pot_export_ports_043()
 	assertEquals "_export_ports arg2" "80:8080 443:30443" "$EXPORTS_CALL1_ARG2"
 }
 
+test_pot_export_ports_044()
+{
+	pot-export-ports -p test-pot-multi-private -e 80:8080 -e 443:30443
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_export_ports calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export_ports arg1" "test-pot-multi-private" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export_ports arg2" "80:8080 443:30443" "$EXPORTS_CALL1_ARG2"
+}
+
 setUp()
 {
 	common_setUp

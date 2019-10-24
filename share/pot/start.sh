@@ -468,6 +468,7 @@ pot-start()
 		return 1
 	fi
 	_js_resolv $_pname
+	_js_etc_hosts "$_pname"
 	if ! _js_start $_pname ; then
 		_error "$_pname failed to start"
 		return 1

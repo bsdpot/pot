@@ -6,7 +6,7 @@ revert-help()
 	echo "pot revert [-hva] -p potname|-f fscomp"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -a all components of a pot'
+	echo '  -a all components of a pot [DEPRECATED]'
 	echo '  -p potname : the pot target of the revert'
 	echo '  -f fscomp : the fs component target of the revert'
 }
@@ -42,6 +42,7 @@ _fscomp_zfs_rollback()
 	done
 }
 
+# DEPRECATED
 _pot_zfs_rollback_full()
 {
 	local _pname _pdir _snap _node _opt _dset
@@ -85,6 +86,9 @@ pot-revert()
 			;;
 		-a)
 			_full_pot="YES"
+			echo "###########################"
+			echo "# option -a is deprecated #"
+			echo "###########################"
 			shift
 			;;
 		-p)

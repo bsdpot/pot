@@ -197,8 +197,23 @@ _pot_zfs_snap()
 	zfs snapshot -r "${POT_ZFS_ROOT}/jails/${_pname}@${_snaptag}"
 }
 
+# recursively remove the oldest snapshot of a pot
+# $1 pot name
+_remove_oldest_pot_snap()
+{
+	# shellcheck disable=SC2039
+	local _pname _snap _pdset
+	_pname=$1
+	_pdset="${POT_ZFS_ROOT}/jails/${_pname}"
+	_snap="$( _zfs_oldest_snap "$_pdset" )"
+	if [ -n "$_snap" ]; then
+		zfs destroy -r "$_pdset@${_snap}"
+	fi
+}
+
 # take a zfs snapshot of all rw dataset found in the fscomp.conf of a pot
 # $1 pot name
+# DEPRECATED
 _pot_zfs_snap_full()
 {
 	# shellcheck disable=SC2039
@@ -221,6 +236,19 @@ _pot_zfs_snap_full()
 	done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
 }
 
+# recursively remove the oldest snapshot of a pot
+# $1 pot name
+_remove_oldest_fscomp_snap()
+{
+	# shellcheck disable=SC2039
+	local _fscomp _snap _fdset
+	_fscomp=$1
+	_fdset="${POT_ZFS_ROOT}/fscomp/${_fscomp}"
+	_snap="$( _zfs_oldest_snap "$_fdset" )"
+	if [ -n "$_snap" ]; then
+		zfs destroy -r "$_fdset@${_snap}"
+	fi
+}
 # take a zfs snapshot of a fscomp
 # $1 fscomp name
 # $2 optional name
@@ -249,6 +277,24 @@ _zfs_last_snap()
 		return 1 # false
 	fi
 	_output="$(zfs list -d 1 -H -t snapshot "$_dset" | sort -r | cut -d'@' -f2 | cut -f1 | head -n1)"
+	if [ -z "$_output" ]; then
+		return 1 # false
+	fi
+	echo "${_output}"
+	return 0 # true
+}
+
+# get the oldest available snaphost of the given dataset
+# $1 the dataset name
+_zfs_oldest_snap()
+{
+	# shellcheck disable=SC2039
+	local _dset _output
+	_dset="$1"
+	if [ -z "$_dset" ]; then
+		return 1 # false
+	fi
+	_output="$(zfs list -d 1 -H -t snapshot "$_dset" | sort -r | cut -d'@' -f2 | cut -f1 | tail -n1)"
 	if [ -z "$_output" ]; then
 		return 1 # false
 	fi

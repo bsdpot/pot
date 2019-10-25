@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - flavorable commands: extend support to set-cmd and set-env
 - pot-rdr anchor: the name of the anchor is now a truncated pot name (the last 54 characters)
 
+### Deprecated
+- snapshot: -n option to provide custom name to snapshots
+- support to full pot snapshot (external zfs dataset) in snapshot and start, as well as the _pot_zfs_snap_full function
+- support to full pot revert (external zfs dataset) in revert/rollback (option -a)
+
 ### Fixed
 - flavorable commands: they cannot exit, but return. create can stop flavour execution otherwise
 

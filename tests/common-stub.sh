@@ -247,6 +247,11 @@ _pot_zfs_snap()
 	__monitor POTZFSSNAP "$@"
 }
 
+_remove_oldest_pot_snap()
+{
+	__monitor RMVPOTSNAP "$@"
+}
+
 _pot_zfs_snap_full()
 {
 	__monitor POTZFSSNAPFULL "$@"
@@ -255,6 +260,11 @@ _pot_zfs_snap_full()
 _fscomp_zfs_snap()
 {
 	__monitor FSCOMPZFSSNAP "$@"
+}
+
+_remove_oldest_fscomp_snap()
+{
+	__monitor RMVFSCOMPSNAP "$@"
 }
 
 _is_valid_release()
@@ -322,8 +332,10 @@ common_setUp()
 	GETPOTBASE_CALLS=0
 	ZFSEXIST_CALLS=0
 	POTZFSSNAP_CALLS=0
+	RMVPOTSNAP_CALLS=0
 	POTZFSSNAPFULL_CALLS=0
 	FSCOMPZFSSNAP_CALLS=0
+	RMVFSCOMPSNAP_CALLS=0
 	GETBRIDGEVAR_CALLS=0
 }
 

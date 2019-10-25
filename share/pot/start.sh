@@ -8,7 +8,7 @@ start-help()
 	echo '  -s take a snapshot before to start'
 	echo '     snapshots are identified by the epoch'
 	echo '     all zfs datasets under the jail dataset are considered'
-	echo '  -S take a snapshot before to start'
+	echo '  -S take a snapshot before to start [DEPRECATED]'
 	echo '     snapshots are identified by the epoch'
 	echo '     all zfs datasets mounted in rw are considered (full)'
 	echo '  potname : the jail that has to start'

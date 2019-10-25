@@ -268,7 +268,16 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'*-e[port to be exported]::_normal'
 					;;
-				snap|snapshot|revert|rollback)
+				snap|snapshot)
+					_arguments -s \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-r[replace the oldest snapshot]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-f[fscomp name]:fscomp name:_pot_fscomps' \
+						'-a[also external components]'
+					;;
+				revert|rollback)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \

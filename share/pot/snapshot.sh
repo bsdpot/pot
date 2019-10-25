@@ -7,7 +7,8 @@ snapshot-help()
 	echo "pot snapshot [-h][-v][-a] [-p potname|-f fscomp]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -a all components of a pot'
+	echo '  -r replace the oldest available snapshot with the new one (not compatible with -a)'
+	echo '  -a all components of a pot [DEPRECATED]'
 	echo '  -p potname : the pot target of the snapshot'
 	echo '  -f fscomp : the fs component target of the snapshot'
 }
@@ -20,8 +21,9 @@ pot-snapshot()
 	_obj=""
 	_objname=
 	_snapname=""
+	_replace=
 	OPTIND=1
-	while getopts "hvap:f:n:" _o ; do
+	while getopts "hvap:f:n:r" _o ; do
 		case "$_o" in
 		h)
 			snapshot-help
@@ -30,8 +32,14 @@ pot-snapshot()
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
+		r)
+			_replace="YES"
+			;;
 		a)
 			_full_pot="YES"
+			echo "###########################"
+			echo "# option -a is deprecated #"
+			echo "###########################"
 			;;
 		p)
 			if [ -z "$_obj" ]; then
@@ -55,6 +63,9 @@ pot-snapshot()
 			;;
 		n)
 			_snapname="$OPTARG"
+			echo "###########################"
+			echo "# option -n is deprecated #"
+			echo "###########################"
 			;;
 		*)
 			snapshot-help
@@ -94,6 +105,9 @@ pot-snapshot()
 		if [ "$_full_pot" = "YES" ]; then
 			_pot_zfs_snap_full "$_objname"
 		else
+			if [ "$_replace" = "YES" ]; then
+				_remove_oldest_pot_snap "$_objname"
+			fi
 			_pot_zfs_snap "$_objname"
 		fi
 		;;
@@ -109,7 +123,9 @@ pot-snapshot()
 		if ! _is_uid0 ; then
 			${EXIT} 1
 		fi
-
+		if [ "$_replace" = "YES" ]; then
+			_remove_oldest_fscomp_snap "$_objname"
+		fi
 		_fscomp_zfs_snap "$_objname" "$_snapname"
 		;;
 	esac

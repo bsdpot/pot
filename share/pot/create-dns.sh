@@ -41,6 +41,9 @@ pot-create-dns()
 			;;
 		esac
 	done
+	echo "############################"
+	echo "# create-dns is deprecated #"
+	echo "############################"
 
 	if _is_pot $POT_DNS_NAME quiet ; then
 		_info "The dns port ${POT_DNS_NAME} is already available"

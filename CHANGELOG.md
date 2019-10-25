@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - snapshot: -n option to provide custom name to snapshots
 - support to full pot snapshot (external zfs dataset) in snapshot and start, as well as the _pot_zfs_snap_full function
 - support to full pot revert (external zfs dataset) in revert/rollback (option -a)
+- create-dns: undocumented and too hard to maintain
 
 ### Fixed
 - flavorable commands: they cannot exit, but return. create can stop flavour execution otherwise

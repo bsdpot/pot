@@ -21,12 +21,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: overwrite /etc/hosts of a pot, adding all pots on the same bridge and custom entries added via set-hosts
 - flavorable commands: extend support to set-cmd and set-env
 - pot-rdr anchor: the name of the anchor is now a truncated pot name (the last 54 characters)
+- export: it's executed only if one snapshot is available. -F force execution, -A call purge-snapshots to reduce the number of shapshot to 1
 
 ### Deprecated
 - snapshot: -n option to provide custom name to snapshots
 - support to full pot snapshot (external zfs dataset) in snapshot and start, as well as the _pot_zfs_snap_full function
 - support to full pot revert (external zfs dataset) in revert/rollback (option -a)
 - create-dns: undocumented and too hard to maintain
+- export: -s option, to specify a snapshot. It's misleading, because zfs send -R will send all the previous snapshots anyway
 
 ### Fixed
 - flavorable commands: they cannot exit, but return. create can stop flavour execution otherwise

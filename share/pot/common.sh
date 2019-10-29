@@ -266,7 +266,7 @@ _fscomp_zfs_snap()
 	zfs snapshot "${POT_ZFS_ROOT}/fscomp/${_fscomp}@${_snaptag}"
 }
 
-# get the last available snaphost of the given dataset
+# get the last available snapshot of a given dataset
 # $1 the dataset name
 _zfs_last_snap()
 {
@@ -284,7 +284,7 @@ _zfs_last_snap()
 	return 0 # true
 }
 
-# get the oldest available snaphost of the given dataset
+# get the oldest available snapshot of a given dataset
 # $1 the dataset name
 _zfs_oldest_snap()
 {
@@ -300,6 +300,23 @@ _zfs_oldest_snap()
 	fi
 	echo "${_output}"
 	return 0 # true
+}
+
+# get the amount of available snapshots of a given dataset
+# $1 the dataset name
+_zfs_count_snap()
+{
+	# shellcheck disable=SC2039
+	local _dset _output
+	_dset="$1"
+	if [ -z "$_dset" ]; then
+		return 1 # false
+	fi
+	_output="$(zfs list -d 1 -H -t snapshot "$_dset" | grep -c . )"
+	if [ -z "$_output" ]; then
+		 echo 0
+	fi
+	echo "${_output}"
 }
 
 # check if the snapshot of the pot does exist

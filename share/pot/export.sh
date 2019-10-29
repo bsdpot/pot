@@ -12,10 +12,12 @@ export-help() {
 	echo '  -p pot : the working pot'
 	echo '  -t tag : the tag to be used as suffix in the filename'
 	echo '           if no tag is specified, tha snapshot will be used as suffix'
-	echo '  -s snapshot : by default, the last snapshot is taken.'
+	echo '  -s snapshot : by default, the last snapshot is taken. [ DEPRECATED ]'
 	echo '                this option allows to use a different snapshot'
 	echo '  -D directory : where to store the compressed file with the pot'
 	echo '  -l compression-level : from 0 (fast) to 9 (best). Defaul level 6. (man xz for more information)'
+	echo '  -F : force exports of multiple snapshot (only 1 snapshot should be allowed)'
+	echo '  -A : auto-purge older snapshots (only 1 snapshot should be allowed)'
 }
 
 # $1 : pot name
@@ -48,14 +50,16 @@ _export_pot()
 # shellcheck disable=SC2039
 pot-export()
 {
-	local _pname _snap _tag _dir
+	local _pname _snap _tag _dir _auto_purge _force
 	_pname=
 	_snap=
 	_tag=
 	_dir="."
 	_clvl=6
+	_auto_purge=
+	_force=
 	OPTIND=1
-	while getopts "hvp:s:t:D:l:" _o ; do
+	while getopts "hvp:s:t:D:l:FA" _o ; do
 		case "$_o" in
 		h)
 			export-help
@@ -69,6 +73,9 @@ pot-export()
 			;;
 		s)
 			_snap="$OPTARG"
+			echo '####################'
+			echo '# -s is deprecated #'
+			echo '####################'
 			;;
 		t)
 			_tag="$OPTARG"
@@ -88,6 +95,12 @@ pot-export()
 				export-help
 				${EXIT} 1
 			fi
+			;;
+		F)
+			_force="YES"
+			;;
+		A)
+			_auto_purge="YES"
 			;;
 		*)
 			export-help
@@ -111,7 +124,7 @@ pot-export()
 	fi
 	if [ -n "$_snap" ]; then
 		if _is_zfs_pot_snap "$_pname" "$_snap" ; then
-			_error "pot $_pname is not valid"
+			_error "no snap $_snap for pot $_pname found"
 			export-help
 			${EXIT} 1
 		fi
@@ -120,6 +133,20 @@ pot-export()
 		if [ -z "$_snap" ]; then
 			_error "pot $_pname has no snapshots - please use pot snapshot for that"
 			${EXIT} 1
+		fi
+	fi
+	if [ "$( _zfs_count_snap "${POT_ZFS_ROOT}/jails/$_pname" )" -gt 1 ]; then
+		if [ "$_force" = "YES" ]; then
+			_info "Pot $_pname has multiple snapshots and they all will be exported"
+		elif [ "$_auto_purge" = "YES" ]; then
+			_info "Pot $_pname has more than 1 snapshot - auto-purge will delete older snapshots"
+			if ! pot-cmd purge-snapshots -p "$_pname" ; then
+				_error "purge-snapshots failed"
+				${EXIT} 1
+			fi
+		else
+			_error "Pot $_pname has more than 1 snapshot - use -A to auto-purge old snapshots or -F to force exporting"
+			return 1 # false
 		fi
 	fi
 	if [ -z "$_tag" ]; then

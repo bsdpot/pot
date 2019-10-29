@@ -97,19 +97,19 @@ pot-purge-snapshots()
 	if [ -z "$_obj" ]; then
 		_error "one of -p|-f has to be used"
 		purge-snapshots-help
-		$EXIT 1
+		return 1
 	fi
 	if [ -z "$_objname" ]; then
 		_error "-p|-f options need an argument"
 		purge-snapshots-help
-		${EXIT} 1
+		return 1
 	fi
 	case $_obj in
 	"pot")
 		if ! _is_pot "$_objname" ; then
 			_error "$_objname is not a pot!"
 			purge-snapshots-help
-			${EXIT} 1
+			return 1
 		fi
 		_purge_dset "${POT_ZFS_ROOT}/jails/$_objname" "$_all_snap"
 		;;
@@ -117,10 +117,10 @@ pot-purge-snapshots()
 		if ! _zfs_exist "${POT_ZFS_ROOT}/fscomp/$_objname" "${POT_FS_ROOT}/fscomp/$_objname" ; then
 			_error "$_objname is not a valid fscomp"
 			purge-snapshots-help
-			${EXIT} 1
+			return 1
 		fi
 		if ! _is_uid0 ; then
-			${EXIT} 1
+			return 1
 		fi
 		_purge_dset "${POT_ZFS_ROOT}/fscomp/$_objname" "$_all_snap"
 		;;

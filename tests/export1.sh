@@ -24,7 +24,23 @@ _zfs_last_snap()
 	__monitor ZFSLASTSNAP "$@"
 	if [ "$1" = "/jails/test-pot-single" ]; then
 		echo 1234321
+	elif [ "$1" = "/jails/test-pot-single-2" ]; then
+		echo 4321234
 	fi
+}
+
+_zfs_count_snap()
+{
+	if [ "$1" = "/jails/test-pot-single-2" ]; then
+		echo 2
+	else
+		echo 1
+	fi
+}
+
+pot-cmd()
+{
+	__monitor POTCMD "$@"
 }
 
 # app specific stubs
@@ -159,6 +175,15 @@ test_pot_export_030()
 	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
 }
 
+test_pot_export_031()
+{
+	# wrong number of snapshost
+	pot-export -p test-pot-single-2
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
+}
+
 test_pot_export_040()
 {
 	pot-export -p test-pot-single
@@ -234,6 +259,35 @@ test_pot_export_044()
 	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
 	assertEquals "_export arg4" "/tmp" "$EXPORTS_CALL1_ARG4"
 }
+
+test_pot_export_050()
+{
+	pot-export -p test-pot-single-2 -t 1.0 -F
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_zfs_pot_snap calls" "0" "$ISZFSSNAP_CALLS"
+	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export arg1" "test-pot-single-2" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "4321234" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+}
+
+test_pot_export_051()
+{
+	pot-export -p test-pot-single-2 -t 1.0 -A
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_zfs_pot_snap calls" "0" "$ISZFSSNAP_CALLS"
+	assertEquals "pot-cmd calls" "1" "$POTCMD_CALLS"
+	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export arg1" "test-pot-single-2" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "4321234" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+}
 setUp()
 {
 	common_setUp
@@ -244,6 +298,7 @@ setUp()
 	EXPORTS_CALL1_ARG1=""
 	EXPORTS_CALL1_ARG2=""
 	EXPORTS_CALL1_ARG3=""
+	POTCMD_CALLS=0
 }
 
 . shunit/shunit2

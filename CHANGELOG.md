@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- info: support for bridge
 - set-hosts: new command to add custom etc/hosts entries to a pot
 - set-env: new command to add environment variable to a pot
 - network-type private-bridge: add a new network layout, to provide private bridges for a group of pots

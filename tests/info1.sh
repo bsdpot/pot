@@ -28,7 +28,7 @@ test_pot_info_001()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 
 	setUp
-	pot-info -b bb
+	pot-info -z bb
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -58,6 +58,17 @@ test_pot_info_002()
 
 	setUp
 	pot-info -p test-pot -v -q -r
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "Info calls" "0" "$INFOPOT_CALLS"
+}
+
+test_pot_info_003()
+{
+	pot-info -p test-pot -b test-bridge
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"

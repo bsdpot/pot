@@ -78,15 +78,28 @@ _info_pot()
 	echo
 }
 
+# $1 bridge name
+_info_bridge()
+{
+# shellcheck disable=SC2039
+	local _bname
+	_bname="$1"
+	if _is_potnet_available ; then
+		potnet show -b "$_bname"
+	else
+		_error "potnet is needed to show bridge information"
+	fi
+}
+
 # shellcheck disable=SC2039
 pot-info()
 {
-	local _pname _quiet _run
+	local _pname _quiet _run _bname
 	_pname=""
 	_quiet="NO"
 	_run="NO"
 	OPTIND=1
-	while getopts "hvqp:r" _o ; do
+	while getopts "hvqp:rb:" _o ; do
 		case "$_o" in
 		h)
 			info-help
@@ -101,6 +114,9 @@ pot-info()
 		p)
 			_pname="$OPTARG"
 			;;
+		b)
+			_bname="$OPTARG"
+			;;
 		r)
 			_run="YES"
 			;;
@@ -110,8 +126,13 @@ pot-info()
 			;;
 		esac
 	done
-	if [ -z "$_pname" ]; then
-		_error "Option -p is mandatory"
+	if [ -z "$_pname" ] && [ -z "$_bname" ]; then
+		_error "Option -p or -b are mandatory"
+		info-help
+		${EXIT} 1
+	fi
+	if [ -n "$_pname" ] && [ -n "$_bname" ]; then
+		_error "Option -p and -b are mutually exclusive"
 		info-help
 		${EXIT} 1
 	fi
@@ -120,23 +141,37 @@ pot-info()
 		info-help
 		${EXIT} 1
 	fi
-	if ! _is_pot "$_pname" quiet ; then
-		if [ "$_quiet" != "YES" ]; then
-			_error "$_pname is not a pot"
-			info-help
-		fi
-		${EXIT} 1
-	fi
-	if [ "$_quiet" = "YES" ]; then
-		if [ "$_run" = "YES" ]; then
-			if _is_pot_running "$_pname" ; then
-				${EXIT} 0
-			else
-				${EXIT} 1
+	if [ -n "$_pname" ]; then
+		if ! _is_pot "$_pname" quiet ; then
+			if [ "$_quiet" != "YES" ]; then
+				_error "$_pname is not a pot"
+				info-help
 			fi
-		else
+			${EXIT} 1
+		fi
+		if [ "$_quiet" = "YES" ]; then
+			if [ "$_run" = "YES" ]; then
+				if _is_pot_running "$_pname" ; then
+					${EXIT} 0
+				else
+					${EXIT} 1
+				fi
+			else
+				${EXIT} 0
+			fi
+		fi
+		_info_pot "$_pname"
+	fi
+	if [ -n "$_bname" ]; then
+		if ! _is_bridge "$_bname" quiet ; then
+			if [ "$_quiet" != "YES" ]; then
+				_error "$_bname is not a bridge"
+			fi
+			${EXIT} 1
+		fi
+		if [ "$_quiet" = "YES" ]; then
 			${EXIT} 0
 		fi
+		_info_bridge "$_bname"
 	fi
-	_info_pot "$_pname"
 }

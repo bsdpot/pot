@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - flavorable commands: extend support to set-cmd and set-env
 - pot-rdr anchor: the name of the anchor is now a truncated pot name (the last 54 characters)
 - export: it's executed only if one snapshot is available. -F force execution, -A call purge-snapshots to reduce the number of shapshot to 1
+- start: using exec.start instead of command (it seems more predictable)
 
 ### Deprecated
 - snapshot: -n option to provide custom name to snapshots
@@ -34,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - flavorable commands: they cannot exit, but return. create can stop flavour execution otherwise
 - show: fix single type support and directory in fscomp.conf
+- start: if the command has arguments with equals, it would have been truncated
 
 ## [0.9.2] 2019-08-25
 ### Added

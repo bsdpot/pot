@@ -272,7 +272,7 @@ _js_get_cmd()
 	local _pname _cdir _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_value="$( grep "^pot.cmd=" "$_cdir/pot.conf" | cut -f2 -d'=' )"
+	_value="$( grep "^pot.cmd=" "$_cdir/pot.conf" | sed 's/^pot.cmd=//' )"
 	[ -z "$_value" ] && _value="sh /etc/rc"
 	echo "$_value"
 }
@@ -378,7 +378,7 @@ _js_start()
 	fi
 	_bg_start "$_pname" &
 	_info "Starting the pot $_pname"
-	jail -c -J "/tmp/${_pname}.jail.conf" $_param command=$_cmd
+	jail -c -J "/tmp/${_pname}.jail.conf" $_param exec.start="$_cmd"
 	sleep 1
 	if ! _is_pot_running "$_pname" ; then
 		start-cleanup "$_pname" "${_iface}"

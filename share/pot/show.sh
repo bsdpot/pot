@@ -25,9 +25,15 @@ _show_pot()
 	if _is_verbose ; then
 		# TODO show external dataset usage
 		_bname=$( _get_pot_base "$_pname" )
-		printf "\\tbase usage      : %s\\n" "$( zfs list -o used -H "${POT_ZFS_ROOT}/bases/$_bname")"
+		if [ "$( _get_pot_type "$_pname")" = "multi" ]; then
+			printf "\\tbase usage      : %s\\n" "$( zfs list -o used -H "${POT_ZFS_ROOT}/bases/$_bname")"
+		fi
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )
+			if _is_absolute_path "$_dset" ; then
+				# dset is a folder mounted via nullfs
+				continue;
+			fi
 			if [ "$_dset" = "${_dset#${POT_ZFS_ROOT}/jails/$_pname}" ] &&
 				[ "$_dset" = "${_dset#${POT_ZFS_ROOT}/bases/$_bname}" ]; then
 				printf "\\tdataset %s usage  : %s\\n" "${_dset##${POT_ZFS_ROOT}/}" "$( zfs list -o used -H "$_dset")"

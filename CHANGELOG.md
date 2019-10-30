@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - flavorable commands: they cannot exit, but return. create can stop flavour execution otherwise
+- show: fix single type support and directory in fscomp.conf
 
 ## [0.9.2] 2019-08-25
 ### Added

@@ -27,7 +27,7 @@ pot-snapshot()
 		case "$_o" in
 		h)
 			snapshot-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -48,7 +48,7 @@ pot-snapshot()
 			else
 				_error "-p|-f are exclusive"
 				snapshot-help
-				${EXIT} 1
+				return 1
 			fi
 			;;
 		f)
@@ -58,7 +58,7 @@ pot-snapshot()
 			else
 				_error "-p|-f are exclusive"
 				snapshot-help
-				${EXIT} 1
+				return 1
 			fi
 			;;
 		n)
@@ -69,37 +69,37 @@ pot-snapshot()
 			;;
 		*)
 			snapshot-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
 	if [ -z "$_obj" ]; then
 		_error "one of -p|-f has to be used"
 		snapshot-help
-		$EXIT 1
+		return 1
 	fi
 	if [ -z "$_objname" ]; then
 		_error "-p|-f options need an argument"
 		snapshot-help
-		${EXIT} 1
+		return 1
 	fi
 	case $_obj in
 	"pot")
 		if [ -n "$_snapname" ]; then
 			_error "Option -n usable only with fscomp"
-			${EXIT} 1
+			return 1
 		fi
 		if ! _is_pot "$_objname" ; then
 			_error "$_objname is not a pot!"
 			snapshot-help
-			${EXIT} 1
+			return 1
 		fi
 		if _is_pot_running "$_objname" ; then
 			_error "The pot $_objname is still running. Snapshot is possible only for stopped pots"
-			${EXIT} 1
+			return 1
 		fi
 		if ! _is_uid0 ; then
-			${EXIT} 1
+			return 1
 		fi
 
 		if [ "$_full_pot" = "YES" ]; then
@@ -115,13 +115,13 @@ pot-snapshot()
 		if ! _zfs_exist "${POT_ZFS_ROOT}/fscomp/$_objname" "${POT_FS_ROOT}/fscomp/$_objname" ; then
 			_error "$_objname is not a valid fscomp"
 			snapshot-help
-			${EXIT} 1
+			return 1
 		fi
 		if [ "$_full_pot" = "YES" ]; then
 			_info "-a option is incompatible with -f. Ignored"
 		fi
 		if ! _is_uid0 ; then
-			${EXIT} 1
+			return 1
 		fi
 		if [ "$_replace" = "YES" ]; then
 			_remove_oldest_fscomp_snap "$_objname"

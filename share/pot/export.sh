@@ -17,7 +17,7 @@ export-help() {
 	echo '  -D directory : where to store the compressed file with the pot'
 	echo '  -l compression-level : from 0 (fast) to 9 (best). Defaul level 6. (man xz for more information)'
 	echo '  -F : force exports of multiple snapshot (only 1 snapshot should be allowed)'
-	echo '  -A : auto-purge older snapshots (only 1 snapshot should be allowed)'
+	echo '  -A : auto-fix snapshots number (exactly 1 snapshot is allowed)'
 }
 
 # $1 : pot name
@@ -131,8 +131,19 @@ pot-export()
 	else
 		_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
 		if [ -z "$_snap" ]; then
-			_error "pot $_pname has no snapshots - please use pot snapshot for that"
-			${EXIT} 1
+			if [ "$_auto_purge" = "YES" ]; then
+				_info "Taking a snapshot of $_pname"
+				if ! pot-cmd snapshot -p "$_pname" ; then
+					_error "Failed to take a snapshot of pot $_pname"
+					${EXIT} 1
+				else
+					_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
+					_debug "A snapshot of $_pname has been automatically taken (@$_snap)"
+				fi
+			else
+				_error "Pot $_pname has no snapshots - please use pot snapshot for that"
+				${EXIT} 1
+			fi
 		fi
 	fi
 	if [ "$( _zfs_count_snap "${POT_ZFS_ROOT}/jails/$_pname" )" -gt 1 ]; then

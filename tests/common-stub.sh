@@ -16,6 +16,7 @@ EXIT="return"
 # test-pot-single			no		single	0		10.1.2.3	yes		public-bridge
 # test-pot-single-run		yes		single	0		undef		yes		public-bridge
 # test-pot-single-2			no		single	0		10.1.2.3	yes		public-bridge
+# test-pot-single-0			no		single	0		10.1.2.3	yes		public-bridge
 # test-pot-3				no		multi	1		10.1.2.3	no		alias
 
 # test-pot-multi-inherit	no		multi	1					no		inherit
@@ -70,7 +71,7 @@ _is_pot()
 		test-pot|test-pot-run|\
 		test-pot-2|test-pot-run-2|\
 		test-pot-0|test-pot-nosnap|test-pot-3|\
-		test-pot-single|test-pot-single-run|test-pot-single-2|\
+		test-pot-single|test-pot-single-run|test-pot-single-2|test-pot-single-0|\
 		test-pot-multi-inherit|test-pot-multi-private|\
 		${POT_DNS_NAME})
 			return 0 # true
@@ -137,7 +138,8 @@ _get_conf_var()
 		test-pot-2|test-pot-run-2)
 			echo "2"
 			;;
-		test-pot-0|test-pot-single|test-pot-single-run|test-pot-single-2)
+		test-pot-0|test-pot-single|test-pot-single-run|\
+		test-pot-single-2|test-pot-single-0)
 			echo "0"
 			;;
 		esac
@@ -158,7 +160,7 @@ _get_conf_var()
 			echo ""
 			;;
 		test-pot-2|test-pot-3|\
-		test-pot-single|test-pot-single-2)
+		test-pot-single|test-pot-single-2|test-pot-single-0)
 			echo "10.1.2.3"
 			;;
 		test-pot-multi-private)
@@ -176,7 +178,7 @@ _get_conf_var()
 			echo "alias"
 			;;
 		test-pot-2|test-pot-single-run|\
-		test-pot-single|test-pot-single-2)
+		test-pot-single|test-pot-single-2|test-pot-single-0)
 			echo "public-bridge"
 			;;
 		test-pot-multi-private)
@@ -192,14 +194,14 @@ _get_conf_var()
 		test-pot-multi-inherit|test-pot-multi-private)
 			echo "multi"
 			;;
-		test-pot-single|test-pot-single-run|test-pot-single-2)
+		test-pot-single|test-pot-single-run|test-pot-single-2|test-pot-single-0)
 			echo "single"
 		esac
 		;;
 	"vnet")
 		case $1 in
 		test-pot-2|test-pot-single|test-pot-single-run|\
-		test-pot-multi-private|test-pot-single-2)
+		test-pot-multi-private|test-pot-single-2|test-pot-single-0)
 			echo "true"
 			;;
 		test-pot-3|test-pot-multi-inherit)

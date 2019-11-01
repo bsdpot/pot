@@ -26,6 +26,13 @@ _zfs_last_snap()
 		echo 1234321
 	elif [ "$1" = "/jails/test-pot-single-2" ]; then
 		echo 4321234
+	elif [ "$1" = "/jails/test-pot-single-0" ]; then
+		if [ -e /tmp/pot_test_last_snap ]; then
+			echo 123123123
+			rm -f /tmp/pot_test_last_snap
+		else
+			touch /tmp/pot_test_last_snap
+		fi
 	fi
 }
 
@@ -184,6 +191,15 @@ test_pot_export_031()
 	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
 }
 
+test_pot_export_032()
+{
+	# no snapshosts available
+	pot-export -p test-pot-single-0
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_export calls" "0" "$EXPORTS_CALLS"
+}
+
 test_pot_export_040()
 {
 	pot-export -p test-pot-single
@@ -282,12 +298,30 @@ test_pot_export_051()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_zfs_pot_snap calls" "0" "$ISZFSSNAP_CALLS"
 	assertEquals "pot-cmd calls" "1" "$POTCMD_CALLS"
+	assertEquals "pot-cmd arg1" "purge-snapshots" "$POTCMD_CALL1_ARG1"
 	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
 	assertEquals "_export arg1" "test-pot-single-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "4321234" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
 	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
 }
+
+test_pot_export_052()
+{
+	pot-export -p test-pot-single-0 -t 1.0 -A
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_zfs_pot_snap calls" "0" "$ISZFSSNAP_CALLS"
+	assertEquals "pot-cmd calls" "1" "$POTCMD_CALLS"
+	assertEquals "pot-cmd arg1" "snapshot" "$POTCMD_CALL1_ARG1"
+	assertEquals "_export calls" "1" "$EXPORTS_CALLS"
+	assertEquals "_export arg1" "test-pot-single-0" "$EXPORTS_CALL1_ARG1"
+	assertEquals "_export arg2" "123123123" "$EXPORTS_CALL1_ARG2"
+	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
+	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+}
+
 setUp()
 {
 	common_setUp
@@ -299,6 +333,11 @@ setUp()
 	EXPORTS_CALL1_ARG2=""
 	EXPORTS_CALL1_ARG3=""
 	POTCMD_CALLS=0
+}
+
+tearDown()
+{
+	rm -f /tmp/pot_test_last_snap
 }
 
 . shunit/shunit2

@@ -41,12 +41,12 @@ This command will just create the needed ZFS datasets.
 ## Create a simple `pot`
 We can now create the simplest `pot`
 ```console
-# pot create -p mypot -t single -b 11.2
+# pot create -p mypot -t single -b 11.3
 ```
 **NOTE** The FreeBSD machine doesn't have to be the same version of your `pot` (jail). However, the hosting machine's version has to be greater or equal than the `pot`'s one.
-For instance, you can run a FreeBSD 10.4 `pot` on a FreeBSD 11.2 host. You **cannot** run a FreeBSD 12 `pot` on a FreeBSD 11.2 host.
+For instance, you can run a FreeBSD 10.4 `pot` on a FreeBSD 11.3 host. You **cannot** run a FreeBSD 12 `pot` on a FreeBSD 11.3 host.
 
-So, we created a `pot`, named `mypot`, based on FreeBSD 11.2 consisting of one ZFS dataset.
+So, we created a `pot`, named `mypot`, based on FreeBSD 11.3 consisting of one ZFS dataset.
 
 Now you can start it or stop it, via:
 ```console
@@ -69,7 +69,7 @@ You can see a list of the `pot`s available on you local machine. The verbose out
 pot name : mypot
 	ip4 : inherit
 	active : true
-	base : 11.2
+	base : 11.3
 	level : 0
 	datasets:
 	snapshot:
@@ -79,7 +79,7 @@ If you want to get some information on a specific `pot`, this command is more us
 # pot info -v -p mypot
 pot name : mypot
 	type : single
-	base : 11.2
+	base : 11.3
 	level : 0
 	ip4 : inherit
 	active : true
@@ -220,12 +220,13 @@ During the creation phase, it's possible to specify which type of network our `p
 * inherit
 * alias (IPv4 or IPv6) n the host network interface
 * IPv4 address on the public internal virtual network
+* IPv4 address on a private internal virtual network
 
 By default, `inherit` is the chosen one.
 ### Network configuration: inherit
 To use the `inherit` network type, a `pot` can be created with the following command:
 ```console
-# pot create -p mypot -t single -b 11.2 -N inherit
+# pot create -p mypot -t single -b 11.3 -N inherit
 ```
 The option `-N` can be omitted, because `inherit` is the default value.
 The `inherit` type means that `mypot` will reuse the same network stack of the host machine.
@@ -237,7 +238,7 @@ If your host is a network that support static IPs, you can assign one static IP 
 For example, your system has 192.168.178.20/24 as IP address and your network administrator reserved you the additional IP address 192.168.178.200.
 To assing the latter IP address to your `pot` you can create it with the following command:
 ```console
-# pot create -p mypot -t single -b 11.2 -N alias -i 192.168.178.200
+# pot create -p mypot -t single -b 11.3 -N alias -i 192.168.178.200
 # pot start mypot
 # pot info -vp mypot
 ```
@@ -248,7 +249,7 @@ More information about alias addresses on network interfaces are available in th
 
 ### Network configuration: public virtual network bridge
 Thanks to `VNET(9)`, `pot` supports an IPv4 virtual network. This network is configured in configuration file (`/usr/local/etc/pot/pot.conf`), so be sure you have it properly configured.
-At the moment, `pot` supports only one big public virtual network, represented by a shared network bridge, so all `pot`s will share it.
+This network type refers to a shared bridge where the public virtual network lives. All `pot`s with this network type will share it. The virtual internal network is connected with the ouside via NAT.
 
 To help the `pot` framework and all users to manage the public virtual network, an additional package is required, normally automatically installed as dependency of the package `pot`. It's also manually installable via:
 ```console
@@ -279,22 +280,67 @@ This command will create and configure the network interfaces properly and will 
 
 The following command will create a `pot` running on the internal network:
 ```console
-# pot create -p mypot -t single -b 11.2 -N public-bridge -i auto
+# pot create -p mypot -t single -b 11.3 -N public-bridge -i auto
 # pot run mypot
 root@mypot:~ # ping 1.1.1.1
 [..]
 root@mypot:~ # exit
 # pot stop mypot
 ```
-The `auto` keyword will automatically select an available address in the internal virtual network.
+The `auto` keyword will automatically select an available address in the internal virtual network and it's the default value, hence the `-i` option can be omitted.
 Commands like `pot info -p mypot` and `potnet show` will show you exactly which address has been assigned to your `pot`
 
-If you prefer to assign a specific IP address of your virtual network, you can just do:
+If you prefer to assign a specific IP address of your virtual network to your `pot`, you can just do:
 ```console
-# pot create -p mypot -t single -b 11.2 -N public-bridge -i 10.192.0.10
+# pot create -p mypot2 -t single -b 11.3 -N public-bridge -i 10.192.0.10
 ```
 `pot` will verify if the IP address is available and free to be used.
-#### Export network services with the internal network
+
+### Network configuration: private virtual network bridge
+The public virtual network has the downside that all `pot`s share the same bridge, affecting isolation.
+To mitigate this issue, private virtual network has been introduced.
+A private virtual network is just a different bridge, that can be used to connect multiple `pot`s, but it's not automatically shared with all `pot`s.
+
+First of all, to use a private virtual network a private bridge has to be created:
+```console
+# pot create-private-bridge -B mybridge -S 4
+```
+This command will create a new private bridge, called `mybridge`, with a network segment big enough to connect 4 `pot`s.
+Using `potnet` it's possible to check the details of the private bridge via the command:
+```console
+# potnet show -b mybridge
+	10.192.0.16	mybridge bridge - network
+	10.192.0.17	mybridge bridge - gateway
+	10.192.0.23	mybridge bridge - broadcast
+```
+The output is from my configuration, however your address' range can differ, depending on the configuration values you have adopted and the network segment available when the bridge is created.
+
+To activate a specific bridge, you can use the command:
+```console
+# pot vnet-start -B mybridge
+```
+This command will create and configure the network interfaces properly and will activate `pf` to perform NAT on the virtual network.
+
+**NOTE** This command is automatically executed when a `pot` is configured to use the public virtual network. There is no need to run it manually.
+
+The following command will create a `pot` running on the private internal network:
+```console
+# pot create -p mypot -t single -b 11.3 -N private-bridge -B mybridge -i auto
+# pot run mypot
+root@mypot:~ # ping 1.1.1.1
+[..]
+root@mypot:~ # exit
+# pot stop mypot
+```
+The `auto` keyword will automatically select an available address in the internal virtual network and it's the default value, hence the `-i` option can be omitted.
+Commands like `pot info -p mypot` and `potnet show -b mybridge` will show you exactly which address has been assigned to your `pot`
+
+If you prefer to assign a specific IP address of your virtual network to your `pot`, you can just do:
+```console
+# pot create -p mypot2 -t single -b 11.3 -N private-bridge -B mybridge -i 10.192.0.19
+```
+`pot` will verify if the IP address is available and free to be used.
+### Export network services with the internal network
 The virtual network is not visible outside the host machine, becuase it's based on NAT of the pf's NAT.
 To make your network services running in your `pot` visible outside the TCP/UDP, desired ports have to be exported/redirected.
 `pot` provides a command to tell which port has to be exported.

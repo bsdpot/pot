@@ -65,6 +65,15 @@ test_1.0.xz.skein
 ```
 The first file is the image, the second file is a hash file, used by the `import` command to verify the integrity.
 
+#### Snapshots management
+
+The `export` command will create an image if and only if one snapshot is available.
+The flag `-A` try to automatically fix the number of available snapshots:
+* if 0 snapshots are available, `-A` will automatically invoke `pot snapshot`
+* if 2+ snapshots are available, `-A` will automatically invoke `pot purge-snapshots`
+
+The command `pot purge-snapshots` deletes all snapshots, except the last one.
+
 ### Images creation automated with flavours
 
 Flavour is the way we currently provide to automate the customization of a `pot`.
@@ -92,9 +101,9 @@ Now we automate those commands in a flavour, called `nginx-test`.
 In the flavour folder we create one file for the `pot` configuration:
 ```console
 # cat /usr/local/etc/pot/flavours/nginx-test
-set-cmd -p test -c "nginx -g 'daemon off;'"
-set-attribute -p test -A no-rc-script -V YES
-set-attribute -p test -A persistent -V NO
+set-cmd -c "nginx -g 'daemon off;'"
+set-attribute -A no-rc-script -V YES
+set-attribute -A persistent -V NO
 set-rss -C 1
 ```
 
@@ -119,11 +128,13 @@ The flavour `nginx-test` can now be used with the `create` command:
 
 An important note: while the bootstrap script is a shell script, where you can do whatever you want, the `pot` command usable in a flavour are a small subset:
 * `add-dep`
+* `export-ports`
 * `copy-in`
 * `mount-in`
 * `set-attribute` (the abbreviated form `set-attr` is not recognized here)
+* `set-cmd`
+* `set-env`
 * `set-rss`
-* `export-ports`
 
 **NOTE** the `mount-in` command has to be used carefully. If the `pot` will be migrated to a different machine, the folders or the ZFS datasets has to be manually migrated as well
 

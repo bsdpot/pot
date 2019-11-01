@@ -65,7 +65,7 @@ In order to use network types like `alias` or `public-bridge`, some configuratio
 #### `POT_EXTIF` (default `em0`)
 Currently, `pot` assumes that all the network traffic is going through one physical network interface.
 This parameter configures `pot` to use the specified network interface.
-It's relevant for `alias` and `public-bridge` network type.
+It's relevant for `alias`, `public-bridge` and `private-bridge` network type.
 
 #### `POT_NETWORK` (default `10.192.0.0/10`)
 This parameter specifies the IPv4 address of you internal virtual network and is used by the `public-bridge` network type only.
@@ -78,6 +78,20 @@ Theoretically, the netmask can be derived by the `POT_NETWORK`. For now, this is
 
 #### `POT_GATEWAY` (default `10.192.0.1`)
 This parameter specifies the IP address that will be used as default gateway in your internal virtual network. It has to be part of the network specified in `POT_NETWORK` and it will be used as default gateway for all `pot`s attached to the internal virtual network (`public-bridge` network type).
+
+#### `POT_EXTRA_EXTIF` (default empty)
+In case your host has multiple network interfaces connected to multiple network segments, this option allows your `pot`s to access those network segments.
+For example, let's say that you have 2 vlan interfaces, called `vlan20` and `vlan30`.
+`vlan20` is configured as 10.0.20.4/24
+`vlan30` is configured as 10.0.30.8/24
+To make those segments accessible, the configuration file should look like:
+```
+POT_EXTRA_EXTIF=vlan20 vlan30
+POT_NETWORK_vlan20=10.0.20.0/24
+POT_NETWORK_vlan30=10.0.30.0/24
+```
+Currently there is no way to use additional external interface for the network type `alias`.
+All other network types are supported
 
 #### Network validation
 If you want to check that your network configuration is valid, you can use the utility `potnet`:

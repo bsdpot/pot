@@ -25,9 +25,10 @@
 # POT_EXTIF=em0
 
 # The list of extra network interface, to make other network segments accessible
-# POT_EXTRA_EXTIF=vlan20
+# POT_EXTRA_EXTIF=vlan20 vlan50
 # for each extra interface, a variable is used to sepcify its network segment
-# POT_NETWORK_vlan20=192.168.0.0/16
+# POT_NETWORK_vlan20=192.168.100.0/24
+# POT_NETWORK_vlan50=10.50.50.0/24
 
 # DNS on the Internal Virtual Network
 
@@ -41,4 +42,4 @@
 
 # name of the tunnel network interface
 # POT_VPN_EXTIF=tun0
-# POT_VPN_NETWORKS=192.168.0.0/16
+# POT_VPN_NETWORKS=192.168.0.0/24 192.168.10.0/24

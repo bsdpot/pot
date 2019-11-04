@@ -114,6 +114,11 @@ pot-import()
 			_tag="$OPTARG"
 			;;
 		U)
+			if [ -z "$OPTARG" ]; then
+				_error "Argument of -U cannot be empty"
+				import-help
+				${EXIT} 1
+			fi
 			_URL="$OPTARG"
 			;;
 		*)

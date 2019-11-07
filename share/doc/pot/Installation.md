@@ -38,6 +38,13 @@ To do so:
 ```
 This settings will take effect at the next reboot.
 
+#### Known issue
+We have found a performance issue with the `vtnet` driver.
+If you are installing `pot` on a VM using `vtnet`, probably you want to add this line to your `/boot/loader.conf`:
+```console
+echo hw.vtnet.lro_disable=1 >> /boot/loader.conf
+```
+This settings will take effect at the next reboot.
 ## `pot` framework configuration
 
 Under the folder `/usr/local/etc/pot` you'll find two files:

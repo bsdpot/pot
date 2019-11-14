@@ -54,6 +54,7 @@ _cj_zfs()
 			zfs create "$_jdset/m"
 			# create the minimum needed tree
 			mkdir -p "${POT_FS_ROOT}/jails/$_pname/m/tmp"
+			chmod 1777 ${POT_FS_ROOT}/jails/$_pname/m/tmp
 			mkdir -p "${POT_FS_ROOT}/jails/$_pname/m/dev"
 		else
 			# clone the last snapshot of _potbase

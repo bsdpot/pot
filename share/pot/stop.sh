@@ -33,6 +33,14 @@ _js_stop()
 		if _is_pot_vnet "$_pname" ; then
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
 		fi
+		
+		if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/prestop.sh" ]; then
+			_info "Executing the pre-stop script for the pot $_pname"
+			(
+				eval $( pot info -E -p "$_pname" )
+				${POT_FS_ROOT}/jails/$_pname/conf/prestop.sh
+			)
+		fi
 		_debug "Stop the pot $_pname"
 		jail -q -r "$_pname"
 		if [ -n "$_epair" ]; then
@@ -63,6 +71,13 @@ _js_stop()
 		pkill -x "ncat-$_pname"
 	fi
 
+	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststop.sh" ]; then
+		_info "Executing the post-stop script for the pot $_pname"
+		(
+			eval $( pot info -E -p "$_pname" )
+			${POT_FS_ROOT}/jails/$_pname/conf/poststop.sh
+		)
+	fi
 	return 0 # true
 }
 

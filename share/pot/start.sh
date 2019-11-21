@@ -319,6 +319,13 @@ _bg_start()
 		echo "pot.attr.to-be-pruned=YES" >> "$_conf"
 	fi
 	_js_rss "$_pname"
+	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststart.sh" ]; then
+		_info "Executing the post-start script for the pot $_pname"
+		(
+			eval $( pot info -E -p "$_pname" )
+			${POT_FS_ROOT}/jails/$_pname/conf/poststart.sh
+		)
+	fi
 }
 
 # $1 jail name
@@ -375,6 +382,13 @@ _js_start()
 		_cmd=/tmp/tinirc
 	else
 		_cmd="$( _js_get_cmd "$_pname" )"
+	fi
+	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/prestart.sh" ]; then
+		_info "Executing the pre-start script for the pot $_pname"
+		(
+			eval $( pot info -E -p "$_pname" )
+			${POT_FS_ROOT}/jails/$_pname/conf/prestart.sh
+		)
 	fi
 	_bg_start "$_pname" &
 	_info "Starting the pot $_pname"

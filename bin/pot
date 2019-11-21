@@ -99,6 +99,7 @@ Commands:
 	set-cmd -- Set the command to start the pot
 	set-env -- Set environment variabls inside a pot
 	set-hosts -- Set etc/hosts entries inside a pot
+	set-hook -- Set hook scripts for a pot
 	set-attr -- Set a pot's attribute
 	get-attr -- Get a pot's attribute
 	export-ports -- Let export tcp ports
@@ -160,7 +161,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|create-dns|\
 	create-private-bridge|\
-	copy-in|mount-in|prune|\
+	copy-in|mount-in|prune|set-hook|\
 	destroy|add-dep|set-rss|get-rss|set-cmd|set-env|set-hosts|\
 	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\

@@ -10,6 +10,23 @@ info-help()
 	echo '  -q quiet'
 	echo '  -p pname: pot name'
 	echo '  -r check if the pot is running'
+	echo '  -E output in environment variables form (only for pot)'
+}
+
+# $! pot name
+_info_pot_env()
+{
+	# shellcheck disable=SC2039
+	local _pname _cdir _ip
+	_pname=$1
+	echo "export _POT_NAME=$_pname"
+	echo "export _POT_IP=$( _get_conf_var "$_pname" ip)"
+	if [ "$( _get_pot_network_type "$_pname" )" = "private-bridge" ]; then
+		echo "export _POT_BRIDGE=$( _get_conf_var "$_pname" bridge)"
+	fi
+	if _is_pot_running "$_pname" ; then
+		echo "export _POT_JID=$( jls -j "$_pname" jid )"
+	fi
 }
 
 # $1 pot name
@@ -98,8 +115,9 @@ pot-info()
 	_pname=""
 	_quiet="NO"
 	_run="NO"
+	_env_output="NO"
 	OPTIND=1
-	while getopts "hvqp:rb:" _o ; do
+	while getopts "hvqp:rb:E" _o ; do
 		case "$_o" in
 		h)
 			info-help
@@ -109,7 +127,7 @@ pot-info()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
 		q)
-			_quiet="YES"
+			_quiet="quiet"
 			;;
 		p)
 			_pname="$OPTARG"
@@ -119,6 +137,9 @@ pot-info()
 			;;
 		r)
 			_run="YES"
+			;;
+		E)
+			_env_output="YES"
 			;;
 		*)
 			info-help
@@ -136,20 +157,23 @@ pot-info()
 		info-help
 		${EXIT} 1
 	fi
-	if [ "$_quiet" = "YES" ] && _is_verbose ; then
+	if [ "$_quiet" = "quiet" ] && _is_verbose ; then
 		_error "Option -q and -v are mutually exclusive"
+		info-help
+		${EXIT} 1
+	fi
+	if [ "$_env_output" = "YES" ] && [ -z "$_pname" ]; then
+		_error "Environment variable output available for pot only"
 		info-help
 		${EXIT} 1
 	fi
 	if [ -n "$_pname" ]; then
 		if ! _is_pot "$_pname" quiet ; then
-			if [ "$_quiet" != "YES" ]; then
-				_error "$_pname is not a pot"
-				info-help
-			fi
+			_qerror "$_quiet" "$_pname is not a pot"
+			info-help
 			${EXIT} 1
 		fi
-		if [ "$_quiet" = "YES" ]; then
+		if [ "$_quiet" = "quiet" ]; then
 			if [ "$_run" = "YES" ]; then
 				if _is_pot_running "$_pname" ; then
 					${EXIT} 0
@@ -160,16 +184,18 @@ pot-info()
 				${EXIT} 0
 			fi
 		fi
-		_info_pot "$_pname"
+		if [ "$_env_output" = "YES" ]; then
+			_info_pot_env "$_pname"
+		else
+			_info_pot "$_pname"
+		fi
 	fi
 	if [ -n "$_bname" ]; then
 		if ! _is_bridge "$_bname" quiet ; then
-			if [ "$_quiet" != "YES" ]; then
-				_error "$_bname is not a bridge"
-			fi
+			_qerror "$_quiet" "$_bname is not a bridge"
 			${EXIT} 1
 		fi
-		if [ "$_quiet" = "YES" ]; then
+		if [ "$_quiet" = "quiet" ]; then
 			${EXIT} 0
 		fi
 		_info_bridge "$_bname"

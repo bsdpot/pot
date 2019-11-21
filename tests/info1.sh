@@ -20,6 +20,11 @@ _info_pot()
 	__monitor INFOPOT "$@"
 }
 
+_info_pot_env()
+{
+	__monitor INFOPOTENV "$@"
+}
+
 test_pot_info_001()
 {
 	pot-info
@@ -163,6 +168,7 @@ setUp()
 	common_setUp
 	HELP_CALLS=0
 	INFOPOT_CALLS=0
+	INFOPOTENV_CALLS=0
 }
 
 . shunit/shunit2

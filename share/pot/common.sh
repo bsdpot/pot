@@ -830,16 +830,38 @@ _is_valid_release()
 	fi
 }
 
-# $1 release, in short format, major.minor or major.minor-RC#
+# $1 FreeBSD release.
+# for instance 12.0 or 13.0-RC1
+_get_freebsd_release_name()
+{
+	if echo "$1" | grep -q "RC" ; then
+		echo "$1"
+	else
+		echo "$1-RELEASE"
+	fi
+}
+
 _fetch_freebsd()
+{
+	local _rel
+	if ! _fetch_freebsd_internal "$1" ; then
+		# remove artifact and retry only once
+		_rel="$( _get_freebsd_release_name "$1" )"
+		rm -f /tmp/"${_rel}"_base.txz
+		if ! _fetch_freebsd_internal "$1" ; then
+			return 1 # false
+		fi
+		return 0 # true
+	fi
+	return 0 # true
+}
+
+# $1 release, in short format, major.minor or major.minor-RC#
+_fetch_freebsd_internal()
 {
 	# shellcheck disable=SC2039
 	local _rel _sha _sha_m
-	if echo "$1" | grep -q "RC" ; then
-		_rel="$1"
-	else
-		_rel="$1"-RELEASE
-	fi
+	_rel="$( _get_freebsd_release_name "$1" )"
 
 	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
 		fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz

@@ -70,6 +70,11 @@ cat()
 	fi
 }
 
+rm()
+{
+	__monitor RM "$@"
+}
+
 # UUT
 . ../share/pot/create-base.sh
 
@@ -81,7 +86,7 @@ test_fetch_freebsd_001()
 	# not downloaded
 	_fetch_freebsd 2.1
 	assertEquals "return code" "1" "$?"
-	assertEquals "fetch calls" "1" "$FETCH_CALLS"
+	assertEquals "fetch calls" "2" "$FETCH_CALLS"
 	assertEquals "fetch arg4" "/tmp/2.1-RELEASE_base.txz" "$FETCH_CALL1_ARG4"
 	assertEquals "error calls" "0" "$ERROR_CALLS"
 }
@@ -92,7 +97,7 @@ test_fetch_freebsd_002()
 	_fetch_freebsd 8.1
 	assertEquals "return code" "1" "$?"
 	assertEquals "fetch calls" "0" "$FETCH_CALLS"
-	assertEquals "error calls" "1" "$ERROR_CALLS"
+	assertEquals "error calls" "2" "$ERROR_CALLS"
 }
 
 test_fetch_freebsd_003()
@@ -101,7 +106,7 @@ test_fetch_freebsd_003()
 	_fetch_freebsd 12.0
 	assertEquals "return code" "1" "$?"
 	assertEquals "fetch calls" "0" "$FETCH_CALLS"
-	assertEquals "error calls" "1" "$ERROR_CALLS"
+	assertEquals "error calls" "2" "$ERROR_CALLS"
 }
 
 test_fetch_freebsd_004()
@@ -125,6 +130,7 @@ setUp()
 {
 	common_setUp
 	FETCH_CALLS=0
+	RM_CALLS=0
 }
 
 . shunit/shunit2

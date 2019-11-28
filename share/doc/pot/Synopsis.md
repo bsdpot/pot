@@ -1,0 +1,4 @@
+SYNOPSIS
+--------
+
+`pot` SUBCOMMAND

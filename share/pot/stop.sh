@@ -65,10 +65,10 @@ _js_stop()
 	fi
 
 	if [ -r "$_jdir/ncat.pid" ]; then
-		pkill -F "$_jdir/ncat.pid" "ncat-$_pname"
+		pkill -F "$_jdir/ncat.pid" -f "ncat-$_pname"
 		rm -f "$_jdir/ncat.pid"
-	elif pgrep -q -x "ncat-$_pname" ; then
-		pkill -x "ncat-$_pname"
+	elif pgrep -q -f "$_jdir/ncat-$_pname" ; then
+		pkill -f "$_jdir/ncat-$_pname"
 	fi
 
 	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststop.sh" ]; then

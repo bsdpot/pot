@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create: if FreeBSD base fetch is interrupted, a broken file is left and the checksum will always fail (#73)
 - import: if the image fetch is interrupted, a broken file is left and the checksum will always fail
 - import: fix hostname rename
+- localhost-tunnel: fix kill of ncat tunnel, when the pot has a long name
 
 ## [0.10.0] 2019-11-01
 ### Added

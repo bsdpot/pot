@@ -233,7 +233,7 @@ _js_export_ports()
 	pfctl -a "pot-rdr/$_aname" -f "$_pfrules"
 	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
 	if [ "$_lo_tunnel" = "YES" ]; then
-		_pdir="${POT_FS_ROOT}/jails/$_pname/"
+		_pdir="${POT_FS_ROOT}/jails/$_pname"
 		if [ -x "/usr/local/bin/ncat" ]; then
 			cp /usr/local/bin/ncat "$_pdir/ncat-$_pname"
 			daemon -f -p $_pdir/ncat.pid $_pdir/ncat-$_pname -lk "$_host_port" -c "/usr/local/bin/ncat $_ip $_pot_port"

@@ -20,6 +20,25 @@ import-help() {
 _fetch_pot()
 {
 	# shellcheck disable=SC2039
+	local _filename
+	_filename="${1}_${2}.xz"
+	if ! _fetch_pot_internal "$1" "$2" "$3" ; then
+		# remove the artifact and retry only once
+		rm -f "${POT_CACHE}/$_filename"
+		if ! _fetch_pot_internal "$1" "$2" "$3" ; then
+			return 1 # false
+		fi
+		return 0 # true
+	fi
+	return 0 # true
+}
+
+# $1 : remote pot name
+# $2 : tag
+# $3 : URL
+_fetch_pot_internal()
+{
+	# shellcheck disable=SC2039
 	local _rpname _tag _URL _filename
 	_rpname=$1
 	_tag=$2
@@ -54,11 +73,12 @@ _fetch_pot()
 _import_pot()
 {
 	# shellcheck disable=SC2039
-	local _pname _rpname _tag _filename _network_type _vnet _ip _newip
+	local _pname _rpname _tag _filename _network_type _newip _cdir
 	_rpname="$1"
 	_tag="$2"
 	_pname="$3"
 	_filename="${_rpname}_${_tag}.xz"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	xzcat "${POT_CACHE}/$_filename" | zfs recv "${POT_ZFS_ROOT}/jails/$_pname"
 	# xzcat  "${POT_CACHE}/$_filename" | zfs recv -u ${POT_ZFS_ROOT}/jails/$_pname
 	# zfs set mountpoint=${POT_FS_ROOT}/jails/$_rpname
@@ -66,7 +86,7 @@ _import_pot()
 
 	# pot.conf modifications
 	_hostname="${_pname}.$( hostname )"
-	${SED} -i '' -e "/^host.hostname=.*/d" "${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+	${SED} -i '' -e "/^host.hostname=.*/d" "$_cdir/pot.conf"
 	echo "host.hostname=\"${_hostname}.$( hostname )\"" >> "$_cdir/pot.conf"
 
 	# network rework

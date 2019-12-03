@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - create: permission of /tmp in single type are wrong (#72)
-- create: if FreeBSD base fetch is interuupted, a broken file is left and the chechum will alway faile (#73)
+- create: if FreeBSD base fetch is interrupted, a broken file is left and the checksum will always fail (#73)
+- import: if the image fetch is interrupted, a broken file is left and the checksum will always fail
+- import: fix hostname rename
 
 ## [0.10.0] 2019-11-01
 ### Added

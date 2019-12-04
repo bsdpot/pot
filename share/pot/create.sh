@@ -359,6 +359,12 @@ _cj_single_install()
 	  cd $_proot
 	  _info "Extract the tarball"
 	  tar xkf /tmp/${_rel}_base.txz
+	  if [ ! -d usr/home ]; then
+		  mkdir -p usr/home
+	  fi
+	  if [ ! -e home ]; then
+		  ln -s usr/home home
+	  fi
 	)
 }
 

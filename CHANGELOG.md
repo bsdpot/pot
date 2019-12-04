@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - set-hooks: add support for pre/post start/stop hooks. Script are executed in the host environment (#61)
 
+### Changed
+- home-usr/home: those link are not always available. Change create and crate-base to have them always (reported by Philip Jocks)
+
 ### Fixed
 - create: permission of /tmp in single type are wrong (#72)
 - create: if FreeBSD base fetch is interrupted, a broken file is left and the checksum will always fail (#73)

@@ -282,7 +282,12 @@ _js_norc()
 	local _pname
 	_pname="$1"
 	_cmd="$(_js_get_cmd $_pname)"
-	echo "ifconfig lo0 inet 127.0.0.1 alias" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+	case "$( _get_conf_var "$_pname" network_type )" in
+	"public-bridge"|\
+	"private-bridge")
+		echo "ifconfig lo0 inet 127.0.0.1 alias" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+		;;
+	esac
 	echo $_cmd >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 	chmod a+x "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 }

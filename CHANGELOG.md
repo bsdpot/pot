@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+* tinitc: lo1 initialization needed only for public or private bridge
+
 ### [0.10.1] 2019-12-04
 ### Added
 - set-hooks: add support for pre/post start/stop hooks. Script are executed in the host environment (#61)

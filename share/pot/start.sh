@@ -315,7 +315,7 @@ _bg_start()
 	_conf="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	sleep 3
-	if [ "$_persist" = "NO" ]; then
+	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
 		jail -m name="$_pname" nopersist
 	fi
 	if _is_pot_prunable "$_pname" ; then
@@ -323,7 +323,9 @@ _bg_start()
 		${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" "$_conf"
 		echo "pot.attr.to-be-pruned=YES" >> "$_conf"
 	fi
-	_js_rss "$_pname"
+	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
+		_js_rss "$_pname"
+	fi
 	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststart.sh" ]; then
 		_info "Executing the post-start script for the pot $_pname"
 		(

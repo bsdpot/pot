@@ -729,6 +729,25 @@ _umount()
 	fi
 }
 
+# $1 pot
+# $2 cmd
+_set_command()
+{
+	# shellcheck disable=SC2039
+	local _pname _cmd _cdir _cmd1 _cmd2
+	_pname="$1"
+	_cmd="$2"
+	_cdir=$POT_FS_ROOT/jails/$_pname/conf
+	sed -i '' -e "/^pot.cmd=.*/d" "$_cdir/pot.conf"
+	_cmd1="$( echo "$_cmd" | sed 's/^"//' )"
+	if [ "$_cmd" = "$_cmd1" ]; then
+		echo "pot.cmd=$_cmd" >> "$_cdir"/pot.conf
+	else
+		_cmd2="$( echo "$_cmd1" | sed 's/"$//' )"
+		echo "pot.cmd=$_cmd2" >> "$_cdir/pot.conf"
+	fi
+}
+
 # $1 the cmd
 # all other parameter will be ignored
 # tested

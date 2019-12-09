@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Fixed
+* flavor: set-cmd can cause issue if it has quotes or double quotes in the command string
 * tinirc: lo1 initialization needed only for public or private bridge
 * start: background tasks now check if the pot is running
 

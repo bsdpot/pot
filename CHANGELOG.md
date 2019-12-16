@@ -6,12 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+* fbsd-update flavour: add a flavour to run freebsd update
+
+### Changed
+* slim flavour: remove a bounch of other directories
+
+
 ### Fixed
 * flavor: set-cmd can cause issue if it has quotes or double quotes in the command string
 * tinirc: lo1 initialization needed only for public or private bridge
 * start: background tasks now check if the pot is running
 
-### [0.10.1] 2019-12-04
+## [0.10.1] 2019-12-04
 ### Added
 - set-hooks: add support for pre/post start/stop hooks. Script are executed in the host environment (#61)
 

@@ -12,11 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 * slim flavour: remove a bounch of other directories
 
-
 ### Fixed
 * flavor: set-cmd can cause issue if it has quotes or double quotes in the command string
 * tinirc: lo1 initialization needed only for public or private bridge
 * start: background tasks now check if the pot is running
+* init: fix bridge folder creation
 
 ## [0.10.1] 2019-12-04
 ### Added

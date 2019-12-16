@@ -77,7 +77,7 @@ pot-init()
 		fi
 	fi
 	# create the bridges folder
-	mkdir -p "${POT_ZFS_ROOT}/bridges"
+	mkdir -p "${POT_FS_ROOT}/bridges"
 	# create mandatory directories for logs
 	mkdir -p /usr/local/etc/syslog.d
 	mkdir -p /usr/local/etc/newsyslog.conf.d

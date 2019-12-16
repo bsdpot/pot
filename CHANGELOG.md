@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * tinirc: lo1 initialization needed only for public or private bridge
 * start: background tasks now check if the pot is running
 * init: fix bridge folder creation
+* prepare: fix prepare when no command is provided (-c is optional)
 
 ## [0.10.1] 2019-12-04
 ### Added

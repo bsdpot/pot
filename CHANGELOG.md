@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.10.2] 2019-12-17
 ### Added
 * fbsd-update flavour: add a flavour to run freebsd update
 

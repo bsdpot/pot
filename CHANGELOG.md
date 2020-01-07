@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.10.3] 2020-01-07
 ### Changed
 - export-ports: relax the check bout the pot's network type
 - list: print a message, if there are no pot yet

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - export-ports: relax the check bout the pot's network type
+- list: print a message, if there are no pot yet
 
 ## [0.10.2] 2019-12-17
 ### Added

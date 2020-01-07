@@ -40,8 +40,8 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.md'
+source_suffix = ['.rst', '.md']
+#source_suffix = '.md'
 
 # The master toctree document.
 master_doc = 'index'
@@ -151,6 +151,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'pot', 'Another container framework based on jails',
+     [author], 7),
+    ('pot', 'pot', 'Another container framework based on jails',
      [author], 8)
 ]
 

@@ -5,5 +5,4 @@ Contents
 * [Description](Description.md)
 * [QuickStart](QuickStart.md)
 * [Installation](Installation.md)
-* [migration](migration.md)
 * [Images](Images.md)

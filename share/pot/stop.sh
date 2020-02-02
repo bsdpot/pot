@@ -107,25 +107,18 @@ _epair_cleanup()
 pot-stop()
 {
 	local _pname
-	args=$(getopt hv $*)
-	if [ $? -ne 0 ]; then
-		stop-help
-		${EXIT} 1
-	fi
 
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hv" _o; do
+		case "$_o" in
+		h)
 			stop-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		--)
-			shift
+		?)
 			break
 			;;
 		esac

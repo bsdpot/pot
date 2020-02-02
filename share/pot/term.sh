@@ -29,7 +29,7 @@ pot-term()
 	args=$(getopt hvf $*)
 	if [ $? -ne 0 ]; then
 		term-help
-		exit 1
+		${EXIT} 1
 	fi
 
 	set -- $args
@@ -37,7 +37,7 @@ pot-term()
 		case "$1" in
 		-h)
 			term-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -57,7 +57,7 @@ pot-term()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		term-help
-		exit 1
+		${EXIT} 1
 	fi
 	if ! _is_pot_running $_pname ; then
 		if [ "$_force" = "YES" ]; then
@@ -68,11 +68,11 @@ pot-term()
 			pot-cmd start $_pname
 			if ! _is_pot_running $_pname ; then
 				_error "The pot $_pname doesn't start"
-				exit 1
+				${EXIT} 1
 			fi
 		else
 			_error "The pot $_pname is not running"
-			exit 1
+			${EXIT} 1
 		fi
 	fi
 	if ! _is_uid0 ; then

@@ -110,7 +110,7 @@ pot-stop()
 	args=$(getopt hv $*)
 	if [ $? -ne 0 ]; then
 		stop-help
-		exit 1
+		${EXIT} 1
 	fi
 
 	set -- $args
@@ -118,7 +118,7 @@ pot-stop()
 		case "$1" in
 		-h)
 			stop-help
-			exit 0
+			${EXIT} 0
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -134,7 +134,7 @@ pot-stop()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		stop-help
-		exit 1
+		${EXIT} 1
 	fi
 	if ! _is_pot "$_pname" quiet ; then
 		_error "The pot $_pname is not a valid pot"
@@ -147,7 +147,7 @@ pot-stop()
 
 	if ! _js_stop $_pname ; then
 		_error "Stop the pot $_pname failed"
-		exit 1
+		${EXIT} 1
 	fi
 	_js_rm_resolv $_pname
 	_pot_umount "$_pname"

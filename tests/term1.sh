@@ -11,9 +11,18 @@
 
 # app specific stubs
 
+pot-cmd()
+{
+	__monitor POTCMD "$@"
+	if [ "$POTCMD_SHOULD_START_POT" = "yes" ]; then
+		_pname="test-pot-run"
+	fi
+}
+
+
 _term()
 {
-	return 0 # true
+	__monitor TERM "$@"
 }
 
 term-help()
@@ -27,24 +36,80 @@ test_pot_term_001()
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "0" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
 
 	setUp
 	pot-term -b bb
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "0" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
 
 	setUp
 	pot-term -h
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "0" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
 }
+
+test_pot_term_020()
+{
+	pot-term test-pot-run
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "1" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
+}
+
+test_pot_term_030()
+{
+	pot-term test-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "0" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
+
+	setUp
+	pot-term -f test-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "2" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "0" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "1" "$POTCMD_CALLS"
+
+	# In this test "pot-cmd start" is changing pot name from
+	# test-pot to test-pot-run.
+	setUp
+	POTCMD_SHOULD_START_POT=yes
+	pot-term -f test-pot
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "2" "$ISPOTRUN_CALLS"
+	assertEquals "_term calls" "1" "$TERM_CALLS"
+	assertEquals "pot-cmd calls" "1" "$POTCMD_CALLS"
+}
+
 
 setUp()
 {
 	common_setUp
 	HELP_CALLS=0
+	TERM_CALLS=0
+	POTCMD_CALLS=0
+	POTCMD_SHOULD_START_POT=no
 }
 
 . shunit/shunit2

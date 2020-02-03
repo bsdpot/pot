@@ -1,20 +1,28 @@
 # Minimal makefile for Sphinx documentation
 #
 
+# pot.7 will be generated together with pot.8
+
+all: _build/man/pot.8
+
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = pot
 SOURCEDIR     = .
 BUILDDIR      = _build
+SRC7 = Description.md Images.md index.md Installation.md QuickStart.md Synopsis.md
+SRC8 = pot.md pot-Synopsis.md
 
-# Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile
+_build/man/pot.8: Makefile conf.py $(SRC7) $(SRC8)
+	$(SPHINXBUILD) -M man "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	sed -i "" 's/\ep$$/\p/g' _build/man/pot.8
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+view7: _build/man/pot.8
+	man _build/man/pot.7
+
+view: _build/man/pot.8
+	man _build/man/pot.8

@@ -43,9 +43,9 @@ test_pot_term_001()
 	setUp
 	pot-term -b bb
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
 	assertEquals "_term calls" "0" "$TERM_CALLS"
 	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
 

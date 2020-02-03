@@ -26,28 +26,22 @@ pot-term()
 	local _pname _force
 	_pname=
 	_force=
-	args=$(getopt hvf $*)
-	if [ $? -ne 0 ]; then
-		term-help
-		${EXIT} 1
-	fi
 
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	while getopts "hvf" _o; do
+		case "$_o" in
+		h)
 			term-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			shift
 			;;
-		-f)
+		f)
 			_force="YES"
 			shift
 			;;
-		--)
+		?)
 			shift
 			break
 			;;

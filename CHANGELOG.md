@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - prepare: fix multiple export port support
+- rc script: extend PATH to make potnet accessible
 
 ## [0.10.3] 2020-01-07
 ### Changed

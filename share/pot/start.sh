@@ -301,9 +301,11 @@ _js_env()
 	_shfile="/tmp/pot_environment_$_pname.sh"
 	grep '^pot.env=' "$_cfile" | sed 's/^pot.env=/export /g' > "$_shfile"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		pot info -E -p "$_pname" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 		cat "$_shfile" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 	else
 		cp "$_shfile" "${POT_FS_ROOT}/jails/$_pname/m/tmp/environment.sh"
+		pot info -E -p "$_pname" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/environment.sh"
 	fi
 }
 

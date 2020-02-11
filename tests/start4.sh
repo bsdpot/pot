@@ -25,8 +25,8 @@ test_js_etc_hosts_000()
 	_js_etc_hosts test-pot-2
 	assertTrue "/etc/hosts" "[ -r /tmp/jails/test-pot-2/m/etc ]"
 	assertEquals "/etc/hosts length" "4" "$( awk 'END {print NR}' /tmp/jails/test-pot-2/m/etc/hosts)"
-	assertEquals "127.0.0.1" "127.0.0.1 localhost" "$( grep "^127.0.0.1" /tmp/jails/test-pot-2/m/etc/hosts)"
-	assertEquals "::1" "::1 localhost" "$( grep "^::1" /tmp/jails/test-pot-2/m/etc/hosts)"
+	assertEquals "127.0.0.1" "127.0.0.1 localhost test-pot-2.test-domain" "$( grep "^127.0.0.1" /tmp/jails/test-pot-2/m/etc/hosts)"
+	assertEquals "::1" "::1 localhost test-pot-2.test-domain" "$( grep "^::1" /tmp/jails/test-pot-2/m/etc/hosts)"
 	assertEquals "test-pot-2" "10.1.2.3 test-pot-2" "$( grep "^10.1.2.3 " /tmp/jails/test-pot-2/m/etc/hosts)"
 	assertEquals "test-single" "10.1.2.4 test-single" "$( grep "^10.1.2.4 " /tmp/jails/test-pot-2/m/etc/hosts)"
 }
@@ -36,8 +36,8 @@ test_js_etc_hosts_001()
 	_js_etc_hosts test-pot-multi-private
 	assertTrue "/etc/hosts" "[ -r /tmp/jails/test-pot-multi-private/m/etc ]"
 	assertEquals "/etc/hosts length" "3" "$( awk 'END {print NR}' /tmp/jails/test-pot-multi-private/m/etc/hosts)"
-	assertEquals "127.0.0.1" "127.0.0.1 localhost" "$( grep "^127.0.0.1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
-	assertEquals "::1" "::1 localhost" "$( grep "^::1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
+	assertEquals "127.0.0.1" "127.0.0.1 localhost test-pot-multi-private.test-domain" "$( grep "^127.0.0.1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
+	assertEquals "::1" "::1 localhost test-pot-multi-private.test-domain" "$( grep "^::1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
 	assertEquals "test-pot-multi-private" "10.1.3.3 test-pot-multi-private" "$( grep "^10.1.3.3 " /tmp/jails/test-pot-multi-private/m/etc/hosts)"
 }
 
@@ -48,8 +48,8 @@ test_js_etc_hosts_020()
 	_js_etc_hosts test-pot-2
 	assertTrue "/etc/hosts" "[ -r /tmp/jails/test-pot-2/m/etc ]"
 	assertEquals "/etc/hosts length" "6" "$( awk 'END {print NR}' /tmp/jails/test-pot-2/m/etc/hosts)"
-	assertEquals "127.0.0.1" "127.0.0.1 localhost" "$( grep "^127.0.0.1" /tmp/jails/test-pot-2/m/etc/hosts)"
-	assertEquals "::1" "::1 localhost" "$( grep "^::1" /tmp/jails/test-pot-2/m/etc/hosts)"
+	assertEquals "127.0.0.1" "127.0.0.1 localhost test-pot-2.test-domain" "$( grep "^127.0.0.1" /tmp/jails/test-pot-2/m/etc/hosts)"
+	assertEquals "::1" "::1 localhost test-pot-2.test-domain" "$( grep "^::1" /tmp/jails/test-pot-2/m/etc/hosts)"
 	assertEquals "test-pot-2" "10.1.2.3 test-pot-2" "$( grep "^10.1.2.3 " /tmp/jails/test-pot-2/m/etc/hosts)"
 	assertEquals "test-single" "10.1.2.4 test-single" "$( grep "^10.1.2.4 " /tmp/jails/test-pot-2/m/etc/hosts)"
 	assertEquals "test-pot-custom" "10.10.10.1 test-pot-custom" "$( grep "^10.10.10.1 " /tmp/jails/test-pot-2/m/etc/hosts)"
@@ -63,8 +63,8 @@ test_js_etc_hosts_021()
 	_js_etc_hosts test-pot-multi-private
 	assertTrue "/etc/hosts" "[ -r /tmp/jails/test-pot-multi-private/m/etc ]"
 	assertEquals "/etc/hosts length" "5" "$( awk 'END {print NR}' /tmp/jails/test-pot-multi-private/m/etc/hosts)"
-	assertEquals "127.0.0.1" "127.0.0.1 localhost" "$( grep "^127.0.0.1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
-	assertEquals "::1" "::1 localhost" "$( grep "^::1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
+	assertEquals "127.0.0.1" "127.0.0.1 localhost test-pot-multi-private.test-domain" "$( grep "^127.0.0.1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
+	assertEquals "::1" "::1 localhost test-pot-multi-private.test-domain" "$( grep "^::1" /tmp/jails/test-pot-multi-private/m/etc/hosts)"
 	assertEquals "test-pot-multi-private" "10.1.3.3 test-pot-multi-private" "$( grep "^10.1.3.3 " /tmp/jails/test-pot-multi-private/m/etc/hosts)"
 	assertEquals "test-pot-custom" "10.10.10.1 test-pot-custom" "$( grep "^10.10.10.1 " /tmp/jails/test-pot-multi-private/m/etc/hosts)"
 	assertEquals "test-pot-custom-2" "10.10.10.2 test-pot-custom-2" "$( grep "^10.10.10.2 " /tmp/jails/test-pot-multi-private/m/etc/hosts)"

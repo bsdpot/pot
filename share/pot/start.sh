@@ -81,8 +81,8 @@ _js_etc_hosts()
 	_pname="$1"
 	_phosts="${POT_FS_ROOT}/jails/$_pname/m/etc/hosts"
 	_hostname="$( _get_conf_var $_pname host.hostname )"
-	printf "::1 localhost\n" > "$_phosts"
-	printf "127.0.0.1 localhost\n" >> "$_phosts"
+	printf "::1 localhost $_hostname\n" > "$_phosts"
+	printf "127.0.0.1 localhost $_hostname\n" >> "$_phosts"
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"public-bridge")
 		potnet etc-hosts >> "$_phosts"

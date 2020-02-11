@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - prepare: fix multiple export port support
 - rc script: extend PATH to make potnet accessible
+- etc/hosts: add full hostname to localhost
 
 ## [0.10.3] 2020-01-07
 ### Changed

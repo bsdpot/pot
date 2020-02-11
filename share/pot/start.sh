@@ -339,7 +339,7 @@ _bg_start()
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _alias_netif
 	_pname="$1"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
@@ -364,10 +364,14 @@ _js_start()
 		_param="$_param ip4=inherit ip6=inherit"
 		;;
 	"alias")
+		_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
+		if [ -z "$_alias_netif" ]; then
+			_alias_netif="${POT_EXTIF}"
+		fi
 		if potnet ip4check -H "$_ip" ; then
-			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
+			_param="$_param interface=${_alias_netif} ip4.addr=$_ip"
 		else
-			_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"
+			_param="$_param interface=${_alias_netif} ip6.addr=$_ip"
 		fi
 		;;
 	"public-bridge")

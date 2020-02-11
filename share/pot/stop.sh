@@ -24,7 +24,7 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair _ip _aname
+	local _pname _jdir _epair _ip _aname _alias_netif
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
@@ -50,11 +50,15 @@ _js_stop()
 		else
 			if [ "$_network_type" = "alias" ]; then
 				_ip=$( _get_conf_var "$_pname" ip )
-				_debug "Remove the $_ip alias"
+				_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
+				if [ -z "$_alias_netif" ]; then
+					_alias_netif="${POT_EXTIF}"
+				fi
+				_debug "Remove the $_ip alias from $_alias_netif"
 				if potnet ip4check -H "$_ip" ; then
-					ifconfig "${POT_EXTIF}" inet "$_ip" -alias
+					ifconfig "${_alias_netif}" inet "$_ip" -alias
 				else
-					ifconfig "${POT_EXTIF}" inet6 "$_ip" -alias
+					ifconfig "${_alias_netif}" inet6 "$_ip" -alias
 				fi
 			fi
 		fi

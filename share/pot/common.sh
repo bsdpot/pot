@@ -1065,6 +1065,7 @@ pot-cmd()
 	case "$_cmd" in
 		create|import|clone|create-private-bridge)
 			if [ "$_POT_RECURSIVE" = "1" ]; then
+				logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 				$_func "$@"
 			else
 				export _POT_RECURSIVE=1
@@ -1072,6 +1073,7 @@ pot-cmd()
 			fi
 			;;
 		*)
+			logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 			$_func "$@"
 			;;
 	esac

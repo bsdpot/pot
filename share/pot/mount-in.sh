@@ -171,6 +171,7 @@ pot-mount-in()
 	_dir=
 	_fscomp=
 	_dset=
+	logger -t pot -p local0.debug "mount-in: $@"
 	while getopts "hvf:d:z:p:m:wr" _o ; do
 		case "$_o" in
 		h)

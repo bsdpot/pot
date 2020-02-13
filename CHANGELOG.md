@@ -5,8 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- alias: add ability to use a different netowrk interface for alias network type (#80)
+- env: add pot info -E output to environment or tinirc
+- log: add the ability to log activites in syslog
+
 ### Fixed
 - prepare: fix multiple export port support
+- rc script: extend PATH to make potnet accessible
+- etc/hosts: add full hostname to localhost
 
 ## [0.10.3] 2020-01-07
 ### Changed

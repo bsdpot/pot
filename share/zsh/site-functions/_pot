@@ -137,6 +137,7 @@ _pot() {
 						'-i[network config]::_normal' \
 						'-d[dns type]:dns types:(inherit pot)' \
 						'-B[bridge name]:bridge name:_pot_bridges' \
+						'-I[netif]:network interface:' \
 						'*-f[flavour name]:flavour name:_pot_flavours'
 					;;
 				clone-fscomp)

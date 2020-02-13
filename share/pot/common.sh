@@ -849,6 +849,18 @@ _is_valid_release()
 	fi
 }
 
+# $1 name of the network interface
+_is_valid_netif()
+{
+	local _netif
+	_netif="$1"
+	if ifconfig "$_netif" > /dev/null 2> /dev/null ; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 # $1 FreeBSD release.
 # for instance 12.0 or 13.0-RC1
 _get_freebsd_release_name()
@@ -1053,6 +1065,7 @@ pot-cmd()
 	case "$_cmd" in
 		create|import|clone|create-private-bridge)
 			if [ "$_POT_RECURSIVE" = "1" ]; then
+				logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 				$_func "$@"
 			else
 				export _POT_RECURSIVE=1
@@ -1060,6 +1073,7 @@ pot-cmd()
 			fi
 			;;
 		*)
+			logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 			$_func "$@"
 			;;
 	esac

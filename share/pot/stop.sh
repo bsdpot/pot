@@ -24,7 +24,7 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair _ip _aname
+	local _pname _jdir _epair _ip _aname _alias_netif
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
@@ -33,7 +33,7 @@ _js_stop()
 		if _is_pot_vnet "$_pname" ; then
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
 		fi
-		
+
 		if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/prestop.sh" ]; then
 			_info "Executing the pre-stop script for the pot $_pname"
 			(
@@ -50,11 +50,15 @@ _js_stop()
 		else
 			if [ "$_network_type" = "alias" ]; then
 				_ip=$( _get_conf_var "$_pname" ip )
-				_debug "Remove the $_ip alias"
+				_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
+				if [ -z "$_alias_netif" ]; then
+					_alias_netif="${POT_EXTIF}"
+				fi
+				_debug "Remove the $_ip alias from $_alias_netif"
 				if potnet ip4check -H "$_ip" ; then
-					ifconfig "${POT_EXTIF}" inet "$_ip" -alias
+					ifconfig "${_alias_netif}" inet "$_ip" -alias
 				else
-					ifconfig "${POT_EXTIF}" inet6 "$_ip" -alias
+					ifconfig "${_alias_netif}" inet6 "$_ip" -alias
 				fi
 			fi
 		fi
@@ -107,25 +111,18 @@ _epair_cleanup()
 pot-stop()
 {
 	local _pname
-	args=$(getopt hv $*)
-	if [ $? -ne 0 ]; then
-		stop-help
-		exit 1
-	fi
 
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hv" _o; do
+		case "$_o" in
+		h)
 			stop-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		--)
-			shift
+		?)
 			break
 			;;
 		esac
@@ -134,7 +131,7 @@ pot-stop()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		stop-help
-		exit 1
+		${EXIT} 1
 	fi
 	if ! _is_pot "$_pname" quiet ; then
 		_error "The pot $_pname is not a valid pot"
@@ -147,7 +144,7 @@ pot-stop()
 
 	if ! _js_stop $_pname ; then
 		_error "Stop the pot $_pname failed"
-		exit 1
+		${EXIT} 1
 	fi
 	_js_rm_resolv $_pname
 	_pot_umount "$_pname"

@@ -87,12 +87,12 @@ pot-init()
 		_error "The network configuration in the pot configuration file is not valid"
 		${EXIT} 1
 	fi
-	if ! ifconfig "$POT_EXTIF" > /dev/null 2> /dev/null ; then
+	if ! _is_valid_netif "$POT_EXTIF" ; then
 		_error "The network interface $POT_EXTIF seems not valid [POT_EXTIF]"
 		${EXIT} 1
 	fi
 	for extra_netif in $POT_EXTRA_EXTIF ; do
-		if ! ifconfig "$extra_netif" > /dev/null 2> /dev/null ; then
+		if ! _is_valid_netif "$extra_netif" ; then
 			_error "The network interface $extra_netif seems not valid [POT_EXTRA_EXTIF]"
 			${EXIT} 1
 		fi

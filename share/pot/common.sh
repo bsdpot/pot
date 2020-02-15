@@ -729,6 +729,25 @@ _umount()
 	fi
 }
 
+# $1 pot
+# $2 cmd
+_set_command()
+{
+	# shellcheck disable=SC2039
+	local _pname _cmd _cdir _cmd1 _cmd2
+	_pname="$1"
+	_cmd="$2"
+	_cdir=$POT_FS_ROOT/jails/$_pname/conf
+	sed -i '' -e "/^pot.cmd=.*/d" "$_cdir/pot.conf"
+	_cmd1="$( echo "$_cmd" | sed 's/^"//' )"
+	if [ "$_cmd" = "$_cmd1" ]; then
+		echo "pot.cmd=$_cmd" >> "$_cdir"/pot.conf
+	else
+		_cmd2="$( echo "$_cmd1" | sed 's/"$//' )"
+		echo "pot.cmd=$_cmd2" >> "$_cdir/pot.conf"
+	fi
+}
+
 # $1 the cmd
 # all other parameter will be ignored
 # tested
@@ -824,6 +843,18 @@ _is_valid_release()
 	_rel="$1"
 	_releases="$( _get_valid_releases )"
 	if _is_in_list "$_rel" $_releases ; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
+# $1 name of the network interface
+_is_valid_netif()
+{
+	local _netif
+	_netif="$1"
+	if ifconfig "$_netif" > /dev/null 2> /dev/null ; then
 		return 0 # true
 	else
 		return 1 # false
@@ -1034,6 +1065,7 @@ pot-cmd()
 	case "$_cmd" in
 		create|import|clone|create-private-bridge)
 			if [ "$_POT_RECURSIVE" = "1" ]; then
+				logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 				$_func "$@"
 			else
 				export _POT_RECURSIVE=1
@@ -1041,6 +1073,7 @@ pot-cmd()
 			fi
 			;;
 		*)
+			logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 			$_func "$@"
 			;;
 	esac

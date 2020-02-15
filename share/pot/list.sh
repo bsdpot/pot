@@ -51,6 +51,12 @@ _ls_pots()
 	local _pots _q
 	_q=$1
 	_pots=$( _get_pot_list )
+	if [ -z "$_pots" ]; then
+		if [ "$_q" != "quiet" ]; then
+			echo "No pot created yet..."
+		fi
+		return
+	fi
 	for _p in $_pots; do
 		if [ "$_q" = "quiet" ]; then
 			echo "$_p"

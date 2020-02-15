@@ -81,8 +81,8 @@ _js_etc_hosts()
 	_pname="$1"
 	_phosts="${POT_FS_ROOT}/jails/$_pname/m/etc/hosts"
 	_hostname="$( _get_conf_var $_pname host.hostname )"
-	printf "::1 localhost\n" > "$_phosts"
-	printf "127.0.0.1 localhost\n" >> "$_phosts"
+	printf "::1 localhost $_hostname\n" > "$_phosts"
+	printf "127.0.0.1 localhost $_hostname\n" >> "$_phosts"
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"public-bridge")
 		potnet etc-hosts >> "$_phosts"
@@ -233,7 +233,7 @@ _js_export_ports()
 	pfctl -a "pot-rdr/$_aname" -f "$_pfrules"
 	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
 	if [ "$_lo_tunnel" = "YES" ]; then
-		_pdir="${POT_FS_ROOT}/jails/$_pname/"
+		_pdir="${POT_FS_ROOT}/jails/$_pname"
 		if [ -x "/usr/local/bin/ncat" ]; then
 			cp /usr/local/bin/ncat "$_pdir/ncat-$_pname"
 			daemon -f -p $_pdir/ncat.pid $_pdir/ncat-$_pname -lk "$_host_port" -c "/usr/local/bin/ncat $_ip $_pot_port"
@@ -282,7 +282,12 @@ _js_norc()
 	local _pname
 	_pname="$1"
 	_cmd="$(_js_get_cmd $_pname)"
-	echo "ifconfig lo0 inet 127.0.0.1 alias" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+	case "$( _get_conf_var "$_pname" network_type )" in
+	"public-bridge"|\
+	"private-bridge")
+		echo "ifconfig lo0 inet 127.0.0.1 alias" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+		;;
+	esac
 	echo "exec $_cmd" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 	chmod a+x "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 }
@@ -296,9 +301,11 @@ _js_env()
 	_shfile="/tmp/pot_environment_$_pname.sh"
 	grep '^pot.env=' "$_cfile" | sed 's/^pot.env=/export /g' > "$_shfile"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		pot info -E -p "$_pname" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 		cat "$_shfile" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 	else
 		cp "$_shfile" "${POT_FS_ROOT}/jails/$_pname/m/tmp/environment.sh"
+		pot info -E -p "$_pname" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/environment.sh"
 	fi
 }
 
@@ -310,7 +317,7 @@ _bg_start()
 	_conf="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	sleep 3
-	if [ "$_persist" = "NO" ]; then
+	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
 		jail -m name="$_pname" nopersist
 	fi
 	if _is_pot_prunable "$_pname" ; then
@@ -318,7 +325,9 @@ _bg_start()
 		${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" "$_conf"
 		echo "pot.attr.to-be-pruned=YES" >> "$_conf"
 	fi
-	_js_rss "$_pname"
+	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
+		_js_rss "$_pname"
+	fi
 	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststart.sh" ]; then
 		_info "Executing the post-start script for the pot $_pname"
 		(
@@ -332,7 +341,7 @@ _bg_start()
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _alias_netif
 	_pname="$1"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
@@ -357,10 +366,14 @@ _js_start()
 		_param="$_param ip4=inherit ip6=inherit"
 		;;
 	"alias")
+		_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
+		if [ -z "$_alias_netif" ]; then
+			_alias_netif="${POT_EXTIF}"
+		fi
 		if potnet ip4check -H "$_ip" ; then
-			_param="$_param interface=${POT_EXTIF} ip4.addr=$_ip"
+			_param="$_param interface=${_alias_netif} ip4.addr=$_ip"
 		else
-			_param="$_param interface=${POT_EXTIF} ip6.addr=$_ip"
+			_param="$_param interface=${_alias_netif} ip6.addr=$_ip"
 		fi
 		;;
 	"public-bridge")

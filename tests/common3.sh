@@ -45,21 +45,27 @@ bridge2: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	maxage 20 holdcnt 6 proto rstp maxaddr 2000 timeout 1200
 	root id 00:00:00:00:00:00 priority 32768 ifcost 0 port 0
 EOF--
+		return 0 # true
 	elif [ "$1" = "bridge0" ]; then
 		cat << EOF--
 bridge0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	inet 10.192.0.111 netmask 0xffc00000 broadcast 10.255.255.255 
 EOF--
+		return 0 # true
 	elif [ "$1" = "bridge1" ]; then
 		cat << EOF--
 bridge1: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	inet 10.192.0.11 netmask 0xffc00000 broadcast 10.255.255.255 
 EOF--
+		return 0 # true
 	elif [ "$1" = "bridge2" ]; then
 		cat << EOF--
 bridge2: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	inet 10.192.0.1 netmask 0xffc00000 broadcast 10.255.255.255 
 EOF--
+		return 0 # true
+	else
+		return 1 # else
 	fi
 }
 
@@ -84,4 +90,15 @@ test_pot_bridge_001()
 	assertEquals "bridge2" "$_rc"
 }
 
+test_pot_is_valid_netif_001()
+{
+	_is_valid_netif bridge2
+	assertTrue "netif not recognized" "$?"
+}
+
+test_pot_is_valid_netif_002()
+{
+	_is_valid_netif not-netif
+	assertFalse "netif wrongly recognized" "$?"
+}
 . shunit/shunit2

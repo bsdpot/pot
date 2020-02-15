@@ -32,6 +32,7 @@ pot-prepare()
 	_ipaddr=
 	_auto_start="NO"
 	_bridge_name=
+	_cmd=
 	OPTIND=1
 	while getopts "hvp:U:t:c:e:a:n:SN:i:B:" _o ; do
 		case "$_o" in
@@ -179,7 +180,7 @@ pot-prepare()
 	fi
 	if [ -n "$_ports" ]; then
 		for _p in $_ports ; do
-			_port_args="-e $_p "
+			_port_args="-e $_p $_port_args"
 		done
 		# shellcheck disable=SC2086
 		if ! pot-cmd export-ports -p "$_new_pname" $_port_args ; then

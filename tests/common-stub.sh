@@ -282,6 +282,15 @@ _is_valid_release()
    esac
 }
 
+_is_valid_netif()
+{
+	if [ "$1" = "lagg0" ]; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
 _is_bridge()
 {
 	case "$1" in

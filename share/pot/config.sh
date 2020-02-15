@@ -2,6 +2,7 @@
 
 : "${_config_names:="fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix"}"
 
+# shellcheck disable=SC2039
 config-help()
 {
 	echo 'pot config [-h][-v][-q] [-g name ]'
@@ -30,39 +31,32 @@ pot-config()
 	local _quiet
 	_quiet="NO"
 	_get=
-	if ! args=$(getopt hvqg: "$@") ; then
-		config-help
-		${EXIT} 1
-	fi
-	# shellcheck disable=SC2086
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+
+	while getopts "hvqg:" _o ; do
+		case "$_o" in
+		h)
 			config-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-q)
+		q)
 			_quiet="quiet"
-			shift
 			;;
-		-g)
-			if _is_in_list "$2" "$_config_names" ; then
-				_get="$2"
+		g)
+			if _is_in_list "$OPTARG" "$_config_names" ; then
+				_get="$OPTARG"
 			else
-				_qerror $_quiet "$2 is not a valid name"
+				_qerror $_quiet "$OPTARG is not a valid name"
 				[ "quiet" != "$_quiet" ] && config-help
 				${EXIT} 1
 			fi
-			shift 2
 			;;
-		--)
-			shift
-			break
+		*)
+			config-help
+			${EXIT} 1
 			;;
 		esac
 	done

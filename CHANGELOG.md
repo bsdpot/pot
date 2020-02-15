@@ -5,13 +5,48 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- alias: add ability to use a different netowrk interface for alias network type (#80)
+- env: add pot info -E output to environment or tinirc
+- log: add the ability to log activites in syslog
 
+### Fixed
+- prepare: fix multiple export port support
+- rc script: extend PATH to make potnet accessible
+- etc/hosts: add full hostname to localhost
+
+## [0.10.3] 2020-01-07
+### Changed
+- export-ports: relax the check bout the pot's network type
+- list: print a message, if there are no pot yet
+
+## [0.10.2] 2019-12-17
+### Added
+- fbsd-update flavour: add a flavour to run freebsd update
+
+### Changed
+- slim flavour: remove a bounch of other directories
+
+### Fixed
+- flavor: set-cmd can cause issue if it has quotes or double quotes in the command string
+- tinirc: lo1 initialization needed only for public or private bridge
+- start: background tasks now check if the pot is running
+- init: fix bridge folder creation
+- prepare: fix prepare when no command is provided (-c is optional)
+
+## [0.10.1] 2019-12-04
 ### Added
 - set-hooks: add support for pre/post start/stop hooks. Script are executed in the host environment (#61)
 
+### Changed
+- home-usr/home: those link are not always available. Change create and crate-base to have them always (reported by Philip Jocks)
+
 ### Fixed
 - create: permission of /tmp in single type are wrong (#72)
-- create: if FreeBSD base fetch is interuupted, a broken file is left and the chechum will alway faile (#73)
+- create: if FreeBSD base fetch is interrupted, a broken file is left and the checksum will always fail (#73)
+- import: if the image fetch is interrupted, a broken file is left and the checksum will always fail
+- import: fix hostname rename
+- localhost-tunnel: fix kill of ncat tunnel, when the pot has a long name
 
 ## [0.10.0] 2019-11-01
 ### Added

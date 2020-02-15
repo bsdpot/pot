@@ -76,6 +76,9 @@ _cb_tar_dir()
 		ln -s opt/custom/etc etc
 		ln -s opt/custom/root root
 		ln -s opt/custom/var var
+		if [ ! -e home ]; then
+			ln -s opt/custom/usr.home home
+		fi
 		cd usr
 		ln -s ../opt/custom/usr.home home
 		cd local

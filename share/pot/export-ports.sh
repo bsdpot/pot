@@ -79,9 +79,7 @@ pot-export-ports()
 	fi
 	if [ "$(_get_pot_network_type "$_pname")" != "public-bridge" ] &&
 		[ "$(_get_pot_network_type "$_pname")" != "private-bridge" ] ; then
-		_error "Only public-bridge and private-bridge are currently supported"
-		export-ports-help
-		return 1
+		_info "Only public-bridge and private-bridge network type can export ports - this setting will be ignored during start"
 	fi
 	if [ -z "${_ports}" ]; then
 		_error "One port has to be specified"

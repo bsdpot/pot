@@ -288,7 +288,7 @@ _js_norc()
 		echo "ifconfig lo0 inet 127.0.0.1 alias" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 		;;
 	esac
-	echo $_cmd >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+	echo "exec $_cmd" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 	chmod a+x "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 }
 

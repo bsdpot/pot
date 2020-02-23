@@ -170,7 +170,7 @@ _js_private_vnet()
 			sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
 		fi
 		echo "ifconfig_${_epairb}=\"inet $_ip/$_net_size\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
-		sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$_gateway"
+		sysrc -f "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf" defaultrouter="$_gateway"
 	fi
 }
 
@@ -207,13 +207,13 @@ _js_export_ports()
 {
 	local _pname _ip _ports _excl_list _pot_port _host_port _aname
 	_pname=$1
-	_ip="$( _get_conf_var $_pname ip )"
-	_ports="$( _get_pot_export_ports $_pname )"
+	_ip="$( _get_conf_var "$_pname" ip )"
+	_ports="$( _get_pot_export_ports "$_pname" )"
 	_pfrules="/tmp/pot_${_pname}_pfrules"
 	if [ -z "$_ports" ]; then
 		return
 	fi
-	rm -f $_pfrules
+	rm -f "$_pfrules"
 	for _port in $_ports ; do
 		_pot_port="$( echo "${_port}" | cut -d':' -f 1)"
 		_host_port="$( echo "${_port}" | cut -d':' -f 2)"
@@ -230,7 +230,12 @@ _js_export_ports()
 		fi
 	done
 	_aname="$( _get_pot_rdr_anchor_name "$_pname" )"
-	pfctl -a "pot-rdr/$_aname" -f "$_pfrules"
+	if ! pfctl -a "pot-rdr/$_aname" -f "$_pfrules" ; then
+		_error "pfctl failed to apply redirection rules - ignoring but no redirection is performed"
+		if _is_verbose ; then
+			cat "$_pfrules"
+		fi
+	fi
 	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
 	if [ "$_lo_tunnel" = "YES" ]; then
 		_pdir="${POT_FS_ROOT}/jails/$_pname"

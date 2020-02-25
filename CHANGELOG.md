@@ -6,10 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- create-base: automatically call freebsd-update when a base is created (#81)
+- create-base: automatically call freebsd-update when a base is created (#83)
 
 ### Changed
-- osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#81)
+- osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#83)
 
 ## [0.10.4] 2020-02-23
 ### Added

@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- create-base: automatically call freebsd-update when a base is created (#81)
+
+### Changed
+- osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#81)
 
 ## [0.10.4] 2020-02-23
 ### Added

@@ -849,6 +849,19 @@ _is_valid_release()
 	fi
 }
 
+# $1 potname
+# it's required to have all the file-system mounted to access /bin/freebsd-version
+_get_os_release()
+{
+	local _pname
+	_pname="$1"
+	if [ -r "${POT_FS_ROOT}/jails/$_pname/m/bin/freebsd-version" ]; then
+		grep ^USERLAND "${POT_FS_ROOT}/jails/$_pname/m/bin/freebsd-version" | cut -f 2 -d"=" | tr -d \"
+	else
+		_get_conf_var "$_pname" osrelease
+	fi
+}
+
 # $1 name of the network interface
 _is_valid_netif()
 {

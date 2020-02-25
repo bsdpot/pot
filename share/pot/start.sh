@@ -358,7 +358,7 @@ _js_start()
 		_param="$_param mount.fdescfs"
 	fi
 	_hostname="$( _get_conf_var $_pname host.hostname )"
-	_osrelease="$( _get_conf_var $_pname osrelease )"
+	_osrelease="$( _get_os_release "$_pname" )"
 	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
 	_param="$_param path=${POT_FS_ROOT}/jails/$_pname/m"
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"

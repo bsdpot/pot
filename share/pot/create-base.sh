@@ -100,7 +100,7 @@ _cb_base_pot()
 	_pname="base-$_tmp"
 	_info "Create the related pot [$_pname]"
 	if ! _is_pot "$_pname" quiet ; then
-		pot-cmd create -l 0 -b "$_bname" -p "$_pname"
+		pot-cmd create -l 0 -b "$_bname" -p "$_pname" -f fbsd-update
 	fi
 	_debug "Taking a snapshot fo $_pname"
 	pot-cmd snapshot -a -p "$_pname"

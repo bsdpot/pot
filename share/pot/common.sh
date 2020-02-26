@@ -213,7 +213,7 @@ _remove_oldest_pot_snap()
 
 # take a zfs snapshot of all rw dataset found in the fscomp.conf of a pot
 # $1 pot name
-# DEPRECATED
+# DEPRECATED - but still used by create-base
 _pot_zfs_snap_full()
 {
 	# shellcheck disable=SC2039

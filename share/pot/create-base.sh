@@ -103,7 +103,7 @@ _cb_base_pot()
 		pot-cmd create -l 0 -b "$_bname" -p "$_pname" -f fbsd-update
 	fi
 	_debug "Taking a snapshot fo $_pname"
-	pot-cmd snapshot -a -p "$_pname"
+	_pot_zfs_snap_full "$_pname"
 }
 
 pot-create-base()

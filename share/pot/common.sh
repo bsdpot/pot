@@ -4,7 +4,7 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot persistent no-rc-script procfs fdescfs prunable localhost-tunnel"
+_POT_RW_ATTRIBUTES="start-at-boot early-start-at-boot persistent no-rc-script procfs fdescfs prunable localhost-tunnel"
 _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 

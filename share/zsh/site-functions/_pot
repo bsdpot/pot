@@ -27,7 +27,7 @@ _pot_flavours() {
 }
 
 _pot_attributes() {
-	_values "pot attributes" 'start-at-boot' 'persistent' 'no-rc-script' 'fdescfs' 'procfs' 'prunable' 'localhost-tunnel'
+	_values "pot attributes" 'start-at-boot' 'early-start-at-boot' 'persistent' 'no-rc-script' 'fdescfs' 'procfs' 'prunable' 'localhost-tunnel'
 }
 
 _pot() {

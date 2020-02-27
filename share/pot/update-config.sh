@@ -57,6 +57,10 @@ _update_one_pot()
 		_debug "pot.attr.start-at-boot=NO"
 		echo "pot.attr.start-at-boot=NO" >> "$_conf"
 	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.early.start-at-boot")" ]; then
+		_debug "pot.attr.early.start-at-boot=NO"
+		echo "pot.attr.early.start-at-boot=NO" >> "$_conf"
+	fi
 	if [ -z "$(_get_conf_var "$_pname" "pot.attr.procfs")" ]; then
 		_debug "pot.attr.procfs=NO"
 		echo "pot.attr.procfs=NO" >> "$_conf"

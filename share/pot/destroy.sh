@@ -7,6 +7,7 @@ destroy-help()
 	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp|-B bridge]"
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -q quiet'
 	echo '  -F force the stop and destroy'
 	echo '  -p potname : the pot name (mandatory)'
 	echo '  -b basename : the base name (mandatory)'
@@ -97,7 +98,7 @@ pot-destroy()
 	_force=
 	_recursive="NO"
 	OPTIND=1
-	while getopts "hvrf:p:b:FB:" _o ; do
+	while getopts "hvrf:p:b:FB:q" _o ; do
 		case "$_o" in
 		h)
 			destroy-help
@@ -105,6 +106,9 @@ pot-destroy()
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			;;
+		q)
+			_POT_VERBOSITY=0
 			;;
 		F)
 			_force="YES"

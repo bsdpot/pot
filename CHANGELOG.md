@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - create-base: automatically call freebsd-update when a base is created (#83)
 - attribute early-start-at-boot: for pot needed to start early at boot (REQUIRE: NETWORKING syslogd pf)
+- create: add a -k flag to keep the pot, even if it's creation process failed
 
 ### Changed
 - osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#83)
 - start-at-boot: the pot rc.d service will be executed late, with jail
+- create: if create failes, the parttially created pot is automatically destroyed
 
 ## [0.10.4] 2020-02-23
 ### Added

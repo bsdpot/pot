@@ -324,12 +324,14 @@ _bg_start()
 	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
 		jail -m name="$_pname" nopersist
 	fi
-	if _is_pot_prunable "$_pname" ; then
-		# set-attr cannot be used for read-only attributes
-		${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" "$_conf"
-		echo "pot.attr.to-be-pruned=YES" >> "$_conf"
+	if [ -e "$_conf" ]; then
+		if _is_pot_prunable "$_pname" ; then
+			# set-attr cannot be used for read-only attributes
+			${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" "$_conf"
+			echo "pot.attr.to-be-pruned=YES" >> "$_conf"
+		fi
 	fi
-	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
+	if _is_pot_running "$_pname" ; then
 		_js_rss "$_pname"
 	fi
 	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststart.sh" ]; then

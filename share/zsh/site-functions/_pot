@@ -127,6 +127,7 @@ _pot() {
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-k[keep pot if it fails]' \
 						'-t[pot type]:pot type:(single multi)' \
 						'-N[network type]:network type:(inherit alias public-bridge)' \
 						'-p[pot name]:pot name:_normal' \
@@ -169,6 +170,7 @@ _pot() {
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-q[Quiet output]' \
 						'-F[Force the pot to stop]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-b[base name]:base name:_pot_bases' \

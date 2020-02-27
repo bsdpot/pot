@@ -1,6 +1,8 @@
 #!/bin/sh
 :
 
+trap _cj_undo_create TERM INT
+
 # shellcheck disable=SC2039
 create-help()
 {
@@ -8,6 +10,7 @@ create-help()
 	echo '  [-b base | -P basepot ] [-d dns] [-t type]'
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -k keep the pot, if create fails'
 	echo '  -p potname : the pot name (mandatory)'
 	echo '  -l lvl : pot level (only for type multi)'
 	echo '  -b base : the base pot'
@@ -29,6 +32,20 @@ create-help()
 	echo '  -I netif : network interface to be used instead of the default one (optional, alias only)'
 }
 
+_cj_undo_create()
+{
+	_POT_VERBOSITY=0
+	if [ -z "$_cleanup_pname" ]; then
+		${EXIT} 1
+	fi
+	if [ "$_cleanup_keep" = "YES" ]; then
+		pot-cmd stop "$_cleanup_pname"
+	else
+		pot-cmd destroy -Fp "$_cleanup_pname" -q
+	fi
+	${EXIT} 1
+}
+
 # $1 pot name
 # $2 type
 # $3 level
@@ -36,6 +53,7 @@ create-help()
 # $5 pot-base name
 _cj_zfs()
 {
+	# shellcheck disable=SC2039
 	local _pname _base _type _potbase _jdset _snap _dset
 	_pname=$1
 	_type=$2
@@ -45,17 +63,25 @@ _cj_zfs()
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	# Create the main jail zfs dataset
 	if ! _zfs_dataset_valid "$_jdset" ; then
-		zfs create "$_jdset"
+		if ! zfs create "$_jdset" ; then
+			_error "create: failed to create $_jdset dataset"
+			_cj_undo_create
+			return 1
+		fi
 	else
 		_info "$_jdset exists already"
 	fi
 	if [ "$_type" = "single" ]; then
 		if [ -z "$_potbase" ]; then
 			# create an empty dataset
-			zfs create "$_jdset/m"
+			if ! zfs create "$_jdset/m" ; then
+				_error "create: failed to create $_jdset/m dataset"
+				_cj_undo_create
+				return 1
+			fi
 			# create the minimum needed tree
 			mkdir -p "${POT_FS_ROOT}/jails/$_pname/m/tmp"
-			chmod 1777 ${POT_FS_ROOT}/jails/$_pname/m/tmp
+			chmod 1777 "${POT_FS_ROOT}/jails/$_pname/m/tmp"
 			mkdir -p "${POT_FS_ROOT}/jails/$_pname/m/dev"
 		else
 			# clone the last snapshot of _potbase
@@ -63,10 +89,15 @@ _cj_zfs()
 			_snap=$(_zfs_last_snap "$_dset")
 			if [ -n "$_snap" ]; then
 				_debug "Clone zfs snapshot $_dset@$_snap"
-				zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/m" "$_dset@$_snap" "$_jdset/m"
+				if ! zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/m" "$_dset@$_snap" "$_jdset/m" ; then
+					_error "create: zfs clone failed"
+					_cj_undo_create
+					return 1 # false
+				fi
 			else
 				# TODO - autofix
 				_error "no snapshot found for $_dset/m"
+				_cj_undo_create
 				return 1 # false
 			fi
 		fi
@@ -82,18 +113,22 @@ _cj_zfs()
 	fi
 
 	# usr.local
-	if [ $_lvl -eq 1 ]; then
+	if [ "$_lvl" -eq 1 ]; then
 		# lvl 1 images clone usr.local dataset
-		if ! _zfs_dataset_valid $_jdset/usr.local ; then
+		if ! _zfs_dataset_valid "$_jdset/usr.local" ; then
 			if [ -n "$_potbase" ]; then
 				_dset=${POT_ZFS_ROOT}/jails/$_potbase
 			else
 				_dset=${POT_ZFS_ROOT}/bases/$_base
 			fi
-			_snap=$(_zfs_last_snap $_dset/usr.local)
+			_snap=$(_zfs_last_snap "$_dset/usr.local")
 			if [ -n "$_snap" ]; then
 				_debug "Clone zfs snapshot $_dset/usr.local@$_snap"
-				zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_pname/usr.local $_dset/usr.local@$_snap $_jdset/usr.local
+				if ! zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/usr.local" "$_dset/usr.local@$_snap" "$_jdset/usr.local" ; then
+					_error "create: zfs clone failed"
+					_cj_undo_create
+					return 1 # false
+				fi
 			else
 				# TODO - autofix
 				_error "no snapshot found for $_dset/usr.local"
@@ -105,16 +140,20 @@ _cj_zfs()
 	fi
 
 	# custom dataset
-	if ! _zfs_dataset_valid $_jdset/custom ; then
+	if ! _zfs_dataset_valid "$_jdset/custom" ; then
 		if [ -n "$_potbase" ]; then
 			_dset=${POT_ZFS_ROOT}/jails/$_potbase/custom
 		else
 			_dset=${POT_ZFS_ROOT}/bases/$_base/custom
 		fi
-		_snap=$(_zfs_last_snap $_dset)
+		_snap=$(_zfs_last_snap "$_dset")
 		if [ -n "$_snap" ]; then
 			_debug "Clone zfs snapshot $_dset@$_snap"
-			zfs clone -o mountpoint=${POT_FS_ROOT}/jails/$_pname/custom $_dset@$_snap $_jdset/custom
+			if ! zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/custom" "$_dset@$_snap" "$_jdset/custom" ; then
+					_error "create: zfs clone failed"
+					_cj_undo_create
+					return 1 # false
+			fi
 		else
 			# TODO - autofix
 			_error "no snapshot found for $_dset"
@@ -158,13 +197,13 @@ _cj_conf()
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	_bdset=${POT_ZFS_ROOT}/bases/$_base
 	if [ -n "$_potbase" ]; then
-		_pblvl=$( _get_conf_var $_potbase pot.level )
+		_pblvl=$( _get_conf_var "$_potbase" pot.level )
 		_pbdset=${POT_ZFS_ROOT}/jails/$_potbase
 	else
 		_pblvl=
 	fi
-	if [ ! -d $_jdir/conf ]; then
-		mkdir -p $_jdir/conf
+	if [ ! -d "$_jdir/conf" ]; then
+		mkdir -p "$_jdir/conf"
 	fi
 	(
 	if [ "$_type" = "multi" ]; then
@@ -191,7 +230,7 @@ _cj_conf()
 			;;
 		esac
 	fi
-	) > $_jdir/conf/fscomp.conf
+	) > "$_jdir/conf/fscomp.conf"
 	(
 		if [ "$_type" = "multi" ]; then
 			_baseos=$( cat $_bdir/.osrelease )
@@ -313,6 +352,7 @@ _cj_internal_conf()
 # $2 : the set-cmd line in the file
 _cj_flv_set_cmd()
 {
+	# shellcheck disable=SC2039
 	local _pname _line _cmd
 	_pname="$1"
 	_line="$2"
@@ -355,7 +395,11 @@ _cj_flv()
 		pot-cmd start "$_pname"
 		cp -v "${_POT_FLAVOUR_DIR}/${_flv}.sh" "$_pdir/m/tmp"
 		_debug "Executing $_flv script on $_pname"
-		jexec "$_pname" "/tmp/${_flv}.sh" "$_pname"
+		if ! jexec "$_pname" "/tmp/${_flv}.sh" "$_pname" ; then
+			_error "create: flavour $_flv failed (script)"
+			_cj_undo_create
+			return 1
+		fi
 		pot-cmd stop "$_pname"
 	else
 		_debug "No shell script available for the flavour $_flv"
@@ -371,8 +415,9 @@ _cj_single_install()
 	_base=$2
 	_proot=${POT_FS_ROOT}/jails/$_pname/m
 	_info "Fetching FreeBSD $_base"
-	if ! _fetch_freebsd $_base ; then
+	if ! _fetch_freebsd "$_base" ; then
 		_error "FreeBSD $_base fetch failed - try to continue"
+		_cj_undo_create
 		return 1 # false
 	fi
 	if echo "$_base" | grep -q "RC" ; then
@@ -380,14 +425,15 @@ _cj_single_install()
 	else
 		_rel="$_base"-RELEASE
 	fi
-	if [ ! -r /tmp/${_rel}_base.txz ]; then
+	if [ ! -r "/tmp/${_rel}_base.txz" ]; then
 		_error "FreeBSD base tarball /tmp/${_rel}_base.txz is missing"
+		_cj_undo_create
 		return 1 # falase
 	fi
 	(
-	  cd $_proot
+	  cd "$_proot"
 	  _info "Extract the tarball"
-	  tar xkf /tmp/${_rel}_base.txz
+	  tar xkf "/tmp/${_rel}_base.txz"
 	  if [ ! -d usr/home ]; then
 		  mkdir -p usr/home
 	  fi
@@ -395,6 +441,7 @@ _cj_single_install()
 		  ln -s usr/home home
 	  fi
 	)
+	return 0
 }
 
 pot-create()
@@ -413,7 +460,8 @@ pot-create()
 	_potbase=
 	_dns=inherit
 	_private_bridge=
-	while getopts "hvp:t:N:i:l:b:f:P:d:B:I:" _o ; do
+	_cleanup_keep="NO"
+	while getopts "hvp:t:N:i:l:b:f:P:d:B:I:k" _o ; do
 		case "$_o" in
 		h)
 			create-help
@@ -421,6 +469,9 @@ pot-create()
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			;;
+		k)
+			_cleanup_keep="YES"
 			;;
 		p)
 			_pname="$OPTARG"
@@ -749,6 +800,8 @@ pot-create()
 	_info "bridge      : $_private_bridge"
 	_info "dns         : $_dns"
 	_info "flavours    : $_flv"
+	export _cleanup_pname="$_pname" # for the cleanup function
+	export _cleanup_keep
 	if ! _cj_zfs "$_pname" "$_type" "$_lvl" "$_base" "$_potbase" ; then
 		${EXIT} 1
 	fi

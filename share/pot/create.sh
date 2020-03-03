@@ -2,6 +2,7 @@
 :
 
 trap _cj_undo_create TERM INT
+set -o pipefail
 
 # shellcheck disable=SC2039
 create-help()
@@ -47,6 +48,143 @@ _cj_undo_create()
 }
 
 # $1 pot name
+# $2 pot-base name
+_c_zfs_single()
+{
+	# shellcheck disable=SC2039
+	local _pname _base _potbase _jdset _snap _dset
+	_pname=$1
+	_potbase=$2
+	_pdset=${POT_ZFS_ROOT}/jails/$_pname
+	_pdir=${POT_FS_ROOT}/jails/$_pname
+	# Create the main jail zfs dataset
+	if ! _zfs_dataset_valid "$_pdset" ; then
+		if ! zfs create "$_pdset" ; then
+			_error "create: failed to create $_pdset dataset"
+			_cj_undo_create
+			return 1
+		fi
+	else
+		_info "$_pdset exists already"
+	fi
+	if [ -z "$_potbase" ]; then
+		# create an empty dataset
+		if ! zfs create "$_pdset/m" ; then
+			_error "create: failed to create $_pdset/m dataset"
+			_cj_undo_create
+			return 1
+		fi
+		# create the minimum needed tree
+		mkdir -p "$_pdir/m/tmp"
+		chmod 1777 "$_pdir/m/tmp"
+		mkdir -p "$_pdir/m/dev"
+	else
+		# send/receive the last snapshot of _potbase
+		_dset=${POT_ZFS_ROOT}/jails/$_potbase/m
+		_snap=$(_zfs_last_snap "$_dset")
+		if [ -n "$_snap" ]; then
+			_debug "Clone zfs snapshot $_dset@$_snap"
+			if ! zfs send "$_dset@$_snap" | zfs receive "$_pdset/m" ; then
+				_error "create: zfs send/receive failed"
+				_cj_undo_create
+				return 1 # false
+			fi
+		else
+			# TODO - autofix
+			_error "no snapshot found for $_dset/m"
+			_cj_undo_create
+			return 1 # false
+		fi
+	fi
+	return 0
+}
+
+# $1 pot name
+# $2 level
+# $3 base name
+# $4 pot-base name
+_c_zfs_multi()
+{
+	# shellcheck disable=SC2039
+	local _pname _base _potbase _jdset _snap _dset
+	_pname=$1
+	_lvl=$2
+	_base=$3
+	_potbase=$4
+	_pdset="${POT_ZFS_ROOT}/jails/$_pname"
+	_pdir="${POT_FS_ROOT}/jails/$_pname"
+
+	# Create the main jail zfs dataset
+	if ! _zfs_dataset_valid "$_pdset" ; then
+		if ! zfs create "$_pdset" ; then
+			_error "create: failed to create $_pdset dataset"
+			_cj_undo_create
+			return 1
+		fi
+	else
+		_info "$_pdset exists already"
+	fi
+	# Create the root mountpoint
+	if [ ! -d "$_pdir/m" ]; then
+		mkdir -p "$_pdir/m"
+	fi
+	# lvl 0 images mount directly usr.local and custom
+	if [ "$_lvl" = "0" ]; then
+		return 0
+	fi
+	# usr.local
+	if [ "$_lvl" -eq 1 ]; then
+		# lvl 1 images send/receive the usr.local dataset
+		if ! _zfs_dataset_valid "$_pdset/usr.local" ; then
+			if [ -n "$_potbase" ]; then
+				_dset=${POT_ZFS_ROOT}/jails/$_potbase
+			else
+				_dset=${POT_ZFS_ROOT}/bases/$_base
+			fi
+			_snap=$(_zfs_last_snap "$_dset/usr.local")
+			if [ -n "$_snap" ]; then
+				_debug "Import zfs snapshot $_dset/usr.local@$_snap"
+				if ! zfs send "$_dset/usr.local@$_snap" | zfs receive "$_pdset/usr.local" ; then
+					_error "create: zfs send/receive failed"
+					_cj_undo_create
+					return 1 # false
+				fi
+			else
+				# TODO - autofix
+				_error "no snapshot found for $_dset/usr.local"
+				return 1 # false
+			fi
+		else
+			_info "$_pdset/usr.local exists already"
+		fi
+	fi
+
+	# custom dataset
+	if ! _zfs_dataset_valid "$_pdset/custom" ; then
+		if [ -n "$_potbase" ]; then
+			_dset=${POT_ZFS_ROOT}/jails/$_potbase/custom
+		else
+			_dset=${POT_ZFS_ROOT}/bases/$_base/custom
+		fi
+		_snap=$(_zfs_last_snap "$_dset")
+		if [ -n "$_snap" ]; then
+			_debug "Clone zfs snapshot $_dset@$_snap"
+			if ! zfs send "$_dset@$_snap" | zfs receive "$_pdset/custom" ; then
+				_error "create: zfs send/receive failed"
+				_cj_undo_create
+				return 1 # false
+			fi
+		else
+			# TODO - autofix
+			_error "no snapshot found for $_dset"
+			return 1 # false
+		fi
+	else
+		_info "$_pdset/custom exists already"
+	fi
+	return 0 # true
+}
+# $1 pot name
 # $2 type
 # $3 level
 # $4 base name
@@ -60,109 +198,14 @@ _cj_zfs()
 	_lvl=$3
 	_base=$4
 	_potbase=$5
-	_jdset=${POT_ZFS_ROOT}/jails/$_pname
-	# Create the main jail zfs dataset
-	if ! _zfs_dataset_valid "$_jdset" ; then
-		if ! zfs create "$_jdset" ; then
-			_error "create: failed to create $_jdset dataset"
-			_cj_undo_create
-			return 1
-		fi
-	else
-		_info "$_jdset exists already"
-	fi
-	if [ "$_type" = "single" ]; then
-		if [ -z "$_potbase" ]; then
-			# create an empty dataset
-			if ! zfs create "$_jdset/m" ; then
-				_error "create: failed to create $_jdset/m dataset"
-				_cj_undo_create
-				return 1
-			fi
-			# create the minimum needed tree
-			mkdir -p "${POT_FS_ROOT}/jails/$_pname/m/tmp"
-			chmod 1777 "${POT_FS_ROOT}/jails/$_pname/m/tmp"
-			mkdir -p "${POT_FS_ROOT}/jails/$_pname/m/dev"
-		else
-			# clone the last snapshot of _potbase
-			_dset=${POT_ZFS_ROOT}/jails/$_potbase/m
-			_snap=$(_zfs_last_snap "$_dset")
-			if [ -n "$_snap" ]; then
-				_debug "Clone zfs snapshot $_dset@$_snap"
-				if ! zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/m" "$_dset@$_snap" "$_jdset/m" ; then
-					_error "create: zfs clone failed"
-					_cj_undo_create
-					return 1 # false
-				fi
-			else
-				# TODO - autofix
-				_error "no snapshot found for $_dset/m"
-				_cj_undo_create
-				return 1 # false
-			fi
-		fi
-		return 0
-	# Create the root mountpoint
-	elif [ ! -d "${POT_FS_ROOT}/jails/$_pname/m" ]; then
-		mkdir -p "${POT_FS_ROOT}/jails/$_pname/m"
-	fi
-
-	# lvl 0 images mount directly usr.local and custom
-	if [ "$_lvl" = "0" ]; then
-		return 0 # true
-	fi
-
-	# usr.local
-	if [ "$_lvl" -eq 1 ]; then
-		# lvl 1 images clone usr.local dataset
-		if ! _zfs_dataset_valid "$_jdset/usr.local" ; then
-			if [ -n "$_potbase" ]; then
-				_dset=${POT_ZFS_ROOT}/jails/$_potbase
-			else
-				_dset=${POT_ZFS_ROOT}/bases/$_base
-			fi
-			_snap=$(_zfs_last_snap "$_dset/usr.local")
-			if [ -n "$_snap" ]; then
-				_debug "Clone zfs snapshot $_dset/usr.local@$_snap"
-				if ! zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/usr.local" "$_dset/usr.local@$_snap" "$_jdset/usr.local" ; then
-					_error "create: zfs clone failed"
-					_cj_undo_create
-					return 1 # false
-				fi
-			else
-				# TODO - autofix
-				_error "no snapshot found for $_dset/usr.local"
-				return 1 # false
-			fi
-		else
-			_info "$_jdset/usr.local exists already"
-		fi
-	fi
-
-	# custom dataset
-	if ! _zfs_dataset_valid "$_jdset/custom" ; then
-		if [ -n "$_potbase" ]; then
-			_dset=${POT_ZFS_ROOT}/jails/$_potbase/custom
-		else
-			_dset=${POT_ZFS_ROOT}/bases/$_base/custom
-		fi
-		_snap=$(_zfs_last_snap "$_dset")
-		if [ -n "$_snap" ]; then
-			_debug "Clone zfs snapshot $_dset@$_snap"
-			if ! zfs clone -o mountpoint="${POT_FS_ROOT}/jails/$_pname/custom" "$_dset@$_snap" "$_jdset/custom" ; then
-					_error "create: zfs clone failed"
-					_cj_undo_create
-					return 1 # false
-			fi
-		else
-			# TODO - autofix
-			_error "no snapshot found for $_dset"
-			return 1 # false
-		fi
-	else
-		_info "$_jdset/custom exists already"
-	fi
-	return 0 # true
+	case "$_type" in
+		"multi")
+			_c_zfs_multi "$_pname" "$_lvl" "$_base" "$_potbase"
+			;;
+		"single")
+			_c_zfs_single "$_pname" "$_potbase"
+			;;
+	esac
 }
 
 # $1 pot name

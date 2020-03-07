@@ -13,13 +13,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#83)
 - start-at-boot: the pot rc.d service will be executed late, with jail
-- create: if create failes, the parttially created pot is automatically destroyed
+- create: if create fails, the partially created pot is automatically destroyed
 - create: -P will use send/receive from a snapshot, to cut the dependency with the snapshot
 - create-multi: usr.local and custom dataset are send/received instead of cloned
 
 ## [0.10.4] 2020-02-23
 ### Added
-- alias: add ability to use a different netowrk interface for alias network type (#80)
+- alias: add ability to use a different network interface for alias network type (#80)
 - env: add pot info -E output to environment or tinirc
 - log: add the ability to log activites in syslog
 

@@ -149,6 +149,9 @@ _c_zfs_multi()
 					_cj_undo_create
 					return 1 # false
 				fi
+				if ! zfs destroy "$_pdset/usr.local@$_snap" ; then
+					_info "create: not able to destroy the snapshot of usr.local - please, do it manually"
+				fi
 			else
 				# TODO - autofix
 				_error "no snapshot found for $_dset/usr.local"
@@ -173,6 +176,9 @@ _c_zfs_multi()
 				_error "create: zfs send/receive failed"
 				_cj_undo_create
 				return 1 # false
+			fi
+			if ! zfs destroy "$_pdset/custom@$_snap" ; then
+				_info "create: not able to destroy the snapshot of custom - please, do it manually"
 			fi
 		else
 			# TODO - autofix

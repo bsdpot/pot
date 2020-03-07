@@ -84,9 +84,13 @@ test_cj_zfs_002()
 	_c_zfs_multi new-pot 1 11.1
 	assertEquals "return code" "0" "$?"
 	# unfortunately, all the other zfs command are executed in subshell
-	assertEquals "zfs calls" "1" "$ZFS_CALLS"
+	assertEquals "zfs calls" "3" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
 	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "zfs arg1" "destroy" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot/usr.local@1234" "$ZFS_CALL2_ARG2"
+	assertEquals "zfs arg1" "destroy" "$ZFS_CALL3_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot/custom@1234" "$ZFS_CALL3_ARG2"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" "$MKDIR_CALL1_ARG2"
 	assertEquals "chmod calls" "0" "$CHMOD_CALLS"
@@ -97,8 +101,13 @@ test_cj_zfs_003()
 	_c_zfs_multi new-pot 1 11.1 test-pot
 	assertEquals "return code" "0" "$?"
 	# unfortunately, all the other zfs command are executed in subshell
-	assertEquals "zfs calls" "1" "$ZFS_CALLS"
+	assertEquals "zfs calls" "3" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "zfs arg1" "destroy" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot/usr.local@4321" "$ZFS_CALL2_ARG2"
+	assertEquals "zfs arg1" "destroy" "$ZFS_CALL3_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot/custom@4321" "$ZFS_CALL3_ARG2"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" "$MKDIR_CALL1_ARG2"
 	assertEquals "chmod calls" "0" "$CHMOD_CALLS"
@@ -109,9 +118,11 @@ test_cj_zfs_004()
 	_c_zfs_multi new-pot 2 11.1 test-pot
 	assertEquals "return code" "0" "$?"
 	# unfortunately, all the other zfs command are executed in subshell
-	assertEquals "zfs calls" "1" "$ZFS_CALLS"
+	assertEquals "zfs calls" "2" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
 	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "zfs arg1" "destroy" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot/custom@4321" "$ZFS_CALL2_ARG2"
 	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
 	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" "$MKDIR_CALL1_ARG2"
 	assertEquals "chmod calls" "0" "$CHMOD_CALLS"

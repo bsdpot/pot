@@ -27,6 +27,7 @@ pot-term()
 	_pname=
 	_force=
 
+	OPTIND=1
 	while getopts "hvf" _o; do
 		case "$_o" in
 		h)

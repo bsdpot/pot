@@ -216,6 +216,14 @@ pot-destroy()
 				done
 			done
 		else
+			# check if some pot depends on it
+			_pots=$( _get_pot_list )
+			for _p in $_pots ; do
+				if [ "$( _get_conf_var "$_p" pot.base )" = "$_bname" ]; then
+					_error "base $_bname is used at least by one pot - use option -r to destroy it recursively"
+					${EXIT} 1
+				fi
+			done
 			# if present, destroy the lvl 0 pot
 			_pname="base-$(echo "$_bname" | sed 's/\./_/')"
 			_debug "Destroying lvl 0 pot $_pname"

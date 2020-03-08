@@ -79,8 +79,10 @@ test_pot_term_030()
 	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
 	assertEquals "_term calls" "0" "$TERM_CALLS"
 	assertEquals "pot-cmd calls" "0" "$POTCMD_CALLS"
+}
 
-	setUp
+test_pot_term_031()
+{
 	pot-term -f test-pot
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
@@ -88,10 +90,11 @@ test_pot_term_030()
 	assertEquals "_is_pot_running calls" "2" "$ISPOTRUN_CALLS"
 	assertEquals "_term calls" "0" "$TERM_CALLS"
 	assertEquals "pot-cmd calls" "1" "$POTCMD_CALLS"
+}
 
+test_pot_term_032() {
 	# In this test "pot-cmd start" is changing pot name from
 	# test-pot to test-pot-run.
-	setUp
 	POTCMD_SHOULD_START_POT=yes
 	pot-term -f test-pot
 	assertEquals "Exit rc" "0" "$?"

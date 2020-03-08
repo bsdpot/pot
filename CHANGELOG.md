@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create: -P will use send/receive from a snapshot, to cut the dependency with the snapshot
 - create-multi: usr.local and custom dataset are send/received instead of cloned
 
+### Fixed
+- mount-in: compute the realpath of the mount-point
+- create: use pipefail only where implemented
+
 ## [0.10.4] 2020-02-23
 ### Added
 - alias: add ability to use a different network interface for alias network type (#80)
@@ -27,7 +31,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - prepare: fix multiple export port support
 - rc script: extend PATH to make potnet accessible
 - etc/hosts: add full hostname to localhost
-- mount-in: compute the realpath of the mount-point
 
 ## [0.10.3] 2020-01-07
 ### Changed

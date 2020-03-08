@@ -2,7 +2,7 @@
 :
 
 trap _cj_undo_create TERM INT
-set -o pipefail
+_set_pipefail
 
 # shellcheck disable=SC2039
 create-help()

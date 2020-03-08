@@ -62,6 +62,7 @@ _directory_validation()
 _mountpoint_validation()
 {
 	__monitor MPVALID "$@"
+	echo "$2"
 }
 
 _mount_dir()
@@ -85,7 +86,6 @@ test_pot_mount_in_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -vb
@@ -97,7 +97,6 @@ test_pot_mount_in_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -b bb
@@ -108,7 +107,6 @@ test_pot_mount_in_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -h
@@ -120,7 +118,6 @@ test_pot_mount_in_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_002()
@@ -134,7 +131,6 @@ test_pot_mount_in_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -f test-fscomp
@@ -146,7 +142,6 @@ test_pot_mount_in_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt
@@ -158,7 +153,6 @@ test_pot_mount_in_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -d /test-dir
@@ -170,7 +164,6 @@ test_pot_mount_in_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -z zroot/test-dataset
@@ -182,7 +175,6 @@ test_pot_mount_in_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_003()
@@ -195,7 +187,6 @@ test_pot_mount_in_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt -f test-fscomp
@@ -207,7 +198,6 @@ test_pot_mount_in_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt -p test-pot
@@ -219,7 +209,6 @@ test_pot_mount_in_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_004()
@@ -232,7 +221,6 @@ test_pot_mount_in_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt -d /test-dir
@@ -244,7 +232,6 @@ test_pot_mount_in_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt -p test-pot
@@ -256,7 +243,6 @@ test_pot_mount_in_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_005()
@@ -269,7 +255,6 @@ test_pot_mount_in_005()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt -z zroot/test-dataset
@@ -281,7 +266,6 @@ test_pot_mount_in_005()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -m /test-mnt -p test-pot
@@ -293,7 +277,6 @@ test_pot_mount_in_005()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_006()
@@ -306,7 +289,6 @@ test_pot_mount_in_006()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -p test-pot -m /test-mnt -z zroot/test-dataset -f test-fscomp
@@ -317,7 +299,6 @@ test_pot_mount_in_006()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -p test-pot -m /test-mnt -f test-fscomp -d /test-dir
@@ -328,7 +309,6 @@ test_pot_mount_in_006()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_007()
@@ -365,7 +345,6 @@ test_pot_mount_in_008()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 	
 	setUp
 	pot-mount-in -p test-no-pot -m /test-no-mnt -z zroot/test-dataset
@@ -374,7 +353,6 @@ test_pot_mount_in_008()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 	
 	setUp
 	pot-mount-in -p test-no-pot -m /test-no-mnt -d test-dir
@@ -383,7 +361,6 @@ test_pot_mount_in_008()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_009()
@@ -393,7 +370,6 @@ test_pot_mount_in_009()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -p test-pot -d test-dir -m test-no-mnt
@@ -401,7 +377,6 @@ test_pot_mount_in_009()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -p test-pot -z zroot/test-dataset -m test-no-mnt
@@ -409,7 +384,6 @@ test_pot_mount_in_009()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_010()
@@ -419,7 +393,6 @@ test_pot_mount_in_010()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -p test-pot -d test-dir -m /
@@ -427,7 +400,6 @@ test_pot_mount_in_010()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 
 	setUp
 	pot-mount-in -p test-pot -z zroot/test-dataset -m /
@@ -435,7 +407,6 @@ test_pot_mount_in_010()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_020()
@@ -452,7 +423,6 @@ test_pot_mount_in_020()
 	assertEquals "_mount_dataset arg" "/test-mnt" "$MOUNTDSET_CALL1_ARG3"
 	assertEquals "_mount_dataset arg" "" "$MOUNTDSET_CALL1_ARG4"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_021()
@@ -469,7 +439,6 @@ test_pot_mount_in_021()
 	assertEquals "_mount_dataset arg" "/test-mnt" "$MOUNTDSET_CALL1_ARG3"
 	assertEquals "_mount_dataset arg" "ro" "$MOUNTDSET_CALL1_ARG4"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_022()
@@ -486,7 +455,6 @@ test_pot_mount_in_022()
 	assertEquals "_mount_dataset arg" "/test-mnt" "$MOUNTDSET_CALL1_ARG3"
 	assertEquals "_mount_dataset arg" "zfs-remount" "$MOUNTDSET_CALL1_ARG4"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 test_pot_mount_in_040()
 {
@@ -502,7 +470,6 @@ test_pot_mount_in_040()
 	assertEquals "_mount_dataset arg" "/test-mnt" "$MOUNTDSET_CALL1_ARG3"
 	assertEquals "_mount_dataset arg" "" "$MOUNTDSET_CALL1_ARG4"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_041()
@@ -519,7 +486,6 @@ test_pot_mount_in_041()
 	assertEquals "_mount_dataset arg" "/test-mnt" "$MOUNTDSET_CALL1_ARG3"
 	assertEquals "_mount_dataset arg" "ro" "$MOUNTDSET_CALL1_ARG4"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_042()
@@ -536,7 +502,6 @@ test_pot_mount_in_042()
 	assertEquals "_mount_dataset arg" "/test-mnt" "$MOUNTDSET_CALL1_ARG3"
 	assertEquals "_mount_dataset arg" "zfs-remount" "$MOUNTDSET_CALL1_ARG4"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_060()
@@ -553,7 +518,6 @@ test_pot_mount_in_060()
 	assertEquals "_mount_dir arg" "test-pot" "$MOUNTDIR_CALL1_ARG2"
 	assertEquals "_mount_dir arg" "/test-mnt" "$MOUNTDIR_CALL1_ARG3"
 	assertEquals "_mount_dir arg" "" "$MOUNTDIR_CALL1_ARG4"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_061()
@@ -570,7 +534,6 @@ test_pot_mount_in_061()
 	assertEquals "_mount_dir arg" "test-pot" "$MOUNTDIR_CALL1_ARG2"
 	assertEquals "_mount_dir arg" "/test-mnt" "$MOUNTDIR_CALL1_ARG3"
 	assertEquals "_mount_dir arg" "ro" "$MOUNTDIR_CALL1_ARG4"
-	assertEquals "_mountpoint_validation calls" "1" "$MPVALID_CALLS"
 }
 
 test_pot_mount_in_062()
@@ -580,7 +543,6 @@ test_pot_mount_in_062()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
-	assertEquals "_mountpoint_validation calls" "0" "$MPVALID_CALLS"
 }
 
 setUp()

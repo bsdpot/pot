@@ -36,14 +36,11 @@ pot-term()
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
 		f)
 			_force="YES"
-			shift
 			;;
 		?)
-			shift
 			break
 			;;
 		esac

@@ -44,7 +44,7 @@ _is_mountpoint_used()
 _mountpoint_validation()
 {
 	# shellcheck disable=SC2039
-	local _pname _mnt_p _mpdir _mounted
+	local _pname _mnt_p _mpdir _mounted _real_mnt
 	_pname="$1"
 	_mnt_p="$2"
 	_mpdir=$POT_FS_ROOT/jails/$_pname/m
@@ -69,9 +69,11 @@ _mountpoint_validation()
 			return 1 # false
 		fi
 	fi
+	_real_mnt=$( chroot "$_mpdir" /bin/realpath "$_mnt_p")
 	if eval $_mounted ; then
 		_pot_umount "$_pname"
 	fi
+	echo "$_real_mnt"
 	return 0 # true
 }
 
@@ -161,7 +163,7 @@ _mount_dir()
 # shellcheck disable=SC2039
 pot-mount-in()
 {
-	local _pname _fscomp _mnt_p _ext _remount _readonly _opt _dir
+	local _pname _fscomp _mnt_p _remount _readonly _opt _dir _real_mnt_p
 	OPTIND=1
 	_pname=
 	_mnt_p=
@@ -307,20 +309,20 @@ pot-mount-in()
 	if ! _is_uid0 ; then
 		return 1
 	fi
-	if ! _mountpoint_validation "$_pname" "$_mnt_p" ; then
+	if ! _real_mnt_p="$(_mountpoint_validation "$_pname" "$_mnt_p" )" ; then
 		_error "The mountpoint is not valid!"
 		return 1
 	fi
 	if [ -n "$_dir" ]; then
-		_mount_dir "$_dir" "$_pname" "$_mnt_p" $_opt
+		_mount_dir "$_dir" "$_pname" "$_real_mnt_p" $_opt
 		return $?
 	fi
 	if [ -n "$_dset" ]; then
-		_mount_dataset "$_dset" "$_pname" "$_mnt_p" $_opt
+		_mount_dataset "$_dset" "$_pname" "$_real_mnt_p" $_opt
 		return $?
 	fi
 	if [ -n "$_fscomp" ]; then
-		_mount_dataset "$POT_ZFS_ROOT/fscomp/$_fscomp" "$_pname" "$_mnt_p" $_opt
+		_mount_dataset "$POT_ZFS_ROOT/fscomp/$_fscomp" "$_pname" "$_real_mnt_p" $_opt
 		return $?
 	fi
 }

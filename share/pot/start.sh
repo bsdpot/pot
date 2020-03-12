@@ -114,11 +114,11 @@ _js_vnet()
 {
 	local _pname _bridge _epair _epairb _ip
 	_pname=$1
-	if ! _is_vnet_up ; then
-		_info "No pot bridge found! Calling vnet-start to fix the issue"
+	if ! _is_vnet_ipv4_up ; then
+		_info "Internal network not found! Calling vnet-start to fix the issue"
 		pot-cmd vnet-start
 	fi
-	_bridge=$(_pot_bridge)
+	_bridge=$(_pot_bridge_ipv4)
 	_epair=${2}a
 	_epairb="${2}b"
 	ifconfig ${_epair} up
@@ -132,10 +132,39 @@ _js_vnet()
 	else # use rc scripts
 		# set the network configuration in the pot's rc.conf
 		if [ -w ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf ]; then
-			sed -i '' '/ifconfig_epair/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+			sed -i '' '/ifconfig_epair[0-9][0-9]*[ab]=/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
 		fi
 		echo "ifconfig_${_epairb}=\"inet $_ip netmask $POT_NETMASK\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
 		sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf defaultrouter="$POT_GATEWAY"
+	fi
+}
+
+# $1 pot name
+# $2 epair interface
+_js_vnet_ipv6()
+{
+	local _pname _bridge _epair _epairb _ip
+	_pname=$1
+	if ! _is_vnet_ipv6_up ; then
+		_info "Internal network not found! Calling vnet-start to fix the issue"
+		pot-cmd vnet-start
+	fi
+	_bridge=$(_pot_bridge_ipv6)
+	_epair=${2}a
+	_epairb="${2}b"
+	ifconfig ${_epair} up
+	ifconfig $_bridge addm ${_epair}
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		touch ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		echo "ifconfig ${_epairb} inet6 up accept_rtadv" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+		echo "/sbin/rtsol -d ${_epairb}" >> ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
+	else # use rc scripts
+		# set the network configuration in the pot's rc.conf
+		if [ -w ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf ]; then
+			sed -i '' '/ifconfig_epair[0-9][0-9]*[ab]_ipv6/d' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+		fi
+		echo "ifconfig_${_epairb}_ipv6=\"inet6 accept_rtadv auto_linklocal\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
+		sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf rtsold_enable="YES"
 	fi
 }
 
@@ -146,7 +175,7 @@ _js_private_vnet()
 	local _pname _bridge_name _bridge _epair _epairb _ip _net_size _gateway
 	_pname=$1
 	_bridge_name="$( _get_conf_var "$_pname" bridge )"
-	if ! _is_vnet_up "$_bridge_name" ; then
+	if ! _is_vnet_ipv4_up "$_bridge_name" ; then
 		_debug "No pot bridge found! Calling vnet-start to fix the issue"
 		pot-cmd vnet-start -B "$_bridge_name"
 	fi
@@ -347,7 +376,7 @@ _bg_start()
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _alias_netif
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _alias_netif _stack
 	_pname="$1"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
@@ -383,10 +412,19 @@ _js_start()
 		fi
 		;;
 	"public-bridge")
-		_iface="$( _js_create_epair )"
-		_js_vnet "$_pname" "$_iface"
-		_param="$_param vnet vnet.interface=${_iface}b"
-		_js_export_ports "$_pname"
+		_param="$_param vnet"
+		_stack="$( _get_network_stack )"
+		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv4" ]; then
+			_iface="$( _js_create_epair )"
+			_js_vnet "$_pname" "$_iface"
+			_param="$_param vnet.interface=${_iface}b"
+			_js_export_ports "$_pname"
+		fi
+		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv6" ]; then
+			_iface="$( _js_create_epair )"
+			_js_vnet_ipv6 "$_pname" "$_iface"
+			_param="$_param vnet.interface=${_iface}b"
+		fi
 		;;
 	"private-bridge")
 		_iface="$( _js_create_epair )"

@@ -355,18 +355,56 @@ _is_zfs_pot_snap()
 	fi
 }
 
+_get_network_stack()
+{
+	# shellcheck disable=SC2039
+	local _stack
+	_stack="${POT_NETWORK_STACK:-ipv4}"
+	case $_stack in
+		ipv4|ipv6|dual)
+			echo "$_stack"
+			;;
+		*)
+			echo ipv4
+			return 1
+			;;
+	esac
+}
+
 # tested
 _pot_bridge()
 {
+	_pot_bridge_ipv4
+}
+
+_pot_bridge_ipv4()
+{
+	# shellcheck disable=SC2039
 	local _bridges
 	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
 	if [ -z "$_bridges" ]; then
 		return
 	fi
 	for _b in $_bridges ; do
-		_ip=$( ifconfig $_b inet | awk '/inet/ { print $2 }' )
-		if [ "$_ip" = $POT_GATEWAY ]; then
-			echo $_b
+		_ip=$( ifconfig "$_b" inet | awk '/inet/ { print $2 }' )
+		if [ "$_ip" = "$POT_GATEWAY" ]; then
+			echo "$_b"
+			return
+		fi
+	done
+}
+
+_pot_bridge_ipv6()
+{
+	# shellcheck disable=SC2039
+	local _bridges
+	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	if [ -z "$_bridges" ]; then
+		return
+	fi
+	for _b in $_bridges ; do
+		if ifconfig "$_b" |grep -q "member: $POT_EXTIF" ; then
+			echo "$_b"
 			return
 		fi
 	done
@@ -509,8 +547,13 @@ _is_pot_prunable()
 	fi
 }
 
-# $1 bridge name (optional)
 _is_vnet_up()
+{
+	_is_vnet_ipv4_up "$1"
+}
+
+# $1 bridge name (optional)
+_is_vnet_ipv4_up()
 {
 	# shellcheck disable=SC2039
 	local _bridge
@@ -534,6 +577,16 @@ _is_vnet_up()
 	fi
 }
 
+_is_vnet_ipv6_up()
+{
+	# shellcheck disable=SC2039
+	local _bridge
+	_bridge="$(_pot_bridge_ipv6)"
+	if [ -z "$_bridge" ]; then
+		return 1 # false
+	fi
+	return 0
+}
 # $1 bridge name
 # $2 quiet / no _error messages are emitted (sometimes useful)
 _is_bridge()

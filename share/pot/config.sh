@@ -1,6 +1,6 @@
 #!/bin/sh
 
-: "${_config_names:="fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix"}"
+: "${_config_names:="fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix network_stack"}"
 
 # shellcheck disable=SC2039
 config-help()
@@ -84,6 +84,9 @@ pot-config()
 			;;
 		fscomp_prefix)
 			_config_echo $_quiet "fscomp prefix" "$POT_FS_ROOT/fscomp"
+			;;
+		network_stack)
+			_config_echo $_quiet "network stack" "$( _get_network_stack )"
 			;;
 	esac
 }

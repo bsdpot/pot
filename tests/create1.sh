@@ -18,6 +18,9 @@ potnet()
 	fi
 	return 1 # false
 }
+
+. pipefail-stub.sh
+
 # UUT
 . ../share/pot/create.sh
 
@@ -27,12 +30,6 @@ potnet()
 _is_vnet_available()
 {
 	__monitor ISVNETAVAIL "$@"
-	return 0 # true
-}
-
-_is_vnet_up()
-{
-	__monitor ISVNETUP "$@"
 	return 0 # true
 }
 
@@ -514,7 +511,6 @@ test_pot_create_060()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
@@ -558,7 +554,6 @@ test_pot_create_062()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
@@ -589,7 +584,6 @@ test_pot_create_063()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
@@ -619,7 +613,6 @@ test_pot_create_064()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
 	assertEquals "_is_potnet_available calls" "1" "$ISPOTNETAVAIL_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
@@ -677,7 +670,6 @@ test_pot_create_081()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
@@ -707,7 +699,6 @@ test_pot_create_082()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "2" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
@@ -737,7 +728,6 @@ test_pot_create_083()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
@@ -839,7 +829,6 @@ test_pot_create_120()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg2" "single" "$CJZFS_CALL1_ARG2"
@@ -876,7 +865,6 @@ test_pot_create_121()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "1" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "1" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg2" "single" "$CJZFS_CALL1_ARG2"
@@ -914,7 +902,6 @@ test_pot_create_122()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
 	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
-	assertEquals "_is_vnet_up calls" "0" "$ISVNETUP_CALLS"
 	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
 	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
 	assertEquals "_cj_zfs arg2" "single" "$CJZFS_CALL1_ARG2"
@@ -958,7 +945,6 @@ setUp()
 	CJFLV_CALL1_ARG2=
 	HELP_CALLS=0
 	ISVNETAVAIL_CALLS=0
-	ISVNETUP_CALLS=0
 	ISPOTNETAVAIL_CALLS=0
 	POTNET_CALLS=0
 }

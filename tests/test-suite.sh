@@ -24,6 +24,8 @@ for s in $suites ; do
 		continue
 	elif [ "$s" = "./conf-stub.sh" ]; then
 		continue
+	elif [ "$s" = "./pipefail-stub.sh" ]; then
+		continue
 	elif [ "$s" = "./monitor.sh" ]; then
 		continue
 	else

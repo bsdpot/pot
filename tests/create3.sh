@@ -41,6 +41,8 @@ cat()
 	fi
 }
 
+. pipefail-stub.sh
+
 # UUT
 . ../share/pot/create.sh
 

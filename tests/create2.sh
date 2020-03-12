@@ -29,6 +29,8 @@ chmod()
 	/bin/chmod $@
 }
 
+. pipefail-stub.sh
+
 # UUT
 . ../share/pot/create.sh
 

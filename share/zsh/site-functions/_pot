@@ -30,6 +30,10 @@ _pot_attributes() {
 	_values "pot attributes" 'start-at-boot' 'early-start-at-boot' 'persistent' 'no-rc-script' 'fdescfs' 'procfs' 'prunable' 'localhost-tunnel'
 }
 
+_pot_network_type() {
+	_values "pot network type" "inherit" "alias" "public-bridge" "private-bridge" "private-bridge"
+}
+
 _pot() {
 	_arguments \
 		'1: :_pot_cmds' \
@@ -129,7 +133,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-k[keep pot if it fails]' \
 						'-t[pot type]:pot type:(single multi)' \
-						'-N[network type]:network type:(inherit alias public-bridge)' \
+						'-N[network type]:network type:_pot_network_type' \
 						'-p[pot name]:pot name:_normal' \
 						'-P[pot reference]:pot reference name:_pot_pots' \
 						'-b[base version]:base version:_pot_bases' \
@@ -154,7 +158,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-p[pot name]::_normal' \
 						'-P[pot reference]:pot reference name:_pot_pots' \
-						'-N[network type]:network type:(inherit alias public-bridge)' \
+						'-N[network type]:network type:_pot_network_type' \
 						'-i[network config]::_normal' \
 						'-B[bridge name]:bridge name:_pot_bridges' \
 						'-F[force snapshot of the pot reference]' 

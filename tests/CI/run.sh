@@ -177,9 +177,11 @@ startstop_test() {
 		error $name show
 	fi
 	if [ $s = "ipv4" ] || [ $s = "dual" ]; then
-		ip4="$( _get_ip $name )"
-		if ! ping -c 1 $ip4 ; then
-			error $name ping-bridge
+		if [ $n != "inherit" ]; then
+			ip4="$( _get_ip $name )"
+			if ! ping -c 1 $ip4 ; then
+				error $name ping-bridge
+			fi
 		fi
 		if ! jexec $name ping -c 1 1.1.1.1 ; then
 			error $name ping-nat

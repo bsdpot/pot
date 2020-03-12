@@ -799,6 +799,10 @@ pot-create()
 			_error "This kernel doesn't support VIMAGE! No vnet possible"
 			${EXIT} 1
 		fi
+		if [ "$( _get_network_stack )" = "ipv6" ]; then
+			_error "private-bridge network type is not supported on ipv6 stack only"
+			${EXIT} 1
+		fi
 		if [ -z "$_private_bridge" ]; then
 			_error "private-bridge network type requires -B option, to specify which private bridge to use"
 			${EXIT} 1

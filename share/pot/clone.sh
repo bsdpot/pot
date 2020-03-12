@@ -363,6 +363,10 @@ pot-clone()
 		fi
 		;;
 	"private-bridge")
+		if [ "$( _get_network_stack )" = "ipv6" ]; then
+			_error "private-bridge network type is not supported on ipv6 stack only"
+			${EXIT} 1
+		fi
 		if ! potnet validate -H "$_ipaddr" -b "$_bridge_name" ; then
 			_error "$_ipaddr is not a valid IP address for the private bridge $_bridge_name"
 			clone-help

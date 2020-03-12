@@ -7,3 +7,4 @@
 !/etc/pot/flavours/slim.sh
 !/etc/pot/flavours/fbsd-update.sh
 devenv.sh
+/tests/CI/pot-ci*

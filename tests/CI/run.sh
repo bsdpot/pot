@@ -8,7 +8,7 @@ error() {
 	test_name="${1:-unknown}"
 	echo "Test ${test_name} failed ($2)" >> $logfile
 	end
-	exit 
+	exit
 }
 
 begin()
@@ -50,59 +50,59 @@ empty_check() {
 
 # $1 type
 # $2 base_version
-# $3 network type
-create_test() {
+# $3 network
+# $4 stack
+get_pot_name() {
 	t=$1
-	b=$2
-	n=${3:-inherit}
-	local name=${1}-${3}-test
-	case $t in
-	single)
-		case $n in
-			private-bridge)
-				# create bridge
-				if ! pot create-private-bridge -v -B testprivate -S 5 ; then
-					error $name create-private-bridge
-				fi
-				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
-					error $name create
-				fi
-				;;
-			*)
-				if ! pot create -v -p $name -t $t -b $b -N $n ; then
-					error $name create
-				fi
-		esac
-		;;
-	multi)
-		if ! pot create-base -v -r $b ; then
-			error $name create-base
-		else
-			case $n in
-				private-bridge)
-					# create bridge
-					if ! pot create-private-bridge -v -B testprivate -S 5 ; then
-						error $name create-private-bridge
-					fi
-					if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
-						error $name create
-					fi
-					;;
-				*)
-					if ! pot create -v -p $name -t $t -b $b -N $n ; then
-						error $name create
-					fi
-			esac
-		fi
-		;;
-	esac
+	b=$( echo $2 | tr '.' '_' )
+	n=$3
+	s=$4
+	echo $t-$b-$n-$s-test
 }
 
 # $1 type
-# $2 network
+# $2 base_version
+# $3 network type
+# $4 stack
+create_test() {
+	local name=$( get_pot_name $1 $2 $3 $4 )
+	t=$1
+	b=$2
+	n=$3
+	s=$4
+	if [ "$t" = "multi" ]; then
+		if ! pot create-base -v -r $b ; then
+			error $name create-base
+		fi
+	fi
+	case $n in
+		private-bridge)
+			# create bridge
+			if ! pot create-private-bridge -v -B testprivate -S 5 ; then
+				error $name create-private-bridge
+			fi
+			if [ "$s" = "ipv6" ]; then
+				if pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
+					error $name create
+				fi
+			else
+				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
+					error $name create
+				fi
+			fi
+			;;
+		*)
+			if ! pot create -v -p $name -t $t -b $b -N $n ; then
+				error $name create
+			fi
+	esac
+}
+
+# $1 name
+# $2 type
 snap_test() {
-	local name=${1}-${2}-test
-	case $1 in
+	local name=${1}
+	case $2 in
 	single)
 		snaps=2
 		;;
@@ -160,13 +160,15 @@ fscomp_test() {
 # $1 pot name
 _get_ip() {
 	local name=$1
-	pot info -p single-auto-test | grep ip4 | awk '{ print $3 }'
+	pot info -p $name | grep "ip " | awk '{ print $3 }'
 }
 
 # $1 pot name
 # $2 network
 startstop_test() {
 	local name=$1
+	local n=$2
+	local s=$3
 	if ! pot start $name ; then
 		error $name start
 	fi
@@ -174,13 +176,18 @@ startstop_test() {
 	if [ "$(pot show | grep -c $name)" -ne 1 ]; then
 		error $name show
 	fi
-	if [ "$3" = "auto" ]; then
+	if [ $s = "ipv4" ] || [ $s = "dual" ]; then
 		ip4="$( _get_ip $name )"
 		if ! ping -c 1 $ip4 ; then
 			error $name ping-bridge
 		fi
 		if ! jexec $name ping -c 1 1.1.1.1 ; then
 			error $name ping-nat
+		fi
+	fi
+	if [ $s = "ipv6" ] || [ $s = "dual" ]; then
+		if ! jexec $name ping -c 2606:4700:4700::1111 ; then
+			error $name ping-ipv6
 		fi
 	fi
 	if ! pot stop $name ; then
@@ -191,8 +198,9 @@ startstop_test() {
 # $1 type
 # $2 base
 # $3 network
+# $4 stack
 destroy_test() {
-	local name=${1}-${3}-test
+	local name=$( get_pot_name $1 $2 $3 $4 )
 	case $1 in
 	single)
 		if ! pot destroy -p $name ; then
@@ -222,7 +230,7 @@ destroy_test() {
 # $2 base
 # $3 network
 destroy_corrupted_test() {
-	local name=${1}-${3}-test
+	local name=$( get_pot_name $1 $2 $3 $4 )
 	case $1 in
 	single)
 		if pot destroy -p $name ; then
@@ -273,23 +281,25 @@ rename_test() {
 # $4 network
 destroy_rename_test() {
 	local name=${1}
-	local type=${2}
-	case $type in
+	local t=${2}
+	local b=${2}
+	local n=${2}
+	case $t in
 	single)
 		if ! pot destroy -p $name ; then
 			error $name destroy
 		fi
 		;;
 	multi)
-		if pot destroy -b $3 ; then
-			error $name no-destroy-base-$3
+		if pot destroy -b $b ; then
+			error $name no-destroy-base-$b
 		fi
-		if ! pot destroy -rb $3 ; then
-			error $name destroy-base-$3
+		if ! pot destroy -rb $b ; then
+			error $name destroy-base-$b
 		fi
 		;;
 	esac
-	if [ "$4" = "private-bridge" ]; then
+	if [ "$n" = "private-bridge" ]; then
 		if ! pot destroy -B testprivate ; then
 			error $name destroy-bridge
 		fi
@@ -299,47 +309,51 @@ destroy_rename_test() {
 # $1 type
 # $2 base_version
 # $3 network
+# $4 stack
 pot_test() {
-	local name=${1}-${3}-test
-	create_test $1 $2 $3
-	snap_test $1 $3
+	local name=$( get_pot_name $1 $2 $3 $4 )
+	create_test $1 $2 $3 $4
+	snap_test $name $1
 	export_test $name $1
 	fscomp_test $name
-	startstop_test $name $3
-	destroy_test $1 $2 ${3}
+	startstop_test $name $3 $4
+	destroy_test $1 $2 $3 $4
 	empty_check $name
 }
 
 # $1 type
 # $2 base_version
 # $3 network
+# $4 stack
 pot_corrupted_test() {
-	local name=${1}-${3}-test
-	create_test $1 $2 $3
+	local name=$( get_pot_name $1 $2 $3 $4 )
+	create_test $1 $2 $3 $4
 	rm -rf /opt/pot/jails/$name/conf
-	destroy_corrupted_test $1 $2 ${3}
+	destroy_corrupted_test $1 $2 $3 $4
 	empty_check $name
 }
 
 # $1 type
 # $2 base_version
 # $3 network
+# $4 stack
 pot_rename_test()
 {
-	local name=${1}-${3}-test
+	local name=$( get_pot_name $1 $2 $3 $4 )
 	local new_name=${name}_new
-	create_test $1 $2 $3
+	create_test $1 $2 $3 $4
 	rename_test $name $new_name
-	startstop_test $new_name $3
+	startstop_test $new_name $3 $4
 	destroy_rename_test $new_name $1 $2 $3
 }
 
 # $1 type
 # $2 base_version
 # $3 network
+# $4 stack
 pot_create_fail_test()
 {
-	local name=${1}-${3}-test
+	local name=$( get_pot_name $1 $2 $3 $4 )
 	local flv_dir
 	if [ "$3" != "inherit" ]; then
 		return 0
@@ -370,22 +384,25 @@ BROKEN_FLV
 	empty_check $name
 }
 
+STACKS="ipv4 dual ipv6"
 VERSIONS="12.1 11.3"
 TYPES="single multi"
 NETWORKS="inherit public-bridge private-bridge"
 begin
 
-empty_check initial_check
-pfctl -F all
-for b in $VERSIONS ; do
-	for t in $TYPES ; do
-		for n in $NETWORKS ; do
-			echo "testing $b $t $n $(date)" >> $logfile
-			pot_test $t $b $n
-			pot_corrupted_test $t $b $n
-			pot_rename_test $t $b $n
-			pot_create_fail_test $t $b $n
-			echo "tested $b $t $n $(date)" >> $logfile
+#empty_check initial_check
+#pfctl -F all
+for s in $STACKS ; do
+	for b in $VERSIONS ; do
+		for t in $TYPES ; do
+			for n in $NETWORKS ; do
+				echo "testing $t $b $n $s $(date)" >> $logfile
+				pot_test $t $b $n $s
+				pot_corrupted_test $t $b $n $s
+				pot_rename_test $t $b $n $s
+				pot_create_fail_test $t $b $n $s
+				echo "tested $b $t $n $(date)" >> $logfile
+			done
 		done
 	done
 done

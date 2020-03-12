@@ -511,7 +511,9 @@ pot-start()
 		_info "Found old cpuset rss limitation - it will be ignored"
 		_info "Please run pot update-config -p $_pname to clean up the configuration"
 	fi
-	if ! _is_uid0 ; then
+
+	if [ "$( _get_network_stack )" = "ipv6" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
+		_error "The framework is configured to run ipv6 only and private-bridge are supported only on ipv4 - abort"
 		return 1
 	fi
 	if _is_pot_vnet $_pname ; then
@@ -519,6 +521,9 @@ pot-start()
 			_error "This kernel doesn't support VIMAGE! No vnet possible - abort"
 			return 1
 		fi
+	fi
+	if ! _is_uid0 ; then
+		return 1
 	fi
 
 	if ! _js_dep $_pname ; then

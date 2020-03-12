@@ -780,10 +780,6 @@ pot-create()
 			_error "This kernel doesn't support VIMAGE! No vnet possible"
 			${EXIT} 1
 		fi
-		if ! _is_vnet_up ; then
-			_info "No public bridge found! Calling vnet-start to fix the issue"
-			pot-cmd vnet-start
-		fi
 		if [ "$_ipaddr" = "auto" ] || [ -z "$_ipaddr" ]; then
 			if ! _is_potnet_available ; then
 			   _error "potnet is not available! It's needed by -i auto"

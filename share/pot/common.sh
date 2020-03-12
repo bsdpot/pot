@@ -854,13 +854,10 @@ _is_rctl_available()
 
 _is_vnet_available()
 {
-	# shellcheck disable=SC2039
-	local _vimage
-	_vimage="$(sysctl kern.conftxt | grep -c VIMAGE)"
-	if [ "$_vimage" = "0" ]; then
-		return 1 # false
-	else
+	if [ "$(sysctl -n kern.features.vimage 2>/dev/null)" = "1" ]; then
 		return 0 # true
+	else
+		return 1 # false
 	fi
 }
 

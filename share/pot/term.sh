@@ -26,38 +26,30 @@ pot-term()
 	local _pname _force
 	_pname=
 	_force=
-	args=$(getopt hvf $*)
-	if [ $? -ne 0 ]; then
-		term-help
-		exit 1
-	fi
 
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvf" _o; do
+		case "$_o" in
+		h)
 			term-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-f)
+		f)
 			_force="YES"
-			shift
 			;;
-		--)
-			shift
+		?)
 			break
 			;;
 		esac
 	done
-	_pname=$1
+	_pname="$(eval echo \$$OPTIND)"
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		term-help
-		exit 1
+		${EXIT} 1
 	fi
 	if ! _is_pot_running $_pname ; then
 		if [ "$_force" = "YES" ]; then
@@ -68,11 +60,11 @@ pot-term()
 			pot-cmd start $_pname
 			if ! _is_pot_running $_pname ; then
 				_error "The pot $_pname doesn't start"
-				exit 1
+				${EXIT} 1
 			fi
 		else
 			_error "The pot $_pname is not running"
-			exit 1
+			${EXIT} 1
 		fi
 	fi
 	if ! _is_uid0 ; then

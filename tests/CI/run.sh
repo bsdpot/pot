@@ -284,8 +284,8 @@ rename_test() {
 destroy_rename_test() {
 	local name=${1}
 	local t=${2}
-	local b=${2}
-	local n=${2}
+	local b=${3}
+	local n=${4}
 	case $t in
 	single)
 		if ! pot destroy -p $name ; then
@@ -314,6 +314,7 @@ destroy_rename_test() {
 # $4 stack
 pot_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
+	logger -p local2.info -t pot-CI "pot_test: $name"
 	create_test $1 $2 $3 $4
 	snap_test $name $1
 	export_test $name $1
@@ -329,6 +330,7 @@ pot_test() {
 # $4 stack
 pot_corrupted_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
+	logger -p local2.info -t pot-CI "pot_corrupted_test: $name"
 	create_test $1 $2 $3 $4
 	rm -rf /opt/pot/jails/$name/conf
 	destroy_corrupted_test $1 $2 $3 $4
@@ -342,11 +344,13 @@ pot_corrupted_test() {
 pot_rename_test()
 {
 	local name=$( get_pot_name $1 $2 $3 $4 )
+	logger -p local2.info -t pot-CI "pot_rename_test: $name"
 	local new_name=${name}_new
 	create_test $1 $2 $3 $4
 	rename_test $name $new_name
 	startstop_test $new_name $3 $4
 	destroy_rename_test $new_name $1 $2 $3
+	empty_check $name
 }
 
 # $1 type
@@ -356,6 +360,7 @@ pot_rename_test()
 pot_create_fail_test()
 {
 	local name=$( get_pot_name $1 $2 $3 $4 )
+	logger -p local2.info -t pot-CI "pot_create_fail_test: $name"
 	local flv_dir
 	if [ "$3" != "inherit" ]; then
 		return 0
@@ -392,8 +397,8 @@ TYPES="single multi"
 NETWORKS="inherit public-bridge private-bridge"
 begin
 
-#empty_check initial_check
-#pfctl -F all
+empty_check initial_check
+pfctl -F all
 for s in $STACKS ; do
 	for b in $VERSIONS ; do
 		for t in $TYPES ; do

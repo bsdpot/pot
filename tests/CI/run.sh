@@ -1,6 +1,7 @@
 #!/bin/sh
 
-export PATH=/appdata/pot/bin:$PATH
+export POT_PATH=$( realpath $( dirname $(realpath $0))/../..)
+export PATH=$POT_PATH/bin:$PATH
 timestamp="$(date +%Y%m%d%H%M)"
 export logfile="pot-ci-${timestamp}"
 
@@ -48,6 +49,15 @@ empty_check() {
 	fi
 }
 
+set_stack() {
+	local s=$1
+	local conf=$POT_PATH/etc/pot/pot.conf
+	if grep -q ^POT_NETWORK_STACK $conf ; then
+		sed -i '' -e "s/POT_NETWORK_STACK=.*$/POT_NETWORK_STACK=$s/" $conf
+	else
+		echo POT_NETWORK_STACK=$s >> $conf
+	fi
+}
 # $1 type
 # $2 base_version
 # $3 network
@@ -165,10 +175,17 @@ _get_ip() {
 
 # $1 pot name
 # $2 network
+# $3 stack
 startstop_test() {
 	local name=$1
 	local n=$2
 	local s=$3
+	if [ $s = "ipv6" ] && [ $n != "private-bridge" ]; then
+		if pot start $name ; then
+			error $name no-start
+		fi
+		return 0
+	fi
 	if ! pot start $name ; then
 		error $name start
 	fi
@@ -188,8 +205,10 @@ startstop_test() {
 		fi
 	fi
 	if [ $s = "ipv6" ] || [ $s = "dual" ]; then
-		if ! jexec $name ping -c 2606:4700:4700::1111 ; then
-			error $name ping-ipv6
+		if [ $n != "private-bridge" ]; then
+			if ! jexec $name ping6 -c 1 2606:4700:4700::1111 ; then
+				error $name ping6-ipv6
+			fi
 		fi
 	fi
 	if ! pot stop $name ; then
@@ -365,7 +384,7 @@ pot_create_fail_test()
 	if [ "$3" != "inherit" ]; then
 		return 0
 	fi
-	flv_dir=/appdata/pot/etc/pot/flavours
+	flv_dir=$POT_PATH/etc/pot/flavours
 	# add a broken flavour
 	(
 	cat << BROKEN_FLV
@@ -400,11 +419,15 @@ begin
 empty_check initial_check
 pfctl -F all
 for s in $STACKS ; do
+	set_stack $s
 	for b in $VERSIONS ; do
 		for t in $TYPES ; do
 			for n in $NETWORKS ; do
 				echo "testing $t $b $n $s $(date)" >> $logfile
 				pot_test $t $b $n $s
+				if [ $n = "private-bridge" ] && [ $s = "ipv6" ]; then
+					continue
+				fi
 				pot_corrupted_test $t $b $n $s
 				pot_rename_test $t $b $n $s
 				pot_create_fail_test $t $b $n $s

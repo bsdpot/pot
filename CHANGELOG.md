@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - attribute early-start-at-boot: for pot needed to start early at boot (REQUIRE: NETWORKING syslogd pf)
 - create: add a -k flag to keep the pot, even if it's creation process failed
 - network stack: add network stack as framework concept (ipv4, ipv6 or dual)
+- CI: import the run.sh script, with regression system tests
 
 ### Changed
 - osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#83)
@@ -17,10 +18,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create: if create fails, the partially created pot is automatically destroyed
 - create: -P will use send/receive from a snapshot, to cut the dependency with the snapshot
 - create-multi: usr.local and custom dataset are send/received instead of cloned
+- inherit: it inherits the stack configured in pot.conf
 
 ### Fixed
 - mount-in: compute the realpath of the mount-point
 - create: use pipefail only where implemented
+- ipv6: rtsold doesn't start in a jail on 11.3
 
 ## [0.10.4] 2020-02-23
 ### Added

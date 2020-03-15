@@ -165,6 +165,8 @@ _js_vnet_ipv6()
 		fi
 		echo "ifconfig_${_epairb}_ipv6=\"inet6 accept_rtadv auto_linklocal\"" >> ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf
 		sysrc -f ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf rtsold_enable="YES"
+		# Fix a bug in the rtsold rc script in 11.3
+		sed -i '' 's/nojail/nojailvnet/' ${POT_FS_ROOT}/jails/$_pname/m/etc/rc.d/rtsold
 	fi
 }
 
@@ -395,16 +397,26 @@ _js_start()
 	if [ "$_persist" != "NO" ]; then
 		_param="$_param persist"
 	fi
-	_ip=$( _get_conf_var $_pname ip )
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"inherit")
-		_param="$_param ip4=inherit ip6=inherit"
+		case "$( _get_network_stack )" in
+			"dual")
+				_param="$_param ip4=inherit ip6=inherit"
+				;;
+			"ipv4")
+				_param="$_param ip4=inherit"
+				;;
+			"ipv6")
+				_param="$_param ip6=inherit"
+				;;
+		esac
 		;;
 	"alias")
 		_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
 		if [ -z "$_alias_netif" ]; then
 			_alias_netif="${POT_EXTIF}"
 		fi
+		_ip=$( _get_conf_var $_pname ip )
 		if potnet ip4check -H "$_ip" ; then
 			_param="$_param interface=${_alias_netif} ip4.addr=$_ip"
 		else
@@ -515,6 +527,9 @@ pot-start()
 	if [ "$( _get_network_stack )" = "ipv6" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
 		_error "The framework is configured to run ipv6 only and private-bridge are supported only on ipv4 - abort"
 		return 1
+	fi
+	if [ "$( _get_network_stack )" = "dual" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
+		_info "The framework is configured to run dual stack, but private-bridge are supported only on ipv4 - ipv6 ignored"
 	fi
 	if _is_pot_vnet $_pname ; then
 		if ! _is_vnet_available ; then

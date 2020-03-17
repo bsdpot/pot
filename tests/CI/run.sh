@@ -180,7 +180,7 @@ startstop_test() {
 	local name=$1
 	local n=$2
 	local s=$3
-	if [ $s = "ipv6" ] && [ $n != "private-bridge" ]; then
+	if [ $s = "ipv6" ] && [ $n = "private-bridge" ]; then
 		if pot start $name ; then
 			error $name no-start
 		fi
@@ -431,7 +431,7 @@ for s in $STACKS ; do
 				pot_corrupted_test $t $b $n $s
 				pot_rename_test $t $b $n $s
 				pot_create_fail_test $t $b $n $s
-				echo "tested $b $t $n $(date)" >> $logfile
+				echo "tested $b $t $n $s $(date)" >> $logfile
 			done
 		done
 	done

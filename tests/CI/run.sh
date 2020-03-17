@@ -95,6 +95,14 @@ create_test() {
 				if pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
 					error $name create
 				fi
+				if ! pot destroy -B testprivate ; then
+					error $name destroy-bridge-after-nocreate
+				fi
+				if [ "$t" = "multi" ]; then
+					if ! pot destroy -v -r $b ; then
+						error $name destroy-base-after-nocreate
+					fi
+				fi
 			else
 				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
 					error $name create

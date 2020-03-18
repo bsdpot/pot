@@ -99,7 +99,7 @@ create_test() {
 					error $name destroy-bridge-after-nocreate
 				fi
 				if [ "$t" = "multi" ]; then
-					if ! pot destroy -v -r $b ; then
+					if ! pot destroy -v -b $b ; then
 						error $name destroy-base-after-nocreate
 					fi
 				fi
@@ -343,6 +343,9 @@ pot_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
 	logger -p local2.info -t pot-CI "pot_test: $name"
 	create_test $1 $2 $3 $4
+	if [ $4 = "ipv6" ] && [ $3 = "private-bridge" ]; then
+		return
+	fi
 	snap_test $name $1
 	export_test $name $1
 	fscomp_test $name
@@ -439,7 +442,7 @@ for s in $STACKS ; do
 				pot_corrupted_test $t $b $n $s
 				pot_rename_test $t $b $n $s
 				pot_create_fail_test $t $b $n $s
-				echo "tested $b $t $n $s $(date)" >> $logfile
+				echo "tested $t $b $n $s $(date)" >> $logfile
 			done
 		done
 	done

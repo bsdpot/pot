@@ -229,42 +229,6 @@ test_is_absolute_path()
 	assertEquals "$?" "0"
 }
 
-test_get_pot_rdr_anchor_name_001()
-{
-	_rc="$(_get_pot_rdr_anchor_name "test-pot" )"
-	assertEquals "test-pot" "$_rc"
-}
-
-test_get_pot_rdr_anchor_name_002()
-{
-	_rc="$(_get_pot_rdr_anchor_name "0123456789012345678901234567890123456789012345678901234" )"
-	assertEquals "0123456789012345678901234567890123456789012345678901234" "$_rc"
-}
-
-test_get_pot_rdr_anchor_name_003()
-{
-	_rc="$(_get_pot_rdr_anchor_name "01234567890123456789012345678901234567890123456789012345" )"
-	assertEquals "1234567890123456789012345678901234567890123456789012345" "$_rc"
-}
-
-test_get_pot_rdr_anchor_name_004()
-{
-	_rc="$(_get_pot_rdr_anchor_name "012345678901234567890123456789012345678901234567890123456789" )"
-	assertEquals "5678901234567890123456789012345678901234567890123456789" "$_rc"
-}
-
-test_get_pot_rdr_anchor_name_005()
-{
-	_rc="$(_get_pot_rdr_anchor_name "01234_678901234567890123456789012345678901234567890123456789" )"
-	assertEquals "678901234567890123456789012345678901234567890123456789" "$_rc"
-}
-
-test_get_pot_rdr_anchor_name_006()
-{
-	_rc="$(_get_pot_rdr_anchor_name "01234___8901234567890123456789012345678901234567890123456789" )"
-	assertEquals "8901234567890123456789012345678901234567890123456789" "$_rc"
-}
-
 setUp()
 {
 	_POT_VERBOSITY=1

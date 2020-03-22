@@ -42,7 +42,7 @@ else
 fi
 
 if [ ! -d "${_POT_INCLUDE}" ]; then
-	echo "Fatal error! Not able to find the subroutines dir on ${_POT_PREFIX}!"
+	echo "Fatal error! Not able to find the subroutines dir on ${_POT_INCLUDE}!"
 	exit 1
 fi
 
@@ -53,6 +53,12 @@ if [ ! -r "${_POT_INCLUDE}/common.sh" ]; then
 	exit 1
 fi
 . "${_POT_INCLUDE}/common.sh"
+
+if [ ! -r "${_POT_INCLUDE}/network.sh" ]; then
+	echo "Fatal error! Not able to find network subroutines on ${_POT_INCLUDE}!"
+	exit 1
+fi
+. "${_POT_INCLUDE}/network.sh"
 
 # loading configuration
 if [ -r "$_POT_ETC/pot.default.conf" ]; then

@@ -5,7 +5,6 @@
 # UUT
 . ../share/pot/export-ports.sh
 
-. ../share/pot/common.sh
 # common stubs
 . common-stub.sh
 

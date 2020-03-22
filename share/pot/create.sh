@@ -373,7 +373,7 @@ _cj_internal_conf()
 
 	# TODO: to be verified
 	# add remote syslogd capability, if not inherit
-	if [ "$_ip" != "inherit" ]; then
+	if [ -n "$_ip" ]; then
 		# configure syslog in the pot
 		${SED} -i '' 's%^[^#].*/var/log.*$%# &%g' "${_etcdir}/syslog.conf"
 		echo "*.*  @${POT_GATEWAY}:514" > "${_etcdir}/syslog.d/pot.conf"
@@ -755,75 +755,10 @@ pot-create()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	case "$_network_type" in
-	"inherit")
-		if [ -n "$_ipaddr" ]; then
-			_info "option -i is ignored when network type is inherit"
-		fi
-		_ipaddr="inherit"
-		;;
-	"alias")
-		if [ -z "$_ipaddr" ]; then
-			_error "option -i is mandatory with network type is alias"
-			${EXIT} 1
-		elif [ "$_ipaddr" = "auto" ]; then
-			_error "-i auto not usable with network type alias - a real IP address has to be provided"
-			${EXIT} 1
-		elif ! potnet ipcheck -H "$_ipaddr" ; then
-			_error "$_ipaddr is not a valid IPv4 or IPv6 address"
-			${EXIT} 1
-		fi
-		;;
-	"public-bridge")
-		if ! _is_vnet_available ; then
-			_error "This kernel doesn't support VIMAGE! No vnet possible"
-			${EXIT} 1
-		fi
-		if [ "$_ipaddr" = "auto" ] || [ -z "$_ipaddr" ]; then
-			if ! _is_potnet_available ; then
-			   _error "potnet is not available! It's needed by -i auto"
-				${EXIT} 1
-			fi
-			_ipaddr="$(potnet next)"
-			_debug "-i auto: assigned $_ipaddr"
-		else
-			if ! potnet validate -H "$_ipaddr" 2> /dev/null ; then
-				_error "The $_ipaddr IP is not valid - run potnet validate -H $_ipaddr for more information"
-				${EXIT} 1
-			fi
-		fi
-		;;
-	"private-bridge")
-		if ! _is_vnet_available ; then
-			_error "This kernel doesn't support VIMAGE! No vnet possible"
-			${EXIT} 1
-		fi
-		if [ "$( _get_network_stack )" = "ipv6" ]; then
-			_error "private-bridge network type is not supported on ipv6 stack only"
-			${EXIT} 1
-		fi
-		if [ -z "$_private_bridge" ]; then
-			_error "private-bridge network type requires -B option, to specify which private bridge to use"
-			${EXIT} 1
-		fi
-		if ! _is_bridge "$_private_bridge" ; then
-			_error "bridge $_private_bridge is not valid. Have you already created it?"
-			${EXIT} 1
-		fi
-		if [ "$_ipaddr" = "auto" ] || [ -z "$_ipaddr" ]; then
-			if ! _is_potnet_available ; then
-			   _error "potnet is not available! It's needed by -i auto"
-				${EXIT} 1
-			fi
-			_ipaddr="$(potnet next -b "$_private_bridge")"
-			_debug "-i auto: assigned $_ipaddr"
-		fi
-		if ! potnet validate -H "$_ipaddr" -b "$_private_bridge"  2> /dev/null ; then
-			_error "The $_ipaddr IP is not valid for bridge $_private_bridge - run potnet validate -H $_ipaddr -b $_private_bridge for more information"
-			${EXIT} 1
-		fi
-		;;
-	esac
+	if ! _ipaddr="$( _validate_network_param "$_network_type" "$_ipaddr" "$_private_bridge" )" ; then
+		echo "$_ipaddr"
+		${EXIT} 1
+	fi
 	if [ -n "$_alias_netif" ] && [ "$_network_type" != "alias" ]; then
 		_info "-I option apply only for alias network type! '-I $_alias_netif' ignored"
 	fi

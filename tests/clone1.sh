@@ -149,19 +149,6 @@ test_pot_clone_004()
 	pot-clone -p new-pot -P test-pot-3
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
-	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
-	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
-}
-
-test_pot_clone_005()
-{
-	# test-pot has inherit network type
-	pot-clone -p new-pot -P test-pot -i 10.1.2.3
-	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
@@ -173,7 +160,6 @@ test_pot_clone_006()
 	pot-clone -p new-pot -P test-pot-2 -i 10.1.2.3
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"

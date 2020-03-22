@@ -299,81 +299,20 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
-	if [ "$_network_type" = "private-bridge" ]; then
-		if [ -z "$_bridge_name" ]; then
-			_error "private-bridge network type require a bridge name (-B option)"
-			clone-help
-			${EXIT} 1
-		fi
-		if ! _is_bridge "$_bridge_name" ; then
-			_error "bridge $_bridge_name is not valid. Have you already created it?"
-			${EXIT} 1
-		fi
-	fi
-	_pb_network_type="$( _get_pot_network_type "$_potbase" )"
-	if [ -z "$_pb_network_type" ] ; then
-		_error "Configuration file for $_potbase contains obsolete elements"
-		_error "Please run pot update-config -p $_potbase to fix"
-		${EXIT} 1
-	fi
 	if [ -z "$_network_type" ]; then
+		_pb_network_type="$( _get_pot_network_type "$_potbase" )"
+		if [ -z "$_pb_network_type" ] ; then
+			_error "Configuration file for $_potbase contains obsolete elements"
+			_error "Please run pot update-config -p $_potbase to fix"
+			${EXIT} 1
+		fi
 		_network_type="$_pb_network_type"
 	fi
-
-	if [ "$_network_type" = "public-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
-		_ipaddr="$(potnet next)"
-		_debug "-i auto: assigned $_ipaddr"
-	elif [ "$_network_type" = "public-bridge" ] && [ -z "$_ipaddr" ] ; then
-		_ipaddr="$(potnet next)"
-		_debug "automatically assigning $_ipaddr"
-	elif [ "$_network_type" = "private-bridge" ] && [ "$_ipaddr" = "auto" ] ; then
-		_ipaddr="$(potnet next -b "$_bridge_name")"
-		_debug "-i auto: assigned $_ipaddr"
-	elif [ "$_network_type" = "private-bridge" ] && [ -z "$_ipaddr" ] ; then
-		_ipaddr="$(potnet next -b "$_bridge_name")"
-		_debug "automatically assigning $_ipaddr"
-	elif [ "$_ipaddr" = "auto" ] ; then
-		_error "Keyword auto not compatible with network type $_network_type"
+	if ! _ipaddr="$( _validate_network_param "$_network_type" "$_ipaddr" "$_bridge_name" )" ; then
+		echo "$_ipaddr"
+		clone-help
 		${EXIT} 1
 	fi
-	case "$_network_type" in
-	"inherit")
-		if [ -n "$_ipaddr" ]; then
-			_error "$_potbase has network type inherit - -i $_ipaddr doesn't apply"
-			clone-help
-			${EXIT} 1
-		fi
-		;;
-	"alias")
-		if [ -z "$_ipaddr" ]; then
-			_error "-i is mandator for alias network type"
-			clone-help
-			${EXIT} 1
-		fi
-		if ! potnet ipcheck -H "$_ipaddr" ; then
-			_error "$_ipaddr is not an IPv4 nor IPv6 address"
-			${EXIT} 1
-		fi
-		;;
-	"public-bridge")
-		if ! potnet validate -H "$_ipaddr" ; then
-			_error "$_ipaddr is not a valid IP address for the public bridge"
-			clone-help
-			${EXIT} 1
-		fi
-		;;
-	"private-bridge")
-		if [ "$( _get_network_stack )" = "ipv6" ]; then
-			_error "private-bridge network type is not supported on ipv6 stack only"
-			${EXIT} 1
-		fi
-		if ! potnet validate -H "$_ipaddr" -b "$_bridge_name" ; then
-			_error "$_ipaddr is not a valid IP address for the private bridge $_bridge_name"
-			clone-help
-			${EXIT} 1
-		fi
-		;;
-	esac
 	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
 	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
 	if [ "$_pblvl" = "0" ] && [ "$_pb_type" != "single" ]; then

@@ -351,81 +351,6 @@ _is_zfs_pot_snap()
 	fi
 }
 
-_get_network_stack()
-{
-	# shellcheck disable=SC2039
-	local _stack
-	_stack="${POT_NETWORK_STACK:-ipv4}"
-	case $_stack in
-		ipv4|ipv6|dual)
-			echo "$_stack"
-			;;
-		*)
-			echo ipv4
-			return 1
-			;;
-	esac
-}
-
-# tested
-_pot_bridge()
-{
-	_pot_bridge_ipv4
-}
-
-_pot_bridge_ipv4()
-{
-	# shellcheck disable=SC2039
-	local _bridges
-	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
-	if [ -z "$_bridges" ]; then
-		return
-	fi
-	for _b in $_bridges ; do
-		_ip=$( ifconfig "$_b" inet | awk '/inet/ { print $2 }' )
-		if [ "$_ip" = "$POT_GATEWAY" ]; then
-			echo "$_b"
-			return
-		fi
-	done
-}
-
-_pot_bridge_ipv6()
-{
-	# shellcheck disable=SC2039
-	local _bridges
-	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
-	if [ -z "$_bridges" ]; then
-		return
-	fi
-	for _b in $_bridges ; do
-		if ifconfig "$_b" |grep -q "member: $POT_EXTIF" ; then
-			echo "$_b"
-			return
-		fi
-	done
-}
-
-# $1 bridge name
-_private_bridge()
-{
-	# shellcheck disable=SC2039
-	local _bridges _bridge _bridge_ip
-	_bridge="$1"
-	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
-	if [ -z "$_bridges" ]; then
-		return
-	fi
-	_bridge_ip="$(_get_bridge_var "$_bridge" gateway)"
-	for _b in $_bridges ; do
-		_ip=$( ifconfig "$_b" inet | awk '/inet/ { print $2 }' )
-		if [ "$_ip" = "$_bridge_ip" ]; then
-			echo "$_b"
-			return
-		fi
-	done
-}
-
 # $1 bridge name
 # $2 var name
 _get_bridge_var()
@@ -493,19 +418,6 @@ _get_pot_network_type()
 }
 
 # $1 pot name
-_get_pot_rdr_anchor_name()
-{
-	# shellcheck disable=SC2039
-	local _pname
-	_pname=$1
-	if [ "${#_pname}" -gt "55" ]; then
-		echo "$_pname" | awk '{ truncated = substr($1, length($1)-54); printf("%s", truncated);}' | sed 's/^__*//'
-	else
-		echo "$_pname"
-	fi
-}
-
-# $1 pot name
 _is_ip_inherit()
 {
 	local _pname _val
@@ -543,46 +455,6 @@ _is_pot_prunable()
 	fi
 }
 
-_is_vnet_up()
-{
-	_is_vnet_ipv4_up "$1"
-}
-
-# $1 bridge name (optional)
-_is_vnet_ipv4_up()
-{
-	# shellcheck disable=SC2039
-	local _bridge
-	if [ -z "$1" ]; then
-		_bridge=$(_pot_bridge)
-	else
-		_bridge="$( _private_bridge "$1" )"
-	fi
-	if [ -z "$_bridge" ]; then
-		return 1 # false
-	elif [ ! -c /dev/pf ]; then
-		return 1 # false
-	elif ! pfctl -s Anchors | grep -q '^[ \t]*pot-nat$' ; then
-		return 1 # false
-	elif ! pfctl -s Anchors | grep -q '^[ \t]*pot-rdr$' ; then
-		return 1 # false
-	elif [ -z "$(pfctl -s nat -a pot-nat)" ]; then
-		return 1 # false
-	else
-		return 0 # true
-	fi
-}
-
-_is_vnet_ipv6_up()
-{
-	# shellcheck disable=SC2039
-	local _bridge
-	_bridge="$(_pot_bridge_ipv6)"
-	if [ -z "$_bridge" ]; then
-		return 1 # false
-	fi
-	return 0
-}
 # $1 bridge name
 # $2 quiet / no _error messages are emitted (sometimes useful)
 _is_bridge()
@@ -688,48 +560,6 @@ _is_flavour()
 		return 0 # true
 	fi
 	return 1 # false
-}
-
-
-# $1 the number to test
-_is_port_number()
-{
-	# shellcheck disable=SC2039
-	local _port
-	_port=$1
-	if [ -z "$_port" ]; then
-		return 1
-	fi
-	# check if it's a number
-	if [ -n "$( echo "$_port" | sed 's/[0-9][0-9]*//' )" ]; then
-		return 1
-	fi
-	# check if it's a 16 bit number
-	if [ "$_port" -le 0 ] || [ "$_port" -gt 65535 ]; then
-		return 1 # false
-	fi
-	return 0
-}
-
-# $1: the -e option argument
-_is_export_port_valid()
-{
-	# shellcheck disable=SC2039
-	local _pot_port _host_port
-	_pot_port="$( echo "${1}" | cut -d':' -f 1)"
-	if [ "$1" = "${_pot_port}" ]; then
-		if ! _is_port_number "$OPTARG" ; then
-			return 1 # false
-		fi
-	else
-		_host_port="$( echo "${1}" | cut -d':' -f 2)"
-		if ! _is_port_number "$_pot_port" ; then
-			return 1 # false
-		fi
-		if ! _is_port_number "$_host_port" ; then
-			return 1 # false
-		fi
-	fi
 }
 
 # $1 the element to search
@@ -925,18 +755,6 @@ _get_os_release()
 		grep ^USERLAND "${POT_FS_ROOT}/jails/$_pname/m/bin/freebsd-version" | cut -f 2 -d"=" | tr -d \"
 	else
 		_get_conf_var "$_pname" osrelease
-	fi
-}
-
-# $1 name of the network interface
-_is_valid_netif()
-{
-	local _netif
-	_netif="$1"
-	if ifconfig "$_netif" > /dev/null 2> /dev/null ; then
-		return 0 # true
-	else
-		return 1 # false
 	fi
 }
 

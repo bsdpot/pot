@@ -57,7 +57,7 @@ _cj_internal_conf()
 test_cj_conf_001()
 {
 	# level 0
-	_cj_conf new-pot 11.1 inherit inherit 0 inherit multi
+	_cj_conf new-pot 11.1 inherit "" 0 inherit multi
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/bases/11.1/usr.local /tmp/jails/new-pot/m/usr/local" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -76,12 +76,12 @@ test_cj_conf_001()
 	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
 	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
 	assertEquals "internal_conf arg3" "0" "$ICONF_CALL1_ARG3"
-	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "internal_conf arg4" "" "$ICONF_CALL1_ARG4"
 }
 
 test_cj_conf_002()
 {
-	_cj_conf new-pot 11.1 inherit inherit 1 inherit multi
+	_cj_conf new-pot 11.1 inherit "" 1 inherit multi
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -99,7 +99,7 @@ test_cj_conf_002()
 	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
 	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
 	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
-	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "internal_conf arg4" "" "$ICONF_CALL1_ARG4"
 	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
@@ -109,7 +109,7 @@ test_cj_conf_003()
 	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	_cj_conf new-pot 11.1 inherit inherit 1 inherit multi "" test-pot
+	_cj_conf new-pot 11.1 inherit "" 1 inherit multi "" test-pot
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -128,7 +128,7 @@ test_cj_conf_003()
 	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
 	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
 	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
-	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "internal_conf arg4" "" "$ICONF_CALL1_ARG4"
 	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
@@ -138,7 +138,7 @@ test_cj_conf_004()
 	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
 	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	_cj_conf new-pot 11.1 inherit inherit 2 inherit multi "" test-pot
+	_cj_conf new-pot 11.1 inherit "" 2 inherit multi "" test-pot
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -156,13 +156,13 @@ test_cj_conf_004()
 	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
 	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
 	assertEquals "internal_conf arg3" "2" "$ICONF_CALL1_ARG3"
-	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "internal_conf arg4" "" "$ICONF_CALL1_ARG4"
 	assertEquals "sed calls" "1" "$SED_CALLS"
 }
 
 test_cj_conf_005()
 {
-	_cj_conf new-pot 11.1 inherit inherit 2 inherit multi "" test-pot-2
+	_cj_conf new-pot 11.1 inherit "" 2 inherit multi "" test-pot-2
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -180,7 +180,7 @@ test_cj_conf_005()
 	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
 	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
 	assertEquals "internal_conf arg3" "2" "$ICONF_CALL1_ARG3"
-	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "internal_conf arg4" "" "$ICONF_CALL1_ARG4"
 	assertEquals "sed calls" "0" "$SED_CALLS"
 }
 
@@ -210,7 +210,7 @@ test_cj_conf_006()
 
 test_cj_conf_007()
 {
-	_cj_conf new-pot 11.1 inherit inherit 1 pot multi
+	_cj_conf new-pot 11.1 inherit "" 1 pot multi
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -230,7 +230,7 @@ test_cj_conf_007()
 	assertEquals "internal_conf arg1" "new-pot" "$ICONF_CALL1_ARG1"
 	assertEquals "internal_conf arg2" "multi" "$ICONF_CALL1_ARG2"
 	assertEquals "internal_conf arg3" "1" "$ICONF_CALL1_ARG3"
-	assertEquals "internal_conf arg4" "inherit" "$ICONF_CALL1_ARG4"
+	assertEquals "internal_conf arg4" "" "$ICONF_CALL1_ARG4"
 }
 
 test_cj_conf_008()
@@ -285,7 +285,7 @@ test_cj_conf_009()
 
 test_cj_conf_020()
 {
-	_cj_conf new-pot 11.1 inherit inherit 0 pot single
+	_cj_conf new-pot 11.1 inherit "" 0 pot single
 	assertEquals "return code" "0" "$?"
 	assertEquals "fscomp args1" "" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "fscomp args2" "" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
@@ -311,6 +311,7 @@ setUp()
 	SYSRC_CALLS=0
 	SERVICE_CALLS=0
 	ICONF_CALLS=0
+	ICONF_CALL1_ARG4=
 
 	POT_FS_ROOT=/tmp
 	POT_ZFS_ROOT=zpot

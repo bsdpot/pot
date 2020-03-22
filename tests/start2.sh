@@ -9,6 +9,8 @@ pfctl()
 # UUT
 . ../share/pot/start.sh
 
+. ../share/pot/start.sh
+
 # common stubs
 . common-stub.sh
 

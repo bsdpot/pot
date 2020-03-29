@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create: add a -k flag to keep the pot, even if it's creation process failed
 - network stack: add network stack as framework concept (ipv4, ipv6 or dual)
 - CI: import the run.sh script, with regression system tests
+- alias: the new notation -i can be repeated to assign multiple IPs to different NICs
 
 ### Changed
 - osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#83)
@@ -19,6 +20,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - create: -P will use send/receive from a snapshot, to cut the dependency with the snapshot
 - create-multi: usr.local and custom dataset are send/received instead of cloned
 - inherit: it inherits the stack configured in pot.conf
+- alias: extend -i option to accept netif|ipaddr
+- alias: -i option can be repeated more than once to add more ip addresses to the same instance
+
+### Removed
+- alias: remove option -I, in favour of a more flexible and powerful -i
 
 ### Fixed
 - mount-in: compute the realpath of the mount-point

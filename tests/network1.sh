@@ -6,40 +6,56 @@ ifconfig() {
 		cat << EOF--
 em0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	options=200080<VLAN_HWCSUM,RXCSUM_IPV6>
-	inet 192.168.0.1 netmask 0xffffff00 broadcast 192.168.178.255 
+	inet 192.168.0.1 netmask 0xffffff00 broadcast 192.168.178.255
 	ether e4:b3:18:d8:4d:25
 	hwaddr c8:5b:76:3a:2f:96
 	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
 	media: Ethernet autoselect
 	status: no carrier
+em1: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+	options=200080<VLAN_HWCSUM,RXCSUM_IPV6>
+	inet 10.192.168.2 netmask 0xffffff00 broadcast 10.192.168.255
+	ether e4:b3:18:d8:4d:45
+	hwaddr c8:5b:76:3a:2f:a6
+	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+	media: Ethernet autoselect
+	status: no carrier
+bce0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+	options=200080<VLAN_HWCSUM,RXCSUM_IPV6>
+	inet 10.192.168.3 netmask 0xffffff00 broadcast 10.192.168.255
+	ether e4:b3:18:d8:4d:35
+	hwaddr c8:5b:76:3a:2f:b6
+	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+	media: Ethernet autoselect
+	status: no carrier
 lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> metric 0 mtu 16384
 	options=600003<RXCSUM,TXCSUM,RXCSUM_IPV6,TXCSUM_IPV6>
-	inet6 ::1 prefixlen 128 
-	inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2 
-	inet 127.0.0.1 netmask 0xff000000 
+	inet6 ::1 prefixlen 128
+	inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2
+	inet 127.0.0.1 netmask 0xff000000
 	nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>
-	groups: lo 
+	groups: lo
 bridge0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	ether 02:87:a9:03:d7:00
-	inet 10.192.0.111 netmask 0xffc00000 broadcast 10.255.255.255 
+	inet 10.192.0.111 netmask 0xffc00000 broadcast 10.255.255.255
 	nd6 options=1<PERFORMNUD>
-	groups: bridge 
+	groups: bridge
 	id 00:00:00:00:00:00 priority 32768 hellotime 2 fwddelay 15
 	maxage 20 holdcnt 6 proto rstp maxaddr 2000 timeout 1200
 	root id 00:00:00:00:00:00 priority 32768 ifcost 0 port 0
 bridge1: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	ether 02:87:a9:03:d7:00
-	inet 10.192.0.11 netmask 0xffc00000 broadcast 10.255.255.255 
+	inet 10.192.0.11 netmask 0xffc00000 broadcast 10.255.255.255
 	nd6 options=1<PERFORMNUD>
-	groups: bridge 
+	groups: bridge
 	id 00:00:00:00:00:00 priority 32768 hellotime 2 fwddelay 15
 	maxage 20 holdcnt 6 proto rstp maxaddr 2000 timeout 1200
 	root id 00:00:00:00:00:00 priority 32768 ifcost 0 port 0
 bridge2: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	ether 02:87:a9:03:d7:00
-	inet 10.192.0.1 netmask 0xffc00000 broadcast 10.255.255.255 
+	inet 10.192.0.1 netmask 0xffc00000 broadcast 10.255.255.255
 	nd6 options=1<PERFORMNUD>
-	groups: bridge 
+	groups: bridge
 	id 00:00:00:00:00:00 priority 32768 hellotime 2 fwddelay 15
 	maxage 20 holdcnt 6 proto rstp maxaddr 2000 timeout 1200
 	root id 00:00:00:00:00:00 priority 32768 ifcost 0 port 0
@@ -48,23 +64,59 @@ EOF--
 	elif [ "$1" = "bridge0" ]; then
 		cat << EOF--
 bridge0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
-	inet 10.192.0.111 netmask 0xffc00000 broadcast 10.255.255.255 
+	inet 10.192.0.111 netmask 0xffc00000 broadcast 10.255.255.255
 EOF--
 		return 0 # true
 	elif [ "$1" = "bridge1" ]; then
 		cat << EOF--
 bridge1: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
-	inet 10.192.0.11 netmask 0xffc00000 broadcast 10.255.255.255 
+	inet 10.192.0.11 netmask 0xffc00000 broadcast 10.255.255.255
 EOF--
 		return 0 # true
 	elif [ "$1" = "bridge2" ]; then
 		cat << EOF--
 bridge2: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
-	inet 10.192.0.1 netmask 0xffc00000 broadcast 10.255.255.255 
+	inet 10.192.0.1 netmask 0xffc00000 broadcast 10.255.255.255
+EOF--
+		return 0 # true
+	elif [ "$1" = "em0" ]; then
+		cat << EOF--
+em0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+	options=200080<VLAN_HWCSUM,RXCSUM_IPV6>
+	inet 192.168.0.1 netmask 0xffffff00 broadcast 192.168.178.255
+	ether e4:b3:18:d8:4d:25
+	hwaddr c8:5b:76:3a:2f:96
+	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+	media: Ethernet autoselect
+	status: no carrier
+EOF--
+		return 0 # true
+	elif [ "$1" = "em1" ]; then
+		cat << EOF--
+em1: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+	options=200080<VLAN_HWCSUM,RXCSUM_IPV6>
+	inet 10.192.168.1 netmask 0xffffff00 broadcast 10.192.168.255
+	ether e4:b3:18:d8:4d:25
+	hwaddr c8:5b:76:3a:2f:96
+	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+	media: Ethernet autoselect
+	status: no carrier
+EOF--
+		return 0 # true
+	elif [ "$1" = "bce0" ]; then
+		cat << EOF--
+bce0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+	options=200080<VLAN_HWCSUM,RXCSUM_IPV6>
+	inet 10.192.168.3 netmask 0xffffff00 broadcast 10.192.168.255
+	ether e4:b3:18:d8:4d:35
+	hwaddr c8:5b:76:3a:2f:b6
+	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+	media: Ethernet autoselect
+	status: no carrier
 EOF--
 		return 0 # true
 	else
-		return 1 # else
+		return 1 # false
 	fi
 }
 
@@ -80,15 +132,26 @@ potnet()
 		return 0 # true
 	fi
 	if [ "$1" = "validate" ] && [ "$2" = "-H" ] ; then
-		if [ "$3" = "10.192.123.123" ] || [ "$3" = "10.192.123.234" ]; then
+		if [ "$3" = "10.192.123.123" ] || [ "$3" = "10.192.123.234" ] ||
+			[ "$3" = "10.1.10.10" ]; then
 			return 0 # true
 		fi
 	fi
 	if [ "$1" = "ipcheck" ]; then
 		case "$3" in
-			192.168.200.200)
+			192.168.200.200|10.192.123.234|10.1.10.10)
 				;;
-			10.192.123.234)
+			2a0a:fade:dead:01e::80|2a0a:fade:dead:01e::443)
+				;;
+			*)
+				return 1
+				;;
+		esac
+		return 0 # true
+	fi
+	if [ "$1" = "ip4check" ]; then
+		case "$3" in
+			192.168.200.200|10.192.123.234|10.1.10.10)
 				;;
 			*)
 				return 1
@@ -202,6 +265,318 @@ test_pot_is_valid_netif_002()
 	assertFalse "netif wrongly recognized" "$?"
 }
 
+test_validate_alias_ipaddr_001()
+{
+	assertTrue "address not recognized" '_validate_alias_ipaddr "192.168.200.200"'
+}
+
+test_get_alias_ipv4_001()
+{
+	ipaddr="192.168.200.200"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "" "$output"
+}
+
+test_validate_alias_ipaddr_002()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200"'
+}
+
+test_get_alias_ipv4_002()
+{
+	ipaddr="em0|192.168.200.200"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "" "$output"
+}
+
+test_validate_alias_ipaddr_003()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200 10.1.10.10"'
+}
+
+test_get_alias_ipv4_003()
+{
+	ipaddr="em0|192.168.200.200 10.1.10.10"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,bce0|10.1.10.10" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,bce0|10.1.10.10" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,bce0|10.1.10.10" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "" "$output"
+}
+
+test_validate_alias_ipaddr_004()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "10.1.10.10 em0|192.168.200.200"'
+}
+
+test_get_alias_ipv4_004()
+{
+	ipaddr="10.1.10.10 em0|192.168.200.200"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|10.1.10.10,em0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|10.1.10.10,em0|192.168.200.200" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|10.1.10.10,em0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "" "$output"
+}
+
+test_validate_alias_ipaddr_005()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200 em1|10.1.10.10"'
+}
+
+test_get_alias_ipv4_005()
+{
+	ipaddr="em0|192.168.200.200 em1|10.1.10.10"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,em1|10.1.10.10" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,em1|10.1.10.10" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,em1|10.1.10.10" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "" "$output"
+}
+
+test_validate_alias_ipaddr_010()
+{
+	assertTrue "address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80"'
+}
+
+test_get_alias_ipv4_010()
+{
+	ipaddr="2a0a:fade:dead:01e::80"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_011()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80"'
+}
+
+test_get_alias_ipv4_011()
+{
+	ipaddr="em0|2a0a:fade:dead:01e::80"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_012()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 2a0a:fade:dead:01e::443"'
+}
+
+test_get_alias_ipv4_012()
+{
+	ipaddr="em0|2a0a:fade:dead:01e::80 2a0a:fade:dead:01e::443"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_013()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::443 em0|2a0a:fade:dead:01e::80"'
+}
+
+test_get_alias_ipv4_013()
+{
+	ipaddr="2a0a:fade:dead:01e::443 em0|2a0a:fade:dead:01e::80"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_014()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|2a0a:fade:dead:01e::443"'
+}
+
+test_get_alias_ipv4_014()
+{
+	ipaddr="em0|2a0a:fade:dead:01e::80 em1|2a0a:fade:dead:01e::443"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_020()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|192.168.200.200"'
+}
+
+test_get_alias_ipv4_020()
+{
+	ipaddr="em0|2a0a:fade:dead:01e::80 em1|192.168.200.200"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em1|192.168.200.200" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em1|192.168.200.200" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em1|192.168.200.200" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_021()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em0|192.168.200.200"'
+}
+
+test_get_alias_ipv4_021()
+{
+	ipaddr="em0|2a0a:fade:dead:01e::80 em0|192.168.200.200"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_022()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80 192.168.200.200"'
+}
+
+test_get_alias_ipv4_022()
+{
+	ipaddr="2a0a:fade:dead:01e::80 192.168.200.200"
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv4
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
+
+	STUB_STACK=dual
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
+
+	STUB_STACK=ipv6
+	output="$( _get_alias_ipv4 "$ipaddr")"
+	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
 test_validate_network_param_001()
 {
 	if ipaddr="$(_validate_network_param "no-network")" ; then
@@ -260,6 +635,33 @@ test_validate_network_param_023()
 {
 	if ipaddr="$(_validate_network_param "alias" "192.168.200.200" "no-bridge")" ; then
 		assertEquals "Wrong ip returned " "192.168.200.200" "$ipaddr"
+	else
+		fail "Valid alias config not recognized"
+	fi
+}
+
+test_validate_network_param_024()
+{
+	if ipaddr="$(_validate_network_param "alias" "em0|192.168.200.200" "no-bridge")" ; then
+		assertEquals "Wrong ip returned " "em0|192.168.200.200" "$ipaddr"
+	else
+		fail "Valid alias config not recognized"
+	fi
+}
+
+test_validate_network_param_025()
+{
+	if ipaddr="$(_validate_network_param "alias" "em0|192.168.200.200 10.1.10.10" "no-bridge")" ; then
+		assertEquals "Wrong ip returned " "em0|192.168.200.200 10.1.10.10" "$ipaddr"
+	else
+		fail "Valid alias config not recognized"
+	fi
+}
+
+test_validate_network_param_026()
+{
+	if ipaddr="$(_validate_network_param "alias" "em0|192.168.200.200 em1|10.1.10.10" "no-bridge")" ; then
+		assertEquals "Wrong ip returned " "em0|192.168.200.200 em1|10.1.10.10" "$ipaddr"
 	else
 		fail "Valid alias config not recognized"
 	fi
@@ -368,6 +770,9 @@ test_validate_network_param_072()
 setUp()
 {
 	_POT_VERBOSITY=1
+	POT_EXTIF="bce0"
+
+
 	STUB_STACK=
 }
 

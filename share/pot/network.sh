@@ -182,6 +182,84 @@ _is_valid_netif()
 	fi
 }
 
+# $1 ipaddr
+_get_alias_ipv4()
+{
+	# shellcheck disable=SC2039
+	local _i _ip _nic _output
+	_output=
+	if [ "$( _get_network_stack )" != "ipv6" ]; then
+		for _i in $1 ; do
+			if echo "$_i" | grep -qF '|' ; then
+				_nic="$( echo "$_i" | cut -f 1 -d '|' )"
+				_ip="$( echo "$_i" | cut -f 2 -d '|' )"
+			else
+				_nic="$POT_EXTIF"
+				_ip="$_i"
+			fi
+			if potnet ip4check -H "$_ip" 2> /dev/null ; then
+				if [ -z "$_output" ]; then
+					_output="$_nic|$_ip"
+				else
+					_output="$_output,$_nic|$_ip"
+				fi
+			fi
+		done
+	fi
+	echo "$_output"
+}
+
+# $1 ipaddr
+_get_alias_ipv6()
+{
+	# shellcheck disable=SC2039
+	local _i _ip _nic _output
+	_output=
+	if [ "$( _get_network_stack )" != "ipv4" ]; then
+		for _i in $1 ; do
+			if echo "$_i" | grep -qF '|' ; then
+				_nic="$( echo "$_i" | cut -f 1 -d '|' )"
+				_ip="$( echo "$_i" | cut -f 2 -d '|' )"
+			else
+				_nic="$POT_EXTIF"
+				_ip="$_i"
+			fi
+			if potnet ip6check -H "$_ip" 2> /dev/null ; then
+				if [ -z "$_output" ]; then
+					_output="$_nic|$_ip"
+				else
+					_output="$_output,$_nic|$_ip"
+				fi
+			fi
+		done
+	fi
+	echo "$_output"
+}
+
+# $1 ipaddr
+_validate_alias_ipaddr()
+{
+	# shellcheck disable=SC2039
+	local _i _nic _ip
+	for _i in $1 ; do
+		if echo "$_i" | grep -qF '|' ; then
+			_nic="$( echo "$_i" | cut -f 1 -d '|' )"
+			_ip="$( echo "$_i" | cut -f 2 -d '|' )"
+			if ! _is_valid_netif "$_nic" ; then
+				_error "$_nic is not a valid network interface"
+				return 1 # false
+			fi
+		else
+			_ip="$_i"
+		fi
+		if ! potnet ipcheck -H "$_ip" 2> /dev/null ; then
+			_error "$_ip is not a valid IP address"
+			return 1 # false
+		fi
+	done
+	return 0
+}
+
 # $1 network type
 # $2 ipaddr
 # $3 bridge-name (private-bridge only)
@@ -205,8 +283,9 @@ _validate_network_param()
 		elif [ "$_ipaddr" = "auto" ]; then
 			_error "-i auto not usable with network type alias - a real IP address has to be provided"
 			return 1
-		elif ! potnet ipcheck -H "$_ipaddr" 2> /dev/null ; then
-			_error "$_ipaddr is not a valid IPv4 or IPv6 address"
+		fi
+		if ! _validate_alias_ipaddr "$_ipaddr" ; then
+			_error "$_ipaddr is not a valid alias configuration"
 			return 1
 		fi
 		;;

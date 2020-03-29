@@ -23,7 +23,7 @@ start-cleanup()
 	if [ -z "$_pname" ]; then
 		return
 	fi
-	if [ -n "$2" ]; then
+	if [ -n "$2" ] && _is_valid_netif "${2}a" ; then
 		ifconfig ${2}a destroy
 	fi
 	pot-cmd stop $_pname
@@ -378,7 +378,7 @@ _bg_start()
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _alias_netif _stack
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _stack
 	_pname="$1"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
@@ -389,7 +389,7 @@ _js_start()
 	if [ "$(_get_conf_var "$_pname" "pot.attr.fdescfs")" = "YES" ]; then
 		_param="$_param mount.fdescfs"
 	fi
-	_hostname="$( _get_conf_var $_pname host.hostname )"
+	_hostname="$( _get_conf_var "$_pname" host.hostname )"
 	_osrelease="$( _get_os_release "$_pname" )"
 	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
 	_param="$_param path=${POT_FS_ROOT}/jails/$_pname/m"
@@ -412,16 +412,42 @@ _js_start()
 		esac
 		;;
 	"alias")
-		_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
-		if [ -z "$_alias_netif" ]; then
-			_alias_netif="${POT_EXTIF}"
-		fi
-		_ip=$( _get_conf_var $_pname ip )
-		if potnet ip4check -H "$_ip" ; then
-			_param="$_param interface=${_alias_netif} ip4.addr=$_ip"
-		else
-			_param="$_param interface=${_alias_netif} ip6.addr=$_ip"
-		fi
+		# shellcheck disable=SC2039
+		local _ip4addr _ip6addr
+		_ip=$( _get_conf_var "$_pname" ip )
+		case "$( _get_network_stack )" in
+			"dual")
+				_ip4addr="$( _get_alias_ipv4 "$_ip" )"
+				_ip6addr="$( _get_alias_ipv4 "$_ip" )"
+				if [ -n "$_ip4addr" ]; then
+					_param="$_param ip4.addr=$_ip4addr"
+				fi
+				if [ -n "$_ip6addr" ]; then
+					_param="$_param ip6.addr=$_ip6addr"
+				fi
+				;;
+			"ipv4")
+				_ip4addr="$( _get_alias_ipv4 "$_ip" )"
+				if [ -n "$_ip4addr" ]; then
+					_param="$_param ip4.addr=$_ip4addr"
+				else
+					_error "No ipb4 address found for $_pname"
+					start-cleanup "$_pname"
+					return 1 # false
+				fi
+				;;
+			"ipv6")
+				_ip6addr="$( _get_alias_ipv4 "$_ip" )"
+				if [ -n "$_ip6addr" ]; then
+					_param="$_param ip6.addr=$_ip6addr"
+				else
+					_error "No ipv6 address found for $_pname"
+					start-cleanup "$_pname"
+					return 1 # false
+				fi
+				;;
+		esac
+
 		;;
 	"public-bridge")
 		_param="$_param vnet"

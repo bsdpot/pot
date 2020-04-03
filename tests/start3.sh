@@ -6,6 +6,17 @@ pfctl()
 	__monitor PFCTL "$@"
 }
 
+SED=sed_stub
+sed_stub()
+{
+	if [ "$(uname)" = "Linux" ]; then
+		shift 2
+		sed -i'' "$@"
+	else
+		sed "$@"
+	fi
+}
+
 # UUT
 . ../share/pot/start.sh
 

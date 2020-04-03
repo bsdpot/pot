@@ -25,7 +25,7 @@ _ls_info_pot()
 	printf "pot name : %s\\n" "$_pname"
 	printf "\\tnetwork : %s\\n" "$( _get_conf_var "$_pname" network_type)"
 	if [ "$( _get_conf_var "$_pname" network_type)" != "inherit" ]; then
-		printf "\\tip : %s\\n" "$( _get_conf_var "$_pname" ip)"
+		printf "\\tip : %s\\n" "$( _get_ip_var "$_pname" )"
 	fi
 	if _is_pot_running "$_pname" ; then
 		printf "\\tactive : true\\n"

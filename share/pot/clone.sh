@@ -12,7 +12,6 @@ clone-help()
 	echo '  -N network-type : new network type of the cloned pot'
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
-	echo '  -I netif : network interface to be used instead of the default one (optional, alias only)'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 
@@ -156,17 +155,15 @@ _cj_zfs()
 # $3 network type
 # $4 ip
 # $5 bridge name
-# $6 network interface (relevant for alias)
 _cj_conf()
 {
 	# shellcheck disable=SC2039
-	local _pname _potbase _ptype _ip _network_type _bridge_name _alias_netif
+	local _pname _potbase _ptype _ip _network_type _bridge_name
 	_pname=$1
 	_potbase=$2
 	_network_type=$3
 	_ip=$4
 	_bridge_name=$5
-	_alias_netif="$6"
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
 	if [ ! -d "$_pdir/conf" ]; then
@@ -183,9 +180,6 @@ _cj_conf()
 	"alias")
 		echo "vnet=false" >> "$_pdir/conf/pot.conf"
 		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
-		if [ -n "${_alias_netif}" ]; then
-			echo "alias_netif=${_alias_netif}"
-		fi
 		;;
 	"public-bridge")
 		echo "vnet=true" >> "$_pdir/conf/pot.conf"
@@ -224,7 +218,7 @@ _cj_conf()
 # shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _alias_netif
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name
 	_pname=
 	_ipaddr=
 	_potbase=
@@ -232,7 +226,7 @@ pot-clone()
 	_autosnap="NO"
 	_bridge_name=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:B:I:" _o ; do
+	while getopts "hvp:i:P:FN:B:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -253,15 +247,11 @@ pot-clone()
 				_network_type="$OPTARG"
 				;;
 			i)
-				_ipaddr=$OPTARG
-				;;
-			I)
-				if ! _is_valid_netif "$OPTARG" ; then
-					_error "Network interface $OPTARG not found"
-					create-help
-					${EXIT} 1
+				if [ -z "$_ipaddr" ]; then
+					_ipaddr="$OPTARG"
+				else
+					_ipaddr="$_ipaddr $OPTARG"
 				fi
-				_alias_netif=$OPTARG
 				;;
 			P)
 				_potbase=$OPTARG
@@ -326,7 +316,7 @@ pot-clone()
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" "$_alias_netif" ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" ; then
 		${EXIT} 1
 	fi
 }

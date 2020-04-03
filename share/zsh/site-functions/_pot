@@ -111,7 +111,7 @@ _pot() {
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
-						'-r[Release number]:supported releases:(10.1 10.3 10.4 11.0 11.1)' \
+						'-r[Release number]:supported releases:_normal' \
 						'-b[base name]:base name:_normal'
 					;;
 				create-fscomp) 
@@ -139,10 +139,9 @@ _pot() {
 						'-b[base version]:base version:_pot_bases' \
 						'-l[pot level]:level:(0 1 2)' \
 						'-t[pot type]:type:(multi single)' \
-						'-i[network config]::_normal' \
+						'*-i[network config]::_normal' \
 						'-d[dns type]:dns types:(inherit pot)' \
 						'-B[bridge name]:bridge name:_pot_bridges' \
-						'-I[netif]:network interface:' \
 						'*-f[flavour name]:flavour name:_pot_flavours'
 					;;
 				clone-fscomp)

@@ -377,6 +377,18 @@ _get_conf_var()
 	echo "$_value"
 }
 
+# $1 pot name
+# $2 var name
+_get_ip_var()
+{
+	# shellcheck disable=SC2039
+	local _pname _cdir _var _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_value="$( grep "^ip=" "$_cdir/pot.conf" | sed 's/^ip=//' )"
+	echo "$_value"
+}
+
 _get_pot_export_ports()
 {
 	# shellcheck disable=SC2039

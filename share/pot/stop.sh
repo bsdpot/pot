@@ -24,7 +24,7 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair _ip _aname _alias_netif
+	local _pname _jdir _epair _ip _aname
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
@@ -49,17 +49,23 @@ _js_stop()
 			ifconfig "${_epair%b}"a destroy
 		else
 			if [ "$_network_type" = "alias" ]; then
-				_ip=$( _get_conf_var "$_pname" ip )
-				_alias_netif="$( _get_conf_var "$_pname" alias_netif )"
-				if [ -z "$_alias_netif" ]; then
-					_alias_netif="${POT_EXTIF}"
-				fi
-				_debug "Remove the $_ip alias from $_alias_netif"
-				if potnet ip4check -H "$_ip" ; then
-					ifconfig "${_alias_netif}" inet "$_ip" -alias
-				else
-					ifconfig "${_alias_netif}" inet6 "$_ip" -alias
-				fi
+				_ip=$( _get_ip_var "$_pname" )
+				_debug "Remove $_ip aliases"
+
+				for _i in $_ip ; do
+					if echo "$_i" | grep -qF '|' ; then
+						_nic="$( echo "$_i" | cut -f 1 -d '|' )"
+						_ipaddr="$( echo "$_i" | cut -f 2 -d '|' )"
+					else
+						_nic="$POT_EXTIF"
+						_ipaddr="$_i"
+					fi
+					if potnet ip4check -H "$_ipaddr" ; then
+						ifconfig "${_nic}" inet "$_ipaddr" -alias
+					else
+						ifconfig "${_nic}" inet6 "$_ipaddr" -alias
+					fi
+				done
 			fi
 		fi
 	fi

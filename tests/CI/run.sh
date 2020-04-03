@@ -58,6 +58,7 @@ set_stack() {
 		echo POT_NETWORK_STACK=$s >> $conf
 	fi
 }
+
 # $1 type
 # $2 base_version
 # $3 network
@@ -86,6 +87,11 @@ create_test() {
 		fi
 	fi
 	case $n in
+		alias)
+			if ! pot create -v -p $name -t $t -b $b -N $n -i fdf2:f389:1f56:164b::1 -i 172.20.135.253 ; then
+				error $name create
+			fi
+			;;
 		private-bridge)
 			# create bridge
 			if ! pot create-private-bridge -v -B testprivate -S 5 ; then
@@ -202,7 +208,7 @@ startstop_test() {
 		error $name show
 	fi
 	if [ $s = "ipv4" ] || [ $s = "dual" ]; then
-		if [ $n != "inherit" ]; then
+		if [ $n = "public-bridge" ] || [ $n = "private-bridge" ] ; then
 			ip4="$( _get_ip $name )"
 			if ! ping -c 1 $ip4 ; then
 				error $name ping-bridge
@@ -424,7 +430,7 @@ BROKEN_FLV
 STACKS="ipv4 dual ipv6"
 VERSIONS="12.1 11.3"
 TYPES="single multi"
-NETWORKS="inherit public-bridge private-bridge"
+NETWORKS="alias inherit public-bridge private-bridge"
 begin
 
 empty_check initial_check

@@ -123,7 +123,7 @@ _js_vnet()
 	_epairb="${2}b"
 	ifconfig ${_epair} up
 	ifconfig $_bridge addm ${_epair}
-	_ip=$( _get_conf_var $_pname ip )
+	_ip=$( _get_ip_var $_pname )
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		touch ${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc
@@ -186,7 +186,7 @@ _js_private_vnet()
 	_epairb="${2}b"
 	ifconfig ${_epair} up
 	ifconfig $_bridge addm ${_epair}
-	_ip=$( _get_conf_var $_pname ip )
+	_ip=$( _get_ip_var $_pname  )
 	_net_size="$(_get_bridge_var "$_bridge_name" net)"
 	_net_size="${_net_size##*/}"
 	_gateway="$(_get_bridge_var "$_bridge_name" gateway)"
@@ -238,7 +238,7 @@ _js_export_ports()
 {
 	local _pname _ip _ports _excl_list _pot_port _host_port _aname
 	_pname=$1
-	_ip="$( _get_conf_var "$_pname" ip )"
+	_ip="$( _get_ip_var "$_pname" )"
 	_ports="$( _get_pot_export_ports "$_pname" )"
 	_pfrules="/tmp/pot_${_pname}_pfrules"
 	if [ -z "$_ports" ]; then
@@ -414,11 +414,11 @@ _js_start()
 	"alias")
 		# shellcheck disable=SC2039
 		local _ip4addr _ip6addr
-		_ip=$( _get_conf_var "$_pname" ip )
+		_ip=$( _get_ip_var "$_pname" )
 		case "$( _get_network_stack )" in
 			"dual")
 				_ip4addr="$( _get_alias_ipv4 "$_ip" )"
-				_ip6addr="$( _get_alias_ipv4 "$_ip" )"
+				_ip6addr="$( _get_alias_ipv6 "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
 					_param="$_param ip4.addr=$_ip4addr"
 				fi
@@ -431,13 +431,13 @@ _js_start()
 				if [ -n "$_ip4addr" ]; then
 					_param="$_param ip4.addr=$_ip4addr"
 				else
-					_error "No ipb4 address found for $_pname"
+					_error "No ipv4 address found for $_pname"
 					start-cleanup "$_pname"
 					return 1 # false
 				fi
 				;;
 			"ipv6")
-				_ip6addr="$( _get_alias_ipv4 "$_ip" )"
+				_ip6addr="$( _get_alias_ipv6 "$_ip" )"
 				if [ -n "$_ip6addr" ]; then
 					_param="$_param ip6.addr=$_ip6addr"
 				else

@@ -30,7 +30,6 @@ create-help()
 	echo '         auto: usable with public-bridge and private-bridge (default)'
 	echo '         ipaddr: mandatory with alias, usable with public-bridge and private-bridge'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
-	echo '  -I netif : network interface to be used instead of the default one (optional, alias only)'
 }
 
 _cj_undo_create()
@@ -222,13 +221,12 @@ _cj_zfs()
 # $7 type
 # $8 private bridge (if network tpye is private_bridge"
 # $9 pot-base name
-# $10 network interface (relevant for alias)
 _cj_conf()
 {
 	# shellcheck disable=SC2039
 	local _pname _base _ip _network_type _lvl _jdir _bdir _potbase _dns _type _pblvl _pbpb
 	# shellcheck disable=SC2039
-	local _jdset _bdset _pbdset _baseos _bridge_name _alias_netif
+	local _jdset _bdset _pbdset _baseos _bridge_name
 	_pname=$1
 	_base=$2
 	_network_type=$3
@@ -238,7 +236,6 @@ _cj_conf()
 	_type=$7
 	_bridge_name=$8
 	_potbase=$9
-	_alias_netif=${10}
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 
@@ -312,9 +309,6 @@ _cj_conf()
 		"alias")
 			echo "vnet=false"
 			echo "ip=${_ip}"
-			if [ -n "${_alias_netif}" ]; then
-				echo "alias_netif=${_alias_netif}"
-			fi
 			;;
 		"public-bridge")
 			echo "vnet=true"
@@ -495,7 +489,7 @@ _cj_single_install()
 pot-create()
 {
 	# shellcheck disable=SC2039
-	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type _private_bridge _alias_netif
+	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type _private_bridge
 	OPTIND=1
 	_type="multi"
 	_network_type="inherit"
@@ -509,7 +503,7 @@ pot-create()
 	_dns=inherit
 	_private_bridge=
 	_cleanup_keep="NO"
-	while getopts "hvp:t:N:i:l:b:f:P:d:B:I:k" _o ; do
+	while getopts "hvp:t:N:i:l:b:f:P:d:B:k" _o ; do
 		case "$_o" in
 		h)
 			create-help
@@ -545,7 +539,11 @@ pot-create()
 			_private_bridge="$OPTARG"
 			;;
 		i)
-			_ipaddr="$OPTARG"
+			if [ -z "$_ipaddr" ]; then
+				_ipaddr="$OPTARG"
+			else
+				_ipaddr="$_ipaddr $OPTARG"
+			fi
 			;;
 		l)
 			_lvl="$OPTARG"
@@ -586,14 +584,6 @@ pot-create()
 				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
 				${EXIT} 1
 			fi
-			;;
-		I)
-			if ! _is_valid_netif "$OPTARG" ; then
-				_error "Network interface $OPTARG not found"
-				create-help
-				${EXIT} 1
-			fi
-			_alias_netif="$OPTARG"
 			;;
 		*)
 			create-help
@@ -759,9 +749,6 @@ pot-create()
 		echo "$_ipaddr"
 		${EXIT} 1
 	fi
-	if [ -n "$_alias_netif" ] && [ "$_network_type" != "alias" ]; then
-		_info "-I option apply only for alias network type! '-I $_alias_netif' ignored"
-	fi
 	if [ "$_dns" = "pot" ]; then
 		if ! _is_vnet_available ; then
 			_error "This kernel doesn't support VIMAGE! No vnet possible (needed by the dns)"
@@ -788,7 +775,7 @@ pot-create()
 	if ! _cj_zfs "$_pname" "$_type" "$_lvl" "$_base" "$_potbase" ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_private_bridge" "$_potbase" "$_alias_netif" ; then
+	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_private_bridge" "$_potbase" ; then
 		${EXIT} 1
 	fi
 	if [ "$_type" = "single" ]; then

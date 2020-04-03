@@ -25,7 +25,7 @@ _js_get_free_rnd_port()
 	echo 3333
 }
 
-_get_conf_var()
+_get_ip_var()
 {
 	echo 1.2.3.4
 }

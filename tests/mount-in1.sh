@@ -31,6 +31,12 @@ realpath()
 	return 1 # false
 }
 
+logger()
+{
+	:
+}
+
+
 # UUT
 . ../share/pot/mount-in.sh
 

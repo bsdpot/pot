@@ -40,6 +40,11 @@ _is_potnet_available()
 	return 0 # true
 }
 
+_is_vnet_available()
+{
+	return 0 # true
+}
+
 # app specific stubs
 _cj_zfs()
 {

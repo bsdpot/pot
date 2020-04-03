@@ -72,7 +72,7 @@ _show_pot_run()
 		printf "\tallocated CPUs    : %s\n" "$_cpu_allocation"
 	fi
 	_network_type="$(_get_pot_network_type "$_pname" )"
-	_ip="$( _get_conf_var "$_pname" ip)"
+	_ip="$( _get_ip_var "$_pname" )"
 	if [ "$_network_type" = "public-bridge" ]; then
 		_aname="$( _get_pot_rdr_anchor_name "$_pname")"
 		if pfctl -a "pot-rdr" -s Anchors | grep -q "pot-rdr/${_aname}$" ; then

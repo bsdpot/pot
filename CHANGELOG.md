@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - network stack: add network stack as framework concept (ipv4, ipv6 or dual)
 - CI: import the run.sh script, with regression system tests
 - alias: the new notation -i can be repeated to assign multiple IPs to different NICs
+- hooks: added variables to provide the full new alias network configuration
 
 ### Changed
 - osrelease: detect it from freebsd-version, deprecating the osrelease field in pot.conf (#83)

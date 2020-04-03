@@ -17,10 +17,40 @@ info-help()
 _info_pot_env()
 {
 	# shellcheck disable=SC2039
-	local _pname _cdir _ip
+	local _pname _ips _idx
 	_pname=$1
 	echo "export _POT_NAME=$_pname"
-	echo "export _POT_IP=$( _get_conf_var "$_pname" ip)"
+	if [ "$( _get_pot_network_type "$_pname" )" != "alias" ]; then
+		echo "export _POT_IP=$( _get_ip_var "$_pname" )"
+	else
+		_ips=""
+		if [ "$( _get_network_stack )" != "ipv6" ]; then
+			_ips="$( _get_alias_ipv4 "$_pname" )"
+		fi
+		if [ "$( _get_network_stack )" != "ipv4" ]; then
+			_ips="$_ips $( _get_alias_ipv6 "$_pname" )"
+		fi
+		_idx=0
+		_ipvar_list=""
+		_nicvar_list=""
+		for ip in $_ips ; do
+			nic="${ip%%|*}"
+			ip="${ip##*|}"
+			if [ "$_idx" = "0" ]; then
+				echo "export _POT_IP=$ip"
+				_ipvar_list="_POT_IP_$_idx"
+				_nicvar_list="_POT_NIC_$_idx"
+			else
+				_ipvar_list="$_ipvar_list _POT_IP_$_idx"
+				_nicvar_list="$_nicvar_list _POT_NIC_$_idx"
+			fi
+			echo "export _POT_IP_$_idx=$ip"
+			echo "export _POT_NIC_$_idx=$nic"
+			_idx=$(( _idx + 1 ))
+		done
+		echo "export _POT_IP_LIST=$_ipvar_list"
+		echo "export _POT_NIC_LIST=$_nicvar_list"
+	fi
 	if [ "$( _get_pot_network_type "$_pname" )" = "private-bridge" ]; then
 		echo "export _POT_BRIDGE=$( _get_conf_var "$_pname" bridge)"
 	fi
@@ -47,7 +77,7 @@ _info_pot()
 	fi
 	printf "\tnetwork_type : %s\n" "$( _get_pot_network_type "$_pname" )"
 	if [ "$( _get_pot_network_type "$_pname" )" != "inherit" ]; then
-		printf "\tip : %s\n" "$( _get_conf_var "$_pname" ip)"
+		printf "\tip : %s\n" "$( _get_ip_var "$_pname" )"
 		if [ "$( _get_pot_network_type "$_pname" )" = "private-bridge" ]; then
 			printf "\tbridge : %s\n" "$( _get_conf_var "$_pname" bridge)"
 		fi

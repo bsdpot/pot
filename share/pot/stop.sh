@@ -133,7 +133,7 @@ pot-stop()
 			;;
 		esac
 	done
-	_pname=$1
+	_pname="$( eval echo \$$OPTIND)"
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		stop-help

@@ -399,7 +399,7 @@ _js_start()
 	fi
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"inherit")
-		case "$( _get_network_stack )" in
+		case "$( _get_pot_network_stack "$_pname" )" in
 			"dual")
 				_param="$_param ip4=inherit ip6=inherit"
 				;;
@@ -415,10 +415,10 @@ _js_start()
 		# shellcheck disable=SC2039
 		local _ip4addr _ip6addr
 		_ip=$( _get_ip_var "$_pname" )
-		case "$( _get_network_stack )" in
+		case "$( _get_pot_network_stack "$_pname" )" in
 			"dual")
-				_ip4addr="$( _get_alias_ipv4 "$_ip" )"
-				_ip6addr="$( _get_alias_ipv6 "$_ip" )"
+				_ip4addr="$( _get_alias_ipv4 "$_pname" "$_ip" )"
+				_ip6addr="$( _get_alias_ipv6 "$_pname" "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
 					_param="$_param ip4.addr=$_ip4addr"
 				fi
@@ -427,7 +427,7 @@ _js_start()
 				fi
 				;;
 			"ipv4")
-				_ip4addr="$( _get_alias_ipv4 "$_ip" )"
+				_ip4addr="$( _get_alias_ipv4 "$_pname" "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
 					_param="$_param ip4.addr=$_ip4addr"
 				else
@@ -437,7 +437,7 @@ _js_start()
 				fi
 				;;
 			"ipv6")
-				_ip6addr="$( _get_alias_ipv6 "$_ip" )"
+				_ip6addr="$( _get_alias_ipv6 "$_pname" "$_ip" )"
 				if [ -n "$_ip6addr" ]; then
 					_param="$_param ip6.addr=$_ip6addr"
 				else
@@ -447,11 +447,10 @@ _js_start()
 				fi
 				;;
 		esac
-
 		;;
 	"public-bridge")
 		_param="$_param vnet"
-		_stack="$( _get_network_stack )"
+		_stack="$( _get_pot_network_stack "$_pname" )"
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv4" ]; then
 			_iface="$( _js_create_epair )"
 			_js_vnet "$_pname" "$_iface"
@@ -550,11 +549,11 @@ pot-start()
 		_info "Please run pot update-config -p $_pname to clean up the configuration"
 	fi
 
-	if [ "$( _get_network_stack )" = "ipv6" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
+	if [ "$( _get_pot_network_stack "$_pname" )" = "ipv6" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
 		_error "The framework is configured to run ipv6 only and private-bridge are supported only on ipv4 - abort"
 		return 1
 	fi
-	if [ "$( _get_network_stack )" = "dual" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
+	if [ "$( _get_pot_network_stack "$_pname" )" = "dual" ] && [ "$( _get_conf_var "$_pname" network_type )" = "private-bridge" ]; then
 		_info "The framework is configured to run dual stack, but private-bridge are supported only on ipv4 - ipv6 ignored"
 	fi
 	if _is_pot_vnet $_pname ; then

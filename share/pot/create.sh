@@ -30,6 +30,7 @@ create-help()
 	echo '         auto: usable with public-bridge and private-bridge (default)'
 	echo '         ipaddr: mandatory with alias, usable with public-bridge and private-bridge'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
+	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
 }
 
 _cj_undo_create()
@@ -221,12 +222,13 @@ _cj_zfs()
 # $7 type
 # $8 private bridge (if network tpye is private_bridge"
 # $9 pot-base name
+# $10 network-stack
 _cj_conf()
 {
 	# shellcheck disable=SC2039
 	local _pname _base _ip _network_type _lvl _jdir _bdir _potbase _dns _type _pblvl _pbpb
 	# shellcheck disable=SC2039
-	local _jdset _bdset _pbdset _baseos _bridge_name
+	local _jdset _bdset _pbdset _baseos _bridge_name _stack
 	_pname=$1
 	_base=$2
 	_network_type=$3
@@ -236,6 +238,8 @@ _cj_conf()
 	_type=$7
 	_bridge_name=$8
 	_potbase=$9
+	_stack=${10}
+
 	_jdir=${POT_FS_ROOT}/jails/$_pname
 	_bdir=${POT_FS_ROOT}/bases/$_base
 
@@ -301,6 +305,7 @@ _cj_conf()
 		echo "pot.attr.start-at-boot=NO"
 		echo "pot.attr.procfs=NO"
 		echo "pot.attr.prunable=NO"
+		echo "pot.stack=$_stack"
 		echo "network_type=$_network_type"
 		case $_network_type in
 		"inherit")
@@ -347,6 +352,7 @@ _cj_conf()
 # $4 ip
 _cj_internal_conf()
 {
+	# shellcheck disable=SC2039
 	local _pname _type _lvl _ip _jdir
 	_pname=$1
 	_type=$2
@@ -489,7 +495,7 @@ _cj_single_install()
 pot-create()
 {
 	# shellcheck disable=SC2039
-	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type _private_bridge
+	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type _private_bridge _network_stack
 	OPTIND=1
 	_type="multi"
 	_network_type="inherit"
@@ -502,8 +508,9 @@ pot-create()
 	_potbase=
 	_dns=inherit
 	_private_bridge=
+	_network_stack="$( _get_network_stack )"
 	_cleanup_keep="NO"
-	while getopts "hvp:t:N:i:l:b:f:P:d:B:k" _o ; do
+	while getopts "hvp:t:N:i:l:b:f:P:d:B:S:k" _o ; do
 		case "$_o" in
 		h)
 			create-help
@@ -537,6 +544,14 @@ pot-create()
 			;;
 		B)
 			_private_bridge="$OPTARG"
+			;;
+		S)
+			if ! _is_in_list "$OPTARG" "ipv4" "ipv6" "dual" ; then
+				_error "Network stack $OPTARG not valid"
+				create-help
+				${EXIT} 1
+			fi
+			_network_stack="$OPTARG"
 			;;
 		i)
 			if [ -z "$_ipaddr" ]; then
@@ -745,7 +760,7 @@ pot-create()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
-	if ! _ipaddr="$( _validate_network_param "$_network_type" "$_ipaddr" "$_private_bridge" )" ; then
+	if ! _ipaddr="$( _validate_network_param "$_network_type" "$_ipaddr" "$_private_bridge" "$_network_stack" )" ; then
 		echo "$_ipaddr"
 		${EXIT} 1
 	fi
@@ -760,22 +775,23 @@ pot-create()
 		fi
 	fi
 	_info "Creating a new pot"
-	_info "pot name    : $_pname"
-	_info "type        : $_type"
-	_info "base        : $_base"
-	_info "pot_base    : $_potbase"
-	_info "level       : $_lvl"
-	_info "network-type: $_network_type"
-	_info "ip          : $_ipaddr"
-	_info "bridge      : $_private_bridge"
-	_info "dns         : $_dns"
-	_info "flavours    : $_flv"
+	_info "pot name     : $_pname"
+	_info "type         : $_type"
+	_info "base         : $_base"
+	_info "pot_base     : $_potbase"
+	_info "level        : $_lvl"
+	_info "network-type : $_network_type"
+	_info "network-stack: $_network_stack"
+	_info "ip           : $_ipaddr"
+	_info "bridge       : $_private_bridge"
+	_info "dns          : $_dns"
+	_info "flavours     : $_flv"
 	export _cleanup_pname="$_pname" # for the cleanup function
 	export _cleanup_keep
 	if ! _cj_zfs "$_pname" "$_type" "$_lvl" "$_base" "$_potbase" ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_private_bridge" "$_potbase" ; then
+	if ! _cj_conf "$_pname" "$_base" "$_network_type" "$_ipaddr" "$_lvl" "$_dns" "$_type" "$_private_bridge" "$_potbase" "$_network_stack" ; then
 		${EXIT} 1
 	fi
 	if [ "$_type" = "single" ]; then

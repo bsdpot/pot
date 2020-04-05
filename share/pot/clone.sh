@@ -12,6 +12,7 @@ clone-help()
 	echo '  -N network-type : new network type of the cloned pot'
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
+	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 
@@ -155,15 +156,17 @@ _cj_zfs()
 # $3 network type
 # $4 ip
 # $5 bridge name
+# $6 network stack
 _cj_conf()
 {
 	# shellcheck disable=SC2039
-	local _pname _potbase _ptype _ip _network_type _bridge_name
+	local _pname _potbase _ptype _ip _network_type _bridge_name _stack
 	_pname=$1
 	_potbase=$2
 	_network_type=$3
 	_ip=$4
 	_bridge_name=$5
+	_stack=$6
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
 	if [ ! -d "$_pdir/conf" ]; then
@@ -172,6 +175,7 @@ _cj_conf()
 	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | \
 		grep -v ^ip | grep -v ^vnet | grep -v ^network_type > "$_pdir/conf/pot.conf"
 	echo "host.hostname=\"${_pname}.$( hostname )\"" >> "$_pdir/conf/pot.conf"
+	echo "pot.stack=$_stack" >> "$_pdir/conf/pot.conf"
 	echo "network_type=$_network_type" >> "$_pdir/conf/pot.conf"
 	case "$_network_type" in
 	"inherit")
@@ -218,15 +222,16 @@ _cj_conf()
 # shellcheck disable=SC2039
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack
 	_pname=
 	_ipaddr=
 	_potbase=
 	_pblvl=0
 	_autosnap="NO"
 	_bridge_name=
+	_network_stack=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:B:" _o ; do
+	while getopts "hvp:i:P:FN:B:S:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -258,6 +263,14 @@ pot-clone()
 				;;
 			B)
 				_bridge_name=$OPTARG
+				;;
+			S)
+				if ! is_in_list "$OPTARG" "ipv4" "ipv6" "dual" ; then
+					_error "Network stack $OPTARG not valid"
+					create-help
+					${EXIT} 1
+				fi
+				_network_stack="$OPTARG"
 				;;
 			F)
 				_autosnap="YES"
@@ -298,7 +311,10 @@ pot-clone()
 		fi
 		_network_type="$_pb_network_type"
 	fi
-	if ! _ipaddr="$( _validate_network_param "$_network_type" "$_ipaddr" "$_bridge_name" )" ; then
+	if [ -z "$_network_stack" ]; then
+		_network_stack="$( _get_pot_network_stack "$_potbase" )"
+	fi
+	if ! _ipaddr="$( _validate_network_param "$_network_type" "$_ipaddr" "$_bridge_name" "$_network_stack" )" ; then
 		echo "$_ipaddr"
 		clone-help
 		${EXIT} 1
@@ -316,7 +332,7 @@ pot-clone()
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" "$_network_stack" ; then
 		${EXIT} 1
 	fi
 }

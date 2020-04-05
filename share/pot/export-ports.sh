@@ -86,7 +86,7 @@ pot-export-ports()
 		[ "$(_get_pot_network_type "$_pname")" != "private-bridge" ] ; then
 		_info "Only public-bridge and private-bridge network type can export ports - this setting will be ignored during start"
 	fi
-	if [ "$( _get_network_stack )" = "ipv6" ]; then
+	if [ "$( _get_pot_network_stack "$_pname" )" = "ipv6" ]; then
 		_info "Only ipv4 can export ports, on ipv6 the pot has already a unique address - this setting will be ignored during start"
 	fi
 	_debug "Exporting the following ports: $_ports"

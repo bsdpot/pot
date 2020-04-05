@@ -1,21 +1,5 @@
 #!/bin/sh
 
-_get_network_stack()
-{
-	# shellcheck disable=SC2039
-	local _stack
-	_stack="${POT_NETWORK_STACK:-ipv4}"
-	case $_stack in
-		ipv4|ipv6|dual)
-			echo "$_stack"
-			;;
-		*)
-			echo ipv4
-			return 1
-			;;
-	esac
-}
-
 # tested
 _pot_bridge()
 {
@@ -182,14 +166,47 @@ _is_valid_netif()
 	fi
 }
 
-# $1 ipaddr
+# get the network stack defined in the global configuration
+_get_network_stack()
+{
+	# shellcheck disable=SC2039
+	local _stack
+	_stack="${POT_NETWORK_STACK:-ipv4}"
+	case $_stack in
+		ipv4|ipv6|dual)
+			echo "$_stack"
+			;;
+		*)
+			echo ipv4
+			return 1
+			;;
+	esac
+}
+
+# get the network stack for the specific pot
+# $1 pot name
+_get_pot_network_stack()
+{
+	# shellcheck disable=SC2039
+	local _stack _pname
+	_pname="$1"
+	_stack="$( _get_conf_var "$_pname" pot.stack )"
+	if [ -z "$_stack" ]; then
+		_get_network_stack
+	else
+		echo "$_stack"
+	fi
+}
+
+# $1 pot name
+# $2 ipaddr
 _get_alias_ipv4()
 {
 	# shellcheck disable=SC2039
 	local _i _ip _nic _output
 	_output=
-	if [ "$( _get_network_stack )" != "ipv6" ]; then
-		for _i in $1 ; do
+	if [ "$( _get_pot_network_stack "$1" )" != "ipv6" ]; then
+		for _i in $2 ; do
 			if echo "$_i" | grep -qF '|' ; then
 				_nic="$( echo "$_i" | cut -f 1 -d '|' )"
 				_ip="$( echo "$_i" | cut -f 2 -d '|' )"
@@ -209,14 +226,15 @@ _get_alias_ipv4()
 	echo "$_output"
 }
 
-# $1 ipaddr
+# $1 pot name
+# $2 ipaddr
 _get_alias_ipv6()
 {
 	# shellcheck disable=SC2039
 	local _i _ip _nic _output
 	_output=
-	if [ "$( _get_network_stack )" != "ipv4" ]; then
-		for _i in $1 ; do
+	if [ "$( _get_pot_network_stack "$1" )" != "ipv4" ]; then
+		for _i in $2 ; do
 			if echo "$_i" | grep -qF '|' ; then
 				_nic="$( echo "$_i" | cut -f 1 -d '|' )"
 				_ip="$( echo "$_i" | cut -f 2 -d '|' )"
@@ -237,10 +255,14 @@ _get_alias_ipv6()
 }
 
 # $1 ipaddr
+# $2 network stack
 _validate_alias_ipaddr()
 {
 	# shellcheck disable=SC2039
-	local _i _nic _ip
+	local _i _nic _ip _ipv4_empty _ipv6_empty _stack
+	_stack="$2"
+	_ipv4_empty="YES"
+	_ipv6_empty="YES"
 	for _i in $1 ; do
 		if echo "$_i" | grep -qF '|' ; then
 			_nic="$( echo "$_i" | cut -f 1 -d '|' )"
@@ -256,13 +278,28 @@ _validate_alias_ipaddr()
 			_error "$_ip is not a valid IP address"
 			return 1 # false
 		fi
+		if potnet ip4check -H "$_ip" 2> /dev/null ; then
+			_ipv4_empty="NO"
+		fi
+		if potnet ip6check -H "$_ip" 2> /dev/null ; then
+			_ipv6_empty="NO"
+		fi
 	done
+	if [ "$_stack" = "ipv4" ] && [ "$_ipv4_empty" = "YES" ]; then
+		_error "Stack is ipv4 but not ipv4 address has been provided"
+		return 1 # false
+	fi
+	if [ "$_stack" = "ipv6" ] && [ "$_ipv6_empty" = "YES" ]; then
+		_error "Stack is ipv6 but not ipv6 address has been provided"
+		return 1 # false
+	fi
 	return 0
 }
 
 # $1 network type
 # $2 ipaddr
 # $3 bridge-name (private-bridge only)
+# $4 network stack
 # if success, then print the ip addr (it could be empty)
 # otherwise it print the an error message
 _validate_network_param()
@@ -272,6 +309,10 @@ _validate_network_param()
 	_network_type=$1
 	_ipaddr=$2
 	_private_bridge=$3
+	_network_stack=$4
+	if [ -z "$_network_stack" ]; then
+		_network_stack="$( _get_network_stack )"
+	fi
 	case "$_network_type" in
 	"inherit")
 		_ipaddr=
@@ -284,7 +325,7 @@ _validate_network_param()
 			_error "-i auto not usable with network type alias - a real IP address has to be provided"
 			return 1
 		fi
-		if ! _validate_alias_ipaddr "$_ipaddr" ; then
+		if ! _validate_alias_ipaddr "$_ipaddr" "$_network_stack" ; then
 			_error "$_ipaddr is not a valid alias configuration"
 			return 1
 		fi
@@ -312,7 +353,7 @@ _validate_network_param()
 			_error "This kernel doesn't support VIMAGE! No vnet possible"
 			return 1
 		fi
-		if [ "$( _get_network_stack )" = "ipv6" ]; then
+		if [ "$_network_stack" = "ipv6" ]; then
 			_error "private-bridge network type is not supported on ipv6 stack only"
 			return 1
 		fi

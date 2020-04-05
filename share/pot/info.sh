@@ -17,19 +17,14 @@ info-help()
 _info_pot_env()
 {
 	# shellcheck disable=SC2039
-	local _pname _ips _idx
+	local _pname _ips _idx _all_ips
 	_pname=$1
 	echo "export _POT_NAME=$_pname"
 	if [ "$( _get_pot_network_type "$_pname" )" != "alias" ]; then
 		echo "export _POT_IP=$( _get_ip_var "$_pname" )"
 	else
-		_ips=""
-		if [ "$( _get_network_stack )" != "ipv6" ]; then
-			_ips="$( _get_alias_ipv4 "$_pname" )"
-		fi
-		if [ "$( _get_network_stack )" != "ipv4" ]; then
-			_ips="$_ips $( _get_alias_ipv6 "$_pname" )"
-		fi
+		_all_ips="$( _get_ip_var "$_pname" ) "
+		_ips="$( _get_alias_ipv4 "$_pname" "$_all_ips" ) $( _get_alias_ipv6 "$_pname" "$_all_ips" )"
 		_idx=0
 		_ipvar_list=""
 		_nicvar_list=""

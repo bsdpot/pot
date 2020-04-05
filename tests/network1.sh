@@ -159,6 +159,16 @@ potnet()
 		esac
 		return 0 # true
 	fi
+	if [ "$1" = "ip6check" ]; then
+		case "$3" in
+			2a0a:fade:dead:01e::80|2a0a:fade:dead:01e::443)
+				;;
+			*)
+				return 1
+				;;
+		esac
+		return 0 # true
+	fi
 	return 1 # false
 }
 
@@ -186,6 +196,11 @@ _get_network_stack()
 	else
 		echo "$STUB_STACK"
 	fi
+}
+
+_get_pot_network_stack()
+{
+	_get_network_stack
 }
 
 _is_bridge()
@@ -267,314 +282,334 @@ test_pot_is_valid_netif_002()
 
 test_validate_alias_ipaddr_001()
 {
-	assertTrue "address not recognized" '_validate_alias_ipaddr "192.168.200.200"'
+	assertTrue "address not recognized" '_validate_alias_ipaddr "192.168.200.200" "dual"'
 }
 
 test_get_alias_ipv4_001()
 {
 	ipaddr="192.168.200.200"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "" "$output"
 }
 
 test_validate_alias_ipaddr_002()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200" "dual"'
 }
 
 test_get_alias_ipv4_002()
 {
 	ipaddr="em0|192.168.200.200"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "" "$output"
 }
 
 test_validate_alias_ipaddr_003()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200 10.1.10.10"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200 10.1.10.10" "dual"'
 }
 
 test_get_alias_ipv4_003()
 {
 	ipaddr="em0|192.168.200.200 10.1.10.10"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,bce0|10.1.10.10" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,bce0|10.1.10.10" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,bce0|10.1.10.10" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "" "$output"
 }
 
 test_validate_alias_ipaddr_004()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "10.1.10.10 em0|192.168.200.200"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "10.1.10.10 em0|192.168.200.200" "dual"'
 }
 
 test_get_alias_ipv4_004()
 {
 	ipaddr="10.1.10.10 em0|192.168.200.200"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|10.1.10.10,em0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|10.1.10.10,em0|192.168.200.200" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|10.1.10.10,em0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "" "$output"
 }
 
 test_validate_alias_ipaddr_005()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200 em1|10.1.10.10"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|192.168.200.200 em1|10.1.10.10" "dual"'
 }
 
 test_get_alias_ipv4_005()
 {
 	ipaddr="em0|192.168.200.200 em1|10.1.10.10"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,em1|10.1.10.10" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,em1|10.1.10.10" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200,em1|10.1.10.10" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "" "$output"
+}
+
+test_validate_alias_ipaddr_006()
+{
+	assertFalse "NIC|address shouldn't be accepted" '_validate_alias_ipaddr "em0|192.168.200.200 em1|10.1.10.10" "ipv6"'
 }
 
 test_validate_alias_ipaddr_010()
 {
-	assertTrue "address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80"'
+	assertTrue "address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80" "dual"'
 }
 
 test_get_alias_ipv4_010()
 {
 	ipaddr="2a0a:fade:dead:01e::80"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 }
 
 test_validate_alias_ipaddr_011()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80" "dual"'
 }
 
 test_get_alias_ipv4_011()
 {
 	ipaddr="em0|2a0a:fade:dead:01e::80"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 }
 
 test_validate_alias_ipaddr_012()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 2a0a:fade:dead:01e::443"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 2a0a:fade:dead:01e::443" "dual"'
 }
 
 test_get_alias_ipv4_012()
 {
 	ipaddr="em0|2a0a:fade:dead:01e::80 2a0a:fade:dead:01e::443"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 }
 
 test_validate_alias_ipaddr_013()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::443 em0|2a0a:fade:dead:01e::80"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::443 em0|2a0a:fade:dead:01e::80" "dual"'
 }
 
 test_get_alias_ipv4_013()
 {
 	ipaddr="2a0a:fade:dead:01e::443 em0|2a0a:fade:dead:01e::80"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 }
 
 test_validate_alias_ipaddr_014()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|2a0a:fade:dead:01e::443"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|2a0a:fade:dead:01e::443" "dual"'
 }
 
 test_get_alias_ipv4_014()
 {
 	ipaddr="em0|2a0a:fade:dead:01e::80 em1|2a0a:fade:dead:01e::443"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_015()
+{
+	assertFalse "NIC|address shouldn't be accepted" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|2a0a:fade:dead:01e::443" "ipv4"'
 }
 
 test_validate_alias_ipaddr_020()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|192.168.200.200"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em1|192.168.200.200" "dual"'
 }
 
 test_get_alias_ipv4_020()
 {
 	ipaddr="em0|2a0a:fade:dead:01e::80 em1|192.168.200.200"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em1|192.168.200.200" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em1|192.168.200.200" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em1|192.168.200.200" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 }
 
 test_validate_alias_ipaddr_021()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em0|192.168.200.200"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "em0|2a0a:fade:dead:01e::80 em0|192.168.200.200" "dual"'
 }
 
 test_get_alias_ipv4_021()
 {
 	ipaddr="em0|2a0a:fade:dead:01e::80 em0|192.168.200.200"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "em0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
 }
 
 test_validate_alias_ipaddr_022()
 {
-	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80 192.168.200.200"'
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80 192.168.200.200" "dual"'
 }
 
 test_get_alias_ipv4_022()
 {
 	ipaddr="2a0a:fade:dead:01e::80 192.168.200.200"
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv4
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
 
 	STUB_STACK=dual
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertEquals "alias_ipv4 is wrong" "bce0|192.168.200.200" "$output"
 
 	STUB_STACK=ipv6
-	output="$( _get_alias_ipv4 "$ipaddr")"
+	output="$( _get_alias_ipv4 test-pot "$ipaddr")"
 	assertTrue "alias_ipv4 is wrong" '[ -z "$output"]'
+}
+
+test_validate_alias_ipaddr_023()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80 192.168.200.200" "ipv4"'
+}
+
+test_validate_alias_ipaddr_024()
+{
+	assertTrue "NIC|address not recognized" '_validate_alias_ipaddr "2a0a:fade:dead:01e::80 192.168.200.200" "ipv6"'
 }
 
 test_validate_network_param_001()
@@ -664,6 +699,34 @@ test_validate_network_param_026()
 		assertEquals "Wrong ip returned " "em0|192.168.200.200 em1|10.1.10.10" "$ipaddr"
 	else
 		fail "Valid alias config not recognized"
+	fi
+}
+
+test_validate_network_param_027()
+{
+	if ipaddr="$(_validate_network_param "alias" "em0|192.168.200.200 em1|10.1.10.10" "" "dual")" ; then
+		assertEquals "Wrong ip returned " "em0|192.168.200.200 em1|10.1.10.10" "$ipaddr"
+	else
+		fail "Valid alias config not recognized"
+	fi
+}
+
+test_validate_network_param_028()
+{
+	if ipaddr="$(_validate_network_param "alias" "em0|192.168.200.200 em1|10.1.10.10" "" "ipv4")" ; then
+		assertEquals "Wrong ip returned " "em0|192.168.200.200 em1|10.1.10.10" "$ipaddr"
+	else
+		fail "Valid alias config not recognized"
+	fi
+}
+
+test_validate_network_param_029()
+{
+	if ipaddr="$(_validate_network_param "alias" "em0|192.168.200.200 em1|10.1.10.10" "" "ipv6")" ; then
+		fail "Invalid alias config not recognized"
+	else
+		assertContains "Wrong error message" "$ipaddr" "ipv6"
+		assertContains "Wrong error message" "$ipaddr" "em0|192.168.200.200 em1|10.1.10.10"
 	fi
 }
 

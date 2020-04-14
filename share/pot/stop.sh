@@ -61,9 +61,13 @@ _js_stop()
 						_ipaddr="$_i"
 					fi
 					if potnet ip4check -H "$_ipaddr" ; then
-						ifconfig "${_nic}" inet "$_ipaddr" -alias
+						if ifconfig "${_nic}" | grep -q "inet $_ipaddr " ; then
+							ifconfig "${_nic}" inet "$_ipaddr" -alias
+						fi
 					else
-						ifconfig "${_nic}" inet6 "$_ipaddr" -alias
+						if ifconfig "${_nic}" | grep -q "inet6 $_ipaddr " ; then
+							ifconfig "${_nic}" inet6 "$_ipaddr" -alias
+						fi
 					fi
 				done
 			fi

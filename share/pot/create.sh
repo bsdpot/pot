@@ -373,26 +373,26 @@ _cj_internal_conf()
 
 	# TODO: to be verified
 	# add remote syslogd capability, if not inherit
-	if [ -n "$_ip" ]; then
-		# configure syslog in the pot
-		${SED} -i '' 's%^[^#].*/var/log.*$%# &%g' "${_etcdir}/syslog.conf"
-		echo "*.*  @${POT_GATEWAY}:514" > "${_etcdir}/syslog.d/pot.conf"
-		if [ ! -r "${_etcdir}/rc.conf" ]; then
-			touch "${_etcdir}/rc.conf"
-		fi
-		sysrc -f "${_etcdir}/rc.conf" "syslogd_flags=-vv -s -b $_ip" > /dev/null
-		# configure syslogd in the host
-		(
-			echo +"$_ip"
-			echo '*.*		'"/var/log/pot/${_pname}.log"
-		) > /usr/local/etc/syslog.d/"${_pname}".conf
-		touch /var/log/pot/"${_pname}".log
-		(
-			echo "# log rotation for pot ${_pname}"
-			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
-		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
-		service syslogd reload
-	fi
+#	if [ -n "$_ip" ]; then
+#		# configure syslog in the pot
+#		${SED} -i '' 's%^[^#].*/var/log.*$%# &%g' "${_etcdir}/syslog.conf"
+#		echo "*.*  @${POT_GATEWAY}:514" > "${_etcdir}/syslog.d/pot.conf"
+#		if [ ! -r "${_etcdir}/rc.conf" ]; then
+#			touch "${_etcdir}/rc.conf"
+#		fi
+#		sysrc -f "${_etcdir}/rc.conf" "syslogd_flags=-vv -s -b $_ip" > /dev/null
+#		# configure syslogd in the host
+#		(
+#			echo +"$_ip"
+#			echo '*.*		'"/var/log/pot/${_pname}.log"
+#		) > /usr/local/etc/syslog.d/"${_pname}".conf
+#		touch /var/log/pot/"${_pname}".log
+#		(
+#			echo "# log rotation for pot ${_pname}"
+#			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
+#		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
+#		service syslogd reload
+#	fi
 }
 
 # Special version of set-cmd usable only for flavours

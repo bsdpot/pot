@@ -195,28 +195,28 @@ _cj_conf()
 		echo "bridge=$_bridge_name" >> "$_pdir/conf/pot.conf"
 		;;
 	esac
-	if [ -n "$_ip" ]; then
-	    _ptype="$( _get_conf_var "$_pname" pot.type )"
-		if [ "$_ptype" = "multi" ]; then
-			_rc_conf="${_pdir}/custom/etc/rc.conf"
-		else
-			_rc_conf="${_pdir}/m/etc/rc.conf"
-		fi
-		touch "${_rc_conf}"
-		sysrc -f "${_rc_conf}" "syslogd_flags=-vv -s -b $_ip" > /dev/null
-	fi
-	if [ "$_network_type" != "inherit" ]; then
-		(
-			echo +"$_ip"
-			echo '*.*		'"/var/log/pot/${_pname}.log"
-		) > /usr/local/etc/syslog.d/"${_pname}".conf
-		touch /var/log/pot/"${_pname}".log
-		(
-			echo "# log rotation for pot ${_pname}"
-			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
-		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
-		service syslogd reload
-	fi
+#	if [ -n "$_ip" ]; then
+#	    _ptype="$( _get_conf_var "$_pname" pot.type )"
+#		if [ "$_ptype" = "multi" ]; then
+#			_rc_conf="${_pdir}/custom/etc/rc.conf"
+#		else
+#			_rc_conf="${_pdir}/m/etc/rc.conf"
+#		fi
+#		touch "${_rc_conf}"
+#		sysrc -f "${_rc_conf}" "syslogd_flags=-vv -s -b $_ip" > /dev/null
+#	fi
+#	if [ "$_network_type" != "inherit" ]; then
+#		(
+#			echo +"$_ip"
+#			echo '*.*		'"/var/log/pot/${_pname}.log"
+#		) > /usr/local/etc/syslog.d/"${_pname}".conf
+#		touch /var/log/pot/"${_pname}".log
+#		(
+#			echo "# log rotation for pot ${_pname}"
+#			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
+#		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
+#		service syslogd reload
+#	fi
 }
 
 # shellcheck disable=SC2039

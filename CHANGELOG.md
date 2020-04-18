@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - inherit: it inherits the stack configured in pot.conf
 - alias: extend -i option to accept netif|ipaddr
 - alias: -i option can be repeated more than once to add more ip addresses to the same instance
+- syslogd: initial removal of syslogd forwarding
 
 ### Removed
 - alias: remove option -I, in favour of a more flexible and powerful -i

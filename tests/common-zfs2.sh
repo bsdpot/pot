@@ -27,9 +27,10 @@ test_fscomp_zfs_snap_001()
 
 test_fscomp_zfs_snap_002()
 {
+	# the argument "new_snap" is ignored
 	_fscomp_zfs_snap fscomp_name new_snap
 	assertEquals "zfs calls" "1" "$ZFS_CALLS"
-	assertEquals "zfs args" "/zroot/fscomp/fscomp_name@new_snap" "$ZFS_CALL1_ARG2"
+	assertEquals "zfs args" "/zroot/fscomp/fscomp_name@123454321" "$ZFS_CALL1_ARG2"
 }
 
 setUp()

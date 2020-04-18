@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 - alias: remove option -I, in favour of a more flexible and powerful -i
+- export: remove option -s, to select a specific snapshot (already deprecated)
+- snapshot: remove option -n, to specify a snapshot name (already deprecated)
+- snapshot: remove flag -a, to snapshot external ZFS datasets (already deprecated)
+- revert: remove flag -a, to restore external ZFS datasets (already deprecated)
 
 ### Fixed
 - mount-in: compute the realpath of the mount-point

@@ -12,8 +12,6 @@ export-help() {
 	echo '  -p pot : the working pot'
 	echo '  -t tag : the tag to be used as suffix in the filename'
 	echo '           if no tag is specified, tha snapshot will be used as suffix'
-	echo '  -s snapshot : by default, the last snapshot is taken. [ DEPRECATED ]'
-	echo '                this option allows to use a different snapshot'
 	echo '  -D directory : where to store the compressed file with the pot'
 	echo '  -l compression-level : from 0 (fast) to 9 (best). Defaul level 6. (man xz for more information)'
 	echo '  -F : force exports of multiple snapshot (only 1 snapshot should be allowed)'
@@ -59,7 +57,7 @@ pot-export()
 	_auto_purge=
 	_force=
 	OPTIND=1
-	while getopts "hvp:s:t:D:l:FA" _o ; do
+	while getopts "hvp:t:D:l:FA" _o ; do
 		case "$_o" in
 		h)
 			export-help
@@ -70,12 +68,6 @@ pot-export()
 			;;
 		p)
 			_pname="$OPTARG"
-			;;
-		s)
-			_snap="$OPTARG"
-			echo '####################'
-			echo '# -s is deprecated #'
-			echo '####################'
 			;;
 		t)
 			_tag="$OPTARG"
@@ -122,30 +114,24 @@ pot-export()
 		_error "pot $_pname not supported - only single type pot can be exported"
 		${EXIT} 1
 	fi
-	if [ -n "$_snap" ]; then
-		if _is_zfs_pot_snap "$_pname" "$_snap" ; then
-			_error "no snap $_snap for pot $_pname found"
-			export-help
+
+	_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
+	if [ -z "$_snap" ]; then
+		if [ "$_auto_purge" = "YES" ]; then
+			_info "Taking a snapshot of $_pname"
+			if ! pot-cmd snapshot -p "$_pname" ; then
+				_error "Failed to take a snapshot of pot $_pname"
+				${EXIT} 1
+			else
+				_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
+				_debug "A snapshot of $_pname has been automatically taken (@$_snap)"
+			fi
+		else
+			_error "Pot $_pname has no snapshots - please use pot snapshot for that"
 			${EXIT} 1
 		fi
-	else
-		_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
-		if [ -z "$_snap" ]; then
-			if [ "$_auto_purge" = "YES" ]; then
-				_info "Taking a snapshot of $_pname"
-				if ! pot-cmd snapshot -p "$_pname" ; then
-					_error "Failed to take a snapshot of pot $_pname"
-					${EXIT} 1
-				else
-					_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
-					_debug "A snapshot of $_pname has been automatically taken (@$_snap)"
-				fi
-			else
-				_error "Pot $_pname has no snapshots - please use pot snapshot for that"
-				${EXIT} 1
-			fi
-		fi
 	fi
+
 	if [ "$( _zfs_count_snap "${POT_ZFS_ROOT}/jails/$_pname" )" -gt 1 ]; then
 		if [ "$_force" = "YES" ]; then
 			_info "Pot $_pname has multiple snapshots and they all will be exported"

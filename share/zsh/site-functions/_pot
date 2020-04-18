@@ -296,16 +296,14 @@ _pot() {
 						'-v[Verbose output]' \
 						'-r[replace the oldest snapshot]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-f[fscomp name]:fscomp name:_pot_fscomps' \
-						'-a[also external components]'
+						'-f[fscomp name]:fscomp name:_pot_fscomps'
 					;;
 				revert|rollback)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-f[fscomp name]:fscomp name:_pot_fscomps' \
-						'-a[also external components]'
+						'-f[fscomp name]:fscomp name:_pot_fscomps'
 					;;
 				purge-snapshots)
 					_arguments -s \
@@ -328,7 +326,6 @@ _pot() {
 						'-v[Verbose output]' \
 						'-p[pot name]:pot name:_pot_pots' \
 						'-t[tag name]::_normal' \
-						'-s[snapshot]::_normal' \
 						'-D[target directory]:target directory:_normal' \
 						'-l[compression level]:compression level:(0 1 2 3 4 5 6 7 8 9)'
 					;;

@@ -6,7 +6,6 @@ revert-help()
 	echo "pot revert [-hva] -p potname|-f fscomp"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -a all components of a pot [DEPRECATED]'
 	echo '  -p potname : the pot target of the revert'
 	echo '  -f fscomp : the fs component target of the revert'
 }
@@ -42,36 +41,14 @@ _fscomp_zfs_rollback()
 	done
 }
 
-# DEPRECATED
-_pot_zfs_rollback_full()
-{
-	local _pname _pdir _snap _node _opt _dset
-	_pname=$1
-	_pdir=${POT_FS_ROOT}/jails/$_pname
-	while read -r line ; do
-		_dset=$( echo $line | awk '{print $1}' )
-		_opt=$( echo $line | awk '{print $3}' )
-		if [ "$_opt" = "ro" ]; then
-			continue
-		fi
-		_snap="$( _zfs_last_snap $_dset)"
-		if [ -z "$_snap" ]; then
-			_info "$_dset has not snapshot - no possible rollback"
-			continue
-		fi
-		zfs rollback ${_dset}@${_snap}
-	done < ${_pdir}/conf/fscomp.conf
-}
-
 pot-revert()
 {
-	local _obj _full_pot
-	args=$(getopt hvap:f: $*)
+	local _obj
+	args=$(getopt hvp:f: $*)
 	if [ $? -ne 0 ]; then
 		revert-help
 		${EXIT} 1
 	fi
-	_full_pot="NO"
 	_obj=
 	set -- $args
 	while true; do
@@ -82,13 +59,6 @@ pot-revert()
 			;;
 		-v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
-			;;
-		-a)
-			_full_pot="YES"
-			echo "###########################"
-			echo "# option -a is deprecated #"
-			echo "###########################"
 			shift
 			;;
 		-p)
@@ -143,11 +113,7 @@ pot-revert()
 		if ! _is_uid0 ; then
 			${EXIT} 1
 		fi
-		if [ "$_full_pot" = "YES" ]; then
-			_pot_zfs_rollback_full $_objname
-		else
-			_pot_zfs_rollback $_objname
-		fi
+		_pot_zfs_rollback $_objname
 		;;
 	"fscomp")
 		if ! _zfs_exist ${POT_ZFS_ROOT}/fscomp/$_objname ${POT_FS_ROOT}/fscomp/$_objname ; then

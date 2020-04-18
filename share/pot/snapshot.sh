@@ -8,7 +8,6 @@ snapshot-help()
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -r replace the oldest available snapshot with the new one (not compatible with -a)'
-	echo '  -a all components of a pot [DEPRECATED]'
 	echo '  -p potname : the pot target of the snapshot'
 	echo '  -f fscomp : the fs component target of the snapshot'
 }
@@ -20,10 +19,9 @@ pot-snapshot()
 	_full_pot="NO"
 	_obj=""
 	_objname=
-	_snapname=""
 	_replace=
 	OPTIND=1
-	while getopts "hvap:f:n:r" _o ; do
+	while getopts "hvp:f:r" _o ; do
 		case "$_o" in
 		h)
 			snapshot-help
@@ -34,12 +32,6 @@ pot-snapshot()
 			;;
 		r)
 			_replace="YES"
-			;;
-		a)
-			_full_pot="YES"
-			echo "###########################"
-			echo "# option -a is deprecated #"
-			echo "###########################"
 			;;
 		p)
 			if [ -z "$_obj" ]; then
@@ -61,12 +53,6 @@ pot-snapshot()
 				return 1
 			fi
 			;;
-		n)
-			_snapname="$OPTARG"
-			echo "###########################"
-			echo "# option -n is deprecated #"
-			echo "###########################"
-			;;
 		*)
 			snapshot-help
 			return 1
@@ -85,10 +71,6 @@ pot-snapshot()
 	fi
 	case $_obj in
 	"pot")
-		if [ -n "$_snapname" ]; then
-			_error "Option -n usable only with fscomp"
-			return 1
-		fi
 		if ! _is_pot "$_objname" ; then
 			_error "$_objname is not a pot!"
 			snapshot-help
@@ -117,16 +99,13 @@ pot-snapshot()
 			snapshot-help
 			return 1
 		fi
-		if [ "$_full_pot" = "YES" ]; then
-			_info "-a option is incompatible with -f. Ignored"
-		fi
 		if ! _is_uid0 ; then
 			return 1
 		fi
 		if [ "$_replace" = "YES" ]; then
 			_remove_oldest_fscomp_snap "$_objname"
 		fi
-		_fscomp_zfs_snap "$_objname" "$_snapname"
+		_fscomp_zfs_snap "$_objname"
 		;;
 	esac
 	return 0

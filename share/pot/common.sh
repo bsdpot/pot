@@ -267,17 +267,12 @@ _remove_oldest_fscomp_snap()
 }
 # take a zfs snapshot of a fscomp
 # $1 fscomp name
-# $2 optional name
 _fscomp_zfs_snap()
 {
 	# shellcheck disable=SC2039
 	local _fscomp _snaptag _dset
 	_fscomp=$1
-	if [ -z "$2" ]; then
-		_snaptag="$(date +%s)"
-	else
-		_snaptag="$2"
-	fi
+	_snaptag="$(date +%s)"
 	_debug "Take snapshot of $_fscomp"
 	zfs snapshot "${POT_ZFS_ROOT}/fscomp/${_fscomp}@${_snaptag}"
 }

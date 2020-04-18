@@ -64,7 +64,7 @@ test_pot_revert_001()
 	pot-revert -va
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_pot_zfs_rollback calls" "0" "$POTZFSROLL_CALLS"
 	assertEquals "_pot_zfs_rollback_full calls" "0" "$POTZFSROLLFULL_CALLS"
 	assertEquals "_fscomp_zfs_rollback calls" "0" "$FSCOMPZFSROLL_CALLS"
@@ -149,14 +149,14 @@ test_pot_revert_021()
 test_pot_revert_022()
 {
 	pot-revert -p test-pot -a
-	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
+	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
 	assertEquals "_pot_zfs_rollback calls" "0" "$POTZFSROLL_CALLS"
-	assertEquals "_pot_zfs_rollback_full calls" "1" "$POTZFSROLLFULL_CALLS"
-	assertEquals "_pot_zfs_rollback_full arg" "test-pot" "$POTZFSROLLFULL_CALL1_ARG1"
+	assertEquals "_pot_zfs_rollback_full calls" "0" "$POTZFSROLLFULL_CALLS"
+	assertEquals "_pot_zfs_rollback_full arg" "" "$POTZFSROLLFULL_CALL1_ARG1"
 }
 
 test_pot_revert_040()
@@ -202,17 +202,17 @@ test_pot_revert_041()
 test_pot_revert_042()
 {
 	pot-revert -f test-fscomp -a
-	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
 	assertEquals "_pot_zfs_rollback calls" "0" "$POTZFSROLL_CALLS"
 	assertEquals "_pot_zfs_rollback_full calls" "0" "$POTZFSROLLFULL_CALLS"
-	assertEquals "_zfs_exist calls" "1" "$ZFSEXIST_CALLS"
-	assertEquals "_fscomp_zfs_rollback calls" "1" "$FSCOMPZFSROLL_CALLS"
-	assertEquals "_fscomp_zfs_rollback arg" "test-fscomp" "$FSCOMPZFSROLL_CALL1_ARG1"
-	assertEquals "Info calls" "1" "$INFO_CALLS"
+	assertEquals "_zfs_exist calls" "0" "$ZFSEXIST_CALLS"
+	assertEquals "_fscomp_zfs_rollback calls" "0" "$FSCOMPZFSROLL_CALLS"
+	assertEquals "_fscomp_zfs_rollback arg" "" "$FSCOMPZFSROLL_CALL1_ARG1"
+	assertEquals "Info calls" "0" "$INFO_CALLS"
 }
 
 setUp()
@@ -222,6 +222,7 @@ setUp()
 	POTZFSROLL_CALLS=0
 	POTZFSROLLFULL_CALLS=0
 	FSCOMPZFSROLL_CALLS=0
+	FSCOMPZFSROLL_CALL1_ARG1=
 }
 
 . shunit/shunit2

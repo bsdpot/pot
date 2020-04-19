@@ -121,6 +121,7 @@ pot-set-attribute()
 	fi
 	case $_attr in
 		"start-at-boot"|\
+		"early-start-at-boot"|\
 		"persistent"|\
 		"no-rc-script"|\
 		"fdescfs"|\

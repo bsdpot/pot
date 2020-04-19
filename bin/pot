@@ -30,7 +30,7 @@
 
 # Environment initialization and initial checks
 
-_POT_VERSION=0.10.4
+_POT_VERSION=0.11.0
 _POT_PATHNAME="$(realpath "$0")"
 _POT_PREFIX="$(dirname "${_POT_PATHNAME}")"
 _POT_INCLUDE="$( realpath "${_POT_PREFIX}/../share/pot")"

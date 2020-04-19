@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.11.1] 2020-04-19
+
 ### Fixed
 - set-attr: attribute early-start-at-boot is now correctly recognized
 ## [0.11.0] 2020-04-19

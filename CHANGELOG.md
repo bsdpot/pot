@@ -5,8 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- prepare: the -S option is now used to specify the network stack
+
+### Changed
+- prepare: the -S flag to start the imported pot changed in -s
+
 ### Fixed
-- fbsd-update: don't assume there is a tty
+- fbsd-update: don't assume there is a tty (#86)
+- clone: duplicate the entry pot.stack (#88)
 
 ## [0.11.1] 2020-04-19
 ### Fixed

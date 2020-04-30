@@ -18,8 +18,9 @@ prepare-help()
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -e port : the tcp port'
 	echo '            This option can be repeated multiple time, to export more ports'
-	echo '  -S : start immediately the newly generated pot'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
+	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
+	echo '  -s : start immediately the newly generated pot'
 }
 
 pot-prepare()
@@ -34,7 +35,7 @@ pot-prepare()
 	_bridge_name=
 	_cmd=
 	OPTIND=1
-	while getopts "hvp:U:t:c:e:a:n:SN:i:B:" _o ; do
+	while getopts "hvp:U:t:c:e:a:n:sN:i:B:S:" _o ; do
 		case "$_o" in
 		h)
 			prepare-help
@@ -73,7 +74,7 @@ pot-prepare()
 				_ports="$_ports $OPTARG"
 			fi
 			;;
-		S)
+		s)
 			_auto_start="YES"
 			;;
 		N)
@@ -95,6 +96,15 @@ pot-prepare()
 		i)
 			_ipaddr=$OPTARG
 			;;
+		S)
+			if ! _is_in_list "$OPTARG" "ipv4" "ipv6" "dual" ; then
+				_error "Network stack $OPTARG not valid"
+				create-help
+				${EXIT} 1
+			fi
+			_network_stack="$OPTARG"
+			;;
+
 		*)
 			prepare-help
 			${EXIT} 1
@@ -156,6 +166,9 @@ pot-prepare()
 	fi
 	if [ -n "$_ipaddr" ]; then
 		_clone_network_opt="$_clone_network_opt -i $_ipaddr"
+	fi
+	if [ -n "$_network_stack" ]; then
+		_clone_network_opt="$_clone_network_opt -S $_network_stack"
 	fi
 	# shellcheck disable=SC2086
 	if ! pot-cmd clone -P "${_imported_pname}" -p "${_new_pname}" $_clone_network_opt ; then

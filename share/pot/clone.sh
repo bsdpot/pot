@@ -172,8 +172,8 @@ _cj_conf()
 	if [ ! -d "$_pdir/conf" ]; then
 		mkdir -p "$_pdir/conf"
 	fi
-	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | \
-		grep -v ^ip | grep -v ^vnet | grep -v ^network_type > "$_pdir/conf/pot.conf"
+	grep -v ^host.hostname "$_pbdir/conf/pot.conf" | grep -v ^bridge \
+		grep -v ^ip | grep -v ^vnet | grep -v ^network_type | grep -v ^pot.stack > "$_pdir/conf/pot.conf"
 	echo "host.hostname=\"${_pname}.$( hostname )\"" >> "$_pdir/conf/pot.conf"
 	echo "pot.stack=$_stack" >> "$_pdir/conf/pot.conf"
 	echo "network_type=$_network_type" >> "$_pdir/conf/pot.conf"
@@ -265,7 +265,7 @@ pot-clone()
 				_bridge_name=$OPTARG
 				;;
 			S)
-				if ! is_in_list "$OPTARG" "ipv4" "ipv6" "dual" ; then
+				if ! _is_in_list "$OPTARG" "ipv4" "ipv6" "dual" ; then
 					_error "Network stack $OPTARG not valid"
 					create-help
 					${EXIT} 1

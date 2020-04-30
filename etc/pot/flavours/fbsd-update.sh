@@ -1,5 +1,4 @@
 #!/bin/sh
 
 export PAGER=/bin/cat
-freebsd-update fetch
-freebsd-update install
+freebsd-update --not-running-from-cron fetch install

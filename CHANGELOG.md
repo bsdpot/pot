@@ -12,10 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - prepare: the -S flag to start the imported pot changed in -s
+- start: remove temporary files
 
 ### Fixed
 - fbsd-update: don't assume there is a tty (#86)
 - clone: duplicate the entry pot.stack (#88)
+- clone: fix a typo refactoring the grep that remove network parameters (#90)
 
 ## [0.11.1] 2020-04-19
 ### Fixed

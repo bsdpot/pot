@@ -61,7 +61,7 @@ _pot_zfs_destroy()
 		_error "zfs failed to destroy the dataset $_jdset"
 		return 1 # false
 	fi
-	rm -f /usr/local/etc/syslog.d/"${_pname}".conf /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
+	rm -f "/usr/local/etc/syslog.d/${_pname}.conf" "/usr/local/etc/newsyslog.conf.d/${_pname}.conf" "/var/log/pot/${_pname}.log"
 	return $?
 }
 

@@ -277,6 +277,7 @@ _js_export_ports()
 			_error "nmap package is missing, localhost-tunnel attribute ignored"
 		fi
 	fi
+	rm -f "$_pfrules"
 }
 
 # $1 jail name
@@ -342,6 +343,7 @@ _js_env()
 	else
 		cp "$_shfile" "${POT_FS_ROOT}/jails/$_pname/m/tmp/environment.sh"
 	fi
+	rm -f "$_shfile"
 }
 
 _bg_start()

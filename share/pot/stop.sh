@@ -24,9 +24,9 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _jdir _epair _ip _aname
+	local _pname _pdir _epair _ip _aname
 	_pname="$1"
-	_jdir="${POT_FS_ROOT}/jails/$_pname"
+	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	_epair=
 	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
@@ -34,11 +34,11 @@ _js_stop()
 			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
 		fi
 
-		if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/prestop.sh" ]; then
+		if [ -x "$_pdir/conf/prestop.sh" ]; then
 			_info "Executing the pre-stop script for the pot $_pname"
 			(
 				eval $( pot info -E -p "$_pname" )
-				${POT_FS_ROOT}/jails/$_pname/conf/prestop.sh
+				$_pdir/conf/prestop.sh
 			)
 		fi
 		_debug "Stop the pot $_pname"
@@ -78,20 +78,22 @@ _js_stop()
 		pfctl -a "pot-rdr/$_aname" -F nat -q
 	fi
 
-	if [ -r "$_jdir/ncat.pid" ]; then
-		pkill -F "$_jdir/ncat.pid" -f "ncat-$_pname"
-		rm -f "$_jdir/ncat.pid"
-	elif pgrep -q -f "$_jdir/ncat-$_pname" ; then
-		pkill -f "$_jdir/ncat-$_pname"
+	if [ -r "$_pdir/ncat.pid" ]; then
+		pkill -F "$_pdir/ncat.pid" -f "ncat-$_pname"
+		rm -f "$_pdir/ncat.pid"
+	elif pgrep -q -f "$_pdir/ncat-$_pname" ; then
+		pkill -f "$_pdir/ncat-$_pname"
 	fi
 
-	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststop.sh" ]; then
+	if [ -x "$_pdir/conf/poststop.sh" ]; then
 		_info "Executing the post-stop script for the pot $_pname"
 		(
 			eval $( pot info -E -p "$_pname" )
-			${POT_FS_ROOT}/jails/$_pname/conf/poststop.sh
+			${_pdir}/conf/poststop.sh
 		)
 	fi
+	rm -f "/tmp/pot_${_pname}_pfrules"
+	rm -f "/tmp/pot_environment_$_pname.sh"
 	return 0 # true
 }
 

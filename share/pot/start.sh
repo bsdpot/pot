@@ -240,11 +240,10 @@ _js_export_ports()
 	_pname=$1
 	_ip="$( _get_ip_var "$_pname" )"
 	_ports="$( _get_pot_export_ports "$_pname" )"
-	_pfrules="/tmp/pot_${_pname}_pfrules"
 	if [ -z "$_ports" ]; then
 		return
 	fi
-	rm -f "$_pfrules"
+	_pfrules=$(mktemp -t pot_pfrules) || exit 1
 	for _port in $_ports ; do
 		_pot_port="$( echo "${_port}" | cut -d':' -f 1)"
 		_host_port="$( echo "${_port}" | cut -d':' -f 2)"
@@ -335,7 +334,7 @@ _js_env()
 	local _pname _shfile _cfile
 	_pname="$1"
 	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-	_shfile="/tmp/pot_environment_$_pname.sh"
+	_shfile=$(mktemp -t pot_environment) || exit 1
 	grep '^pot.env=' "$_cfile" | sed 's/^pot.env=/export /g' > "$_shfile"
 	pot-cmd info -E -p "$_pname" >> "$_shfile"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then

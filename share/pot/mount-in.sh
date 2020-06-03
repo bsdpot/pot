@@ -55,7 +55,7 @@ _mountpoint_validation()
 	fi
 	if ! _is_pot_running "$_pname" ; then
 		_mounted=true # true
-		if ! _pot_mount "$_pname" ; then
+		if ! _pot_mount "$_pname" >/dev/null ; then
 			_error "Pot $_pname failed to mount"
 			return 1 # false
 		fi
@@ -64,14 +64,14 @@ _mountpoint_validation()
 	if [ ! -d "$_mpdir/$_mnt_p" ]; then
 		if ! mkdir -p "$_mpdir/$_mnt_p" ; then
 			if eval $_mounted ; then
-				_pot_umount "$_pname"
+				_pot_umount "$_pname" >/dev/null
 			fi
 			return 1 # false
 		fi
 	fi
 	_real_mnt=$( chroot "$_mpdir" /bin/realpath "$_mnt_p")
 	if eval $_mounted ; then
-		_pot_umount "$_pname"
+		_pot_umount "$_pname" >/dev/null
 	fi
 	echo "$_real_mnt"
 	return 0 # true

@@ -194,6 +194,18 @@ _cj_conf()
 		echo "bridge=$_bridge_name" >> "$_pdir/conf/pot.conf"
 		;;
 	esac
+	if [ -e "$_pbdir/conf/prestart.sh" ]; then
+		cp "$_pbdir/conf/prestart.sh" "$_pdir/conf/prestart.sh"
+	fi
+	if [ -e "$_pbdir/conf/prestop.sh" ]; then
+		cp "$_pbdir/conf/prestop.sh" "$_pdir/conf/prestop.sh"
+	fi
+	if [ -e "$_pbdir/conf/poststart.sh" ]; then
+		cp "$_pbdir/conf/poststart.sh" "$_pdir/conf/poststart.sh"
+	fi
+	if [ -e "$_pbdir/conf/poststop.sh" ]; then
+		cp "$_pbdir/conf/poststop.sh" "$_pdir/conf/poststop.sh"
+	fi
 #	if [ -n "$_ip" ]; then
 #	    _ptype="$( _get_conf_var "$_pname" pot.type )"
 #		if [ "$_ptype" = "multi" ]; then

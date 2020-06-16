@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone: duplicate the entry pot.stack (#88)
 - clone: fix a typo refactoring the grep that remove network parameters (#90)
 - mount-in: fix mountpoint validation when pot is stopped and -v is passed (#93)
+- clone: hooks have been ignored by clone (#94)
 
 ## [0.11.1] 2020-04-19
 ### Fixed

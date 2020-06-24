@@ -36,8 +36,8 @@ _info_pot_env()
 				_ipvar_list="_POT_IP_$_idx"
 				_nicvar_list="_POT_NIC_$_idx"
 			else
-				_ipvar_list="$_ipvar_list _POT_IP_$_idx"
-				_nicvar_list="$_nicvar_list _POT_NIC_$_idx"
+				_ipvar_list="$_ipvar_list\\ _POT_IP_$_idx"
+				_nicvar_list="$_nicvar_list\\ _POT_NIC_$_idx"
 			fi
 			echo "export _POT_IP_$_idx=$ip"
 			echo "export _POT_NIC_$_idx=$nic"

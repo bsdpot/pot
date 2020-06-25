@@ -26,11 +26,12 @@ prepare-help()
 pot-prepare()
 {
 	# shellcheck disable=SC2039
-	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _bridge_name
+	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _ipaddr_list _bridge_name
 	_pname=
 	_ports=
 	_network_type=
 	_ipaddr=
+	_ipaddr_list=
 	_auto_start="NO"
 	_bridge_name=
 	_cmd=
@@ -94,7 +95,7 @@ pot-prepare()
 			_bridge_name="$OPTARG"
 			;;
 		i)
-			_ipaddr=$OPTARG
+			_ipaddr_list="$_ipaddr_list $OPTARG"
 			;;
 		S)
 			if ! _is_in_list "$OPTARG" "ipv4" "ipv6" "dual" ; then
@@ -164,9 +165,9 @@ pot-prepare()
 	if [ "$_network_type" = "private-bridge" ]; then
 		_clone_network_opt="$_clone_network_opt -B $_bridge_name"
 	fi
-	if [ -n "$_ipaddr" ]; then
+	for _ipaddr in $_ipaddr_list; do
 		_clone_network_opt="$_clone_network_opt -i $_ipaddr"
-	fi
+	done
 	if [ -n "$_network_stack" ]; then
 		_clone_network_opt="$_clone_network_opt -S $_network_stack"
 	fi

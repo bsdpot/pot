@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone: hooks have been ignored by clone (#94)
 - info: fix withespace quoting with -E flag (#95)
 - prepare: fix -i command to allow multiple IP addresses (#97)
+- ifconfig: force IFCONFIG_FORMAT to avoid conflicting user setting (#99)
 
 ## [0.11.1] 2020-04-19
 ### Fixed

@@ -28,6 +28,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Force ifconfig into expected format
+export IFCONFIG_FORMAT=addr:default
+
 # Environment initialization and initial checks
 
 _POT_VERSION=0.11.2

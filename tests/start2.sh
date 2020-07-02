@@ -9,7 +9,7 @@ pfctl()
 # UUT
 . ../share/pot/start.sh
 
-. ../share/pot/start.sh
+POT_MKTEMP_SUFFIX=XX
 
 # common stubs
 . common-stub.sh

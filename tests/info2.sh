@@ -78,8 +78,8 @@ test_info_pot_env_001()
 test_info_pot_env_020()
 {
 	assertEquals "alias has wrong IP"        "export _POT_IP=192.168.0.1" "$( _info_pot_env test-pot-alias | grep _POT_IP= )"
-	assertEquals "alias has wrong IP LIST"   "$( _info_pot_env test-pot-alias | grep _POT_IP_LIST= )" "export _POT_IP_LIST=_POT_IP_0 _POT_IP_1"
-	assertEquals "alias has wrong NIC LIST"  "$( _info_pot_env test-pot-alias | grep _POT_NIC_LIST= )" "export _POT_NIC_LIST=_POT_NIC_0 _POT_NIC_1"
+	assertEquals "alias has wrong IP LIST"   "$( _info_pot_env test-pot-alias | grep _POT_IP_LIST= )" "export _POT_IP_LIST=_POT_IP_0\ _POT_IP_1"
+	assertEquals "alias has wrong NIC LIST"  "$( _info_pot_env test-pot-alias | grep _POT_NIC_LIST= )" "export _POT_NIC_LIST=_POT_NIC_0\ _POT_NIC_1"
 	assertEquals "alias has wrong IP 0"      "$( _info_pot_env test-pot-alias | grep _POT_IP_0= )" "export _POT_IP_0=192.168.0.1"
 	assertEquals "alias has wrong IP 1"      "$( _info_pot_env test-pot-alias | grep _POT_IP_1= )" "export _POT_IP_1=fe80::0"
 	assertEquals "alias has wrong NIC 0"     "$( _info_pot_env test-pot-alias | grep _POT_NIC_0= )" "export _POT_NIC_0=em0"

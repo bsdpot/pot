@@ -17,6 +17,8 @@ sed_stub()
 	fi
 }
 
+POT_MKTEMP_SUFFIX=XXX
+
 # UUT
 . ../share/pot/start.sh
 

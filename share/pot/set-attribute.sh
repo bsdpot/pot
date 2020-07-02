@@ -17,7 +17,7 @@ set-attr-help()
 # if valid, it returns true and it echo a normalized version of the boolean value (YES/NO)
 # if not valid, it return false
 _normalize_true_false() {
-	case $1 in 
+	case $1 in
 		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn])
 			echo YES
 			return 0 # true
@@ -51,6 +51,27 @@ _set_boolean_attribute()
 	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
 }
 
+# $1 pot name
+# $2 attribute name
+# $3 value
+_set_uint_attribute()
+{
+	# shellcheck disable=SC2039
+	local _pname _value _cdir
+	_pname=$1
+	_attr=$2
+	_value=$3
+
+	if [ -n "$(printf '%s' "${_value}" | tr -d '0-9')" ] ; then
+		_error "value $_value is not a valid uint value"
+		set-attr-help
+		return 1
+	fi
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
+}
+
 _ignored_parameter()
 {
 	# shellcheck disable=SC2039
@@ -62,7 +83,7 @@ _ignored_parameter()
 # shellcheck disable=SC2039
 pot-set-attribute()
 {
-	local _pname _attr _value
+	local _pname _attr _value _type
 	_pname=
 	_attr=
 	_value=
@@ -96,12 +117,12 @@ pot-set-attribute()
 		set-attr-help
 		return 1
 	fi
-	if [ -z "$_attr" ]; then 
+	if [ -z "$_attr" ]; then
 		_error "Option -A is mandatory"
 		set-attr-help
 		return 1
 	fi
-	if [ -z "$_value" ]; then 
+	if [ -z "$_value" ]; then
 		_error "Option -V is mandatory"
 		set-attr-help
 		return 1
@@ -111,7 +132,7 @@ pot-set-attribute()
 		set-attr-help
 		return 1
 	fi
-	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES ; then
+	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES ${_POT_JAIL_RW_ATTRIBUTES} ; then
 		_error "$_attr is not a valid attribute"
 		set-attr-help
 		return 1
@@ -124,15 +145,24 @@ pot-set-attribute()
 		"early-start-at-boot"|\
 		"persistent"|\
 		"no-rc-script"|\
-		"fdescfs"|\
-		"procfs"|\
 		"prunable"|\
 		"localhost-tunnel")
 			_cmd=_set_boolean_attribute
 			;;
 		*)
-			_ignored_parameter "$_attr"
-			return 0
+			eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
+			case "${_type}" in
+			(bool)
+				_cmd=_set_boolean_attribute
+				;;
+			(uint)
+				_cmd=_set_uint_attribute
+				;;
+			(*)
+				_ignored_parameter "$_attr"
+			        return 0
+				;;
+			esac
 			;;
 	esac
 

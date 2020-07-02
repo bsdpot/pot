@@ -4,9 +4,42 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot early-start-at-boot persistent no-rc-script procfs fdescfs prunable localhost-tunnel"
+_POT_RW_ATTRIBUTES="start-at-boot early-start-at-boot persistent no-rc-script prunable localhost-tunnel"
 _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
+
+# not devfs handles separately
+_POT_JAIL_RW_ATTRIBUTES='mount fdescfs linprocfs nullfs procfs tmpfs zfs children'
+
+# N: arg name jail command, T: type of data, D: deafult value
+_POT_DEFAULT_mount_N='allow.mount'
+_POT_DEFAULT_mount_T='bool'
+_POT_DEFAULT_mount_D='NO'
+#_POT_DEFAULT_devfs_N='allow.mount.devfs'
+#_POT_DEFAULT_devfs_T='bool'
+#_POT_DEFAULT_devfs_D='YES'
+_POT_DEFAULT_fdescfs_N='allow.mount.fdescfs'
+_POT_DEFAULT_fdescfs_T='bool'
+_POT_DEFAULT_fdescfs_D='NO'
+_POT_DEFAULT_linprocfs_N='allow.mount.linprocfs'
+_POT_DEFAULT_linprocfs_T='bool'
+_POT_DEFAULT_linprocfs_D='NO'
+_POT_DEFAULT_nullcfs_N='allow.mount.nullfs'
+_POT_DEFAULT_nullcfs_T='bool'
+_POT_DEFAULT_nullcfs_D='NO'
+_POT_DEFAULT_procfs_N='allow.mount.procfs'
+_POT_DEFAULT_procfs_T='bool'
+_POT_DEFAULT_procfs_D='NO'
+_POT_DEFAULT_tmpfs_N='allow.mount.tmpfs'
+_POT_DEFAULT_tmpfs_T='bool'
+_POT_DEFAULT_tmpfs_D='NO'
+_POT_DEFAULT_zfs_N='allow.mount.zfs'
+_POT_DEFAULT_zfs_T='bool'
+_POT_DEFAULT_zfs_D='NO'
+_POT_DEFAULT_children_N='children.max'
+_POT_DEFAULT_children_T='uint'
+_POT_DEFAULT_children_D='0'
+
 
 __POT_MSG_ERR=0
 __POT_MSG_INFO=1

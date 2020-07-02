@@ -26,7 +26,7 @@ _get_conf_static_ports()
 _update_one_pot()
 {
 	# shellcheck disable=SC2039
-	local _pname _conf
+	local _pname _conf _attr _value
 	_pname="$1"
 	if ! _is_pot "$_pname" ; then
 		_error "Invalid pot name"
@@ -61,14 +61,16 @@ _update_one_pot()
 		_debug "pot.attr.early.start-at-boot=NO"
 		echo "pot.attr.early.start-at-boot=NO" >> "$_conf"
 	fi
-	if [ -z "$(_get_conf_var "$_pname" "pot.attr.procfs")" ]; then
-		_debug "pot.attr.procfs=NO"
-		echo "pot.attr.procfs=NO" >> "$_conf"
-	fi
-	if [ -z "$(_get_conf_var "$_pname" "pot.attr.fdescfs")" ]; then
-		_debug "pot.attr.fdescfs=NO"
-		echo "pot.attr.fdescfs=NO" >> "$_conf"
-	fi
+
+	for _attr in ${_POT_JAIL_RW_ATTRIBUTES}
+	do
+		if [ -z "$(_get_conf_var "$_pname" "pot.attr.${_attr}")" ]; then
+			eval _value=\"\${_POT_DEFAULT_${_attr}_D}\"
+			_debug "pot.attr.${_attr}=${_value}"
+			echo "pot.attr.${_attr}=${_value}" >> "$_conf"
+		fi
+	done
+
 	if [ -z "$(_get_conf_var "$_pname" "pot.attr.prunable")" ]; then
 		_debug "pot.attr.prunable=NO"
 		echo "pot.attr.prunable=NO" >> "$_conf"
@@ -180,7 +182,7 @@ pot-update-config()
 		if ! _update_all_pots ; then
 			${EXIT} 1
 		fi
-	else 
+	else
 		_error "A pot name or -a are mandatory"
 		update-config-help
 		${EXIT} 1

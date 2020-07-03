@@ -9,7 +9,7 @@ _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
-_POT_JAIL_RW_ATTRIBUTES='mount fdescfs linprocfs nullfs procfs tmpfs zfs children'
+_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs children'
 
 # N: arg name jail command, T: type of data, D: deafult value
 _POT_DEFAULT_mount_N='allow.mount'
@@ -39,6 +39,10 @@ _POT_DEFAULT_zfs_D='NO'
 _POT_DEFAULT_children_N='children.max'
 _POT_DEFAULT_children_T='uint'
 _POT_DEFAULT_children_D='0'
+# 0:everything, 1:chroot+below(poudriere), 2:just chroot(normal jail)
+_POT_DEFAULT_enforce_statfs_N='enforce_statfs'
+_POT_DEFAULT_enforce_statfs_T='uint'
+_POT_DEFAULT_enforce_statfs_D='2'
 
 
 __POT_MSG_ERR=0

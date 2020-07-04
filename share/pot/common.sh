@@ -12,12 +12,10 @@ _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 _POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs children'
 
 # N: arg name jail command, T: type of data, D: deafult value
+# devfs is always mounted
 _POT_DEFAULT_mount_N='allow.mount'
 _POT_DEFAULT_mount_T='bool'
 _POT_DEFAULT_mount_D='NO'
-#_POT_DEFAULT_devfs_N='allow.mount.devfs'
-#_POT_DEFAULT_devfs_T='bool'
-#_POT_DEFAULT_devfs_D='YES'
 _POT_DEFAULT_fdescfs_N='allow.mount.fdescfs'
 _POT_DEFAULT_fdescfs_T='bool'
 _POT_DEFAULT_fdescfs_D='NO'

@@ -386,16 +386,13 @@ _js_start()
 	_param="$_param allow.chflags exec.clean mount.devfs"
 	_param="$_param sysvmsg=new sysvsem=new sysvshm=new"
 
-	for _attr in ${_POT_JAIL_RW_ATTRIBUTES}
-	do
+	for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 		eval _name=\"\${_POT_DEFAULT_${_attr}_N}\"
 		eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
 		_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
-		if [ X"${_value}" = X"YES" ]
-		then
+		if [ "${_value}" = "YES" ]; then
 			_param="$_param ${_name}"
-		elif [ X"${_type}" != X"bool" -a -n "${_value}" ]
-		then
+		elif [ "${_type}" != "bool" ] && [ -n "${_value}" ]; then
 			_param="$_param ${_name}=${_value}"
 		fi
 	done

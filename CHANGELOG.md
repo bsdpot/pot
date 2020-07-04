@@ -6,24 +6,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.11.2] 2020-05-01
 ### Added
-- prepare: the -S option is now used to specify the network stack
 - set-attr: add many jails attributes: enforce_stats mount fdescfs libprocfs nullfs procfs tmpfs zfs children
 
 ### Changed
-- prepare: the -S flag to start the imported pot changed in -s
-- start: remove temporary files
+- start: remove temporary files (#91 #92)
 
 ### Fixed
-- fbsd-update: don't assume there is a tty (#86)
-- clone: duplicate the entry pot.stack (#88)
 - clone: fix a typo refactoring the grep that remove network parameters (#90)
 - mount-in: fix mountpoint validation when pot is stopped and -v is passed (#93)
 - clone: hooks have been ignored by clone (#94)
 - info: fix withespace quoting with -E flag (#95)
 - prepare: fix -i command to allow multiple IP addresses (#97)
 - ifconfig: force IFCONFIG_FORMAT to avoid conflicting user setting (#99)
+
+## [0.11.2] 2020-05-01
+### Added
+- prepare: the -S option is now used to specify the network stack
+
+### Changed
+- prepare: the -S flag to start the imported pot changed in -s
+
+### Fixed
+- fbsd-update: don't assume there is a tty (#86)
+- clone: duplicate the entry pot.stack (#88)
 
 ## [0.11.1] 2020-04-19
 ### Fixed

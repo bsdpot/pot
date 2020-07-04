@@ -379,17 +379,27 @@ _bg_start()
 _js_start()
 {
 	# shellcheck disable=SC2039
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _stack
+	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _stack _value _name _type
 	_pname="$1"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags exec.clean mount.devfs"
-	if [ "$(_get_conf_var "$_pname" "pot.attr.procfs")" = "YES" ]; then
-		_param="$_param mount.procfs"
-	fi
-	if [ "$(_get_conf_var "$_pname" "pot.attr.fdescfs")" = "YES" ]; then
-		_param="$_param mount.fdescfs"
-	fi
+	_param="$_param sysvmsg=new sysvsem=new sysvshm=new"
+
+	for _attr in ${_POT_JAIL_RW_ATTRIBUTES}
+	do
+		eval _name=\"\${_POT_DEFAULT_${_attr}_N}\"
+		eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
+		_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
+		if [ X"${_value}" = X"YES" ]
+		then
+			_param="$_param ${_name}"
+		elif [ X"${_type}" != X"bool" -a -n "${_value}" ]
+		then
+			_param="$_param ${_name}=${_value}"
+		fi
+	done
+
 	_hostname="$( _get_conf_var "$_pname" host.hostname )"
 	_osrelease="$( _get_os_release "$_pname" )"
 	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
@@ -539,7 +549,7 @@ pot-start()
 		return 0
 	fi
 	## detect obsolete config parameter
-	if [ -n "$(_get_conf_var "$_pname" "pot.export.static.ports")" ] || 
+	if [ -n "$(_get_conf_var "$_pname" "pot.export.static.ports")" ] ||
 		[ -n "$(_get_conf_var "$_pname" "ip4")" ]; then
 		_error "Configuration file for $_pname contains obsolete elements"
 		_error "Please run pot update-config -p $_pname to fix"

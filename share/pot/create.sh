@@ -300,11 +300,19 @@ _cj_conf()
 		else
 			echo "osrelease=\"${_baseos}-RELEASE\""
 		fi
+		# pot attributes
 		echo "pot.attr.no-rc-script=NO"
 		echo "pot.attr.persistent=YES"
 		echo "pot.attr.start-at-boot=NO"
-		echo "pot.attr.procfs=NO"
 		echo "pot.attr.prunable=NO"
+		# jail attributes
+		for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
+			if [ -z "$(_get_conf_var "$_pname" "pot.attr.${_attr}")" ]; then
+				eval _value=\"\${_POT_DEFAULT_${_attr}_D}\"
+				echo "pot.attr.${_attr}=${_value}"
+			fi
+		done
+
 		echo "pot.stack=$_stack"
 		echo "network_type=$_network_type"
 		case $_network_type in

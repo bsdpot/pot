@@ -63,7 +63,7 @@ pot-get-attribute()
 		fi
 		${EXIT} 1
 	fi
-	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES ; then
+	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES $_POT_JAIL_RW_ATTRIBUTES ; then
 		_error "$_attr is not a valid attribute"
 		get-attr-help
 		${EXIT} 1

@@ -216,6 +216,9 @@ startstop_test() {
 		fi
 		# temporary disable ping tests for alias
 		if [ "$n" = "alias" ]; then
+			if ! pot stop $name ; then
+				error $name stop
+			fi
 			return 0
 		fi
 		if ! jexec $name ping -c 1 1.1.1.1 ; then
@@ -225,6 +228,9 @@ startstop_test() {
 	if [ $s = "ipv6" ] || [ $s = "dual" ]; then
 		# temporary disable ping tests for alias
 		if [ "$n" = "alias" ]; then
+			if ! pot stop $name ; then
+				error $name stop
+			fi
 			return 0
 		fi
 		if [ $n != "private-bridge" ]; then

@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- start: remove temporary files
+
+### Fixes
+- clone: fix a typo refactoring the grep that remove network parameters (#90)
+- mount-in: fix mountpoint validation when pot is stopped and -v is passed (#93)
+- clone: hooks have been ignored by clone (#94)
+- info: fix withespace quoting with -E flag (#95)
+- prepare: fix -i command to allow multiple IP addresses (#97)
+- ifconfig: force IFCONFIG_FORMAT to avoid conflicting user setting (#99)
 
 ## [0.11.2] 2020-05-01
 ### Added
@@ -12,17 +22,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - prepare: the -S flag to start the imported pot changed in -s
-- start: remove temporary files
 
 ### Fixed
 - fbsd-update: don't assume there is a tty (#86)
 - clone: duplicate the entry pot.stack (#88)
-- clone: fix a typo refactoring the grep that remove network parameters (#90)
-- mount-in: fix mountpoint validation when pot is stopped and -v is passed (#93)
-- clone: hooks have been ignored by clone (#94)
-- info: fix withespace quoting with -E flag (#95)
-- prepare: fix -i command to allow multiple IP addresses (#97)
-- ifconfig: force IFCONFIG_FORMAT to avoid conflicting user setting (#99)
 
 ## [0.11.1] 2020-04-19
 ### Fixed

@@ -33,7 +33,7 @@ export IFCONFIG_FORMAT=addr:default
 
 # Environment initialization and initial checks
 
-_POT_VERSION=0.11.2
+_POT_VERSION=0.11.3
 _POT_PATHNAME="$(realpath "$0")"
 _POT_PREFIX="$(dirname "${_POT_PATHNAME}")"
 _POT_INCLUDE="$( realpath "${_POT_PREFIX}/../share/pot")"

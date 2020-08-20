@@ -236,7 +236,7 @@ _js_get_free_rnd_port()
 # $1 pot name
 _js_export_ports()
 {
-	local _pname _ip _ports _excl_list _pot_port _host_port _aname
+	local _pname _ip _ports _excl_list _pot_port _host_port _aname _pdir
 	_pname=$1
 	_ip="$( _get_ip_var "$_pname" )"
 	_ports="$( _get_pot_export_ports "$_pname" )"
@@ -244,6 +244,7 @@ _js_export_ports()
 		return
 	fi
 	_pfrules=$(mktemp "/tmp/pot_pfrules_${_pname}${POT_MKTEMP_SUFFIX}") || exit 1
+	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
 	for _port in $_ports ; do
 		_pot_port="$( echo "${_port}" | cut -d':' -f 1)"
 		_host_port="$( echo "${_port}" | cut -d':' -f 2)"
@@ -258,22 +259,21 @@ _js_export_ports()
 				echo "rdr pass on $extra_netif proto tcp from any to $extra_netif port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
 			done
 		fi
+		if [ "$_lo_tunnel" = "YES" ]; then
+			_pdir="${POT_FS_ROOT}/jails/$_pname"
+			if [ -x "/usr/local/bin/ncat" ]; then
+				cp /usr/local/bin/ncat "$_pdir/ncat-$_pname-$_pot_port"
+				daemon -f -p $_pdir/ncat-$_pot_port.pid $_pdir/ncat-$_pname-$_pot_port -lk "$_host_port" -c "/usr/local/bin/ncat $_ip $_pot_port"
+			else
+				_error "nmap package is missing, localhost-tunnel attribute ignored"
+			fi
+		fi
 	done
 	_aname="$( _get_pot_rdr_anchor_name "$_pname" )"
 	if ! pfctl -a "pot-rdr/$_aname" -f "$_pfrules" ; then
 		_error "pfctl failed to apply redirection rules - ignoring but no redirection is performed"
 		if _is_verbose ; then
 			cat "$_pfrules"
-		fi
-	fi
-	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
-	if [ "$_lo_tunnel" = "YES" ]; then
-		_pdir="${POT_FS_ROOT}/jails/$_pname"
-		if [ -x "/usr/local/bin/ncat" ]; then
-			cp /usr/local/bin/ncat "$_pdir/ncat-$_pname"
-			daemon -f -p $_pdir/ncat.pid $_pdir/ncat-$_pname -lk "$_host_port" -c "/usr/local/bin/ncat $_ip $_pot_port"
-		else
-			_error "nmap package is missing, localhost-tunnel attribute ignored"
 		fi
 	fi
 	rm -f "$_pfrules"

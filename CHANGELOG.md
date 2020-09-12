@@ -5,12 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- set-attr: add many jails attributes: enforce_stats mount fdescfs libprocfs nullfs procfs tmpfs zfs children
+
 ### Fixed
 - localhost-tunnel: fix multiple port support (#108)
 
 ## [0.11.3] 2020-08-03
 ### Changed
-- start: remove temporary files
+- start: remove temporary files (#91 #92)
 
 ### Fixes
 - clone: fix a typo refactoring the grep that remove network parameters (#90)
@@ -19,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - info: fix withespace quoting with -E flag (#95)
 - prepare: fix -i command to allow multiple IP addresses (#97)
 - ifconfig: force IFCONFIG_FORMAT to avoid conflicting user setting (#99)
+
 
 ## [0.11.2] 2020-05-01
 ### Added

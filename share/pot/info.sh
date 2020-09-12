@@ -104,6 +104,14 @@ _info_pot()
 		_value=$( _get_conf_var "$_pname" "pot.attr.$_a")
 		printf "\t\t%s: %s\n" "$_a" "${_value:-"NO"}"
 	done
+	printf "\tjail attributes:\n"
+	for _a in $_POT_JAIL_RW_ATTRIBUTES ; do
+		_value=$( _get_conf_var "$_pname" "pot.attr.$_a")
+		if [ -z "$_value" ]; then
+			eval _value="\$_POT_DEFAULT_${_a}_D"
+		fi
+		printf "\t\t%s: %s\n" "$_a" "${_value:-"NO"}"
+	done
 	if _is_verbose ; then
 		_cpu="$( _get_conf_var "$_pname" pot.rss.cpus)"
 		_mem="$( _get_conf_var "$_pname" pot.rss.memory)"

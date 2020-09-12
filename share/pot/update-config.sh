@@ -62,8 +62,7 @@ _update_one_pot()
 		echo "pot.attr.early.start-at-boot=NO" >> "$_conf"
 	fi
 
-	for _attr in ${_POT_JAIL_RW_ATTRIBUTES}
-	do
+	for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 		if [ -z "$(_get_conf_var "$_pname" "pot.attr.${_attr}")" ]; then
 			eval _value=\"\${_POT_DEFAULT_${_attr}_D}\"
 			_debug "pot.attr.${_attr}=${_value}"

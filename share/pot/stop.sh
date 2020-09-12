@@ -78,6 +78,19 @@ _js_stop()
 		pfctl -a "pot-rdr/$_aname" -F nat -q
 	fi
 
+	_ports="$( _get_pot_export_ports "$_pname" )"
+	if [ -n "$_ports" ]; then
+		for _port in $_ports ; do
+			_pot_port="$( echo "${_port}" | cut -d':' -f 1)"
+			if [ -r "$_pdir/ncat-$_pot_port.pid" ]; then
+				pkill -F "$_pdir/ncat-$_pot_port.pid" -f "ncat-$_pname-$_pot_port"
+				rm -f "$_pdir/ncat-$_pot_port.pid"
+			elif pgrep -q -f "$_pdir/ncat-$_pname-$_pot_port" ; then
+				pkill -f "$_pdir/ncat-$_pname-$_pot_port"
+			fi
+		done
+	fi
+	# For compatibility reason with the previous implementations
 	if [ -r "$_pdir/ncat.pid" ]; then
 		pkill -F "$_pdir/ncat.pid" -f "ncat-$_pname"
 		rm -f "$_pdir/ncat.pid"

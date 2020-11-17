@@ -16,7 +16,7 @@ create-help()
 	echo '  -l lvl : pot level (only for type multi)'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
-	echo '  -d dns : one between inherit(default) or pot'
+	echo '  -d dns : one between inherit(default), poa or off'
 	echo '  -f flavour : flavour to be used'
 	echo '  -t type: single or multi (default multi)'
 	echo '         single: the pot is based on a unique ZFS dataset'
@@ -584,6 +584,9 @@ pot-create()
 					;;
 				"pot")
 					_dns=pot
+					;;
+				"off")
+					_dns=off
 					;;
 				*)
 					_error "The dns $OPTARG is not a valid option: choose between inherit or pot"

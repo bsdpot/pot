@@ -805,6 +805,36 @@ test_pot_create_083()
 	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
 }
 
+test_pot_create_084()
+{
+	pot-create -p new-pot -b 11.1 -N public-bridge -i 10.1.2.3 -d off
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_is_vnet_available calls" "0" "$ISVNETAVAIL_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg3" "1" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "11.1" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_zfs arg5" "" "$CJZFS_CALL1_ARG5"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "11.1" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.1.2.3" "$CJCONF_CALL1_ARG4"
+	assertEquals "_cj_conf arg5" "1" "$CJCONF_CALL1_ARG5"
+	assertEquals "_cj_conf arg6" "off" "$CJCONF_CALL1_ARG6"
+	assertEquals "_cj_conf arg7" "multi" "$CJCONF_CALL1_ARG7"
+	assertEquals "_cj_conf arg8" "" "$CJCONF_CALL1_ARG8"
+	assertEquals "_cj_conf arg9" "" "$CJCONF_CALL1_ARG9"
+	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
+	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+}
+
+
 test_pot_create_100()
 {
 	pot-create -p new-pot -t single

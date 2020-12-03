@@ -444,7 +444,8 @@ BROKEN_FLV
 STACKS="ipv4 dual ipv6"
 VERSIONS="12.2 11.4"
 TYPES="single multi"
-NETWORKS="alias inherit public-bridge private-bridge"
+#NETWORKS="alias inherit public-bridge private-bridge"
+NETWORKS="inherit public-bridge private-bridge"
 begin
 
 empty_check initial_check

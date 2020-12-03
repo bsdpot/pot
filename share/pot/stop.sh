@@ -113,11 +113,14 @@ _js_stop()
 # $1 pot name
 _js_rm_resolv()
 {
-	local _pname _jdir
+	local _pname _jdir _dns
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
-	if [ -f $_jdir/m/etc/resolv.conf ]; then
-		rm -f $_jdir/m/etc/resolv.conf
+	if [ -f "$_jdir/m/etc/resolv.conf" ]; then
+		_dns="$(_get_conf_var "$_pname" pot.dns)"
+		if [ "$_dns" != "off" ]; then
+			rm -f "$_jdir/m/etc/resolv.conf"
+		fi
 	fi
 }
 

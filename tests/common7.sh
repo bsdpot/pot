@@ -98,4 +98,11 @@ test_get_usable_hostname_003()
 	result="$( _get_usable_hostname pot-long-name-012345678901234567890123456789012345678901234567890123456789 )"
 	assertEquals "pot-long-name-01234567890123456789012345678901234567890123456789" "$result"
 }
+
+test_get_usable_hostname_004()
+{
+	export POT_HOSTNAME_MAX_LENGTH=62
+	result="$( _get_usable_hostname pot-long-name-012345678901234567890123456789012345678901234567890123456789 )"
+	assertEquals "pot-long-name-012345678901234567890123456789012345678901234567" "$result"
+}
 . shunit/shunit2

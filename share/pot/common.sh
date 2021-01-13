@@ -388,11 +388,11 @@ _get_usable_hostname() {
 	local _pname _hname _phname
 	_pname="$1"
 	_hname="$(hostname)"
-	if [ ${#_pname} -gt "${_POT_HOSTNAME_MAX_LENGTH:-64}" ]; then
-		echo "$_pname" | awk '{ truncated = substr($1, 1, 64); printf("%s", truncated); }'
+	if [ ${#_pname} -gt "${POT_HOSTNAME_MAX_LENGTH:-64}" ]; then
+		echo "$_pname" | awk -v len="${POT_HOSTNAME_MAX_LENGTH:-64}" '{ truncated = substr($1, 1, len); printf("%s", truncated); }'
 	else
 		_phname="${_pname}.$_hname"
-		if [ ${#_phname} -gt "${_POT_HOSTNAME_MAX_LENGTH:-64}" ]; then
+		if [ ${#_phname} -gt "${POT_HOSTNAME_MAX_LENGTH:-64}" ]; then
 			echo "$_pname"
 		else
 			echo "$_phname"

@@ -2,14 +2,6 @@
 
 # system utilities stubs
 
-# UUT
-. ../share/pot/common.sh
-
-# common stubs
-. ./monitor.sh
-
-# app specific stubs
-
 find()
 {
 	cat << MANIFEST-EOF
@@ -33,6 +25,20 @@ sysctl()
 {
 	echo "amd64"
 }
+
+hostname()
+{
+	echo "test-host"
+}
+
+# UUT
+. ../share/pot/common.sh
+
+# common stubs
+. ./monitor.sh
+
+# app specific stubs
+
 
 test_map_archs_001()
 {
@@ -74,4 +80,22 @@ test_is_valid_release_002()
 	assertEquals "1" "$?"
 }
 
+test_get_usable_hostname_001()
+{
+	result="$( _get_usable_hostname pot-short-name )"
+	assertEquals "pot-short-name.test-host" "$result"
+
+}
+
+test_get_usable_hostname_002()
+{
+	result="$( _get_usable_hostname pot-long-name-01234567890123456789012345678901234567890123456789 )"
+	assertEquals "pot-long-name-01234567890123456789012345678901234567890123456789" "$result"
+}
+
+test_get_usable_hostname_003()
+{
+	result="$( _get_usable_hostname pot-long-name-012345678901234567890123456789012345678901234567890123456789 )"
+	assertEquals "pot-long-name-01234567890123456789012345678901234567890123456789" "$result"
+}
 . shunit/shunit2

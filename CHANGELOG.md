@@ -5,10 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- pot.conf: add parameter to control max hostname length inside the pot (#118)
+
+### Changed
+- hostname: max default length for hostname set to 64 (#118)
+- create: adopt the new hostname length parameter (#118)
+- clone: adopt the new hostname length parameter (#118)
+
 
 ## [0.11.6] 2020-12-14
 ### Fixed
-stop: remove resolv.conf only if dns is not off (#117)
+- stop: remove resolv.conf only if dns is not off (#117)
 
 ## [0.11.5] 2020-11-21
 ### Added
@@ -297,7 +305,7 @@ stop: remove resolv.conf only if dns is not off (#117)
 ### Fixed
 - is_pot: improve support to single pots, that don't have fscomp.conf file
 - create-base: fix regression introduced on 0.5.9 (RC support and create -F removal)
- 
+
 ## [0.5.9] 2018-12-16
 ### Added
 - Add support to RC FreeBSD version
@@ -328,7 +336,7 @@ stop: remove resolv.conf only if dns is not off (#117)
 - add-fscomp : if the pot is running, mount the new fscomp right away
 
 ### Fixed
-- clone : fix a misleading/false positive error message 
+- clone : fix a misleading/false positive error message
 - clone : fix syslogd configuration in the cloned pot
 - destroy : fix if pot is a single dataset one
 - start : fix hostname warning

@@ -381,6 +381,25 @@ _is_zfs_pot_snap()
 	fi
 }
 
+# $1 pot name
+# tested (common.sh 7)
+_get_usable_hostname() {
+	# shellcheck disable=SC2039
+	local _pname _hname _phname
+	_pname="$1"
+	_hname="$(hostname)"
+	if [ ${#_pname} -gt "${POT_HOSTNAME_MAX_LENGTH:-64}" ]; then
+		echo "$_pname" | awk -v len="${POT_HOSTNAME_MAX_LENGTH:-64}" '{ truncated = substr($1, 1, len); printf("%s", truncated); }'
+	else
+		_phname="${_pname}.$_hname"
+		if [ ${#_phname} -gt "${POT_HOSTNAME_MAX_LENGTH:-64}" ]; then
+			echo "$_pname"
+		else
+			echo "$_phname"
+		fi
+	fi
+}
+
 # $1 bridge name
 # $2 var name
 _get_bridge_var()

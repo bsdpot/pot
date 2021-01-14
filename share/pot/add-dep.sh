@@ -23,6 +23,7 @@ _add_dependency()
 	echo "pot.depend=$_depPot" >> "$_cdir"/pot.conf
 }
 
+# shellcheck disable=SC2039
 pot-add-dep()
 {
 	# shellcheck disable=SC2039

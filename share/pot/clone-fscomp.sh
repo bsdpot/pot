@@ -1,5 +1,7 @@
 #!/bin/sh
+:
 
+# shellcheck disable=SC2039
 clone-fscomp-help()
 {
 	echo "pot clone-fscomp [-hv] -f fscomp -F fscomp"

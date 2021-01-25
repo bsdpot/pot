@@ -1,5 +1,7 @@
 #!/bin/sh
+:
 
+# shellcheck disable=SC2039
 version-help()
 {
 	echo 'pot version [-h][-v][-q]'
@@ -9,41 +11,37 @@ version-help()
 }
 
 
+# shellcheck disable=SC2039
 pot-version()
 {
+	# shellcheck disable=SC2039
 	local _quiet
 	_quiet="NO"
-	args=$(getopt hvq $*)
-	if [ $? -ne 0 ]; then
-		version-help
-		exit 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvq" _o ; do
+		case "$_o" in
+		h)
 			version-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-q)
+		q)
 			_quiet="YES"
-			shift
 			;;
-		--)
-			shift
-			break
+		?)
+			version-help
+			${EXIT} 1
+			;;
+		*)
 			;;
 		esac
 	done
 
 	if [ "$_quiet" = "YES" ]; then
 		${ECHO} "${_POT_VERSION}"
-		return 0
+		${EXIT} 0
 	fi
-	_info "pot version: $_POT_VERSION"
+	echo "pot version: $_POT_VERSION"
 }
-

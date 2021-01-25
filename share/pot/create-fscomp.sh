@@ -1,5 +1,6 @@
 #!/bin/sh
-
+:
+# shellcheck disable=SC2039
 create-fscomp-help()
 {
 	echo "pot create-fscomp [-hv] -f name"
@@ -8,41 +9,35 @@ create-fscomp-help()
 	echo '  -f name : the fs component name (mandatory)'
 }
 
+# shellcheck disable=SC2039
 pot-create-fscomp()
 {
+	# shellcheck disable=SC2039
 	local _dset
 	_dset=
-	args=$(getopt hvf: $*)
-	if [ $? -ne 0 ]; then
-		create-fscomp-help
-		exit 1
-	fi
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvf:" _o ; do
+		case "$_o" in
+		h)
 			create-fscomp-help
-			exit 0
+			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-f)
-			_dset="${POT_ZFS_ROOT}/fscomp/$2"
-			shift 2
+		f)
+			_dset="${POT_ZFS_ROOT}/fscomp/$OPTARG"
 			;;
-		--)
-			shift
-			break
-			;;
+		?)
+			create-fscomp-help
+			${EXIT} 1
 		esac
 	done
 
 	if [ -z "$_dset" ]; then
 		_error "fs component name is missing"
 		create-fscomp-help
-		exit 1
+		${EXIT} 1
 	fi
 	if ! _is_init ; then
 		${EXIT} 1
@@ -51,10 +46,9 @@ pot-create-fscomp()
 		if ! _is_uid0 ; then
 			${EXIT} 1
 		fi
-		zfs create "$_dset"
-		if [ $? -ne 0 ]; then
+		if ! zfs create "$_dset" ; then
 			_error "fs component $_dset creation failed"
-			exit 1
+			${EXIT} 1
 		fi
 	else
 		_info "fs component $_dset already exists"

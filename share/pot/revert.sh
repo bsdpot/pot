@@ -1,6 +1,6 @@
 #!/bin/sh
-
-# supported releases
+:
+# shellcheck disable=SC2039
 revert-help()
 {
 	echo "pot revert [-hva] -p potname|-f fscomp"
@@ -13,79 +13,75 @@ revert-help()
 # $1 pot name
 _pot_zfs_rollback()
 {
+	# shellcheck disable=SC2039
 	local _pname _pdir _snap
 	_pname=$1
 	_pdset=${POT_ZFS_ROOT}/jails/$_pname
-	for _dset in $( zfs list -o name -H -r $_pdset | sort -r | tr '\n' ' ') ; do
-		_snap="$( _zfs_last_snap $_dset)"
+	for _dset in $( zfs list -o name -H -r "$_pdset" | sort -r | tr '\n' ' ') ; do
+		_snap="$( _zfs_last_snap "$_dset")"
 		if [ -z "$_snap" ]; then
 			_info "$_dset has not snapshot - no possible rollback"
 			continue
 		fi
-		zfs rollback $_dset@$_snap
+		zfs rollback "$_dset"@"$_snap"
 	done
 }
 
 _fscomp_zfs_rollback()
 {
+	# shellcheck disable=SC2039
 	local _fscomp _pdir _snap
 	_fscomp=$1
 	_fdset=${POT_ZFS_ROOT}/fscomp/$_fscomp
-	for _dset in $( zfs list -o name -H -r $_fdset | sort -r | tr '\n' ' ') ; do
-		_snap="$( _zfs_last_snap $_dset)"
+	for _dset in $( zfs list -o name -H -r "$_fdset" | sort -r | tr '\n' ' ') ; do
+		_snap="$( _zfs_last_snap "$_dset")"
 		if [ -z "$_snap" ]; then
 			_info "$_dset has not snapshot - no possible rollback"
 			continue
 		fi
-		zfs rollback $_dset@$_snap
+		zfs rollback "$_dset@$_snap"
 	done
 }
 
+# shellcheck disable=SC2039
 pot-revert()
 {
+	# shellcheck disable=SC2039
 	local _obj
-	args=$(getopt hvp:f: $*)
-	if [ $? -ne 0 ]; then
-		revert-help
-		${EXIT} 1
-	fi
 	_obj=
-	set -- $args
-	while true; do
-		case "$1" in
-		-h)
+	OPTIND=1
+	while getopts "hvp:f:" _o ; do
+		case "$_o" in
+		h)
 			revert-help
 			${EXIT} 0
 			;;
-		-v)
+		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			shift
 			;;
-		-p)
+		p)
 			if [ -z "$_obj" ]; then
 				_obj="pot"
-				_objname="$2"
+				_objname="$OPTARG"
 			else
 				_error "-p|-f are exclusive"
 				revert-help
 				${EXIT} 1
 			fi
-			shift 2
 			;;
-		-f)
+		f)
 			if [ -z "$_obj" ]; then
 				_obj="fscomp"
-				_objname="$2"
+				_objname="$OPTARG"
 			else
 				_error "-p|-f are exclusive"
 				revert-help
 				${EXIT} 1
 			fi
-			shift 2
 			;;
-		--)
-			shift
-			break
+		?)
+			revert-help
+			${EXIT} 1
 			;;
 		esac
 	done
@@ -101,33 +97,30 @@ pot-revert()
 	fi
 	case $_obj in
 	"pot")
-		if ! _is_pot $_objname ; then
+		if ! _is_pot "$_objname" ; then
 			_error "$_objname is not a pot!"
 			revert-help
 			${EXIT} 1
 		fi
-		if _is_pot_running $_objname ; then
+		if _is_pot_running "$_objname" ; then
 			_error "The pot $_objname is still running. Revert is possible only for stopped pots"
 			${EXIT} 1
 		fi
 		if ! _is_uid0 ; then
 			${EXIT} 1
 		fi
-		_pot_zfs_rollback $_objname
+		_pot_zfs_rollback "$_objname"
 		;;
 	"fscomp")
-		if ! _zfs_exist ${POT_ZFS_ROOT}/fscomp/$_objname ${POT_FS_ROOT}/fscomp/$_objname ; then
+		if ! _zfs_exist "${POT_ZFS_ROOT}/fscomp/$_objname" "${POT_FS_ROOT}/fscomp/$_objname" ; then
 			_error "$_objname is not a valid fscomp"
 			revert-help
 			${EXIT} 1
 		fi
-		if [ "$_full_pot" = "YES" ]; then
-			_info "-a option is incompatible with -f. Ignored"
-		fi
 		if ! _is_uid0 ; then
 			${EXIT} 1
 		fi
-		_fscomp_zfs_rollback $_objname
+		_fscomp_zfs_rollback "$_objname"
 		;;
 	esac
 }

@@ -869,12 +869,72 @@ test_is_export_port_valid_003()
 	assertFalse "negative port number should cause an error" "$?"
 }
 
+test_is_export_port_valid_004()
+{
+	_is_export_port_valid udp:80000
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid udp:80000:8080
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid udp:8080:80000
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid udp:-22
+	assertFalse "negative port number should cause an error" "$?"
+
+	_is_export_port_valid udp:-22:8080
+	assertFalse "negative port number should cause an error" "$?"
+
+	_is_export_port_valid udp:8080:-22
+	assertFalse "negative port number should cause an error" "$?"
+}
+
+test_is_export_port_valid_005()
+{
+	_is_export_port_valid tcp:80000
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid tcp:80000:8080
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid tcp:8080:80000
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid tcp:-22
+	assertFalse "negative port number should cause an error" "$?"
+
+	_is_export_port_valid tcp:-22:8080
+	assertFalse "negative port number should cause an error" "$?"
+
+	_is_export_port_valid tcp:8080:-22
+	assertFalse "negative port number should cause an error" "$?"
+}
+
 test_is_export_port_valid_010()
 {
 	_is_export_port_valid 8080
 	assertTrue "valid port should be accepted" "$?"
 
 	_is_export_port_valid 8080:8080
+	assertTrue "valid port should be accepted" "$?"
+}
+
+test_is_export_port_valid_011()
+{
+	_is_export_port_valid udp:8080
+	assertTrue "valid port should be accepted" "$?"
+
+	_is_export_port_valid udp:8080:8080
+	assertTrue "valid port should be accepted" "$?"
+}
+
+test_is_export_port_valid_012()
+{
+	_is_export_port_valid tcp:8080
+	assertTrue "valid port should be accepted" "$?"
+
+	_is_export_port_valid tcp:8080:8080
 	assertTrue "valid port should be accepted" "$?"
 }
 

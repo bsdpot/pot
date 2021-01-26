@@ -136,14 +136,21 @@ _is_port_number()
 _is_export_port_valid()
 {
 	# shellcheck disable=SC2039
-	local _pot_port _host_port
-	_pot_port="$( echo "${1}" | cut -d':' -f 1)"
-	if [ "$1" = "${_pot_port}" ]; then
+	local _pot_port _host_port _arg
+	if [ "${1#tcp:}" != "${1}" ]; then
+		_arg="${1#tcp:}"
+	elif [ "${1#udp:}" != "${1}" ]; then
+		_arg="${1#udp:}"
+	else
+		_arg="${1}"
+	fi
+	_pot_port="$( echo "${_arg}" | cut -d':' -f 1)"
+	if [ "$_arg" = "${_pot_port}" ]; then
 		if ! _is_port_number "$_pot_port" ; then
 			return 1 # false
 		fi
 	else
-		_host_port="$( echo "${1}" | cut -d':' -f 2)"
+		_host_port="$( echo "${_arg}" | cut -d':' -f 2)"
 		if ! _is_port_number "$_pot_port" ; then
 			return 1 # false
 		fi

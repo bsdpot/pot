@@ -1,5 +1,6 @@
 #!/bin/sh
-
+:
+# shellcheck disable=SC2039
 vnet-start-help()
 {
 	echo 'pot vnet-start [-h][-v]'
@@ -57,6 +58,7 @@ _private_bridge_start()
 
 _ipv4_start()
 {
+	# shellcheck disable=SC2039
 	local _bridge_name pf_file _nat_rules
 	_bridge_name="$1"
 	# activate ip forwarding
@@ -151,6 +153,7 @@ _ipv6_start()
 	_ipv6_bridge_start
 }
 
+# shellcheck disable=SC2039
 pot-vnet-start()
 {
 	# shellcheck disable=SC2039
@@ -200,4 +203,3 @@ pot-vnet-start()
 			;;
 	esac
 }
-

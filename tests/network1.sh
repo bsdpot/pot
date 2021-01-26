@@ -830,12 +830,58 @@ test_validate_network_param_072()
 	fi
 }
 
+test_is_export_port_valid_001()
+{
+	_is_export_port_valid
+	assertFalse "empty argument not recognized" "$?"
+}
+
+test_is_export_port_valid_002()
+{
+	_is_export_port_valid ssh
+	assertFalse "port as a name should cause an error" "$?"
+
+	_is_export_port_valid ssh:8080
+	assertFalse "port as a name should cause an error" "$?"
+
+	_is_export_port_valid 8080:ssh
+	assertFalse "port as a name should cause an error" "$?"
+}
+
+test_is_export_port_valid_003()
+{
+	_is_export_port_valid 80000
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid 80000:8080
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid 8080:80000
+	assertFalse "invalid port number should cause an error" "$?"
+
+	_is_export_port_valid -22
+	assertFalse "negative port number should cause an error" "$?"
+
+	_is_export_port_valid -22:8080
+	assertFalse "negative port number should cause an error" "$?"
+
+	_is_export_port_valid 8080:-22
+	assertFalse "negative port number should cause an error" "$?"
+}
+
+test_is_export_port_valid_010()
+{
+	_is_export_port_valid 8080
+	assertTrue "valid port should be accepted" "$?"
+
+	_is_export_port_valid 8080:8080
+	assertTrue "valid port should be accepted" "$?"
+}
+
 setUp()
 {
 	_POT_VERBOSITY=1
 	POT_EXTIF="bce0"
-
-
 	STUB_STACK=
 }
 

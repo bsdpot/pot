@@ -139,7 +139,7 @@ _is_export_port_valid()
 	local _pot_port _host_port
 	_pot_port="$( echo "${1}" | cut -d':' -f 1)"
 	if [ "$1" = "${_pot_port}" ]; then
-		if ! _is_port_number "$OPTARG" ; then
+		if ! _is_port_number "$_pot_port" ; then
 			return 1 # false
 		fi
 	else

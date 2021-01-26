@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - pot.conf: add parameter to control max hostname length inside the pot (#118)
 - CI: add shellcheck as hard requirements in the PR flow
+- export-ports: add UDP support, as -e udp:53:53 (#115)
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)

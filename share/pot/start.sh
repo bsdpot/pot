@@ -18,6 +18,7 @@ start-help()
 # shellcheck disable=SC2039
 # $1 pot name
 # $2 the network interface, if created
+# shellcheck disable=SC2039
 start-cleanup()
 {
 	local _pname

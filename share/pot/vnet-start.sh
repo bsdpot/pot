@@ -91,22 +91,23 @@ _ipv4_start()
 	(
 		echo "ext_if = \"${POT_EXTIF}\""
 		echo "localnet = \"${POT_NETWORK}\""
-		echo "nat on \$ext_if from \$localnet to any -> (\$ext_if)"
+		echo "nat on \$ext_if from \$localnet to any -> (\$ext_if:0)"
 	) > $_nat_rules
 
 	# EXTRA_EXTIF NAT rules
 	if [ -n "$POT_EXTRA_EXTIF" ]; then
 		for extra_netif in $POT_EXTRA_EXTIF ; do
 			eval extra_net="\$POT_NETWORK_$extra_netif"
+			# shellcheck disable=SC2154
 			if [ -n "$extra_net" ]; then
-				echo "nat on $extra_netif from \$localnet to $extra_net -> ($extra_netif)" >> $_nat_rules
+				echo "nat on $extra_netif from \$localnet to $extra_net -> ($extra_netif:0)" >> $_nat_rules
 			fi
 		done
 	fi
 	# VPN NAT rules
 	if [ -n "$POT_VPN_EXTIF" ] && [ -n "$POT_VPN_NETWORKS" ]; then
 		for net in $POT_VPN_NETWORKS ; do
-			echo "nat on $POT_VPN_EXTIF from \$localnet to $net -> ($POT_VPN_EXTIF)" >> $_nat_rules
+			echo "nat on $POT_VPN_EXTIF from \$localnet to $net -> ($POT_VPN_EXTIF:0)" >> $_nat_rules
 		done
 	fi
 

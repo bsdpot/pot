@@ -64,6 +64,7 @@ _update_one_pot()
 
 	for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 		if [ -z "$(_get_conf_var "$_pname" "pot.attr.${_attr}")" ]; then
+			# shellcheck disable=SC1083,2086
 			eval _value=\"\${_POT_DEFAULT_${_attr}_D}\"
 			_debug "pot.attr.${_attr}=${_value}"
 			echo "pot.attr.${_attr}=${_value}" >> "$_conf"
@@ -141,6 +142,7 @@ _update_all_pots()
 	done
 }
 
+# shellcheck disable=SC2039
 pot-update-config()
 {
 	# shellcheck disable=SC2039

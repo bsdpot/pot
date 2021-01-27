@@ -11,6 +11,7 @@ create-private-bridge-help()
 	echo '  -S bridge size (number of host expected)'
 }
 
+# shellcheck disable=SC2039
 # $1 bridge-name
 # $2 bridge-size
 create-bridge()
@@ -29,6 +30,7 @@ create-bridge()
 	fi
 }
 
+# shellcheck disable=SC2039
 pot-create-private-bridge()
 {
 	# shellcheck disable=SC2039
@@ -77,4 +79,3 @@ pot-create-private-bridge()
 	mkdir -p "${POT_FS_ROOT}/bridges"
 	create-bridge "$_bname" "$_host_amount"
 }
-

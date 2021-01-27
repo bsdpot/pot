@@ -23,8 +23,8 @@ _set_rss()
 	_rssname="$2"
 	_rsslimit="$3"
 	_cdir=$POT_FS_ROOT/jails/$_pname/conf
-	${SED} -i '' -e "/^pot.rss.$_rssname=.*/d" $_cdir/pot.conf
-	echo "pot.rss.$_rssname=$_rsslimit" >> $_cdir/pot.conf
+	${SED} -i '' -e "/^pot.rss.$_rssname=.*/d" "$_cdir/pot.conf"
+	echo "pot.rss.$_rssname=$_rsslimit" >> "$_cdir/pot.conf"
 }
 
 # $1 the amount of memory
@@ -56,8 +56,8 @@ _set_cpu()
 	local _pname _cpus
 	_pname=$1
 	_cpus=$2
-	if _is_natural_number $_cpus ; then
-		if [ $_cpus -gt 0 ]; then
+	if _is_natural_number "$_cpus" ; then
+		if [ "$_cpus" -gt 0 ]; then
 			_set_rss "$_pname" cpus "$_cpus"
 			return 0 # true
 		fi
@@ -71,9 +71,10 @@ _set_memory()
 	local _pname _memory
 	_pname=$1
 	_memory=$2
-	_set_rss $_pname memory $_memory
+	_set_rss "$_pname" memory "$_memory"
 }
 
+# shellcheck disable=SC2039
 pot-set-rss()
 {
 	# shellcheck disable=SC2039

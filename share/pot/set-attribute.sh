@@ -83,6 +83,7 @@ _ignored_parameter()
 # shellcheck disable=SC2039
 pot-set-attribute()
 {
+	# shellcheck disable=SC2039
 	local _pname _attr _value _type
 	_pname=
 	_attr=
@@ -132,6 +133,7 @@ pot-set-attribute()
 		set-attr-help
 		return 1
 	fi
+	# shellcheck disable=SC2086
 	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES ${_POT_JAIL_RW_ATTRIBUTES} ; then
 		_error "$_attr is not a valid attribute"
 		set-attr-help
@@ -150,6 +152,7 @@ pot-set-attribute()
 			_cmd=_set_boolean_attribute
 			;;
 		*)
+			# shellcheck disable=SC1083,2086
 			eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
 			case "${_type}" in
 			(bool)

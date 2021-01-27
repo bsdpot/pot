@@ -27,8 +27,7 @@ _set_hosts()
 # shellcheck disable=SC2039
 pot-set-hosts()
 {
-	local _pname _hosts _tmpfile _ip _hostname
-	_hosts=
+	local _pname _tmpfile _ip _hostname
 	_pname=
 	_tmpfile="/tmp/pot-set-hosts"
 	OPTIND=1

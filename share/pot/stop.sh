@@ -1,6 +1,6 @@
 #!/bin/sh
-
-# supported releases
+:
+# shellcheck disable=SC2039
 stop-help()
 {
 	echo "pot stop [-hv] [potname]"
@@ -24,6 +24,7 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
+	# shellcheck disable=SC2039
 	local _pname _pdir _epair _ip _aname
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
@@ -31,14 +32,15 @@ _js_stop()
 	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
 		if _is_pot_vnet "$_pname" ; then
-			_epair=$(jexec $_pname ifconfig | grep ^epair | cut -d':' -f1)
+			_epair=$(jexec "$_pname" ifconfig | grep ^epair | cut -d':' -f1)
 		fi
 
 		if [ -x "$_pdir/conf/prestop.sh" ]; then
 			_info "Executing the pre-stop script for the pot $_pname"
 			(
+				# shellcheck disable=SC2086,2046
 				eval $( pot info -E -p "$_pname" )
-				$_pdir/conf/prestop.sh
+				"$_pdir"/conf/prestop.sh
 			)
 		fi
 		_debug "Stop the pot $_pname"
@@ -101,8 +103,9 @@ _js_stop()
 	if [ -x "$_pdir/conf/poststop.sh" ]; then
 		_info "Executing the post-stop script for the pot $_pname"
 		(
+			# shellcheck disable=SC2086,2046
 			eval $( pot info -E -p "$_pname" )
-			${_pdir}/conf/poststop.sh
+			"${_pdir}"/conf/poststop.sh
 		)
 	fi
 	rm -f "/tmp/pot_${_pname}_pfrules"
@@ -113,6 +116,7 @@ _js_stop()
 # $1 pot name
 _js_rm_resolv()
 {
+	# shellcheck disable=SC2039
 	local _pname _jdir _dns
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
@@ -126,18 +130,22 @@ _js_rm_resolv()
 
 _epair_cleanup()
 {
+	# shellcheck disable=SC2039
 	local _epairs_a _epairs_b
 	_epairs_b="$(ifconfig | grep '^epair[0-9][0-9]*b' | sed 's/:.*$//' | sort)"
 	_epairs_a="$(ifconfig | grep '^epair[0-9][0-9]*a' | sed 's/:.*$//' | sort)"
 	for _e in $_epairs_b ; do
-		if _is_in_list ${_e%b}a $_epairs_a ; then
-			ifconfig $_e destroy
+		# shellcheck disable=SC2086
+		if _is_in_list "${_e%b}a" $_epairs_a ; then
+			ifconfig "$_e" destroy
 		fi
 	done
 }
 
+# shellcheck disable=SC2039
 pot-stop()
 {
+	# shellcheck disable=SC2039
 	local _pname
 
 	OPTIND=1
@@ -170,11 +178,11 @@ pot-stop()
 		${EXIT} 1
 	fi
 
-	if ! _js_stop $_pname ; then
+	if ! _js_stop "$_pname" ; then
 		_error "Stop the pot $_pname failed"
 		${EXIT} 1
 	fi
-	_js_rm_resolv $_pname
+	_js_rm_resolv "$_pname"
 	_pot_umount "$_pname"
 	_epair_cleanup
 }

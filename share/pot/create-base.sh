@@ -56,6 +56,7 @@ _cb_tar_dir()
 	_bname=$2
 	_mnt="${POT_FS_ROOT}/bases/${_bname}"
 	(
+		set -e
 		cd "$_mnt"
 		tar xkf /tmp/"${_rel}"_base.txz
 		# add release information
@@ -106,6 +107,7 @@ _cb_base_pot()
 	_pot_zfs_snap_full "$_pname"
 }
 
+# shellcheck disable=SC2039
 pot-create-base()
 {
 	# shellcheck disable=SC2039
@@ -148,7 +150,7 @@ pot-create-base()
 		create-base-help
 		${EXIT} 1
 	fi
-	if [ -z "$_bname" ]; then 
+	if [ -z "$_bname" ]; then
 		_bname=$_rel
 		_info "Automatically use $_rel as base name"
 	fi

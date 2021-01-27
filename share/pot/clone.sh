@@ -117,19 +117,19 @@ _cj_zfs()
 						if [ "$_autosnap" = "YES" ]; then
 							_snaptag="$(date +%s)"
 							_info "$_dset has no snap - taking a snapshot on the fly with tag $_snaptag"
-							zfs snapshot ${_dset}@${_snaptag}
+							zfs snapshot "${_dset}@${_snaptag}"
 							_snap=$_snaptag
 						else
 							_error "$_dset has no snap - please take a snapshot of $_potbase"
-							_cj_cleanup $_pname
+							_cj_cleanup "$_pname"
 							return 1
 						fi
 					fi
-					if _zfs_exist $_jdset/$_dname $_pdir/$_dname ; then
+					if _zfs_exist "$_jdset/$_dname" "$_pdir/$_dname" ; then
 						_debug "$_dname dataset already cloned"
 					else
 						_debug "clone $_dset@$_snap into $_jdset/$_dname"
-						zfs clone -o mountpoint=$_pdir/$_dname $_dset@$_snap $_jdset/$_dname
+						zfs clone -o mountpoint="$_pdir/$_dname" "$_dset@$_snap" "$_jdset/$_dname"
 						if [ -z "$_opt" ]; then
 							_debug "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}"
 							echo "$_jdset/$_dname $_pdir/${_mnt_p##${_pbdir}/}" >> "$_pdir/conf/fscomp.conf"
@@ -141,12 +141,12 @@ _cj_zfs()
 				# managing fscomp datasets - the simple way - no clone support for fscomp
 				elif [ "$_dset" != "${_dset##${POT_ZFS_ROOT}/fscomp}" ]; then
 					_debug "$_dset $_pdir/${_mnt_p##${_pbdir}/}"
-					echo "$_dset $_pdir/${_mnt_p##${_pbdir}/}" >> $_pdir/conf/fscomp.conf
+					echo "$_dset $_pdir/${_mnt_p##${_pbdir}/}" >> "$_pdir/conf/fscomp.conf"
 				else
 					_error "not able to manage $_dset"
 				fi
 			fi
-		done < ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
+		done < "${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf"
 	fi
 	return 0 # true
 }
@@ -160,7 +160,7 @@ _cj_zfs()
 _cj_conf()
 {
 	# shellcheck disable=SC2039
-	local _pname _potbase _ptype _ip _network_type _bridge_name _stack
+	local _pname _potbase _ip _network_type _bridge_name _stack
 	_pname=$1
 	_potbase=$2
 	_network_type=$3
@@ -172,28 +172,30 @@ _cj_conf()
 	if [ ! -d "$_pdir/conf" ]; then
 		mkdir -p "$_pdir/conf"
 	fi
-	grep -vE '^(host.hostname|bridge|ip|vnet|network_type|pot.stack)' $_pbdir/conf/pot.conf > "$_pdir/conf/pot.conf"
-	echo "host.hostname=\"$( _get_usable_hostname "${_pname}" )\"" >> "$_pdir/conf/pot.conf"
-	echo "pot.stack=$_stack" >> "$_pdir/conf/pot.conf"
-	echo "network_type=$_network_type" >> "$_pdir/conf/pot.conf"
-	case "$_network_type" in
-	"inherit")
-		echo "vnet=false" >> "$_pdir/conf/pot.conf"
-		;;
-	"alias")
-		echo "vnet=false" >> "$_pdir/conf/pot.conf"
-		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
-		;;
-	"public-bridge")
-		echo "vnet=true" >> "$_pdir/conf/pot.conf"
-		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
-		;;
-	"private-bridge")
-		echo "vnet=true" >> "$_pdir/conf/pot.conf"
-		echo "ip=$_ip" >> "$_pdir/conf/pot.conf"
-		echo "bridge=$_bridge_name" >> "$_pdir/conf/pot.conf"
-		;;
-	esac
+	grep -vE '^(host.hostname|bridge|ip|vnet|network_type|pot.stack)' "$_pbdir/conf/pot.conf" > "$_pdir/conf/pot.conf"
+	{
+		echo "host.hostname=\"$( _get_usable_hostname "${_pname}" )\""
+		echo "pot.stack=$_stack"
+		echo "network_type=$_network_type"
+		case "$_network_type" in
+		"inherit")
+			echo "vnet=false"
+			;;
+		"alias")
+			echo "vnet=false"
+			echo "ip=$_ip"
+			;;
+		"public-bridge")
+			echo "vnet=true"
+			echo "ip=$_ip"
+			;;
+		"private-bridge")
+			echo "vnet=true"
+			echo "ip=$_ip"
+			echo "bridge=$_bridge_name" >> "$_pdir/conf/pot.conf"
+			;;
+		esac
+	} >> "$_pdir/conf/pot.conf"
 	if [ -e "$_pbdir/conf/prestart.sh" ]; then
 		cp "$_pbdir/conf/prestart.sh" "$_pdir/conf/prestart.sh"
 	fi
@@ -206,33 +208,12 @@ _cj_conf()
 	if [ -e "$_pbdir/conf/poststop.sh" ]; then
 		cp "$_pbdir/conf/poststop.sh" "$_pdir/conf/poststop.sh"
 	fi
-#	if [ -n "$_ip" ]; then
-#	    _ptype="$( _get_conf_var "$_pname" pot.type )"
-#		if [ "$_ptype" = "multi" ]; then
-#			_rc_conf="${_pdir}/custom/etc/rc.conf"
-#		else
-#			_rc_conf="${_pdir}/m/etc/rc.conf"
-#		fi
-#		touch "${_rc_conf}"
-#		sysrc -f "${_rc_conf}" "syslogd_flags=-vv -s -b $_ip" > /dev/null
-#	fi
-#	if [ "$_network_type" != "inherit" ]; then
-#		(
-#			echo +"$_ip"
-#			echo '*.*		'"/var/log/pot/${_pname}.log"
-#		) > /usr/local/etc/syslog.d/"${_pname}".conf
-#		touch /var/log/pot/"${_pname}".log
-#		(
-#			echo "# log rotation for pot ${_pname}"
-#			echo "/var/log/pot/${_pname}.log 644 7 * @T00 CX"
-#		) > /usr/local/etc/newsyslog.conf.d/"${_pname}".conf
-#		service syslogd reload
-#	fi
 }
 
 # shellcheck disable=SC2039
 pot-clone()
 {
+	# shellcheck disable=SC2039
 	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack
 	_pname=
 	_ipaddr=
@@ -255,6 +236,7 @@ pot-clone()
 				_pname=$OPTARG
 				;;
 			N)
+				# shellcheck disable=SC2086
 				if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
 					_error "Network type $OPTARG not recognized"
 					clone-help

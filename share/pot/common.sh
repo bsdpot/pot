@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2034
 
 : "${EXIT:=exit}"
 : "${ECHO:=echo}"
@@ -49,6 +50,7 @@ __POT_MSG_DBG=2
 # $1 severity
 _msg()
 {
+	# shellcheck disable=SC2039
 	local _sev
 	_sev=$1
 	shift
@@ -56,14 +58,14 @@ _msg()
 		return
 	fi
 	case $_sev in
-		$__POT_MSG_ERR)
-			echo "###> " $*
+		"$__POT_MSG_ERR")
+			echo "###> " "$@"
 			;;
-		$__POT_MSG_INFO)
-			echo "===> " $*
+		"$__POT_MSG_INFO")
+			echo "===> " "$@"
 			;;
-		$__POT_MSG_DBG)
-			echo "=====> " $*
+		"$__POT_MSG_DBG")
+			echo "=====> " "$@"
 			;;
 		*)
 			;;
@@ -72,38 +74,45 @@ _msg()
 
 _error()
 {
-	_msg $__POT_MSG_ERR $*
+	_msg $__POT_MSG_ERR "$@"
 }
 
 _info()
 {
-	_msg $__POT_MSG_INFO $*
+	_msg $__POT_MSG_INFO "$@"
 }
 
 _debug()
 {
-	_msg $__POT_MSG_DBG $*
+	_msg $__POT_MSG_DBG "$@"
 }
 
 # $1 quiet / no _error message is emitted
 _qerror()
 {
 	if [ "$1" != "quiet" ]; then
-		_error $*
+		_error "$@"
 	fi
 }
 
 _set_pipefail()
 {
+	# shellcheck disable=SC2039
 	local _major _version
 	_major="$(sysctl -n kern.osrelease | cut -f 1 -d '.')"
 	_version="$(sysctl -n kern.osrelease | cut -f 1 -d '-')"
 	if [ "$_major" -ge "13" ]; then
+		# shellcheck disable=SC2039
 		set -o pipefail
 		return
 	fi
 	case "$_version" in
 		"12.1")
+			# shellcheck disable=SC2039
+			set -o pipefail
+			;;
+		"12.2")
+			# shellcheck disable=SC2039
 			set -o pipefail
 			;;
 	esac
@@ -146,11 +155,11 @@ _is_absolute_path()
 _conf_check()
 {
 	if [ -z "${POT_ZFS_ROOT}" ]; then
-		_qerror $1 "POT_ZFS_ROOT is mandatory"
+		_qerror "$1" "POT_ZFS_ROOT is mandatory"
 		return 1 # false
 	fi
 	if [ -z "${POT_FS_ROOT}" ]; then
-		_qerror $1 "POT_FS_ROOT is mandatory"
+		_qerror "$1" "POT_FS_ROOT is mandatory"
 		return 1 # false
 	fi
 	return 0 # true
@@ -160,18 +169,18 @@ _conf_check()
 # $1 quiet / no _error messages are emitted
 _is_init()
 {
-	if ! _conf_check $1 ; then
-		_qerror $1 "Configuration not valid, please verify it"
+	if ! _conf_check "$1" ; then
+		_qerror "$1" "Configuration not valid, please verify it"
 		return 1 # false
 	fi
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
-		_qerror $1 "Your system is not initialized, please run pot init"
+		_qerror "$1" "Your system is not initialized, please run pot init"
 		return 1 # false
 	fi
 	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" || \
 	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" || \
 	   ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
-		_qerror $1 "Your system is not propery initialized, please run pot init to fix it"
+		_qerror "$1" "Your system is not propery initialized, please run pot init to fix it"
 	fi
 }
 
@@ -190,7 +199,7 @@ _is_flavourdir()
 _zfs_dataset_valid()
 {
 	[ -z "$1" ] && return 1 # return false
-	if [ "$1" = "$( zfs list -o name -H $1 2> /dev/null)" ]; then
+	if [ "$1" = "$( zfs list -o name -H "$1" 2> /dev/null)" ]; then
 		return 0 # true
 	else
 		return 1 # false
@@ -203,12 +212,13 @@ _zfs_dataset_valid()
 # tested
 _zfs_exist()
 {
+	# shellcheck disable=SC2039
 	local _mnt_
 	[ -z "$2" ] && return 1 # false
-	if ! _zfs_dataset_valid $1 ; then
+	if ! _zfs_dataset_valid "$1" ; then
 		return 1 # false
 	fi
-	_mnt_="$(zfs list -H -o mountpoint $1 2> /dev/null )"
+	_mnt_="$(zfs list -H -o mountpoint "$1" 2> /dev/null )"
 	if [ "$_mnt_" != "$2" ]; then
 		return 1 # false
 	fi
@@ -219,10 +229,11 @@ _zfs_exist()
 # $1 the dataset
 _get_zfs_mountpoint()
 {
+	# shellcheck disable=SC2039
 	local _mnt_p _dset
 	_dset=$1
-	_mnt_p="$( zfs list -o mountpoint -H $_dset 2> /dev/null )"
-	echo $_mnt_p
+	_mnt_p="$( zfs list -o mountpoint -H "$_dset" 2> /dev/null )"
+	echo "$_mnt_p"
 }
 
 # given a mountpoint, look for the corresponding dataset
@@ -444,7 +455,7 @@ _get_pot_export_ports()
 	local _pname _cdir _var _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_value="$(awk '/pot.export.ports/ { n=split($0,array,"="); if (n==2) { print array[2]; } }' $_cdir/pot.conf )"
+	_value="$(awk '/pot.export.ports/ { n=split($0,array,"="); if (n==2) { print array[2]; } }' "$_cdir/pot.conf" )"
 	echo "$_value"
 }
 
@@ -481,9 +492,10 @@ _get_pot_network_type()
 # $1 pot name
 _is_ip_inherit()
 {
+	# shellcheck disable=SC2039
 	local _pname _val
 	_pname="$1"
-	if [ "$(_get_pot_network_type $_pname )" = "inherit" ]; then
+	if [ "$(_get_pot_network_type "$_pname" )" = "inherit" ]; then
 		return 0 # true
 	else
 		return 1 # false
@@ -493,9 +505,10 @@ _is_ip_inherit()
 # $1 pot name
 _is_pot_vnet()
 {
+	# shellcheck disable=SC2039
 	local _pname _val
 	_pname="$1"
-	_val="$( _get_conf_var $_pname vnet )"
+	_val="$( _get_conf_var "$_pname" vnet )"
 	if [ "$_val" = "true" ]; then
 		return 0 # true
 	else
@@ -525,7 +538,7 @@ _is_bridge()
 	_bname="$1"
 	_bconf="${POT_FS_ROOT}/bridges/$_bname"
 	if [ ! -e "$_bconf" ]; then
-		_qerror "$2" "bridge $_bridge not found"
+		_qerror "$2" "bridge $_bname not found"
 		return 1 # false
 	fi
 	return 0 # true
@@ -536,6 +549,7 @@ _is_bridge()
 # tested
 _is_fscomp()
 {
+	# shellcheck disable=SC2039
 	local _fscomp _fdir _fdset
 	_fscomp="$1"
 	_fdir="${POT_FS_ROOT}/fscomp/$_fscomp"
@@ -556,6 +570,7 @@ _is_fscomp()
 # tested
 _is_base()
 {
+	# shellcheck disable=SC2039
 	local _base _bdir _bdset
 	_base="$1"
 	_bdir="${POT_FS_ROOT}/bases/$_base"
@@ -566,7 +581,7 @@ _is_base()
 		fi
 		return 1 # false
 	fi
-	if ! _zfs_dataset_valid $_bdset ; then
+	if ! _zfs_dataset_valid "$_bdset" ; then
 		if [ "$2" != "quiet" ]; then
 			_error "zfs dataset $_bdset not found"
 		fi
@@ -580,6 +595,7 @@ _is_base()
 # tested
 _is_pot()
 {
+	# shellcheck disable=SC2039
 	local _pname _pdir
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
@@ -596,7 +612,7 @@ _is_pot()
 		_qerror "$2" "Some component of the pot $_pname is missing"
 		return 3 # false
 	fi
-	if [ "$( _get_pot_type $_pname )" = "multi" ] && [ ! -r "$_pdir/conf/fscomp.conf" ]; then
+	if [ "$( _get_pot_type "$_pname" )" = "multi" ] && [ ! -r "$_pdir/conf/fscomp.conf" ]; then
 		_qerror "$2" "Some component of the pot $_pname is missing"
 		return 4 # false
 	fi
@@ -628,12 +644,14 @@ _is_flavour()
 # tested
 _is_in_list()
 {
+	# shellcheck disable=SC2039
 	local _e
 	if [ $# -lt 2 ]; then
 		return 1 # false
 	fi
 	_e="$1"
 	shift
+	# shellcheck disable=SC2068
 	for e in $@ ; do
 		if [ "$_e" = "$e" ]; then
 			return 0 # true
@@ -660,12 +678,13 @@ _is_natural_number()
 # tested
 _is_mounted()
 {
+	# shellcheck disable=SC2039
 	local _mnt_p _mounted
 	_mnt_p=$1
 	if [ -z "$_mnt_p" ]; then
 		return 1 # false
 	fi
-	_mounted=$( mount | grep -F $_mnt_p | awk '{print $3}')
+	_mounted=$( mount | grep -F "$_mnt_p" | awk '{print $3}')
 	for m in $_mounted ; do
 		if [ "$m" = "$_mnt_p" ]; then
 			return 0 # true
@@ -683,7 +702,7 @@ _umount()
 	_mnt_p=$1
 	if _is_mounted "$_mnt_p" ; then
 		_debug "unmount $_mnt_p"
-		umount -f $_mnt_p
+		umount -f "$_mnt_p"
 	else
 		_debug "$_mnt_p is already unmounted"
 	fi
@@ -779,6 +798,7 @@ _map_archs()
 # tested (common7)
 _get_valid_releases()
 {
+	# shellcheck disable=SC2039
 	local _arch _file_prefix
 	_arch="$( sysctl -n hw.machine_arch )"
 	_file_prefix="$(_map_archs "$_arch" )"
@@ -799,6 +819,7 @@ _is_valid_release()
 	fi
 	_rel="$1"
 	_releases="$( _get_valid_releases )"
+	# shellcheck disable=SC2086
 	if _is_in_list "$_rel" $_releases ; then
 		return 0 # true
 	else
@@ -810,6 +831,7 @@ _is_valid_release()
 # it's required to have all the file-system mounted to access /bin/freebsd-version
 _get_os_release()
 {
+	# shellcheck disable=SC2039
 	local _pname
 	_pname="$1"
 	if [ -r "${POT_FS_ROOT}/jails/$_pname/m/bin/freebsd-version" ]; then
@@ -832,6 +854,7 @@ _get_freebsd_release_name()
 
 _fetch_freebsd()
 {
+	# shellcheck disable=SC2039
 	local _rel
 	if ! _fetch_freebsd_internal "$1" ; then
 		# remove artifact and retry only once
@@ -861,7 +884,8 @@ _fetch_freebsd_internal()
 	fi
 	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" ]; then
 		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
-		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" | awk '/^base.txz/ { print $2 }' )
+		#_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" | awk '/^base.txz/ { print $2 }' )
+		_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}")
 		if [ "$_sha" != "$_sha_m" ]; then
 			_error "sha256 doesn't match! Aborting"
 			return 1 # false
@@ -900,6 +924,7 @@ _print_pot_snaps()
 # $1 pot name
 _pot_mount()
 {
+	# shellcheck disable=SC2039
 	local _pname _dset _mnt_p _opt _node
 	_pname="$1"
 	if ! _is_pot "$_pname" ; then
@@ -959,6 +984,7 @@ _pot_mount()
 # $1 pot name
 _pot_umount()
 {
+	# shellcheck disable=SC2039
 	local _pname _tmpfile _jdir _node _mnt_p _opt _dset
 	_pname="$1"
 	if ! _tmpfile=$(mktemp -t "${_pname}.XXXXXX") ; then
@@ -1001,16 +1027,20 @@ _pot_umount()
 
 _get_pot_list()
 {
+	# shellcheck disable=SC2011
 	ls -d "${POT_FS_ROOT}/jails/"*/ 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
 _get_bridge_list()
 {
+	# shellcheck disable=SC2038
 	find "${POT_FS_ROOT}/bridges" -type f 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
+# shellcheck disable=SC2039
 pot-cmd()
 {
+	# shellcheck disable=SC2039
 	local _cmd _func
 	_cmd=$1
 	shift
@@ -1018,6 +1048,7 @@ pot-cmd()
 		_error "Fatal error! $_cmd implementation not found!"
 		exit 1
 	fi
+	# shellcheck disable=SC1090
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
 	case "$_cmd" in
@@ -1027,7 +1058,7 @@ pot-cmd()
 				$_func "$@"
 			else
 				export _POT_RECURSIVE=1
-				lockf -k /tmp/pot-lock-file $_POT_PATHNAME $_cmd "$@"
+				lockf -k /tmp/pot-lock-file "$_POT_PATHNAME" "$_cmd" "$@"
 			fi
 			;;
 		*)

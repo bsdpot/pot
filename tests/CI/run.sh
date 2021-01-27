@@ -77,11 +77,13 @@ get_pot_name() {
 # $4 stack
 create_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
+	local fopt
 	t=$1
 	b=$2
 	n=$3
 	s=$4
 	f=$5
+	fopt=
 	if [ "$t" = "multi" ]; then
 		if ! pot create-base -v -r $b ; then
 			error $name create-base

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - pot.conf: add parameter to control max hostname length inside the pot (#118)
+- CI: add shellcheck as hard requirements in the PR flow
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)

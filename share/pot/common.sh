@@ -884,8 +884,10 @@ _fetch_freebsd_internal()
 	fi
 	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" ]; then
 		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
-		#_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" | awk '/^base.txz/ { print $2 }' )
-		_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}")
+		# shellcheck disable=SC2002
+		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" | awk '/^base.txz/ { print $2 }' )
+		# This version would remove the useless cat, but the testability of this function is compromised
+		#_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}")
 		if [ "$_sha" != "$_sha_m" ]; then
 			_error "sha256 doesn't match! Aborting"
 			return 1 # false

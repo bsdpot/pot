@@ -269,10 +269,10 @@ _cj_conf()
 			;;
 		2)
 			echo "$_bdset ${_jdir}/m ro"
-			if [ $_pblvl -eq 1 ]; then
+			if [ "$_pblvl" -eq 1 ]; then
 				echo "$_pbdset/usr.local ${_jdir}/m/usr/local ro"
 			else
-				_pbpb=$( _get_conf_var $_potbase pot.potbase )
+				_pbpb="$( _get_conf_var "$_potbase" pot.potbase )"
 				echo "${POT_ZFS_ROOT}/jails/$_pbpb/usr.local ${_jdir}/m/usr/local ro"
 			fi
 			echo "$_jdset/custom ${_jdir}/m/opt/custom zfs-remount"
@@ -282,7 +282,7 @@ _cj_conf()
 	) > "$_jdir/conf/fscomp.conf"
 	(
 		if [ "$_type" = "multi" ]; then
-			_baseos=$( cat $_bdir/.osrelease )
+			_baseos="$( cat "$_bdir/.osrelease" )"
 		else
 			_baseos="${_base}"
 		fi
@@ -308,7 +308,9 @@ _cj_conf()
 		# jail attributes
 		for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 			if [ -z "$(_get_conf_var "$_pname" "pot.attr.${_attr}")" ]; then
+				# shellcheck disable=SC1083,SC2086
 				eval _value=\"\${_POT_DEFAULT_${_attr}_D}\"
+				# shellcheck disable=SC2154
 				echo "pot.attr.${_attr}=${_value}"
 			fi
 		done
@@ -336,13 +338,14 @@ _cj_conf()
 		if [ "${_dns}" = "pot" ]; then
 			echo "pot.depend=${POT_DNS_NAME}"
 		fi
-	) > $_jdir/conf/pot.conf
+	) > "$_jdir/conf/pot.conf"
 	if [ "$_lvl" -eq 2 ]; then
-		if [ $_pblvl -eq 1 ]; then
+		if [ "$_pblvl" -eq 1 ]; then
 			# CHANGE the potbase usr.local to be not zfs-remount
 			# Add an info here would be nice
 			if [ -w "${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf" ]; then
 				_info "${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf fix (${POT_FS_ROOT}/jails/$_potbase/m/usr/local zfs-remount)"
+				# shellcheck disable=SC2086
 				${SED} -i '' s%${POT_FS_ROOT}/jails/$_potbase/m/usr/local\ zfs-remount%${POT_FS_ROOT}/jails/$_potbase/m/usr/local% ${POT_FS_ROOT}/jails/$_potbase/conf/fscomp.conf
 			else
 				_info "$_potbase fscomp.conf has not fscomp.conf"
@@ -433,6 +436,7 @@ _cj_flv()
 	if [ -r "${_POT_FLAVOUR_DIR}/${_flv}" ]; then
 		_debug "Executing $_flv pot commands on $_pname"
 		while read -r line ; do
+			# shellcheck disable=SC2086
 			if _is_cmd_flavorable $line ; then
 				if [ "$line" != "${line#set-cmd}" ]; then
 					# workaround for set-cmd / damn quoting and shell script
@@ -466,6 +470,7 @@ _cj_flv()
 # $2 freebsd version
 _cj_single_install()
 {
+	# shellcheck disable=SC2039
 	local _pname _base _proot _rel
 	_pname=$1
 	_base=$2
@@ -487,6 +492,7 @@ _cj_single_install()
 		return 1 # falase
 	fi
 	(
+	  set -e
 	  cd "$_proot"
 	  _info "Extract the tarball"
 	  tar xkf "/tmp/${_rel}_base.txz"
@@ -500,6 +506,7 @@ _cj_single_install()
 	return 0
 }
 
+# shellcheck disable=SC2039
 pot-create()
 {
 	# shellcheck disable=SC2039
@@ -543,6 +550,7 @@ pot-create()
 			fi
 			;;
 		N)
+			# shellcheck disable=SC2086
 			if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
 				_error "Network type $OPTARG not recognized"
 				create-help
@@ -675,13 +683,13 @@ pot-create()
 				fi
 				;;
 			1)
-				if [ -z "$_base" -a -z "$_potbase" ]; then
+				if [ -z "$_base" ] && [ -z "$_potbase" ]; then
 					_error "at least one of -b and -P has to be used"
 					create-help
 					${EXIT} 1
 				fi
-				if [ -n "$_base" -a -n "$_potbase" ]; then
-					if [ "$( _get_pot_base $_potbase )" != "$_base" ]; then
+				if [ -n "$_base" ] && [ -n "$_potbase" ]; then
+					if [ "$( _get_pot_base "$_potbase" )" != "$_base" ]; then
 						_error "-b $_base and -P $_potbase are not compatible"
 						create-help
 						${EXIT} 1
@@ -689,21 +697,21 @@ pot-create()
 					# TODO: an info or debug message che be showned
 				fi
 				if [ -n "$_potbase" ]; then
-					if ! _is_pot $_potbase ; then
+					if ! _is_pot "$_potbase" ; then
 						_error "-P $_potbase : is not a pot"
 						create-help
 						${EXIT} 1
 					fi
-					if [ "$( _get_conf_var $_potbase pot.level )" != "1" ]; then
+					if [ "$( _get_conf_var "$_potbase" pot.level )" != "1" ]; then
 						_error "-P $_potbase : it has to be of level 1"
 						create-help
 						${EXIT} 1
 					fi
 				fi
 				if [ -z "$_base" ]; then
-					_base=$( _get_pot_base $_potbase )
+					_base=$( _get_pot_base "$_potbase" )
 					if [ -z "$_base" ]; then
-						_error "-P $potbase has no base??"
+						_error "-P $_potbase has no base??"
 						${EXIT} 1
 					fi
 					_debug "-P $_potbase induced -b $_base"
@@ -720,12 +728,12 @@ pot-create()
 					create-help
 					${EXIT} 1
 				fi
-				if [ $( _get_conf_var $_potbase pot.level ) -lt 1 ]; then
+				if [ "$( _get_conf_var "$_potbase" pot.level )" -lt 1 ]; then
 					_error "-P $_potbase : it has to be at least of level 1"
 					create-help
 					${EXIT} 1
 				fi
-				if ! _is_pot $_potbase ; then
+				if ! _is_pot "$_potbase" ; then
 					_error "-P $_potbase : is not a pot"
 					create-help
 					${EXIT} 1
@@ -736,14 +744,14 @@ pot-create()
 						create-help
 						${EXIT} 1
 					fi
-					if [ "$( _get_pot_base $_potbase )" != "$_base" ]; then
+					if [ "$( _get_pot_base "$_potbase" )" != "$_base" ]; then
 						_error "-b $_base and -P $_potbase are not compatible"
 						${EXIT} 1
 					fi
 				else
-					_base=$( _get_pot_base $_potbase )
+					_base=$( _get_pot_base "$_potbase" )
 					if [ -z "$_base" ]; then
-						_error "-P $potbase has no base??"
+						_error "-P $_potbase has no base??"
 						${EXIT} 1
 					fi
 					if ! _is_base "$_base" quiet ; then

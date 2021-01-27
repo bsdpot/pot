@@ -25,6 +25,7 @@ _config_echo()
 	fi
 }
 
+# shellcheck disable=SC2039
 pot-config()
 {
 	# shellcheck disable=SC2039
@@ -54,7 +55,7 @@ pot-config()
 				${EXIT} 1
 			fi
 			;;
-		*)
+		?)
 			config-help
 			${EXIT} 1
 			;;
@@ -90,4 +91,3 @@ pot-config()
 			;;
 	esac
 }
-

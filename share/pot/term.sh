@@ -1,6 +1,6 @@
 #!/bin/sh
-
-# supported releases
+:
+# shellcheck disable=2039
 term-help()
 {
 	echo "pot term [-h] [potname]"
@@ -14,6 +14,7 @@ term-help()
 # $1 pot name
 _term()
 {
+	# shellcheck disable=2039
 	local _pname
 	_pname="$1"
 	jexec -l -U root "$_pname"
@@ -21,8 +22,10 @@ _term()
 	# jexec "$_pname" env -i TERM="$TERM" /usr/bin/login -fp root
 }
 
+# shellcheck disable=2039
 pot-term()
 {
+	# shellcheck disable=2039
 	local _pname _force
 	_pname=
 	_force=
@@ -51,14 +54,15 @@ pot-term()
 		term-help
 		${EXIT} 1
 	fi
+	# shellcheck disable=2086
 	if ! _is_pot_running $_pname ; then
 		if [ "$_force" = "YES" ]; then
 			if ! _is_uid0 ; then
 				${EXIT} 1
 			fi
 
-			pot-cmd start $_pname
-			if ! _is_pot_running $_pname ; then
+			pot-cmd start "$_pname"
+			if ! _is_pot_running "$_pname" ; then
 				_error "The pot $_pname doesn't start"
 				${EXIT} 1
 			fi
@@ -71,5 +75,5 @@ pot-term()
 		${EXIT} 1
 	fi
 
-	_term $_pname
+	_term "$_pname"
 }

@@ -16,6 +16,7 @@ get-attr-help()
 # shellcheck disable=SC2039
 pot-get-attribute()
 {
+	# shellcheck disable=SC2039
 	local _pname _attr _value _quiet
 	_pname=
 	_attr=
@@ -51,7 +52,7 @@ pot-get-attribute()
 		get-attr-help
 		${EXIT} 1
 	fi
-	if [ -z "$_attr" ]; then 
+	if [ -z "$_attr" ]; then
 		_error "Option -A is mandatory"
 		get-attr-help
 		${EXIT} 1
@@ -63,6 +64,7 @@ pot-get-attribute()
 		fi
 		${EXIT} 1
 	fi
+	# shellcheck disable=SC2086
 	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES $_POT_JAIL_RW_ATTRIBUTES ; then
 		_error "$_attr is not a valid attribute"
 		get-attr-help

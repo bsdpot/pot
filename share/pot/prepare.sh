@@ -23,6 +23,7 @@ prepare-help()
 	echo '  -s : start immediately the newly generated pot'
 }
 
+# shellcheck disable=SC2039
 pot-prepare()
 {
 	# shellcheck disable=SC2039

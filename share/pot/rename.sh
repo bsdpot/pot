@@ -102,7 +102,7 @@ _rn_recursive()
 	local _pname _newname _pots _cdir
 	_pname=$1
 	_newname=$2
-	_pots=$( ls -d "${POT_FS_ROOT}"/jails/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$( _get_pot_list )
 	for _p in $_pots ; do
 		_cdir=${POT_FS_ROOT}/jails/$_p/conf
 		${SED} -i '' -e "s%/jails/$_pname/%/jails/$_newname/%g" "$_cdir/fscomp.conf"

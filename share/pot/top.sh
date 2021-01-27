@@ -1,6 +1,6 @@
 #!/bin/sh
-
-# supported releases
+:
+# shellcheck disable=SC2039
 top-help()
 {
 	echo "pot top [-h] -p pot"
@@ -8,6 +8,7 @@ top-help()
 	echo '  -p pot : the working pot'
 }
 
+# shellcheck disable=SC2039
 pot-top()
 {
 	# shellcheck disable=SC2039

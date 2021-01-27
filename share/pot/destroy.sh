@@ -87,6 +87,7 @@ _fscomp_zfs_destroy()
 	return $?
 }
 
+# shellcheck disable=SC2039
 pot-destroy()
 {
 	# shellcheck disable=SC2039
@@ -287,7 +288,7 @@ pot-destroy()
 				fi
 			done
 		fi
-		if [ "$( _get_conf_var "$_pname" pot.level )" = "2" -a "$_recursive" = "YES" ]; then
+		if [ "$( _get_conf_var "$_pname" pot.level )" = "2" ] && [ "$_recursive" = "YES" ]; then
 			_debug "$_pname has level 2. No recursive destroy possible (ignored)"
 		fi
 
@@ -305,7 +306,7 @@ pot-destroy()
 				fi
 			done
 		done
-		
+
 		_info "Destroying pot $_pname"
 		if ! _pot_zfs_destroy "$_pname" $_force ; then
 			_error "$_pname destruction failed"

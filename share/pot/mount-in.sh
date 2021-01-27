@@ -26,7 +26,7 @@ _is_mountpoint_used()
 	_mnt_p="${2#/}"
 	_conf=$POT_FS_ROOT/jails/$_pname/conf/fscomp.conf
 	_proot=$POT_FS_ROOT/jails/$_pname/m
-	if grep -q " $_proot/$_mnt_p$" "$_conf" || 
+	if grep -q " $_proot/$_mnt_p$" "$_conf" ||
 		grep -q " $_proot/$_mnt_p " "$_conf" ; then
 		# mount point already used
 		return 0 # true
@@ -173,7 +173,7 @@ pot-mount-in()
 	_dir=
 	_fscomp=
 	_dset=
-	logger -t pot -p local0.debug -- "mount-in: $@"
+	logger -t pot -p local0.debug -- "mount-in: $*"
 	while getopts "hvf:d:z:p:m:wr" _o ; do
 		case "$_o" in
 		h)

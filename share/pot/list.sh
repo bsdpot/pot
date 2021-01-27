@@ -1,5 +1,5 @@
 #!/bin/sh
-
+:
 # shellcheck disable=SC2039
 list-help()
 {
@@ -18,6 +18,7 @@ list-help()
 # $1 pot name
 _ls_info_pot()
 {
+	# shellcheck disable=SC2039
 	local _pname _cdir _lvl
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -35,7 +36,7 @@ _ls_info_pot()
 	if _is_verbose ; then
 		printf "\\tbase : %s\\n" "$( _get_conf_var "$_pname" pot.base)"
 		printf "\\tlevel : %s\\n" "$_lvl"
-		if [ $_lvl -eq 2 ]; then
+		if [ "$_lvl" -eq 2 ]; then
 			printf "\\tbase pot : %s\\n" "$( _get_conf_var "$_pname" pot.potbase)"
 		fi
 		printf "\\tdatasets:\\n"
@@ -48,6 +49,7 @@ _ls_info_pot()
 
 _ls_pots()
 {
+	# shellcheck disable=SC2039
 	local _pots _q
 	_q=$1
 	_pots=$( _get_pot_list )
@@ -68,9 +70,11 @@ _ls_pots()
 
 _ls_bases()
 {
+	# shellcheck disable=SC2039
 	local _bdir _bases _q
 	_q=$1
 	_bdir="${POT_FS_ROOT}/bases/"
+	# shellcheck disable=SC2011
 	_bases=$(  ls -d "$_bdir"/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
 	if [ "$_q" = "quiet" ]; then
 		for _b in $_bases; do
@@ -85,9 +89,9 @@ _ls_bases()
 
 _ls_fscomp()
 {
-	local _fdir _fscomps _q
+	# shellcheck disable=SC2039
+	local _fscomps _q
 	_q=$1
-	_fdir="${POT_FS_ROOT}/fscomp/"
 	_fscomps=$( zfs list -d 1 -Ho name "${POT_ZFS_ROOT}/fscomp" | sed '1d' | xargs -I {} basename {} | tr '\n' ' ' )
 	if [ "$_q" = "quiet" ]; then
 		for _f in $_fscomps; do
@@ -102,9 +106,12 @@ _ls_fscomp()
 
 _ls_flavour()
 {
+	# shellcheck disable=SC2039
 	local _flv1 _flv2 _flv _q
 	_q=$1
+	# shellcheck disable=SC2010
 	_flv1=$( ls "${_POT_FLAVOUR_DIR}" | grep -v .sh$ | xargs basename )
+	# shellcheck disable=SC2011
 	_flv2=$( ls "${_POT_FLAVOUR_DIR}"/*.sh | xargs basename | sed 's/\.sh//' )
 	# shellcheck disable=SC2086
 	_flv=$( printf "%s\\n%s\\n" $_flv1 $_flv2 | sort -u | tr '\n' ' ' )
@@ -121,6 +128,7 @@ _ls_flavour()
 
 _ls_bridges()
 {
+	# shellcheck disable=SC2039
 	local _bridges _q
 	_q=$1
 	_bridges=$( _get_bridge_list )

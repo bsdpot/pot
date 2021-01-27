@@ -77,7 +77,7 @@ _show_pot_run()
 		_aname="$( _get_pot_rdr_anchor_name "$_pname")"
 		if pfctl -a "pot-rdr" -s Anchors | grep -q "pot-rdr/${_aname}$" ; then
 			printf "\\n\\tNetwork port redirection\\n"
-			pfctl -a "pot-rdr/$_aname" -s nat -P | grep -F \ ${_ip}\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
+			pfctl -a "pot-rdr/$_aname" -s nat -P | grep -F \ "${_ip}"\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
 				printf "\\t\\t%s\\n" "$rule"
 			done
 		fi
@@ -87,10 +87,9 @@ _show_pot_run()
 _show_running_pots()
 {
 	# shellcheck disable=SC2039
-	local _jdir _pots _p _q
+	local _pots _p _q
 	_q=$1
-	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$( _get_pot_list )
 	for _p in $_pots; do
 		if _is_pot_running "$_p" ; then
 			if [ "$_q" = "YES" ]; then
@@ -105,10 +104,9 @@ _show_running_pots()
 _show_all_pots()
 {
 	# shellcheck disable=SC2039
-	local _jdir _pots _p _q
+	local _pots _p _q
 	_q=$1
-	_jdir="${POT_FS_ROOT}/jails/"
-	_pots=$( ls -d $_jdir/*/ 2> /dev/null | xargs -I {} basename {} | tr '\n' ' ' )
+	_pots=$( _get_pot_list )
 	for _p in $_pots; do
 		if [ "$_q" = "YES" ]; then
 			echo "$_p"
@@ -155,6 +153,7 @@ pot-show()
 			;;
 		esac
 	done
+	# shellcheck disable=SC2235
 	if ( [ -n "$_pname" ] && [ -n "$_all" ] ) ||
 		( [ -n "$_pname" ] && [ -n "$_running" ] ) ||
 		( [ -n "$_all" ] && [ -n "$_running" ] ); then
@@ -162,8 +161,8 @@ pot-show()
 		show-help
 		${EXIT} 1
 	fi
-	if [ -z "$_pname" ] && 
-		[ -z "$_all" ] && 
+	if [ -z "$_pname" ] &&
+		[ -z "$_all" ] &&
 		[ -z "$_running" ]; then
 		_running="YES"
 	fi

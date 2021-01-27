@@ -21,7 +21,7 @@ _set_environment()
 	_tmpfile="$2"
 	_cfile=$POT_FS_ROOT/jails/$_pname/conf/pot.conf
 	${SED} -i '' -e "/^pot.env=.*/d" "$_cfile"
-	cat "$_tmpfile" | sed 's/.*/pot.env=&/g' >> "$_cfile"
+	sed 's/.*/pot.env=&/g' "$_tmpfile" >> "$_cfile"
 }
 
 # shellcheck disable=SC2039

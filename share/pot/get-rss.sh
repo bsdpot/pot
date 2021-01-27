@@ -40,6 +40,7 @@ print_rss()
 	fi
 }
 
+# shellcheck disable=SC2039
 pot-get-rss()
 {
 	# shellcheck disable=SC2039

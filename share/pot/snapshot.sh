@@ -15,7 +15,8 @@ snapshot-help()
 # shellcheck disable=SC2039
 pot-snapshot()
 {
-	local _full_pot _obj _objname _snapname
+	# shellcheck disable=SC2039
+	local _full_pot _obj _objname
 	_full_pot="NO"
 	_obj=""
 	_objname=

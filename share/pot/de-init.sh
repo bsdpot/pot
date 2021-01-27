@@ -10,6 +10,7 @@ de-init-help()
 	echo '  -f force - stop all running pots'
 }
 
+# shellcheck disable=SC2039
 pot-de-init()
 {
 	# shellcheck disable=SC2039
@@ -52,11 +53,11 @@ pot-de-init()
 		fi
 	done
 	# Remove pot dataset
-	if ! _zfs_dataset_valid ${POT_ZFS_ROOT} ; then
+	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}" ; then
 		_info "no root dataset found ($POT_ZFS_ROOT)"
 	else
 		_info "Deinstall pot ($POT_ZFS_ROOT)"
-		zfs destroy -r $_zopt ${POT_ZFS_ROOT}
+		zfs destroy -r $_zopt "${POT_ZFS_ROOT}"
 	fi
 	# Remove pf entries
 	pf_file="$(sysrc -n pf_rules)"

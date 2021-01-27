@@ -14,7 +14,7 @@ revert-help()
 _pot_zfs_rollback()
 {
 	# shellcheck disable=SC2039
-	local _pname _pdir _snap
+	local _pname _pdset _snap
 	_pname=$1
 	_pdset=${POT_ZFS_ROOT}/jails/$_pname
 	for _dset in $( zfs list -o name -H -r "$_pdset" | sort -r | tr '\n' ' ') ; do
@@ -30,7 +30,7 @@ _pot_zfs_rollback()
 _fscomp_zfs_rollback()
 {
 	# shellcheck disable=SC2039
-	local _fscomp _pdir _snap
+	local _fscomp _fdset _snap
 	_fscomp=$1
 	_fdset=${POT_ZFS_ROOT}/fscomp/$_fscomp
 	for _dset in $( zfs list -o name -H -r "$_fdset" | sort -r | tr '\n' ' ') ; do

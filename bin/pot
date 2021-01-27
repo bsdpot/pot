@@ -33,6 +33,7 @@ export IFCONFIG_FORMAT=addr:default
 
 # Environment initialization and initial checks
 
+# shellcheck disable=SC2034
 _POT_VERSION=0.11.6
 _POT_PATHNAME="$(realpath "$0")"
 _POT_PREFIX="$(dirname "${_POT_PATHNAME}")"
@@ -41,6 +42,7 @@ _POT_ETC="$( realpath "${_POT_PREFIX}/../etc/pot")"
 if [ -d "${_POT_ETC}/flavours" ]; then
 	_POT_FLAVOUR_DIR="$( realpath "${_POT_ETC}/flavours")"
 else
+	# shellcheck disable=SC2034
 	_POT_FLAVOUR_DIR=
 fi
 
@@ -55,16 +57,19 @@ if [ ! -r "${_POT_INCLUDE}/common.sh" ]; then
 	echo "Fatal error! Not able to find common subroutines on ${_POT_INCLUDE}!"
 	exit 1
 fi
+# shellcheck disable=SC1090
 . "${_POT_INCLUDE}/common.sh"
 
 if [ ! -r "${_POT_INCLUDE}/network.sh" ]; then
 	echo "Fatal error! Not able to find network subroutines on ${_POT_INCLUDE}!"
 	exit 1
 fi
+# shellcheck disable=SC1090
 . "${_POT_INCLUDE}/network.sh"
 
 # loading configuration
 if [ -r "$_POT_ETC/pot.default.conf" ]; then
+	# shellcheck disable=SC1090
 	. "$_POT_ETC/pot.default.conf"
 else
 	_error "Fatal error! Not able to find default configuration file on $_POT_ETC"
@@ -72,6 +77,7 @@ else
 fi
 
 if [ -r "$_POT_ETC/pot.conf" ]; then
+	# shellcheck disable=SC1090
 	. "$_POT_ETC/pot.conf"
 fi
 
@@ -126,6 +132,7 @@ Commands:
 EOF
 }
 
+# shellcheck disable=SC2034
 # variable initialization
 _POT_VERBOSITY=1
 
@@ -189,4 +196,3 @@ case "${CMD}" in
 		exit 1
 		;;
 esac
-

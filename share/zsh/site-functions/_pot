@@ -57,20 +57,20 @@ _pot() {
 						'-v[Verbose output]' \
 						'-B[bridge name]:bridge name:_pot_bridges'
 					;;
-				config) 
+				config)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
 						'-g[Element name]:config element name:(fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix network_stack)'
 					;;
-				de-init) 
+				de-init)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-f[Force stop of all running pots]'
 					;;
-				version|ps) 
+				version|ps)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
@@ -105,20 +105,14 @@ _pot() {
 						'-r[All running pots]' \
 						'-p[pot name]:pot name:_pot_pots'
 					;;
-				create-dns)
-					_arguments -s \
-						'-h[Show help]' \
-						'-v[Verbose output]' \
-						'-b[base name]:base name:_pot_bases'
-					;;
-				create-base) 
+				create-base)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
 						'-r[Release number]:supported releases:_normal' \
 						'-b[base name]:base name:_normal'
 					;;
-				create-fscomp) 
+				create-fscomp)
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
@@ -166,7 +160,7 @@ _pot() {
 						'-i[network config]::_normal' \
 						'-B[bridge name]:bridge name:_pot_bridges' \
 						'-S[network stack]:network stack:_pot_network_stack_type' \
-						'-F[force snapshot of the pot reference]' 
+						'-F[force snapshot of the pot reference]'
 					;;
 				rename)
 					_arguments -s \

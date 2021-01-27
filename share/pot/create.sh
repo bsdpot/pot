@@ -789,8 +789,8 @@ pot-create()
 			${EXIT} 1
 		fi
 		if ! _is_pot "${POT_DNS_NAME}" quiet ; then
-			_info "dns pot not found ($POT_DNS_NAME) - fixing"
-			pot-cmd create-dns
+			_error "dns pot not found ($POT_DNS_NAME) - please fix it"
+			${EXIT} 1
 		fi
 	fi
 	_info "Creating a new pot"

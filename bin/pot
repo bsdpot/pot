@@ -175,7 +175,7 @@ case "${CMD}" in
 	show|version|config|\
 	list|info|ps|top|\
 	init|de-init|vnet-start|\
-	create-base|create-fscomp|create|create-dns|\
+	create-base|create-fscomp|create|\
 	create-private-bridge|\
 	copy-in|mount-in|prune|set-hook|\
 	destroy|add-dep|set-rss|get-rss|set-cmd|set-env|set-hosts|\

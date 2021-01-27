@@ -13,4 +13,3 @@ jobs:
       with:
         scandir: share/pot
         additional_files: bin/pot
-        ignore: create-dns.sh

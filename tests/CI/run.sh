@@ -77,18 +77,23 @@ get_pot_name() {
 # $4 stack
 create_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
+	local fopt
 	t=$1
 	b=$2
 	n=$3
 	s=$4
+	f=$5
+	fopt=
 	if [ "$t" = "multi" ]; then
 		if ! pot create-base -v -r $b ; then
 			error $name create-base
 		fi
+	elif [ "$f" = "slim" ]; then
+		fopt="-f slim"
 	fi
 	case $n in
 		alias)
-			if ! pot create -v -p $name -t $t -b $b -N $n -i fdf2:f389:1f56:164b::1 -i 172.20.135.253 ; then
+			if ! pot create -v -p $name -t $t -b $b -N $n -i fdf2:f389:1f56:164b::1 -i 172.20.135.253 $fopt ; then
 				error $name create
 			fi
 			;;
@@ -98,7 +103,7 @@ create_test() {
 				error $name create-private-bridge
 			fi
 			if [ "$s" = "ipv6" ]; then
-				if pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
+				if pot create -v -p $name -t $t -b $b -N $n -B testprivate $fopt ; then
 					error $name create
 				fi
 				if ! pot destroy -B testprivate ; then
@@ -110,13 +115,13 @@ create_test() {
 					fi
 				fi
 			else
-				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate ; then
+				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate $fopt ; then
 					error $name create
 				fi
 			fi
 			;;
 		*)
-			if ! pot create -v -p $name -t $t -b $b -N $n ; then
+			if ! pot create -v -p $name -t $t -b $b -N $n $fopt ; then
 				error $name create
 			fi
 	esac
@@ -362,7 +367,7 @@ destroy_rename_test() {
 pot_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
 	logger -p local2.info -t pot-CI "pot_test: $name"
-	create_test $1 $2 $3 $4
+	create_test $1 $2 $3 $4 slim
 	if [ $4 = "ipv6" ] && [ $3 = "private-bridge" ]; then
 		return
 	fi

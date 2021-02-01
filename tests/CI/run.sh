@@ -226,8 +226,15 @@ startstop_test() {
 			fi
 			return 0
 		fi
+		# test ICMP
 		if ! jexec $name ping -c 1 1.1.1.1 ; then
 			error $name ping-nat
+		fi
+		if ! jexec $name drill google.com @1.1.1.1 A ; then
+			error $name udp-nat
+		fi
+		if ! jexec $name fetch -4 -o /dev/null http://neverssl.com  ; then
+			error $name tcp-nat
 		fi
 	fi
 	if [ $s = "ipv6" ] || [ $s = "dual" ]; then
@@ -241,6 +248,12 @@ startstop_test() {
 		if [ $n != "private-bridge" ]; then
 			if ! jexec $name ping6 -c 1 2606:4700:4700::1111 ; then
 				error $name ping6-ipv6
+			fi
+			if ! jexec $name drill google.com @2606:4700:4700::1111 AAAA ; then
+				error $name ping6-ipv6
+			fi
+			if ! jexec $name fetch -6 -o /dev/null http://www.google.com  ; then
+				error $name tcp-nat
 			fi
 		fi
 	fi

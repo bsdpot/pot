@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - pot.conf: add parameter to control max hostname length inside the pot (#118)
 - CI: add shellcheck as hard requirements in the PR flow
 - export-ports: add UDP support, as -e udp:53:53 (#115)
+- create: dns custom allows to statically provide a resolv.conf
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)
 - create: adopt the new hostname length parameter (#118)
 - clone: adopt the new hostname length parameter (#118)
 - ext-if: do not include interface aliases in the bridges network if EXTIF has them (#120)
+- start: add support for custom dns resolver
 
 ### Removed
 - create-dns: remove this already deprecated command, leaving the user to create a dns for the public bridge

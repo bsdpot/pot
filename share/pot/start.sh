@@ -94,6 +94,7 @@ _js_resolv()
 	return 0
 }
 
+# tests in start4.sh
 # $1 pot name
 _js_etc_hosts()
 {

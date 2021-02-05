@@ -220,7 +220,7 @@ _cj_zfs()
 # $5 level
 # $6 dns
 # $7 type
-# $8 private bridge (if network tpye is private_bridge"
+# $8 private bridge (if network type is private_bridge)
 # $9 pot-base name
 # $10 network-stack
 _cj_conf()

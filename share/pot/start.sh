@@ -63,7 +63,6 @@ _js_resolv()
 	"inherit")
 		if [ ! -r /etc/resolv.conf ]; then
 			_error "No resolv.conf found in /etc"
-			start-cleanup "$_pname"
 			return 1 # false
 		fi
 		if [ -d "$_jdir/m/etc" ]; then
@@ -637,7 +636,10 @@ pot-start()
 		start-cleanup "$_pname"
 		return 1
 	fi
-	_js_resolv "$_pname"
+	if ! _js_resolv "$_pname" ; then
+		start-cleanup "$_pname"
+		return 1
+	fi
 	_js_etc_hosts "$_pname"
 	if ! _js_start "$_pname" ; then
 		_error "$_pname failed to start"

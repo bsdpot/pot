@@ -41,6 +41,11 @@ cat()
 	fi
 }
 
+cp()
+{
+	__monitor CP "$@"
+}
+
 . pipefail-stub.sh
 
 # UUT
@@ -303,6 +308,57 @@ test_cj_conf_020()
 	assertEquals "internal_conf calls" "0" "$ICONF_CALLS"
 	assertEquals "sed calls" "0" "$SED_CALLS"
 }
+
+test_cj_conf_040()
+{
+	_cj_conf new-pot 11.1 inherit "" 0 pot single
+	assertEquals "return code" "0" "$?"
+	assertEquals "fscomp args1" "" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "pot.dns" "pot.dns=pot" "$(grep ^pot.dns /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.depend" "pot.depend=${POT_DNS_NAME}" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "cp calls" "0" "$CP_CALLS"
+}
+
+test_cj_conf_041()
+{
+	_cj_conf new-pot 11.1 inherit "" 0 off single
+	assertEquals "return code" "0" "$?"
+	assertEquals "fscomp args1" "" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "pot.dns" "pot.dns=off" "$(grep ^pot.dns /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.depend" "" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "cp calls" "0" "$CP_CALLS"
+}
+
+test_cj_conf_042()
+{
+	_cj_conf new-pot 11.1 inherit "" 0 inherit single
+	assertEquals "return code" "0" "$?"
+	assertEquals "fscomp args1" "" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "pot.dns" "pot.dns=inherit" "$(grep ^pot.dns /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.depend" "" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "cp calls" "0" "$CP_CALLS"
+}
+
+test_cj_conf_043()
+{
+	_cj_conf new-pot 11.1 inherit "" 0 custom:/etc/resolv.conf single
+	assertEquals "return code" "0" "$?"
+	assertEquals "fscomp args1" "" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "pot.dns" "pot.dns=custom" "$(grep ^pot.dns /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "pot.depend" "" "$(grep ^pot.depend /tmp/jails/new-pot/conf/pot.conf)"
+	assertEquals "cp calls" "1" "$CP_CALLS"
+	assertEquals "cp arg1" "/etc/resolv.conf" "$CP_CALL1_ARG1"
+	assertEquals "cp arg2" "/tmp/jails/new-pot/conf/resolv.conf" "$CP_CALL1_ARG2"
+}
+
 setUp()
 {
 	common_setUp
@@ -310,6 +366,7 @@ setUp()
 	SED_CALLS=0
 	SYSRC_CALLS=0
 	SERVICE_CALLS=0
+	CP_CALLS=0
 	ICONF_CALLS=0
 	ICONF_CALL1_ARG4=
 

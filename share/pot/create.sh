@@ -603,7 +603,7 @@ pot-create()
 				"off")
 					_dns=off
 					;;
-				"custom:*")
+				custom:*)
 					if [ -r "${OPTARG##custom:}" ]; then
 						_dns=$OPTARG
 					else

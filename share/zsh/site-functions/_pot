@@ -138,7 +138,7 @@ _pot() {
 						'-l[pot level]:level:(0 1 2)' \
 						'-t[pot type]:type:(multi single)' \
 						'*-i[network config]::_normal' \
-						'-d[dns type]:dns types:(inherit pot off)' \
+						'-d[dns type]:dns types:(inherit pot off custom:)' \
 						'-B[bridge name]:bridge name:_pot_bridges' \
 						'-S[network stack]:network stack:_pot_network_stack_type' \
 						'*-f[flavour name]:flavour name:_pot_flavours'

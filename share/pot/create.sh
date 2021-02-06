@@ -220,7 +220,7 @@ _cj_zfs()
 # $5 level
 # $6 dns
 # $7 type
-# $8 private bridge (if network tpye is private_bridge"
+# $8 private bridge (if network type is private_bridge)
 # $9 pot-base name
 # $10 network-stack
 _cj_conf()
@@ -290,7 +290,11 @@ _cj_conf()
 		echo "pot.type=${_type}"
 		echo "pot.base=${_base}"
 		echo "pot.potbase=${_potbase}"
-		echo "pot.dns=${_dns}"
+		if [ "$_dns" = "${_dns##custom:}" ]; then
+			echo "pot.dns=${_dns}"
+		else
+			echo "pot.dns=custom"
+		fi
 		echo "pot.cmd=sh /etc/rc"
 		echo "host.hostname=\"$( _get_usable_hostname "${_pname}" )\""
 		if echo "$_baseos" | grep -q "RC" ; then
@@ -339,6 +343,9 @@ _cj_conf()
 			echo "pot.depend=${POT_DNS_NAME}"
 		fi
 	) > "$_jdir/conf/pot.conf"
+	if [ "$_dns" != "${_dns##custom:}" ]; then
+		cp "${_dns##custom:}" "$_jdir/conf/resolv.conf"
+	fi
 	if [ "$_lvl" -eq 2 ]; then
 		if [ "$_pblvl" -eq 1 ]; then
 			# CHANGE the potbase usr.local to be not zfs-remount
@@ -595,6 +602,15 @@ pot-create()
 					;;
 				"off")
 					_dns=off
+					;;
+				"custom:*")
+					if [ -r "${OPTARG##custom:}" ]; then
+						_dns=$OPTARG
+					else
+						_error "The file ${OPTARG##custom:} is not valid or readable"
+						create-help
+						${EXIT} 1
+					fi
 					;;
 				*)
 					_error "The dns $OPTARG is not a valid option: choose between inherit or pot"

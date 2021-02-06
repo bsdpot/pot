@@ -23,6 +23,10 @@ EXIT="return"
 # test-pot-multi-inherit	no		multi	1					no		inherit
 # test-pot-multi-private	no		multi	1		10.1.3.3	yes		private-bridge
 
+# test-pot-dns-inherit
+# test-pot-dns-pot
+# test-pot-dns-custom
+# test-pot-dns-off
 ##### recognized bridges
 # name						net				gateway
 # test-bridge				10.1.3.0/28		10.1.3.1
@@ -220,6 +224,21 @@ _get_conf_var()
 	"host.hostname")
 		echo "$1.test-domain"
 		;;
+	"pot.dns")
+		case $1 in
+		test-pot-dns-inherit)
+			echo "inherit"
+			;;
+		test-pot-dns-pot)
+			echo "pot"
+			;;
+		test-pot-dns-custom)
+			echo "custom"
+			;;
+		test-pot-dns-off)
+			echo "off"
+			;;
+		esac
 	esac
 }
 

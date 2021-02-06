@@ -121,7 +121,7 @@ create_test() {
 			fi
 			;;
 		*)
-			if ! pot create -v -p $name -t $t -b $b -N $n $fopt ; then
+			if ! pot create -v -p $name -t $t -b $b -N $n -d custom:resolv.conf-$s $fopt ; then
 				error $name create
 			fi
 	esac

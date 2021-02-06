@@ -11,8 +11,10 @@ export-ports-help()
 	echo '  -p pot : the working pot'
 	echo '  -e port : the tcp port'
 	echo '            This option can be repeated multiple time, to export more ports'
-	echo '            -e 80 will export port 80 using an available port'
-	echo '            -e 80:30000 will export port 80 using port 30000'
+	echo '            -e 80 will export tcp port 80 using an available port'
+	echo '            -e 80:30000 will export tcp port 80 using port 30000'
+	echo '            -e tcp:80:30000 will export tcp port 80 using port 30000'
+	echo '            -e udp:53:30053 will export udp port 53 using port 30053'
 }
 
 # $1 pot

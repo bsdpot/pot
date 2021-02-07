@@ -16,7 +16,7 @@ create-help()
 	echo '  -l lvl : pot level (only for type multi)'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
-	echo '  -d dns : one between inherit(default), poa or off'
+	echo '  -d dns : one between inherit(default), pot, off or custom:filename'
 	echo '  -f flavour : flavour to be used'
 	echo '  -t type: single or multi (default multi)'
 	echo '         single: the pot is based on a unique ZFS dataset'

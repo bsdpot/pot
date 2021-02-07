@@ -173,6 +173,15 @@ _is_valid_netif()
 	fi
 }
 
+_is_valid_extif_addr()
+{
+	# shellcheck disable=SC2039
+	local _netif _ip
+	_netif="$1"
+	_ip="$2"
+	ifconfig "$_netif" | grep -F "inet " | grep -qF " $_ip "
+}
+
 # get the network stack defined in the global configuration
 _get_network_stack()
 {

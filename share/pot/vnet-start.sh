@@ -59,7 +59,7 @@ _private_bridge_start()
 _ipv4_start()
 {
 	# shellcheck disable=SC2039
-	local _bridge_name pf_file _nat_rules
+	local _bridge_name pf_file _nat_rules _ext_addr
 	_bridge_name="$1"
 	# activate ip forwarding
 	if _is_verbose ; then
@@ -89,11 +89,27 @@ _ipv4_start()
 	if [ -w "$_nat_rules" ]; then
 		rm -f "$_nat_rules"
 	fi
+	if [ -n "$POT_EXTIF_ADDR" ]; then
+		if ! potnet ip4check --host "$POT_EXTIF_ADDR" ; then
+			_info "The value $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not a valid IPv4 address - ignoring"
+			_ext_addr=
+		elif ! _is_valid_extif_addr "$POT_EXTIF" "$POT_EXTIF_ADDR" ; then
+            _info "The IP address $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not available on the network interface $POT_EXTIF [POT_EXTIF]    "
+			_ext_addr=
+		else
+			_ext_addr=$POT_EXTIF_ADDR
+        fi
+    fi
 	# NAT rules
 	(
 		echo "ext_if = \"${POT_EXTIF}\""
 		echo "localnet = \"${POT_NETWORK}\""
-		echo "nat on \$ext_if from \$localnet to any -> (\$ext_if:0)"
+		if [ -n "$_ext_addr" ]; then
+			echo "ext_addr = \"${_ext_addr}\""
+			echo "nat on \$ext_if from \$localnet to any -> \$ext_addr"
+		else
+			echo "nat on \$ext_if from \$localnet to any -> (\$ext_if:0)"
+		fi
 	) > $_nat_rules
 
 	# EXTRA_EXTIF NAT rules

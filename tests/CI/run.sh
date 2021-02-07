@@ -366,6 +366,9 @@ destroy_rename_test() {
 		fi
 		;;
 	esac
+	if ! pot destroy -f fscomp ; then
+		error $name destroy-fscom
+	fi
 	if [ "$n" = "private-bridge" ]; then
 		if ! pot destroy -B testprivate ; then
 			error $name destroy-bridge
@@ -388,7 +391,10 @@ pot_test() {
 	export_test $name $1
 	fscomp_test $name
 	startstop_test $name $3 $4
-	destroy_test $1 $2 $3 $4
+	local new_name=${name}_new
+	rename_test $name $new_name
+	startstop_test $new_name $3 $4
+	destroy_rename_test $new_name $1 $2 $3
 	empty_check $name
 }
 
@@ -479,7 +485,7 @@ for s in $STACKS ; do
 					continue
 				fi
 				pot_corrupted_test $t $b $n $s
-				pot_rename_test $t $b $n $s
+				#pot_rename_test $t $b $n $s
 				pot_create_fail_test $t $b $n $s
 				echo "tested $t $b $n $s $(date)" >> $logfile
 			done

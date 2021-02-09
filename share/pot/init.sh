@@ -109,6 +109,10 @@ pot-init()
 		fi
 	done
 
+	if [ -w /etc/rc.conf ]; then
+		echo "Creating a backup of your /etc/rc.conf"
+		cp -v /etc/rc.conf /etc/rc.conf.bkp-pot
+	fi
 	# add proper syslogd flags and restart it
 	sysrc -q syslogd_flags="-b 127.0.0.1 -b $POT_GATEWAY -a $POT_NETWORK"
 	# service syslogd restart
@@ -119,6 +123,8 @@ pot-init()
 		_debug "pf alredy properly configured"
 	else
 		if [ -w "$pf_file" ]; then
+			echo "Creating a backup of your $pf_file"
+			cp -v "$pf_file" "$pf_file".bkp-pot
 			# delete incomplete/broken ancory entries - just in case
 			sed -i '' '/^nat-anchor pot-nat$/d' "$pf_file"
 			sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' "$pf_file"

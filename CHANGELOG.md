@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone: adopt the new hostname length parameter (#118)
 - ext-if: do not include interface aliases in the bridges network if EXTIF has them (#120)
 - start: add support for custom dns resolver
+- init: create backup of rc.conf and pf.conf before to apply pot related changes
 
 ### Removed
 - create-dns: remove this already deprecated command, leaving the user to create a dns for the public bridge

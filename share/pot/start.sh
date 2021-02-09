@@ -264,7 +264,7 @@ _js_get_free_rnd_port()
 _js_export_ports()
 {
 	# shellcheck disable=SC2039
-	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt
+	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt _to_arg
 	_pname=$1
 	_ip="$( _get_ip_var "$_pname" )"
 	_ports="$( _get_pot_export_ports "$_pname" )"
@@ -288,8 +288,14 @@ _js_export_ports()
 		if [ "$_pot_port" = "$_port" ]; then
 			_host_port=$( _js_get_free_rnd_port "$_excl_list" )
 		fi
-		_debug "Redirect: from $POT_EXTIF : $_proto_port:$_host_port to $_ip : $_proto_port:$_pot_port"
-		echo "rdr pass on $POT_EXTIF proto $_proto_port from any to ($POT_EXTIF) port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
+		if [ -n "$POT_EXTIF_ADDR" ]; then
+			_to_arg="$POT_EXTIF_ADDR"
+		else
+			_to_arg="($POT_EXTIF)"
+		fi
+
+		_debug "Redirect: from $_to_arg : $_proto_port:$_host_port to $_ip : $_proto_port:$_pot_port"
+		echo "rdr pass on $POT_EXTIF proto $_proto_port from any to $_to_arg port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
 		_excl_list="$_excl_list $_host_port"
 		if [ -n "$POT_EXTRA_EXTIF" ]; then
 			for extra_netif in $POT_EXTRA_EXTIF ; do

@@ -91,6 +91,17 @@ pot-init()
 		_error "The network interface $POT_EXTIF seems not valid [POT_EXTIF]"
 		${EXIT} 1
 	fi
+	if [ -n "$POT_EXTIF_ADDR" ]; then
+		if ! potnet ip4check --host "$POT_EXTIF_ADDR" ; then
+			_error "The value $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not a valid IPv4 address"
+			${EXIT} 1
+		fi
+		if ! _is_valid_extif_addr "$POT_EXTIF" "$POT_EXTIF_ADDR" ; then
+			_error "The IP address $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not available on the network interface $POT_EXTIF [POT_EXTIF]"
+			${EXIT} 1
+		fi
+	fi
+
 	for extra_netif in $POT_EXTRA_EXTIF ; do
 		if ! _is_valid_netif "$extra_netif" ; then
 			_error "The network interface $extra_netif seems not valid [POT_EXTRA_EXTIF]"
@@ -119,4 +130,3 @@ pot-init()
 		echo "Please, check that your PF configuration file $pf_file is still valid!"
 	fi
 }
-

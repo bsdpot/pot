@@ -399,7 +399,7 @@ ASSUME_ALWAYS_YES=yes pkg bootstrap
 PKG_FLV
 ) > $flv_dir/pkg.sh
 	chmod a+x $flv_dir/pkg.sh
-	if ! pot clone -p $cloned_name -P $name -f pkg ; then
+	if ! pot clone -p $cloned_name -P $name -f pkg -F ; then
 		error $name clone
 	fi
 	startstop_test $cloned_name $n $s

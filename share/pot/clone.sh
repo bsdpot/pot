@@ -272,7 +272,7 @@ pot-clone()
 				_autosnap="YES"
 				;;
 			f)
-				if ! _is_flavouridr ; then
+				if ! _is_flavourdir ; then
 					_error "The flavour directory is missing"
 					${EXIT} 1
 				fi

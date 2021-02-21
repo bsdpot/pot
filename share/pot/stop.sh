@@ -171,8 +171,7 @@ pot-stop()
 	fi
 	if ! _is_pot "$_pname" quiet ; then
 		_error "The pot $_pname is not a valid pot"
-		stop-help
-		${EXIT} 1
+		${EXIT} 0
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1

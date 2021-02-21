@@ -406,7 +406,7 @@ PKG_FLV
 	if [ "$n" = "private-bridge" ]; then
 		bopt="-B testprivate"
 	fi
-	if ! pot clone -p $cloned_name -P $name -f pkg -F "$bopt" ; then
+	if ! pot clone -p $cloned_name -P $name -f pkg -F $bopt ; then
 		error $name clone
 	fi
 	startstop_test $cloned_name $n $s

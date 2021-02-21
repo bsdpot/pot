@@ -404,16 +404,19 @@ PKG_FLV
 ) > $flv_dir/pkg.sh
 	chmod a+x $flv_dir/pkg.sh
 	if [ "$n" = "private-bridge" ]; then
-		bopt="-B testprivate"
-	fi
-	if ! pot clone -p $cloned_name -P $name -f pkg -F $bopt ; then
-		error $name clone
+		if ! pot clone -p $cloned_name -P $name -f pkg -F -B testprivate ; then
+			error $name clone
+		fi
+	else
+		if ! pot clone -p $cloned_name -P $name -f pkg -F ; then
+			error $name clone
+		fi
 	fi
 	startstop_test $cloned_name $n $s
 	if ! pot destroy -p $cloned_name ; then
 		error $name destroy
 	fi
-	rm $flv_dir/broken.sh
+	rm $flv_dir/pkg.sh
 }
 
 # $1 type

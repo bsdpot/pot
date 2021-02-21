@@ -1,6 +1,8 @@
 #!/bin/sh
 :
 
+trap _cj_undo_clone TERM INT
+_set_pipefail
 # shellcheck disable=SC2039
 clone-help()
 {
@@ -9,6 +11,7 @@ clone-help()
 	echo '  -v verbose'
 	echo '  -P potname : the pot to be cloned (template)'
 	echo '  -p potname : the new pot name'
+	echo '  -f flavour : flavour to be used'
 	echo '  -N network-type : new network type of the cloned pot'
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
@@ -17,16 +20,15 @@ clone-help()
 }
 
 # $1 pot name
-_cj_cleanup()
+_cj_undo_clone()
 {
-	# shellcheck disable=SC2039
-	local _pname _jdset
-	_pname=$1
-	_jdset=${POT_ZFS_ROOT}/jails/$_pname
-	if [ -z "$_pname" ]; then
-		return
+	_POT_VERBOSITY=0
+	if [ -z "$_cleanup_pname" ]; then
+		${EXIT} 1
 	fi
-	zfs destroy -r "$_jdset" 2> /dev/null
+	pot-cmd stop "$_cleanup_pname"
+	pot-cmd destroy -Fp "$_cleanup_pname" -q
+	${EXIT} 1
 }
 
 # $1 pot name
@@ -69,7 +71,7 @@ _cj_zfs()
 				_snap=$_snaptag
 			else
 				_error "$_dset has no snap - please take a snapshot of $_potbase"
-				_cj_cleanup "$_pname"
+				_cj_undo_clone
 				return 1 # error
 			fi
 		fi
@@ -121,7 +123,7 @@ _cj_zfs()
 							_snap=$_snaptag
 						else
 							_error "$_dset has no snap - please take a snapshot of $_potbase"
-							_cj_cleanup "$_pname"
+							_cj_undo_clone "$_pname"
 							return 1
 						fi
 					fi
@@ -214,7 +216,7 @@ _cj_conf()
 pot-clone()
 {
 	# shellcheck disable=SC2039
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack _flv
 	_pname=
 	_ipaddr=
 	_potbase=
@@ -222,8 +224,9 @@ pot-clone()
 	_autosnap="NO"
 	_bridge_name=
 	_network_stack=
+	_flv=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:B:S:" _o ; do
+	while getopts "hvp:i:P:FN:B:S:f:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -267,6 +270,23 @@ pot-clone()
 				;;
 			F)
 				_autosnap="YES"
+				;;
+			f)
+				if ! _is_flavouridr ; then
+					_error "The flavour directory is missing"
+					${EXIT} 1
+				fi
+				if _is_flavour "$OPTARG" ; then
+					if [ -z "$_flv" ]; then
+						_flv="$OPTARG"
+					else
+						_flv="$_flv $OPTARG"
+					fi
+				else
+					_error "Flavour $OPTARG not found"
+					_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
+					${EXIT} 1
+				fi
 				;;
 			*)
 				clone-help
@@ -322,10 +342,19 @@ pot-clone()
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
+	export _cleanup_pname="$_pname"
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
 	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" "$_network_stack" ; then
 		${EXIT} 1
+	fi
+	if [ -n "$_flv" ]; then
+		for _f in $_flv ; do
+			if ! _exec_flv "$_pname" "$_f" ; then
+				_cj_undo_clone
+				${EXIT} 1
+			fi
+		done
 	fi
 }

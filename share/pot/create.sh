@@ -560,7 +560,7 @@ pot-create()
 			;;
 		f)
 			if ! _is_flavourdir ; then
-				_error "The flavour dir is missing"
+				_error "The flavour directory is missing"
 				${EXIT} 1
 			fi
 			if _is_flavour "$OPTARG" ; then
@@ -570,7 +570,7 @@ pot-create()
 					_flv="$_flv $OPTARG"
 				fi
 			else
-				_error "The flavour $OPTARG not found"
+				_error "Flavour $OPTARG not found"
 				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
 				${EXIT} 1
 			fi

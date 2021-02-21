@@ -115,7 +115,7 @@ create_test() {
 					fi
 				fi
 			else
-				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate $fopt ; then
+				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate -d custom:resolv.conf-ipv4 $fopt ; then
 					error $name create
 				fi
 			fi

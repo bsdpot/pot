@@ -159,7 +159,8 @@ pot-stop()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
 		?)
-			break
+			stop-help
+			${EXIT} 1
 			;;
 		esac
 	done

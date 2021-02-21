@@ -67,6 +67,11 @@ _zfs_last_snap()
 	esac
 }
 
+_cj_undo_clone()
+{
+	__monitor UNDO_CLONE "$@"
+}
+
 test_cj_zfs_001()
 {
 	_cj_zfs new-pot test-pot
@@ -165,11 +170,10 @@ test_cj_zfs_020()
 {
 	_cj_zfs new-pot test-pot-nosnap NO
 	assertNotEquals "return code" "0" "$?"
-	assertEquals "zfs calls" "2" "$ZFS_CALLS"
+	assertEquals "zfs calls" "1" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
 	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
-	assertEquals "zfs arg1" "destroy" "$ZFS_CALL2_ARG1"
-	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL2_ARG3"
+	assertEquals "undo_clone calls" "1" "$UNDO_CLONE_CALLS"
 }
 
 test_cj_zfs_040()
@@ -211,6 +215,7 @@ setUp()
 	DATE_CALLS=0
 	ZFSDATASETVALID_CALLS=0
 	ZFSLASTSNAP_CALLS=0
+	UNDO_CLONE_CALLS=0
 }
 
 tearDown()

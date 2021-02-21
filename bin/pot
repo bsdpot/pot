@@ -47,21 +47,28 @@ else
 fi
 
 if [ ! -d "${_POT_INCLUDE}" ]; then
-	echo "Fatal error! Not able to find the subroutines dir on ${_POT_INCLUDE}!"
+	echo "Fatal error! Not able to find the subroutines directory as ${_POT_INCLUDE}!"
 	exit 1
 fi
 
 # loading subroutines
 
 if [ ! -r "${_POT_INCLUDE}/common.sh" ]; then
-	echo "Fatal error! Not able to find common subroutines on ${_POT_INCLUDE}!"
+	echo "Fatal error! Not able to find common subroutines in ${_POT_INCLUDE}!"
 	exit 1
 fi
 # shellcheck disable=SC1090
 . "${_POT_INCLUDE}/common.sh"
 
+if [ ! -r "${_POT_INCLUDE}/common-flv.sh" ]; then
+	echo "Fatal error! Not able to find flavor subroutines in ${_POT_INCLUDE}!"
+	exit 1
+fi
+# shellcheck disable=SC1090
+. "${_POT_INCLUDE}/common-flv.sh"
+
 if [ ! -r "${_POT_INCLUDE}/network.sh" ]; then
-	echo "Fatal error! Not able to find network subroutines on ${_POT_INCLUDE}!"
+	echo "Fatal error! Not able to find network subroutines in ${_POT_INCLUDE}!"
 	exit 1
 fi
 # shellcheck disable=SC1090

@@ -73,9 +73,9 @@ _cj_single_install()
 	__monitor CJSINGLE "$@"
 }
 
-_cj_flv()
+_exec_flv()
 {
-	__monitor CJFLV "$@"
+	__monitor EXEC_FLV "$@"
 }
 
 create-help()
@@ -94,7 +94,7 @@ test_pot_create_001()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -vL
@@ -106,7 +106,7 @@ test_pot_create_001()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -L bb
@@ -118,7 +118,7 @@ test_pot_create_001()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -h
@@ -130,7 +130,7 @@ test_pot_create_001()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -S
@@ -142,7 +142,7 @@ test_pot_create_001()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_002()
@@ -156,7 +156,7 @@ test_pot_create_002()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_003()
@@ -170,7 +170,7 @@ test_pot_create_003()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -p new-pot -b 11.1 -P test-pot -l 0
@@ -182,7 +182,7 @@ test_pot_create_003()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_004()
@@ -196,7 +196,7 @@ test_pot_create_004()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -p new-pot -P test-pot2 -l 1
@@ -208,7 +208,7 @@ test_pot_create_004()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -p new-pot -b 11.1 -l 2
@@ -220,7 +220,7 @@ test_pot_create_004()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_005()
@@ -233,7 +233,7 @@ test_pot_create_005()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-create -p new-pot -b 12.1 -N alias -I removed-option
@@ -244,7 +244,7 @@ test_pot_create_005()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_006()
@@ -257,7 +257,7 @@ test_pot_create_006()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_020()
@@ -286,7 +286,7 @@ test_pot_create_020()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_021()
@@ -315,7 +315,7 @@ test_pot_create_021()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_022()
@@ -329,7 +329,7 @@ test_pot_create_022()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_023()
@@ -343,7 +343,7 @@ test_pot_create_023()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_024()
@@ -357,7 +357,7 @@ test_pot_create_024()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_025()
@@ -386,7 +386,7 @@ test_pot_create_025()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_026()
@@ -415,8 +415,8 @@ test_pot_create_026()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
-	assertEquals "_cj_flv arg2" "flap" "$CJFLV_CALL1_ARG2"
+	assertEquals "_exec_flv calls" "1" "$EXEC_FLV_CALLS"
+	assertEquals "_exec_flv arg2" "flap" "$EXEC_FLV_CALL1_ARG2"
 }
 
 test_pot_create_027()
@@ -445,8 +445,8 @@ test_pot_create_027()
 	assertEquals "_cj_conf_arg10" "ipv6" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "1" "$CJFLV_CALLS"
-	assertEquals "_cj_flv arg2" "flap" "$CJFLV_CALL1_ARG2"
+	assertEquals "_exec_flv calls" "1" "$EXEC_FLV_CALLS"
+	assertEquals "_exec_flv arg2" "flap" "$EXEC_FLV_CALL1_ARG2"
 }
 
 test_pot_create_028()
@@ -475,9 +475,9 @@ test_pot_create_028()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "2" "$CJFLV_CALLS"
-	assertEquals "_cj_flv arg2" "flap" "$CJFLV_CALL1_ARG2"
-	assertEquals "_cj_flv arg2" "flap2" "$CJFLV_CALL2_ARG2"
+	assertEquals "_exec_flv calls" "2" "$EXEC_FLV_CALLS"
+	assertEquals "_exec_flv arg2" "flap" "$EXEC_FLV_CALL1_ARG2"
+	assertEquals "_exec_flv arg2" "flap2" "$EXEC_FLV_CALL2_ARG2"
 }
 
 test_pot_create_030()
@@ -491,7 +491,7 @@ test_pot_create_030()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 test_pot_create_040()
 {
@@ -518,7 +518,7 @@ test_pot_create_040()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_041()
@@ -546,7 +546,7 @@ test_pot_create_041()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_042()
@@ -560,7 +560,7 @@ test_pot_create_042()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_060()
@@ -589,7 +589,7 @@ test_pot_create_060()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
@@ -603,7 +603,7 @@ test_pot_create_061()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_062()
@@ -631,7 +631,7 @@ test_pot_create_062()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_063()
@@ -660,7 +660,7 @@ test_pot_create_063()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_064()
@@ -688,7 +688,7 @@ test_pot_create_064()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_065()
@@ -700,7 +700,7 @@ test_pot_create_065()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 	# an empty error message is printed because _error is re-implemented in the stub
 }
 
@@ -715,7 +715,7 @@ test_pot_create_080()
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_081()
@@ -744,7 +744,7 @@ test_pot_create_081()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_082()
@@ -773,7 +773,7 @@ test_pot_create_082()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_083()
@@ -802,7 +802,7 @@ test_pot_create_083()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_084()
@@ -831,7 +831,7 @@ test_pot_create_084()
 	assertEquals "_cj_conf_arg10" "dual" "$CJCONF_CALL1_ARG10"
 	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
 	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 
@@ -940,7 +940,7 @@ test_pot_create_120()
 	assertEquals "_cj_interal_conf arg2" "single" "$CJICONF_CALL1_ARG2"
 	assertEquals "_cj_interal_conf arg3" "0" "$CJICONF_CALL1_ARG3"
 	assertEquals "_cj_interal_conf arg4" "" "$CJICONF_CALL1_ARG4"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_121()
@@ -975,7 +975,7 @@ test_pot_create_121()
 	assertEquals "_cj_interal_conf arg2" "single" "$CJICONF_CALL1_ARG2"
 	assertEquals "_cj_interal_conf arg3" "0" "$CJICONF_CALL1_ARG3"
 	assertEquals "_cj_interal_conf arg4" "10.1.2.3" "$CJICONF_CALL1_ARG4"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_create_122()
@@ -1009,7 +1009,7 @@ test_pot_create_122()
 	assertEquals "_cj_interal_conf arg2" "single" "$CJICONF_CALL1_ARG2"
 	assertEquals "_cj_interal_conf arg3" "0" "$CJICONF_CALL1_ARG3"
 	assertEquals "_cj_interal_conf arg4" "" "$CJICONF_CALL1_ARG4"
-	assertEquals "_cj_flv calls" "0" "$CJFLV_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 	assertEquals "_potnet calls" "0" "$POTNET_CALLS"
 }
 
@@ -1027,8 +1027,8 @@ setUp()
 	CJCONF_CALL1_ARG10=
 	CJICONF_CALLS=0
 	CJICONF_CALL1_ARG4=
-	CJFLV_CALLS=0
-	CJFLV_CALL1_ARG2=
+	EXEC_FLV_CALLS=0
+	EXEC_FLV_CALL1_ARG2=
 	HELP_CALLS=0
 	ISVNETAVAIL_CALLS=0
 	ISPOTNETAVAIL_CALLS=0

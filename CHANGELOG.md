@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - export-ports: add UDP support, as -e udp:53:53 (#115)
 - create: dns custom allows to statically provide a resolv.conf
 - POT_EXTIF_ADDR: new parameter to force which IP of EXTIF should be used for NAT and RDR
+- clone: add support for applying flavors to cloned pots
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)

@@ -100,18 +100,14 @@ _set_pipefail()
 	# shellcheck disable=SC2039
 	local _major _version
 	_major="$(sysctl -n kern.osrelease | cut -f 1 -d '.')"
-	_version="$(sysctl -n kern.osrelease | cut -f 1 -d '-')"
 	if [ "$_major" -ge "13" ]; then
 		# shellcheck disable=SC2039
 		set -o pipefail
 		return
 	fi
+	_version="$(sysctl -n kern.osrelease | cut -f 1 -d '-')"
 	case "$_version" in
-		"12.1")
-			# shellcheck disable=SC2039
-			set -o pipefail
-			;;
-		"12.2")
+		"12.1"|"12.2")
 			# shellcheck disable=SC2039
 			set -o pipefail
 			;;

@@ -156,6 +156,7 @@ _pot() {
 						'-v[Verbose output]' \
 						'-p[pot name]::_normal' \
 						'-P[pot reference]:pot reference name:_pot_pots' \
+						'*-f[flavour name]:flavour name:_pot_flavours'
 						'-N[network type]:network type:_pot_network_type' \
 						'-i[network config]::_normal' \
 						'-B[bridge name]:bridge name:_pot_bridges' \

@@ -413,66 +413,6 @@ _cj_internal_conf()
 #	fi
 }
 
-# Special version of set-cmd usable only for flavours
-# $1 : pot name
-# $2 : the set-cmd line in the file
-_cj_flv_set_cmd()
-{
-	# shellcheck disable=SC2039
-	local _pname _line _cmd
-	_pname="$1"
-	_line="$2"
-	_cmd="${_line#set-cmd -c }"
-	if [ "$_line" = "$_cmd" ]; then
-		_error "In flavour only 'set-cmd -c ' is supported"
-		return
-	fi
-	_set_command "$_pname" "$_cmd"
-}
-
-# $1 pot name
-# $2 flavour name
-_cj_flv()
-{
-	# shellcheck disable=SC2039
-	local _pname _flv _pdir
-	_pname=$1
-	_flv=$2
-	_pdir=${POT_FS_ROOT}/jails/$_pname
-	_debug "Flavour: $_flv"
-	if [ -r "${_POT_FLAVOUR_DIR}/${_flv}" ]; then
-		_debug "Executing $_flv pot commands on $_pname"
-		while read -r line ; do
-			# shellcheck disable=SC2086
-			if _is_cmd_flavorable $line ; then
-				if [ "$line" != "${line#set-cmd}" ]; then
-					# workaround for set-cmd / damn quoting and shell script
-					_cj_flv_set_cmd "$_pname" "$line"
-				else
-					# shellcheck disable=SC2086
-					pot-cmd $line -p "$_pname"
-				fi
-			else
-				_error "Flavor $_flv: line $line not valid - ignoring"
-			fi
-		done < "${_POT_FLAVOUR_DIR}/${_flv}"
-	fi
-	if [ -x "${_POT_FLAVOUR_DIR}/${_flv}.sh" ]; then
-		_debug "Starting $_pname pot for the initial bootstrap"
-		pot-cmd start "$_pname"
-		cp -v "${_POT_FLAVOUR_DIR}/${_flv}.sh" "$_pdir/m/tmp"
-		_debug "Executing $_flv script on $_pname"
-		if ! jexec "$_pname" "/tmp/${_flv}.sh" "$_pname" ; then
-			_error "create: flavour $_flv failed (script)"
-			_cj_undo_create
-			return 1
-		fi
-		pot-cmd stop "$_pname"
-	else
-		_debug "No shell script available for the flavour $_flv"
-	fi
-}
-
 # $1 pot name
 # $2 freebsd version
 _cj_single_install()
@@ -620,7 +560,7 @@ pot-create()
 			;;
 		f)
 			if ! _is_flavourdir ; then
-				_error "The flavour dir is missing"
+				_error "The flavour directory is missing"
 				${EXIT} 1
 			fi
 			if _is_flavour "$OPTARG" ; then
@@ -630,7 +570,7 @@ pot-create()
 					_flv="$_flv $OPTARG"
 				fi
 			else
-				_error "The flavour $OPTARG not found"
+				_error "Flavour $OPTARG not found"
 				_debug "Looking in the flavour dir ${_POT_FLAVOUR_DIR}"
 				${EXIT} 1
 			fi
@@ -837,7 +777,10 @@ pot-create()
 	fi
 	if [ -n "$_flv" ]; then
 		for _f in $_flv ; do
-			_cj_flv "$_pname" "$_f"
+			if ! _exec_flv "$_pname" "$_f" ; then
+				_cj_undo_create
+				${EXIT} 1
+			fi
 		done
 	fi
 }

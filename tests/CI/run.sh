@@ -53,7 +53,11 @@ set_stack() {
 	local s=$1
 	local conf=$POT_PATH/etc/pot/pot.conf
 	if grep -q ^POT_NETWORK_STACK $conf ; then
-		sed -i '' -e "s/POT_NETWORK_STACK=.*$/POT_NETWORK_STACK=$s/" $conf
+		if [ -L $conf ]; then
+			echo POT_NETWORK_STACK=$s >> $conf
+		else
+			sed -i '' -e "s/POT_NETWORK_STACK=.*$/POT_NETWORK_STACK=$s/" $conf
+		fi
 	else
 		echo POT_NETWORK_STACK=$s >> $conf
 	fi

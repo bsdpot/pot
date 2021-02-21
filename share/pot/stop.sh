@@ -6,7 +6,7 @@ stop-help()
 	echo "pot stop [-hv] [potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  potname : the jail that has to start'
+	echo '  potname : the pot that has to stop'
 }
 
 _js_cpu_rebalance()

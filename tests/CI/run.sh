@@ -399,7 +399,10 @@ ASSUME_ALWAYS_YES=yes pkg bootstrap
 PKG_FLV
 ) > $flv_dir/pkg.sh
 	chmod a+x $flv_dir/pkg.sh
-	if ! pot clone -p $cloned_name -P $name -f pkg -F ; then
+	if [ "$n" = "private-bridge" ]; then
+		bopt="-B testprivate"
+	fi
+	if ! pot clone -p $cloned_name -P $name -f pkg -F "$bopt" ; then
 		error $name clone
 	fi
 	startstop_test $cloned_name $n $s

@@ -391,7 +391,7 @@ clone_test() {
 	local s=${3}
 
 	flv_dir=$POT_PATH/etc/pot/flavours
-	# add a broken flavour
+	# add a flavour
 	(
 	cat << PKG_FLV
 #!/bin/sh
@@ -439,6 +439,7 @@ pot_corrupted_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
 	logger -p local2.info -t pot-CI "pot_corrupted_test: $name"
 	create_test $1 $2 $3 $4
+	clone_test $name $3 $4
 	rm -rf /opt/pot/jails/$name/conf
 	destroy_corrupted_test $1 $2 $3 $4
 	empty_check $name

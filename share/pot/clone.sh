@@ -210,6 +210,9 @@ _cj_conf()
 	if [ -e "$_pbdir/conf/poststop.sh" ]; then
 		cp "$_pbdir/conf/poststop.sh" "$_pdir/conf/poststop.sh"
 	fi
+	if [ -e "$_pbdir/conf/resolv.conf" ]; then
+		cp "$_pbdir/conf/resolv.conf" "$_pdir/conf/resolv.conf"
+	fi
 }
 
 # shellcheck disable=SC2039

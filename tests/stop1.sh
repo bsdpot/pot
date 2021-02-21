@@ -48,7 +48,7 @@ test_pot_stop_001()
 	pot-stop -b bb
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "Stop calls" "0" "$STOPPED_CALLS"
 
 	setUp
@@ -62,8 +62,8 @@ test_pot_stop_001()
 test_pot_stop_002()
 {
 	pot-stop non-existent-test-pot
-	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "Stop calls" "0" "$STOPPED_CALLS"
 }

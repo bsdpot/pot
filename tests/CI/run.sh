@@ -53,7 +53,11 @@ set_stack() {
 	local s=$1
 	local conf=$POT_PATH/etc/pot/pot.conf
 	if grep -q ^POT_NETWORK_STACK $conf ; then
-		sed -i '' -e "s/POT_NETWORK_STACK=.*$/POT_NETWORK_STACK=$s/" $conf
+		if [ -L $conf ]; then
+			echo POT_NETWORK_STACK=$s >> $conf
+		else
+			sed -i '' -e "s/POT_NETWORK_STACK=.*$/POT_NETWORK_STACK=$s/" $conf
+		fi
 	else
 		echo POT_NETWORK_STACK=$s >> $conf
 	fi
@@ -115,7 +119,7 @@ create_test() {
 					fi
 				fi
 			else
-				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate $fopt ; then
+				if ! pot create -v -p $name -t $t -b $b -N $n -B testprivate -d custom:resolv.conf-ipv4 $fopt ; then
 					error $name create
 				fi
 			fi
@@ -257,6 +261,11 @@ startstop_test() {
 			fi
 		fi
 	fi
+	if [ "$name" != "${name%%clone}" ]; then
+		if ! jexec $name /usr/local/sbin/pkg -v ; then
+			error $name flavor on clone
+		fi
+	fi
 	if ! pot stop $name ; then
 		error $name stop
 	fi
@@ -376,6 +385,40 @@ destroy_rename_test() {
 	fi
 }
 
+# $1 base pot name
+# $2 network
+# $3 stack
+clone_test() {
+	local name=${1}
+	local cloned_name=${1}-clone
+	local n=${2}
+	local s=${3}
+
+	flv_dir=$POT_PATH/etc/pot/flavours
+	# add a flavour
+	(
+	cat << PKG_FLV
+#!/bin/sh
+ASSUME_ALWAYS_YES=yes pkg bootstrap
+PKG_FLV
+) > $flv_dir/pkg.sh
+	chmod a+x $flv_dir/pkg.sh
+	if [ "$n" = "private-bridge" ]; then
+		if ! pot clone -p $cloned_name -P $name -f pkg -F -B testprivate ; then
+			error $name clone
+		fi
+	else
+		if ! pot clone -p $cloned_name -P $name -f pkg -F ; then
+			error $name clone
+		fi
+	fi
+	startstop_test $cloned_name $n $s
+	if ! pot destroy -p $cloned_name ; then
+		error $name destroy
+	fi
+	rm $flv_dir/pkg.sh
+}
+
 # $1 type
 # $2 base_version
 # $3 network
@@ -406,6 +449,7 @@ pot_corrupted_test() {
 	local name=$( get_pot_name $1 $2 $3 $4 )
 	logger -p local2.info -t pot-CI "pot_corrupted_test: $name"
 	create_test $1 $2 $3 $4
+	clone_test $name $3 $4
 	rm -rf /opt/pot/jails/$name/conf
 	destroy_corrupted_test $1 $2 $3 $4
 	empty_check $name
@@ -485,7 +529,6 @@ for s in $STACKS ; do
 					continue
 				fi
 				pot_corrupted_test $t $b $n $s
-				#pot_rename_test $t $b $n $s
 				pot_create_fail_test $t $b $n $s
 				echo "tested $t $b $n $s $(date)" >> $logfile
 			done

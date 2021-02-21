@@ -6,7 +6,7 @@ stop-help()
 	echo "pot stop [-hv] [potname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  potname : the jail that has to start'
+	echo '  potname : the pot that has to stop'
 }
 
 _js_cpu_rebalance()
@@ -159,7 +159,8 @@ pot-stop()
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
 		?)
-			break
+			stop-help
+			${EXIT} 1
 			;;
 		esac
 	done
@@ -171,8 +172,7 @@ pot-stop()
 	fi
 	if ! _is_pot "$_pname" quiet ; then
 		_error "The pot $_pname is not a valid pot"
-		stop-help
-		${EXIT} 1
+		${EXIT} 0
 	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1

@@ -26,6 +26,8 @@ date()
 	fi
 }
 
+. pipefail-stub.sh
+
 # UUT
 . ../share/pot/clone.sh
 
@@ -74,7 +76,7 @@ _cj_undo_clone()
 
 test_cj_zfs_001()
 {
-	_cj_zfs new-pot test-pot
+	_cj_zfs new-pot test-pot NO
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "3" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
@@ -93,7 +95,7 @@ test_cj_zfs_001()
 
 test_cj_zfs_002()
 {
-	_cj_zfs new-pot test-pot-2
+	_cj_zfs new-pot test-pot-2 NO
 	assertEquals "return code" "0" "$?"
 	assertEquals "zfs calls" "2" "$ZFS_CALLS"
 	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
@@ -205,6 +207,43 @@ test_cj_zfs_041()
 	assertEquals "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-single-run/m@6688" "$ZFS_CALL2_ARG4"
 	assertEquals "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/m" "$ZFS_CALL2_ARG5"
 }
+
+test_cj_zfs_060()
+{
+	_cj_zfs new-pot test-pot-single NO 12345678
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "2" "$ZFS_CALLS"
+	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "mkdir calls" "1" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "zfs arg1" "clone" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/m" "$ZFS_CALL2_ARG3"
+	assertEquals "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-single/m@12345678" "$ZFS_CALL2_ARG4"
+	assertEquals "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/m" "$ZFS_CALL2_ARG5"
+	assertEquals "zfs last snap calls" "0" "$ZFSLASTSNAP_CALLS"
+}
+
+test_cj_zfs_061()
+{
+	_cj_zfs new-pot test-pot NO 12345678
+	assertEquals "return code" "0" "$?"
+	assertEquals "zfs calls" "3" "$ZFS_CALLS"
+	assertEquals "zfs arg1" "create" "$ZFS_CALL1_ARG1"
+	assertEquals "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" "$ZFS_CALL1_ARG2"
+	assertEquals "mkdir calls" "2" "$MKDIR_CALLS"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/conf" "$MKDIR_CALL1_ARG2"
+	assertEquals "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" "$MKDIR_CALL2_ARG2"
+	assertEquals "zfs arg1" "clone" "$ZFS_CALL2_ARG1"
+	assertEquals "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/usr.local" "$ZFS_CALL2_ARG3"
+	assertEquals "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot/usr.local@12345678" "$ZFS_CALL2_ARG4"
+	assertEquals "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/usr.local" "$ZFS_CALL2_ARG5"
+	assertEquals "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/custom" "$ZFS_CALL3_ARG3"
+	assertEquals "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot/custom@12345678" "$ZFS_CALL3_ARG4"
+	assertEquals "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" "$ZFS_CALL3_ARG5"
+	assertEquals "zfs last snap calls" "0" "$ZFSLASTSNAP_CALLS"
+}
+
 setUp()
 {
 	common_setUp

@@ -46,6 +46,11 @@ _is_vnet_available()
 	return 0 # true
 }
 
+_get_pot_snaps()
+{
+	echo 12341234
+	echo 12345678
+}
 # app specific stubs
 _cj_zfs()
 {
@@ -401,6 +406,25 @@ test_pot_clone_062()
 	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
+test_pot_clone_080()
+{
+	pot-clone -p new-pot -P test-pot -s 12345678
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg1" "new-pot" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg2" "test-pot" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_zfs arg3" "NO" "$CJZFS_CALL1_ARG3"
+	assertEquals "_cj_zfs arg4" "12345678" "$CJZFS_CALL1_ARG4"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
+}
 setUp()
 {
 	common_setUp

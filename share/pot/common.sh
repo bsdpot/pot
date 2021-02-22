@@ -930,6 +930,14 @@ _print_pot_snaps()
 	fi
 }
 
+#1 pot name
+_get_pot_snaps()
+{
+	for _s in $( zfs list -t snapshot -o name -H "${POT_ZFS_ROOT}/jails/$1" | tr '\n' ' ' ) ; do
+		echo "${_s##*@}"
+	done
+}
+
 # $1 pot name
 _pot_mount()
 {

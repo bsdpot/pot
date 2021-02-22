@@ -12,6 +12,7 @@ clone-help()
 	echo '  -v verbose'
 	echo '  -k keep the pot, if clone fails'
 	echo '  -P potname : the pot to be cloned (template)'
+	echo '  -s snapshot : the snapshot to be used to clone'
 	echo '  -p potname : the new pot name'
 	echo '  -f flavour : flavour to be used'
 	echo '  -N network-type : new network type of the cloned pot'
@@ -40,13 +41,16 @@ _cj_undo_clone()
 # $1 pot name
 # $2 pot-base name
 # $3 auto-snapshot
+# $4 custom snapshot tag
 _cj_zfs()
 {
 	# shellcheck disable=SC2039
-	local _pname _potbase _jdset _pdir _pbdir _pbdset _mnt_p _opt _autosnap _snaptag _pb_type
+	local _pname _potbase _jdset _pdir _pbdir _pbdset _mnt_p _opt _autosnap _snaptag _pb_type _snap __last_snap
 	_pname=$1
 	_potbase=$2
-	_autosnap="${3:-NO}"
+	_autosnap="$3"
+	_snap="$4"
+	__last_snap=
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	_pbdset=${POT_ZFS_ROOT}/jails/$_potbase
 	_pdir=${POT_FS_ROOT}/jails/$_pname
@@ -66,9 +70,12 @@ _cj_zfs()
 	if [ -e "$_pdir/conf/fscomp.conf" ]; then
 		rm -f "$_pdir/conf/fscomp.conf"
 	fi
+	_debug "Cloning $_potbase with snap $_snap"
 	if [ "$_pb_type" = "single" ]; then
 		_dset="${_pbdset}/m"
-		_snap=$( _zfs_last_snap "$_dset" )
+		if [ -z "$_snap" ]; then
+			_snap=$( _zfs_last_snap "$_dset" )
+		fi
 		if [ -z "$_snap" ]; then
 			if [ "$_autosnap" = "YES" ]; then
 				_snaptag="$(date +%s)"
@@ -108,6 +115,9 @@ _cj_zfs()
 			_debug "Create root mountpoint dir ($_pdir/m)"
 			mkdir -p "$_pdir/m"
 		fi
+		if [ -z "$_snap" ]; then
+			__last_snap="YES"
+		fi
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )
 			_mnt_p=$( echo "$line" | awk '{print $2}' )
@@ -120,7 +130,9 @@ _cj_zfs()
 				# managing potbase datasets
 				if [ "$_dset" != "${_dset##${_pbdset}}" ]; then
 					_dname="${_dset##${_pbdset}/}"
-					_snap=$( _zfs_last_snap "$_dset" )
+					if [ "$__last_snap" = "YES" ]; then
+						_snap=$( _zfs_last_snap "$_dset" )
+					fi
 					if [ -z "$_snap" ]; then
 						if [ "$_autosnap" = "YES" ]; then
 							_snaptag="$(date +%s)"
@@ -225,7 +237,7 @@ _cj_conf()
 pot-clone()
 {
 	# shellcheck disable=SC2039
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack _flv
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack _snap _flv
 	_pname=
 	_ipaddr=
 	_potbase=
@@ -234,9 +246,10 @@ pot-clone()
 	_bridge_name=
 	_network_stack=
 	_cleanup_keep="NO"
+	_snap=
 	_flv=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:B:S:f:k" _o ; do
+	while getopts "hvp:i:P:FN:B:S:f:ks:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -273,6 +286,9 @@ pot-clone()
 				;;
 			P)
 				_potbase=$OPTARG
+				;;
+			s)
+				_snap=$OPTARG
 				;;
 			B)
 				_bridge_name=$OPTARG
@@ -332,6 +348,20 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
+	if [ -n "$_snap" ]; then
+		if [ "$_autosnap" = "YES" ]; then
+			_error "-s and -F are incompatible - which snapshot should I use"
+			clone-help
+			${EXIT} 1
+		fi
+		# shellcheck disable=SC2046
+		if ! _is_in_list "$_snap" $(_get_pot_snaps "$_potbase" | tr '\n' ' ') ; then
+			_error "snapshot $_snap not found"
+			_debug "snapshots available $(_get_pot_snaps "$_potbase" | tr '\n' ' ')"
+			clone-help
+			${EXIT} 1
+		fi
+	fi
 	if [ -z "$_network_type" ]; then
 		_pb_network_type="$( _get_pot_network_type "$_potbase" )"
 		if [ -z "$_pb_network_type" ] ; then
@@ -361,7 +391,7 @@ pot-clone()
 	fi
 	export _cleanup_pname="$_pname"
 	export _cleanup_keep
-	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
+	if ! _cj_zfs "$_pname" "$_potbase" "$_autosnap" "$_snap" ; then
 		${EXIT} 1
 	fi
 	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" "$_network_stack" ; then

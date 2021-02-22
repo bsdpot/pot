@@ -66,7 +66,7 @@ which()
 		fi
 	fi
 }
-	
+
 
 # UUT
 . ../share/pot/common.sh
@@ -96,6 +96,15 @@ test_is_pot_running()
 
 	_is_pot_running pot-test-2
 	assertNotEquals "1" "$?"
+}
+
+test_is_valid_potname()
+{
+	_is_valid_potname "test-pot"
+	assertEquals "Refusing valid name" "0" "$?"
+
+	_is_valid_potname "test.pot"
+	assertNotEquals "Invalid name not detected" "0" "$?"
 }
 
 test_is_in_list()

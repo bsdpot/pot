@@ -630,7 +630,7 @@ _is_pot_running()
 # tested (common1)
 _is_valid_potname()
 {
-	if echo $1 | grep -Fq '.' ; then
+	if echo "$1" | grep -Fq '.' ; then
 		return 1 # false
 	else
 		return 0 # true

@@ -1,13 +1,6 @@
 #!/bin/sh
 
 # system utilities stubs
-
-# UUT
-. ../share/pot/clone.sh
-
-# common stubs
-. common-stub.sh
-
 potnet()
 {
 	# no monitor, potnet is called in a subshell
@@ -35,6 +28,14 @@ potnet()
 	return 1 # false
 }
 
+. pipefail-stub.sh
+
+# UUT
+. ../share/pot/clone.sh
+
+# common stubs
+. common-stub.sh
+
 _is_potnet_available()
 {
 	return 0 # true
@@ -56,6 +57,11 @@ _cj_conf()
 	__monitor CJCONF "$@"
 }
 
+_exec_flv()
+{
+	__monitor EXEC_FLV "$@"
+}
+
 clone-help()
 {
 	__monitor HELP "$@"
@@ -70,6 +76,7 @@ test_pot_clone_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-clone -vL
@@ -79,6 +86,7 @@ test_pot_clone_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-clone -L bb
@@ -88,6 +96,7 @@ test_pot_clone_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-clone -h
@@ -97,6 +106,7 @@ test_pot_clone_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-clone -S
@@ -106,6 +116,7 @@ test_pot_clone_001()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_002()
@@ -117,6 +128,7 @@ test_pot_clone_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-clone -P test-pot
@@ -126,6 +138,7 @@ test_pot_clone_002()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_003()
@@ -137,6 +150,7 @@ test_pot_clone_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 
 	setUp
 	pot-clone -p test-pot -P test-pot-2
@@ -146,6 +160,7 @@ test_pot_clone_003()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_004()
@@ -157,6 +172,7 @@ test_pot_clone_004()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_006()
@@ -168,6 +184,19 @@ test_pot_clone_006()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
+}
+
+test_pot_clone_007()
+{
+	# invalid pot name
+	pot-clone -p new.pot -P test-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_020()
@@ -179,6 +208,7 @@ test_pot_clone_020()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
 	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_021()
@@ -197,6 +227,7 @@ test_pot_clone_021()
 	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_022()
@@ -214,6 +245,7 @@ test_pot_clone_022()
 	assertEquals "_cj_conf arg2" "test-pot-2" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.1.2.4" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_023()
@@ -232,6 +264,7 @@ test_pot_clone_023()
 	assertEquals "_cj_conf arg2" "test-pot" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "inherit" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_024()
@@ -249,6 +282,7 @@ test_pot_clone_024()
 	assertEquals "_cj_conf arg2" "test-pot-2" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_040()
@@ -266,6 +300,49 @@ test_pot_clone_040()
 	assertEquals "_cj_conf arg2" "test-pot-single" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
+}
+
+test_pot_clone_041()
+{
+	pot-clone -p new-pot-single -P test-pot-single -f flop
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-single" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-single" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-single" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-single" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "1" "$EXEC_FLV_CALLS"
+	assertEquals "_exec_flv arg1" "new-pot-single" "$EXEC_FLV_CALL1_ARG1"
+	assertEquals "_exec_flv arg2" "flop" "$EXEC_FLV_CALL1_ARG2"
+}
+
+test_pot_clone_041()
+{
+	pot-clone -p new-pot-single -P test-pot-single -f flip -f flop
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_uid0 calls" "1" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "1" "$CJZFS_CALLS"
+	assertEquals "_cj_zfs arg0" "new-pot-single" "$CJZFS_CALL1_ARG1"
+	assertEquals "_cj_zfs arg1" "test-pot-single" "$CJZFS_CALL1_ARG2"
+	assertEquals "_cj_conf calls" "1" "$CJCONF_CALLS"
+	assertEquals "_cj_conf arg1" "new-pot-single" "$CJCONF_CALL1_ARG1"
+	assertEquals "_cj_conf arg2" "test-pot-single" "$CJCONF_CALL1_ARG2"
+	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
+	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "2" "$EXEC_FLV_CALLS"
+	assertEquals "_exec_flv arg1" "new-pot-single" "$EXEC_FLV_CALL1_ARG1"
+	assertEquals "_exec_flv arg2" "flip" "$EXEC_FLV_CALL1_ARG2"
+	assertEquals "_exec_flv arg1" "new-pot-single" "$EXEC_FLV_CALL2_ARG1"
+	assertEquals "_exec_flv arg2" "flop" "$EXEC_FLV_CALL2_ARG2"
 }
 
 test_pot_clone_060()
@@ -283,6 +360,7 @@ test_pot_clone_060()
 	assertEquals "_cj_conf arg2" "test-pot-multi-private" "$CJCONF_CALL1_ARG2"
 	assertEquals "_cj_conf arg3" "public-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.123.123.123" "$CJCONF_CALL1_ARG4"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_061()
@@ -301,6 +379,7 @@ test_pot_clone_061()
 	assertEquals "_cj_conf arg3" "private-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.1.3.4" "$CJCONF_CALL1_ARG4"
 	assertEquals "_cj_conf arg5" "test-bridge" "$CJCONF_CALL1_ARG5"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 test_pot_clone_062()
@@ -319,6 +398,7 @@ test_pot_clone_062()
 	assertEquals "_cj_conf arg3" "private-bridge" "$CJCONF_CALL1_ARG3"
 	assertEquals "_cj_conf arg4" "10.1.3.4" "$CJCONF_CALL1_ARG4"
 	assertEquals "_cj_conf arg5" "test-bridge" "$CJCONF_CALL1_ARG5"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
 setUp()
@@ -328,6 +408,7 @@ setUp()
 	CJCONF_CALLS=0
 	CJCONF_CALL1_ARG4=
 	HELP_CALLS=0
+	EXEC_FLV_CALLS=0
 }
 
 . shunit/shunit2

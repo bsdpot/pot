@@ -260,6 +260,19 @@ test_pot_create_006()
 	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
+test_pot_create_007()
+{
+	pot-create -p new.pot -b 12.1
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_cj_single_install calls" "0" "$CJSINGLE_CALLS"
+	assertEquals "_cj_interal_conf calls" "0" "$CJICONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
+}
+
 test_pot_create_020()
 {
 	pot-create -p new-pot -b 11.1

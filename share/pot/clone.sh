@@ -3,12 +3,14 @@
 
 trap _cj_undo_clone TERM INT
 _set_pipefail
+
 # shellcheck disable=SC2039
 clone-help()
 {
 	echo "pot clone [-hvF] -p potname -P basepot [-i ipaddr]"
 	echo '  -h print this help'
 	echo '  -v verbose'
+	echo '  -k keep the pot, if clone fails'
 	echo '  -P potname : the pot to be cloned (template)'
 	echo '  -p potname : the new pot name'
 	echo '  -f flavour : flavour to be used'
@@ -27,7 +29,11 @@ _cj_undo_clone()
 		${EXIT} 1
 	fi
 	pot-cmd stop "$_cleanup_pname"
-	pot-cmd destroy -Fp "$_cleanup_pname" -q
+	if [ "$_cleanup_keep" != "YES" ]; then
+		pot-cmd destroy -Fp "$_cleanup_pname" -q
+	fi
+	unset _cleanup_pname
+	unset _cleanup_keep
 	${EXIT} 1
 }
 
@@ -227,9 +233,10 @@ pot-clone()
 	_autosnap="NO"
 	_bridge_name=
 	_network_stack=
+	_cleanup_keep="NO"
 	_flv=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:B:S:f:" _o ; do
+	while getopts "hvp:i:P:FN:B:S:f:k" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -238,7 +245,14 @@ pot-clone()
 			v)
 				_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 				;;
+			k)
+				_cleanup_keep="YES"
+				;;
 			p)
+				if ! _is_valid_potname "$OPTARG" ; then
+					_error "$OPTARG is not a valid name for a pot ('.' is the only character not allowed)"
+					${EXIT} 1
+				fi
 				_pname=$OPTARG
 				;;
 			N)
@@ -346,6 +360,7 @@ pot-clone()
 		${EXIT} 1
 	fi
 	export _cleanup_pname="$_pname"
+	export _cleanup_keep
 	if ! _cj_zfs "$_pname" "$_potbase" $_autosnap ; then
 		${EXIT} 1
 	fi
@@ -360,4 +375,6 @@ pot-clone()
 			fi
 		done
 	fi
+	unset _cleanup_pname
+	unset _cleanup_keep
 }

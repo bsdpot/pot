@@ -626,6 +626,17 @@ _is_pot_running()
 	return $?
 }
 
+# $1 pot name
+# tested (common1)
+_is_valid_potname()
+{
+	if echo "$1" | grep -Fq '.' ; then
+		return 1 # false
+	else
+		return 0 # true
+	fi
+}
+
 # $1 flavour name
 _is_flavour()
 {

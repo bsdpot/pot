@@ -122,7 +122,7 @@ _is_fscomp()
 _is_flavour()
 {
 	case $1 in
-		default|flap|flap2)
+		default|flap|flap2|flip|flop)
 			return 0 # true
 			;;
 	esac

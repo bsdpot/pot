@@ -43,6 +43,8 @@ _cj_undo_create()
 	if [ "$_cleanup_keep" != "YES" ]; then
 		pot-cmd destroy -Fp "$_cleanup_pname" -q
 	fi
+	unset _cleanup_pname
+	unset _cleanup_keep
 	${EXIT} 1
 }
 
@@ -485,6 +487,10 @@ pot-create()
 			_cleanup_keep="YES"
 			;;
 		p)
+			if ! _is_valid_potname "$OPTARG" ; then
+				_error "$OPTARG is not a valid name for a pot ('.' is the only character not allowed)"
+				${EXIT} 1
+			fi
 			_pname="$OPTARG"
 			;;
 		t)
@@ -783,4 +789,6 @@ pot-create()
 			fi
 		done
 	fi
+	unset _cleanup_pname
+	unset _cleanup_keep
 }

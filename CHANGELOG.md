@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone: add support for applying flavors to cloned pots
 - clone: add -k flag to keep the cloned pot for debug when the process failed
 - info: -s to list available snapshots of a pot
+- clone: -s flag to explicitly choose the snapshot to clone
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)

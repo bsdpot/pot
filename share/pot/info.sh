@@ -4,13 +4,15 @@
 # shellcheck disable=SC2039
 info-help()
 {
-	echo "pot info [-hvqr] -p pname"
+	echo "pot info [-hvqr] [-p pname|-B bname]"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -q quiet'
 	echo '  -p pname: pot name'
-	echo '  -r check if the pot is running'
-	echo '  -E output in environment variables form (only for pot)'
+	echo '  -B bname: bridge name'
+	echo '  -r check only if the pot is running'
+	echo '  -E print few pot information as environment variables'
+	echo '  -s list the available snapshots for the pot'
 }
 
 # $! pot name
@@ -128,6 +130,15 @@ _info_pot()
 	echo
 }
 
+# $1 pot name
+_info_pot_snapshots()
+{
+	# shellcheck disable=SC2039
+	local _pname
+	_pname="$1"
+	_get_pot_snaps "$_pname"
+}
+
 # $1 bridge name
 _info_bridge()
 {
@@ -144,13 +155,15 @@ _info_bridge()
 # shellcheck disable=SC2039
 pot-info()
 {
-	local _pname _quiet _run _bname
+	# shellcheck disable=SC2039
+	local _pname _quiet _run _bname _env_output _snaps
 	_pname=""
 	_quiet="NO"
 	_run="NO"
 	_env_output="NO"
+	_snaps="NO"
 	OPTIND=1
-	while getopts "hvqp:rb:E" _o ; do
+	while getopts "hvqp:rB:Es" _o ; do
 		case "$_o" in
 		h)
 			info-help
@@ -165,7 +178,7 @@ pot-info()
 		p)
 			_pname="$OPTARG"
 			;;
-		b)
+		B)
 			_bname="$OPTARG"
 			;;
 		r)
@@ -173,6 +186,9 @@ pot-info()
 			;;
 		E)
 			_env_output="YES"
+			;;
+		s)
+			_snaps="YES"
 			;;
 		*)
 			info-help
@@ -200,24 +216,29 @@ pot-info()
 		info-help
 		${EXIT} 1
 	fi
+	if [ -n "$_bname" ] && [ "$_snaps" = "YES" ]; then
+		_info "Bridges has no snapshots - -s ignored"
+		_snaps="NO"
+	fi
 	if [ -n "$_pname" ]; then
 		if ! _is_pot "$_pname" quiet ; then
 			_qerror "$_quiet" "$_pname is not a pot"
 			info-help
 			${EXIT} 1
 		fi
-		if [ "$_quiet" = "quiet" ]; then
-			if [ "$_run" = "YES" ]; then
-				if _is_pot_running "$_pname" ; then
-					${EXIT} 0
-				else
-					${EXIT} 1
-				fi
-			else
+		if [ "$_run" = "YES" ]; then
+			if _is_pot_running "$_pname" ; then
 				${EXIT} 0
+			else
+				${EXIT} 1
 			fi
 		fi
-		if [ "$_env_output" = "YES" ]; then
+		if [ "$_quiet" = "quiet" ]; then
+			${EXIT} 0
+		fi
+		if [ "$_snaps" = "YES" ]; then
+			_info_pot_snapshots "$_pname"
+		elif [ "$_env_output" = "YES" ]; then
 			_info_pot_env "$_pname"
 		else
 			_info_pot "$_pname"

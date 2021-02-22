@@ -94,7 +94,10 @@ _pot() {
 						'-v[Verbose output]' \
 						'-q[Quiet output]' \
 						'-p[pot name]:pot name:_pot_pots' \
-						'-r[Check if the pos is running]'
+						'-B[bridge name]:bridge name:_pot_bridges' \
+						'-r[Check only if the pos is running]' \
+						'-s[List only the available snapshots of the pot]' \
+						'-E[Print few pot information as environment variables]'
 					;;
 				show)
 					_arguments -s \

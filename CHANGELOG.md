@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - POT_EXTIF_ADDR: new parameter to force which IP of EXTIF should be used for NAT and RDR
 - clone: add support for applying flavors to cloned pots
 - clone: add -k flag to keep the cloned pot for debug when the process failed
+- info: -s to list available snapshots of a pot
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - ext-if: do not include interface aliases in the bridges network if EXTIF has them (#120)
 - start: add support for custom dns resolver
 - init: create backup of rc.conf and pf.conf before to apply pot related changes
+- info: -B instead of -b for private bridge information
 
 ### Removed
 - create-dns: remove this already deprecated command, leaving the user to create a dns for the public bridge

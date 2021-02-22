@@ -25,6 +25,11 @@ _info_pot_env()
 	__monitor INFOPOTENV "$@"
 }
 
+_info_pot_snapshots()
+{
+	__monitor INFOPOTSNAP "$@"
+}
+
 test_pot_info_001()
 {
 	pot-info
@@ -33,7 +38,7 @@ test_pot_info_001()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 
 	setUp
-	pot-info -z bb
+	pot-info -b bb
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -73,7 +78,7 @@ test_pot_info_002()
 
 test_pot_info_003()
 {
-	pot-info -p test-pot -b test-bridge
+	pot-info -p test-pot -B test-bridge
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
@@ -111,8 +116,10 @@ test_pot_info_021()
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
 	assertEquals "Info calls" "0" "$INFOPOT_CALLS"
+}
 
-	setUp
+test_pot_info_022()
+{
 	pot-info -p test-pot -qr
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
@@ -120,8 +127,10 @@ test_pot_info_021()
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
 	assertEquals "Info calls" "0" "$INFOPOT_CALLS"
+}
 
-	setUp
+test_pot_info_023()
+{
 	pot-info -p test-pot-run -qr
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
@@ -141,19 +150,11 @@ test_pot_info_040()
 	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
 	assertEquals "Info calls" "1" "$INFOPOT_CALLS"
 	assertEquals "Info arg" "test-pot" "$INFOPOT_CALL1_ARG1"
+}
 
-	setUp
+test_pot_info_041()
+{
 	pot-info -p test-pot -v
-	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
-	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
-	assertEquals "Info calls" "1" "$INFOPOT_CALLS"
-	assertEquals "Info arg" "test-pot" "$INFOPOT_CALL1_ARG1"
-
-	setUp
-	pot-info -p test-pot -r
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
@@ -163,12 +164,36 @@ test_pot_info_040()
 	assertEquals "Info arg" "test-pot" "$INFOPOT_CALL1_ARG1"
 }
 
+test_pot_info_042()
+{
+	pot-info -p test-pot -r
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
+	assertEquals "Info calls" "0" "$INFOPOT_CALLS"
+}
+
+test_pot_info_043()
+{
+	pot-info -p test-pot -s
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
+	assertEquals "_is_pot_running calls" "0" "$ISPOTRUN_CALLS"
+	assertEquals "Info calls" "0" "$INFOPOT_CALLS"
+	assertEquals "InfoSnap calls" "1" "$INFOPOTSNAP_CALLS"
+}
+
 setUp()
 {
 	common_setUp
 	HELP_CALLS=0
 	INFOPOT_CALLS=0
 	INFOPOTENV_CALLS=0
+	INFOPOTSNAP_CALLS=0
 }
 
 . shunit/shunit2

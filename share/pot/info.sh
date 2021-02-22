@@ -134,9 +134,16 @@ _info_pot()
 _info_pot_snapshots()
 {
 	# shellcheck disable=SC2039
-	local _pname
+	local _pname _snaps
 	_pname="$1"
-	_get_pot_snaps "$_pname"
+	if _is_verbose ; then
+		_snaps="$( _get_pot_snaps "$_pname" )"
+		for _s in $_snaps ; do
+			echo "$_s: -> " "$( date -r "$_s" )"
+		done
+	else
+		_get_pot_snaps "$_pname"
+	fi
 }
 
 # $1 bridge name

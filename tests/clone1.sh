@@ -187,6 +187,18 @@ test_pot_clone_006()
 	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
 }
 
+test_pot_clone_007()
+{
+	# invalid pot name
+	pot-clone -p new.pot -P test-pot
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_cj_zfs calls" "0" "$CJZFS_CALLS"
+	assertEquals "_cj_conf calls" "0" "$CJCONF_CALLS"
+	assertEquals "_exec_flv calls" "0" "$EXEC_FLV_CALLS"
+}
+
 test_pot_clone_020()
 {
 	pot-clone -p new-pot -P test-pot-0

@@ -487,6 +487,10 @@ pot-create()
 			_cleanup_keep="YES"
 			;;
 		p)
+			if ! _is_valid_potname "$OPTARG" ; then
+				_error "$OPTARG is not a valid name for a pot ('.' is the only character not allowed)"
+				${EXIT} 1
+			fi
 			_pname="$OPTARG"
 			;;
 		t)

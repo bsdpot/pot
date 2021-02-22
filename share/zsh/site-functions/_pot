@@ -154,6 +154,7 @@ _pot() {
 					_arguments -s \
 						'-h[Show help]' \
 						'-v[Verbose output]' \
+						'-k[keep pot if it fails]' \
 						'-p[pot name]::_normal' \
 						'-P[pot reference]:pot reference name:_pot_pots' \
 						'*-f[flavour name]:flavour name:_pot_flavours'

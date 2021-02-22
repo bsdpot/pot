@@ -43,6 +43,8 @@ _cj_undo_create()
 	if [ "$_cleanup_keep" != "YES" ]; then
 		pot-cmd destroy -Fp "$_cleanup_pname" -q
 	fi
+	unset _cleanup_pname
+	unset _cleanup_keep
 	${EXIT} 1
 }
 
@@ -783,4 +785,6 @@ pot-create()
 			fi
 		done
 	fi
+	unset _cleanup_pname
+	unset _cleanup_keep
 }

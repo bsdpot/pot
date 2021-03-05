@@ -256,7 +256,7 @@ _pot() {
 						'-p[pot name]:pot name:_pot_pots' \
 						'*-H[hosts entry]::_normal'
 					;;
-				set-hosts)
+				set-hook)
 					_arguments \
 						'-h[Show help]' \
 						'-v[Verbose output]' \

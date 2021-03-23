@@ -784,22 +784,10 @@ _is_potnet_available()
 }
 
 # tested (common7)
-_map_archs()
+_get_arch()
 {
-	if [ -z "$1" ]; then
-		return
-	fi
-	case "$1" in
-		amd64)
-			echo amd64-amd64
-			;;
-		i386)
-			echo i386-i386
-			;;
-		*)
-			# TODO Add more arhitectures
-			;;
-	esac
+
+	echo "$(sysctl -n hw.machine)-$(sysctl -n hw.machine_arch)"
 }
 
 # tested (common7)
@@ -807,8 +795,7 @@ _get_valid_releases()
 {
 	# shellcheck disable=SC2039
 	local _arch _file_prefix
-	_arch="$( sysctl -n hw.machine_arch )"
-	_file_prefix="$(_map_archs "$_arch" )"
+	_file_prefix="$(_get_arch)"
 	if [ -z "$_file_prefix" ]; then
 		echo
 	fi
@@ -862,12 +849,14 @@ _get_freebsd_release_name()
 _fetch_freebsd()
 {
 	# shellcheck disable=SC2039
-	local _rel
-	if ! _fetch_freebsd_internal "$1" ; then
+	local _archpath _rel
+	_archpath="$(_get_arch)"
+
+	if ! _fetch_freebsd_internal "$1" "$_archpath"; then
 		# remove artifact and retry only once
 		_rel="$( _get_freebsd_release_name "$1" )"
 		rm -f /tmp/"${_rel}"_base.txz
-		if ! _fetch_freebsd_internal "$1" ; then
+		if ! _fetch_freebsd_internal "$1" "$_archpath"; then
 			return 1 # false
 		fi
 		return 0 # true
@@ -879,22 +868,23 @@ _fetch_freebsd()
 _fetch_freebsd_internal()
 {
 	# shellcheck disable=SC2039
-	local _rel _sha _sha_m
+	local _rel _sha _sha_m _archpath
 	_rel="$( _get_freebsd_release_name "$1" )"
+	_archpath="$( echo "$2" | sed -e 's:-:/:' )"
 
 	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
-		fetch -m http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz
+		fetch -m https://ftp.freebsd.org/pub/FreeBSD/releases/"$_archpath"/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz
 	fi
 
 	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
 		return 1 # false
 	fi
-	if [ -r /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" ]; then
+	if [ -r /usr/local/share/freebsd/MANIFESTS/"$2"-"${_rel}" ]; then
 		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
 		# shellcheck disable=SC2002
-		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}" | awk '/^base.txz/ { print $2 }' )
+		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/"$2"-"${_rel}" | awk '/^base.txz/ { print $2 }' )
 		# This version would remove the useless cat, but the testability of this function is compromised
-		#_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/amd64-amd64-"${_rel}")
+		#_sha_m=$( awk '/^base.txz/ { print $2 }' < /usr/local/share/freebsd/MANIFESTS/"$2"-"${_rel}")
 		if [ "$_sha" != "$_sha_m" ]; then
 			_error "sha256 doesn't match! Aborting"
 			return 1 # false

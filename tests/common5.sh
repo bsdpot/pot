@@ -10,7 +10,14 @@ fi
 
 [()
 {
+	#echo test: "$@" >&2
+
 	if ${TEST} "$1" = "!" ]; then
+		if ${TEST} "$__didfetch" != "1" ]; then
+			# pretend these files don't exist yet
+			return 0 # false
+		fi
+
 		if ${TEST} "$2" = "-r" ]; then
 			if ${TEST} "$3" = "/tmp/11.1-RELEASE_base.txz" ]; then
 				return 1 # false
@@ -33,6 +40,14 @@ fi
 			return 0 # true
 		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-8.1-RELEASE" ]; then
 			return 1 # false
+		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-11.1-RELEASE" ]; then
+			return 0 # true
+		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-12.0-RELEASE" ]; then
+			return 0 # true
+		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-12.0-RC3" ]; then
+			return 0 # true
+		elif ${TEST} "$2" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-8.1-RELEASE" ]; then
+			return 1 # false
 		fi
 	fi
 	${TEST} "$@"
@@ -41,19 +56,45 @@ fi
 
 fetch()
 {
+	__didfetch="1"
+	#echo fetch: "$@" >&2
+
 	__monitor FETCH "$@"
 }
 
 sha256()
 {
-	if [ "$2" = /tmp/11.1-RELEASE_base.txz ]; then
-		echo "0123456789abcdef"
-	elif [ "$2" = /tmp/12.0-RELEASE_base.txz ]; then
-		echo "fedcba9876543210"
-	elif [ "$2" = /tmp/12.0-RC3_base.txz ]; then
-		echo "aaaaaaaaaaaaaaaa"
+	if [ "$__arch" = "amd64" ]; then
+		if [ "$2" = /tmp/11.1-RELEASE_base.txz ]; then
+			echo "0123456789abcdef"
+		elif [ "$2" = /tmp/12.0-RELEASE_base.txz ]; then
+			echo "fedcba9876543210"
+		elif [ "$2" = /tmp/12.0-RC3_base.txz ]; then
+			echo "aaaaaaaaaaaaaaaa"
+		else
+			echo ""
+		fi
 	else
-		echo ""
+		if [ "$2" = /tmp/11.1-RELEASE_base.txz ]; then
+			echo "other0123456789abcdef"
+		elif [ "$2" = /tmp/12.0-RELEASE_base.txz ]; then
+			echo "otherfedcba9876543210"
+		elif [ "$2" = /tmp/12.0-RC3_base.txz ]; then
+			echo "otheraaaaaaaaaaaaaaaa"
+		else
+			echo ""
+		fi
+	fi
+}
+
+sysctl()
+{
+	if [ "$2" = "hw.machine_arch" ]; then
+		echo "$__arch"
+	elif [ "$2" = "hw.machine" ]; then
+		echo "$__machine"
+	else
+		return 1        # failure
 	fi
 }
 
@@ -65,6 +106,12 @@ cat()
 		echo "base.txz 0123456789abcdef"
 	elif [ "$1" = "/usr/local/share/freebsd/MANIFESTS/amd64-amd64-12.0-RC3" ]; then
 		echo "base.txz aaaaaaaaaaaaaaaa"
+	elif [ "$1" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-12.0-RELEASE" ]; then
+		echo "base.txz other0123456789abcdef"
+	elif [ "$1" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-11.1-RELEASE" ]; then
+		echo "base.txz other0123456789abcdef"
+	elif [ "$1" = "/usr/local/share/freebsd/MANIFESTS/arm64-aarch64-12.0-RC3" ]; then
+		echo "base.txz otheraaaaaaaaaaaaaaaa"
 	else
 		/bin/cat "$@"
 	fi
@@ -126,8 +173,39 @@ test_fetch_freebsd_005()
 	assertEquals "fetch calls" "0" "$FETCH_CALLS"
 	assertEquals "error calls" "0" "$ERROR_CALLS"
 }
+
+test_fetch_freebsd_006()
+{
+	# Need fetch first
+	__didfetch="0"
+	_fetch_freebsd 12.0-RC3
+	assertEquals "return code" "0" "$?"
+	assertEquals "fetch calls" "1" "$FETCH_CALLS"
+	assertEquals "fetch arg1" "-m" "$FETCH_CALL1_ARG1"
+	assertEquals "fetch arg2" "https://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/12.0-RC3/base.txz" "$FETCH_CALL1_ARG2"
+	assertEquals "fetch arg3" "-o" "$FETCH_CALL1_ARG3"
+	assertEquals "fetch arg4" "/tmp/12.0-RC3_base.txz" "$FETCH_CALL1_ARG4"
+	assertEquals "error calls" "0" "$ERROR_CALLS"
+}
+
+test_fetch_freebsd_007()
+{
+	# Need fetch first
+	__machine="arm64"
+	__arch="aarch64"
+	__didfetch="0"
+	_fetch_freebsd 12.0-RC3
+	assertEquals "return code" "0" "$?"
+	assertEquals "fetch calls" "1" "$FETCH_CALLS"
+	assertEquals "fetch arg2" "https://ftp.freebsd.org/pub/FreeBSD/releases/arm64/aarch64/12.0-RC3/base.txz" "$FETCH_CALL1_ARG2"
+	assertEquals "error calls" "0" "$ERROR_CALLS"
+}
+
 setUp()
 {
+	__machine="amd64"	# default to amd64
+	__arch="amd64"
+	__didfetch="1"
 	common_setUp
 	FETCH_CALLS=0
 	RM_CALLS=0

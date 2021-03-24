@@ -23,7 +23,13 @@ MANIFEST-EOF
 
 sysctl()
 {
-	echo "amd64"
+	if [ "$2" = "hw.machine_arch" ]; then
+		echo "$__arch"
+	elif [ "$2" = "hw.machine" ]; then
+		echo "$__machine"
+	else
+		return 1	# failure
+	fi
 }
 
 hostname()
@@ -40,20 +46,20 @@ hostname()
 # app specific stubs
 
 
-test_map_archs_001()
+test_get_arch_001()
 {
-	result="$(_map_archs )"
-	assertEquals "" "$result"
-	result="$(_map_archs intel )"
-	assertEquals "" "$result"
-}
-
-test_map_archs_002()
-{
-	result="$(_map_archs i386 )"
-	assertEquals "i386-i386" "$result"
-	result="$(_map_archs amd64 )"
+	result="$(_get_arch)"
 	assertEquals "amd64-amd64" "$result"
+
+	__machine="i386"
+	__arch="i386"
+	result="$(_get_arch)"
+	assertEquals "i386-i386" "$result"
+
+	__machine="arm64"
+	__arch="aarch64"
+	result="$(_get_arch)"
+	assertEquals "arm64-aarch64" "$result"
 }
 
 test_get_valid_releases_001()
@@ -105,4 +111,11 @@ test_get_usable_hostname_004()
 	result="$( _get_usable_hostname pot-long-name-012345678901234567890123456789012345678901234567890123456789 )"
 	assertEquals "pot-long-name-012345678901234567890123456789012345678901234567" "$result"
 }
+
+setUp()
+{
+	__machine="amd64"
+	__arch="amd64"
+}
+
 . shunit/shunit2

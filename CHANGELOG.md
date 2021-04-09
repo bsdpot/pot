@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: add support for custom dns resolver
 - init: create backup of rc.conf and pf.conf before to apply pot related changes
 - info: -B instead of -b for private bridge information
+- copy-in: copy is executed in the jail environment, to avoid soft-link related issues in the destination path
+- copy-in: with running pots, a -F flag is needed to force the copy, an operation that is discouraged for security reasons
 
 ### Removed
 - create-dns: remove this already deprecated command, leaving the user to create a dns for the public bridge

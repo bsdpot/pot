@@ -1059,7 +1059,7 @@ pot-cmd()
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}
 	case "$_cmd" in
-		create|import|clone|create-private-bridge|prepare)
+		create|import|clone|create-private-bridge|prepare|copy-in)
 			if [ "$_POT_RECURSIVE" = "1" ]; then
 				logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 				$_func "$@"

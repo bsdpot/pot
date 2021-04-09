@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone: add -k flag to keep the cloned pot for debug when the process failed
 - info: -s to list available snapshots of a pot
 - clone: -s flag to explicitly choose the snapshot to clone
+- architecture: remove limitation of amd64 as the only architecture supported (#143 by jmg@)
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)
@@ -27,6 +28,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 - create-dns: remove this already deprecated command, leaving the user to create a dns for the public bridge
+
+### Fixed
+- zsh: fix autocompletion for set-hook (#139 by urosgruber)
 
 ## [0.11.6] 2020-12-14
 ### Fixed

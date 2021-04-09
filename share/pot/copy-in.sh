@@ -109,7 +109,6 @@ pot-copy-in()
 		_error "The destination has to be an absolute pathname"
 		return 1
 	fi
-	_destination="${_destination#/}"
 
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
@@ -148,7 +147,7 @@ pot-copy-in()
 		_cp_source=/tmp/tmp
 	fi
 	if _is_pot_running "$_pname" ; then
-		if jexec "$_pname" /bin/cp "$_cp_opt" "/tmp/tmp/$_cp_source" "$_destination" ; then
+		if jexec "$_pname" /bin/cp "$_cp_opt" "$_cp_source" "$_destination" ; then
 			_debug "Source $_source copied in the pot $_pname"
 			_rc=0
 		else
@@ -156,7 +155,7 @@ pot-copy-in()
 			_rc=1
 		fi
 	else
-		if jail -c path="$_proot" command=/bin/cp "$_cp_opt" "/tmp/tmp/$_cp_source" "$_destination" ; then
+		if jail -c path="$_proot" command=/bin/cp "$_cp_opt" "$_cp_source" "$_destination" ; then
 			_debug "Source $_source copied in the pot $_pname"
 			_rc=0
 		else
@@ -165,7 +164,7 @@ pot-copy-in()
 		fi
 	fi
 
-	if umount "$_proot/tmp/tmp" ; then
+	if ! umount "$_proot/tmp/tmp" ; then
 		_error "Failed to unmount the source tmp folder from the pot"
 		_rc=1
 	fi

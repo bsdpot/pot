@@ -192,7 +192,7 @@ fscomp_test() {
 
 copy_test() {
 	local name=$1
-	if pot copy-in -p $name -s /etc/protocols -d /root ; then
+	if ! pot copy-in -p $name -s /etc/protocols -d /root ; then
 		error $name copy-in
 	fi
 }
@@ -442,10 +442,10 @@ pot_test() {
 	if [ $4 = "ipv6" ] && [ $3 = "private-bridge" ]; then
 		return
 	fi
+	copy_test $name
 	snap_test $name $1
 	export_test $name $1
 	fscomp_test $name
-	copy_test $name
 	startstop_test $name $3 $4 check-copy-in
 	local new_name=${name}_new
 	rename_test $name $new_name

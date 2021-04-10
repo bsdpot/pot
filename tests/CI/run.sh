@@ -192,7 +192,7 @@ fscomp_test() {
 
 copy_test() {
 	local name=$1
-	if pot copy-in -p $name -s /etc/os-version -d /root ; then
+	if pot copy-in -p $name -s /etc/protocols -d /root ; then
 		error $name copy-in
 	fi
 }
@@ -220,7 +220,7 @@ startstop_test() {
 		error $name start
 	fi
 	if [ "$4" = "check-copy-in" ]; then
-		if ! jexec $name test -f /root/os-version ; then
+		if ! jexec $name test -f /root/protocols ; then
 			error $name no-copied-file
 		fi
 	fi

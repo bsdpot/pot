@@ -190,6 +190,13 @@ fscomp_test() {
 	fi
 }
 
+copy_test() {
+	local name=$1
+	if pot copy-in -p $name -s /etc/os-version -d /root ; then
+		error $name copy-in
+	fi
+}
+
 # $1 pot name
 _get_ip() {
 	local name=$1
@@ -211,6 +218,11 @@ startstop_test() {
 	fi
 	if ! pot start $name ; then
 		error $name start
+	fi
+	if [ "$4" = "check-copy-in" ]; then
+		if ! jexec $name test -f /root/os-version ; then
+			error $name no-copied-file
+		fi
 	fi
 	# runtime checks
 	if [ "$(pot show | grep -c $name)" -ne 1 ]; then
@@ -433,7 +445,8 @@ pot_test() {
 	snap_test $name $1
 	export_test $name $1
 	fscomp_test $name
-	startstop_test $name $3 $4
+	copy_test $name
+	startstop_test $name $3 $4 check-copy-in
 	local new_name=${name}_new
 	rename_test $name $new_name
 	startstop_test $new_name $3 $4

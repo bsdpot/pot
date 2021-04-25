@@ -3,7 +3,7 @@
 # shellcheck disable=SC3033
 stop-help()
 {
-	echo "pot stop [-hv] [potname]"
+	echo "pot stop [-hv] [-p] potname"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  potname : the pot that has to stop'
@@ -147,9 +147,10 @@ pot-stop()
 {
 	# shellcheck disable=SC3043
 	local _pname
+	_pname=
 
 	OPTIND=1
-	while getopts "hv" _o; do
+	while getopts "hvp:" _o; do
 		case "$_o" in
 		h)
 			stop-help
@@ -158,13 +159,18 @@ pot-stop()
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			;;
+		p)
+			_pname="$OPTARG"
+			;;
 		?)
 			stop-help
 			${EXIT} 1
 			;;
 		esac
 	done
-	_pname="$( eval echo \$$OPTIND)"
+	if [ -z "$_pname" ]; then
+		_pname="$( eval echo \$$OPTIND)"
+	fi
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		stop-help

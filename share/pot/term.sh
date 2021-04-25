@@ -4,7 +4,7 @@
 # shellcheck disable=3033
 term-help()
 {
-	echo "pot term [-h] [potname]"
+	echo "pot term [-hvf] [-p] potname"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -f force: it start the pot, if it'\''s not running'
@@ -32,7 +32,7 @@ pot-term()
 	_force=
 
 	OPTIND=1
-	while getopts "hvf" _o; do
+	while getopts "hvfp:" _o; do
 		case "$_o" in
 		h)
 			term-help
@@ -44,12 +44,17 @@ pot-term()
 		f)
 			_force="YES"
 			;;
+		p)
+			_pname="$OPTARG"
+			;;
 		?)
 			break
 			;;
 		esac
 	done
-	_pname="$(eval echo \$$OPTIND)"
+	if [ -z "$_pname" ]; then
+		_pname="$(eval echo \$$OPTIND)"
+	fi
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		term-help

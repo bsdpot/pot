@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - info: -s to list available snapshots of a pot
 - clone: -s flag to explicitly choose the snapshot to clone
 - architecture: remove limitation of amd64 as the only architecture supported (#143 by jmg@)
+- start/stop/term/run: add support to -p potname on those commands, the only one not supporting it
 
 ### Changed
 - hostname: max default length for hostname set to 64 (#118)

@@ -3,7 +3,7 @@
 # shellcheck disable=SC3033
 start-help()
 {
-	echo "pot start [-h] [potname]"
+	echo "pot start [-h] [-p] potname"
 	echo '  -h print this help'
 	echo '  -v verbose'
 	echo '  -s take a snapshot before to start'
@@ -562,8 +562,9 @@ pot-start()
 	# shellcheck disable=SC3043
 	local _pname _snap
 	_snap=none
+	_pname=
 	OPTIND=1
-	while getopts "hvsS" _o ; do
+	while getopts "hvsSp:" _o ; do
 		case "$_o" in
 		h)
 			start-help
@@ -578,13 +579,18 @@ pot-start()
 		S)
 			_snap=full
 			;;
+		p)
+			_pname="$OPTARG"
+			;;
 		*)
 			start-help
 			${EXIT} 1
 			;;
 		esac
 	done
-	_pname="$( eval echo \$$OPTIND)"
+	if [ -z "$_pname" ]; then
+		_pname="$( eval echo \$$OPTIND)"
+	fi
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		start-help

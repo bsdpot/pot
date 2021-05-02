@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 stop-help()
 {
 	echo "pot stop [-hv] [potname]"
@@ -142,7 +142,7 @@ _epair_cleanup()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-stop()
 {
 	# shellcheck disable=SC2039

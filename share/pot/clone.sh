@@ -4,7 +4,7 @@
 trap _cj_undo_clone TERM INT
 _set_pipefail
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 clone-help()
 {
 	echo "pot clone [-hvF] -p potname -P basepot [-i ipaddr]"
@@ -233,7 +233,7 @@ _cj_conf()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-clone()
 {
 	# shellcheck disable=SC2039

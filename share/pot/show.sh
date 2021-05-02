@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 show-help()
 {
 	echo "pot show [-hvq] [-a|-r|-p potname]"
@@ -116,7 +116,7 @@ _show_all_pots()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-show()
 {
 	# shellcheck disable=SC2039

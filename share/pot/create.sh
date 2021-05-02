@@ -4,7 +4,7 @@
 trap _cj_undo_create TERM INT
 _set_pipefail
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 create-help()
 {
 	echo "pot create [-hv] -p potname [-N network-type] [-i ipaddr] [-l lvl] [-f flavour]"
@@ -455,7 +455,7 @@ _cj_single_install()
 	return 0
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-create()
 {
 	# shellcheck disable=SC2039

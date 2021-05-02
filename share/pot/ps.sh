@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 ps-help()
 {
 	echo "pot ps [-hvq]"
@@ -36,7 +36,7 @@ _ps_pots()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-ps()
 {
 	# shellcheck disable=SC2039

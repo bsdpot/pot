@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 set-rss-help()
 {
 	echo "pot set-rss [-hv] -p pot -C cpus -M memory"
@@ -74,7 +74,7 @@ _set_memory()
 	_set_rss "$_pname" memory "$_memory"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-set-rss()
 {
 	# shellcheck disable=SC2039

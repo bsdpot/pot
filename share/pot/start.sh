@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 start-help()
 {
 	echo "pot start [-h] [potname]"
@@ -15,10 +15,10 @@ start-help()
 	echo '  potname : the jail that has to start'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 # $1 pot name
 # $2 the network interface, if created
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 start-cleanup()
 {
 	local _pname
@@ -555,7 +555,7 @@ _js_start()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-start()
 {
 	# shellcheck disable=SC2039

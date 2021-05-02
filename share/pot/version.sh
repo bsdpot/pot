@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 version-help()
 {
 	echo 'pot version [-h][-v][-q]'
@@ -11,7 +11,7 @@ version-help()
 }
 
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-version()
 {
 	# shellcheck disable=SC2039

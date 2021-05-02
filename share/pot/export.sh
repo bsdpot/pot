@@ -4,7 +4,7 @@
 # Add a way to directly upload the compressed file
 # Add a way to change compression utility
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 export-help() {
 	echo "pot export [-hv] -p pot [-s snapshot] [-t tag] [-D directory] [-l level]"
 	echo '  -h print this help'
@@ -45,7 +45,7 @@ _export_pot()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-export()
 {
 	local _pname _snap _tag _dir _auto_purge _force

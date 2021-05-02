@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 snapshot-help()
 {
 	echo "pot snapshot [-h][-v][-a] [-p potname|-f fscomp]"
@@ -12,7 +12,7 @@ snapshot-help()
 	echo '  -f fscomp : the fs component target of the snapshot'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-snapshot()
 {
 	# shellcheck disable=SC2039

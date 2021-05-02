@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 rename-help()
 {
 	echo "pot rename [-h][-v] -p OldPotName -n NewPotName"
@@ -111,7 +111,7 @@ _rn_recursive()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-rename()
 {
 	local _pname _newname

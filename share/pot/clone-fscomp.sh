@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 clone-fscomp-help()
 {
 	echo "pot clone-fscomp [-hv] -f fscomp -F fscomp"
@@ -32,7 +32,7 @@ _cf_zfs()
 	return 0 # true
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-clone-fscomp()
 {
 	# shellcheck disable=SC2039

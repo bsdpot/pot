@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 set-hosts-help() {
 	echo "pot set-hosts [-hv] -p pot -H env"
 	echo '  -h print this help'
@@ -24,7 +24,7 @@ _set_hosts()
 	sed 's/.*/pot.hosts=&/g' "$_tmpfile" >> "$_cfile"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-set-hosts()
 {
 	local _pname _tmpfile _ip _hostname

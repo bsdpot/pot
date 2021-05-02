@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 purge-snapshots-help()
 {
 	echo "pot purge-snapshots [-h][-v][-a] [-p potname|-f fscomp]"
@@ -49,7 +49,7 @@ _purge_dset()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-purge-snapshots()
 {
 	local _obj _objname _all_snap

@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 create-private-bridge-help()
 {
 	echo 'pot create-private-bridge [-h][-v][-B name][-S size]'
@@ -11,7 +11,7 @@ create-private-bridge-help()
 	echo '  -S bridge size (number of host expected)'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 # $1 bridge-name
 # $2 bridge-size
 create-bridge()
@@ -30,7 +30,7 @@ create-bridge()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-create-private-bridge()
 {
 	# shellcheck disable=SC2039

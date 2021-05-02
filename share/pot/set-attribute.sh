@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 set-attr-help()
 {
 	echo "pot set-attr [-hv] -p pot -A attr -V value"
@@ -80,7 +80,7 @@ _ignored_parameter()
 	_info "The attribute $_attr is not implemented and it will be ignored"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-set-attribute()
 {
 	# shellcheck disable=SC2039

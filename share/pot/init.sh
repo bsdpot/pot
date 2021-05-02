@@ -4,7 +4,7 @@
 # TODO
 # check the return code of all commands
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 init-help()
 {
 	echo 'pot init [-h][-v]'
@@ -12,7 +12,7 @@ init-help()
 	echo '  -v verbose'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-init()
 {
 	local pf_file

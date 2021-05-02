@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 list-help()
 {
 	echo "pot list [-hpbfFa][-qv]"
@@ -143,7 +143,7 @@ _ls_bridges()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-list()
 {
 	# shellcheck disable=SC2039

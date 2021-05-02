@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 get-rss-help()
 {
 	echo "pot get-rss [-h] [-p pot|-a]"
@@ -40,7 +40,7 @@ print_rss()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-get-rss()
 {
 	# shellcheck disable=SC2039

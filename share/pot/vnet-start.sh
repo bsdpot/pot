@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 vnet-start-help()
 {
 	echo 'pot vnet-start [-h][-v]'
@@ -169,7 +169,7 @@ _ipv6_start()
 	_ipv6_bridge_start
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-vnet-start()
 {
 	# shellcheck disable=SC2039

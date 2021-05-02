@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 info-help()
 {
 	echo "pot info [-hvqr] [-p pname|-B bname]"
@@ -149,7 +149,7 @@ _info_pot_snapshots()
 # $1 bridge name
 _info_bridge()
 {
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 	local _bname
 	_bname="$1"
 	if _is_potnet_available ; then
@@ -159,7 +159,7 @@ _info_bridge()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-info()
 {
 	# shellcheck disable=SC2039

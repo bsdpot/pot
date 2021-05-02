@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 revert-help()
 {
 	echo "pot revert [-hva] -p potname|-f fscomp"
@@ -43,7 +43,7 @@ _fscomp_zfs_rollback()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-revert()
 {
 	# shellcheck disable=SC2039

@@ -3,7 +3,7 @@
 
 # supported releases are defined in common.sh
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 create-base-help()
 {
 	echo "pot create-base [-h] [-r RELEASE] [-b basename]"
@@ -107,7 +107,7 @@ _cb_base_pot()
 	_pot_zfs_snap_full "$_pname"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-create-base()
 {
 	# shellcheck disable=SC2039

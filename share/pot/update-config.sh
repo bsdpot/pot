@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 update-config-help()
 {
 	echo "pot update-config [-h] [-p pot|-a]"
@@ -142,7 +142,7 @@ _update_all_pots()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-update-config()
 {
 	# shellcheck disable=SC2039

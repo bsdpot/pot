@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 de-init-help()
 {
 	echo 'pot de-init [-h][-v][-f]'
@@ -10,7 +10,7 @@ de-init-help()
 	echo '  -f force - stop all running pots'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-de-init()
 {
 	# shellcheck disable=SC2039

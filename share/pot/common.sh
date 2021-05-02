@@ -1044,7 +1044,7 @@ _get_bridge_list()
 	find "${POT_FS_ROOT}/bridges" -type f 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-cmd()
 {
 	# shellcheck disable=SC2039

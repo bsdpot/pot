@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 destroy-help()
 {
 	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp|-B bridge]"
@@ -87,7 +87,7 @@ _fscomp_zfs_destroy()
 	return $?
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-destroy()
 {
 	# shellcheck disable=SC2039

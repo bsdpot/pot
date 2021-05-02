@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-help()
 {
 	# shellcheck disable=SC2039

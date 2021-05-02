@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 mount-in-help()
 {
 	echo "pot mount-in [-hvwr] -p pot -m mnt -f fscomp | -d directory | -z dataset"
@@ -160,7 +160,7 @@ _mount_dir()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-mount-in()
 {
 	local _pname _fscomp _mnt_p _remount _readonly _opt _dir _real_mnt_p

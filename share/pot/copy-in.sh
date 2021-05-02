@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 copy-in-help()
 {
 	echo "pot copy-in [-hv] -p pot -s source -d destination"
@@ -52,7 +52,7 @@ _mount_source_into_potroot()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-copy-in()
 {
 	local _pname _source _destination _to_be_umount _rc _force _proot _cp_opt

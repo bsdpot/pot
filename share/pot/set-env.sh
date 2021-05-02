@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 set-env-help() {
 	echo "pot set-env [-hv] -p pot -E env"
 	echo '  -h print this help'
@@ -24,7 +24,7 @@ _set_environment()
 	sed 's/.*/pot.env=&/g' "$_tmpfile" >> "$_cfile"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-set-env()
 {
 	local _pname _env _tmpfile

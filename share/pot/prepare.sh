@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 prepare-help()
 {
 	echo "pot prepare [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd"
@@ -23,7 +23,7 @@ prepare-help()
 	echo '  -s : start immediately the newly generated pot'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-prepare()
 {
 	# shellcheck disable=SC2039

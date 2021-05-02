@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 prune-help()
 {
 	echo "pot prune [-hvq]"
@@ -48,7 +48,7 @@ _prune_pots()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-prune()
 {
 	# shellcheck disable=SC2039

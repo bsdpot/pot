@@ -15,7 +15,7 @@ get-rss-help()
 # $2 json format
 print_rss()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _rss _pname _json _pcpu _mem _cputime _vmem _clockrate _cputimecounter _swap
 	_pname=$1
 	_json=$2
@@ -43,7 +43,7 @@ print_rss()
 # shellcheck disable=SC3033
 pot-get-rss()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _o _json
 	_pname=
 	_json=

@@ -13,7 +13,7 @@ de-init-help()
 # shellcheck disable=SC3033
 pot-de-init()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pots _p _force _zopt
 	_force=
 	_zopt=

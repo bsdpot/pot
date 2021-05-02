@@ -18,7 +18,7 @@ list-help()
 # $1 pot name
 _ls_info_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cdir _lvl
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -49,7 +49,7 @@ _ls_info_pot()
 
 _ls_pots()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pots _q
 	_q=$1
 	_pots=$( _get_pot_list )
@@ -70,7 +70,7 @@ _ls_pots()
 
 _ls_bases()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bdir _bases _q
 	_q=$1
 	_bdir="${POT_FS_ROOT}/bases/"
@@ -89,7 +89,7 @@ _ls_bases()
 
 _ls_fscomp()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _fscomps _q
 	_q=$1
 	_fscomps=$( zfs list -d 1 -Ho name "${POT_ZFS_ROOT}/fscomp" | sed '1d' | xargs -I {} basename {} | tr '\n' ' ' )
@@ -106,7 +106,7 @@ _ls_fscomp()
 
 _ls_flavour()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _flv1 _flv2 _flv _q
 	_q=$1
 	# shellcheck disable=SC2010
@@ -128,7 +128,7 @@ _ls_flavour()
 
 _ls_bridges()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridges _q
 	_q=$1
 	_bridges=$( _get_bridge_list )
@@ -146,7 +146,7 @@ _ls_bridges()
 # shellcheck disable=SC3033
 pot-list()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _obj _q
 	_obj="pots"
 	_q=

@@ -18,7 +18,7 @@ info-help()
 # $! pot name
 _info_pot_env()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _ips _idx _all_ips
 	_pname=$1
 	echo "export _POT_NAME=$_pname"
@@ -59,7 +59,7 @@ _info_pot_env()
 # $1 pot name
 _info_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cdir _lvl _ports _type
 	_pname=$1
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -133,7 +133,7 @@ _info_pot()
 # $1 pot name
 _info_pot_snapshots()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _snaps
 	_pname="$1"
 	if _is_verbose ; then
@@ -162,7 +162,7 @@ _info_bridge()
 # shellcheck disable=SC3033
 pot-info()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _quiet _run _bname _env_output _snaps
 	_pname=""
 	_quiet="NO"

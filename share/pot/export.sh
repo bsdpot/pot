@@ -25,7 +25,7 @@ export-help() {
 # $5 : compression level
 _export_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _dset _snap _tag _dir _file _clvl
 	_pname="$1"
 	_snap="$2"

@@ -11,7 +11,7 @@ top-help()
 # shellcheck disable=SC3033
 pot-top()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _o
 	_pname=
 	OPTIND=1

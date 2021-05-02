@@ -18,7 +18,7 @@ set-hook-help() {
 # $3 hook type
 _set_hook()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _script
 	_pname="$1"
 	_script="$2"

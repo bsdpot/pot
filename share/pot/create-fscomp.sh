@@ -12,7 +12,7 @@ create-fscomp-help()
 # shellcheck disable=SC3033
 pot-create-fscomp()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset
 	_dset=
 	OPTIND=1

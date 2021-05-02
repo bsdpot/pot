@@ -26,7 +26,7 @@ prepare-help()
 # shellcheck disable=SC3033
 pot-prepare()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _ipaddr_list _bridge_name
 	_pname=
 	_ports=

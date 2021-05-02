@@ -44,7 +44,7 @@ _cj_undo_clone()
 # $4 custom snapshot tag
 _cj_zfs()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _potbase _jdset _pdir _pbdir _pbdset _mnt_p _opt _autosnap _snaptag _pb_type _snap __last_snap
 	_pname=$1
 	_potbase=$2
@@ -179,7 +179,7 @@ _cj_zfs()
 # $6 network stack
 _cj_conf()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _potbase _ip _network_type _bridge_name _stack
 	_pname=$1
 	_potbase=$2
@@ -236,7 +236,7 @@ _cj_conf()
 # shellcheck disable=SC3033
 pot-clone()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack _snap _flv
 	_pname=
 	_ipaddr=

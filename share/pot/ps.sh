@@ -12,7 +12,7 @@ ps-help()
 # $1 pot name
 _ps_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _quiet
 	_pname=$1
 	_quiet=$2
@@ -27,7 +27,7 @@ _ps_pot()
 
 _ps_pots()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pots _quiet _p
 	_quiet="$1"
 	_pots="$( _get_pot_list )"
@@ -39,7 +39,7 @@ _ps_pots()
 # shellcheck disable=SC3033
 pot-ps()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _quiet
 	_quiet=
 	OPTIND=1

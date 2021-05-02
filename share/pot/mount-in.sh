@@ -20,7 +20,7 @@ mount-in-help()
 # $2 mount point
 _is_mountpoint_used()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _mnt_p _proot
 	_pname="$1"
 	_mnt_p="${2#/}"
@@ -43,7 +43,7 @@ _is_mountpoint_used()
 # $2 mount point
 _mountpoint_validation()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _mnt_p _mpdir _mounted _real_mnt
 	_pname="$1"
 	_mnt_p="$2"
@@ -79,7 +79,7 @@ _mountpoint_validation()
 
 _directory_validation()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _dir  _proot _conf
 	_pname="$1"
 	_dir="$2"
@@ -103,7 +103,7 @@ _directory_validation()
 # $4 mount option (zfs-remount, ro)
 _mount_dataset()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset _pname _mnt_p _pdir _opt
 	_dset="$1"
 	_pname="$2"
@@ -137,7 +137,7 @@ _mount_dataset()
 # $4 mount option (ro)
 _mount_dir()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dir _pname _mnt_p _pdir _opt
 	_dir="$1"
 	_pname="$2"

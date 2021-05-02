@@ -14,7 +14,7 @@ version-help()
 # shellcheck disable=SC3033
 pot-version()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _quiet
 	_quiet="NO"
 	OPTIND=1

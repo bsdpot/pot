@@ -16,7 +16,7 @@ create-private-bridge-help()
 # $2 bridge-size
 create-bridge()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bconf _bname _bsize
 	_bname=$1
 	_bsize=$2
@@ -33,7 +33,7 @@ create-bridge()
 # shellcheck disable=SC3033
 pot-create-private-bridge()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bname _host_amount
 	OPTIND=1
 	while getopts "hvB:S:" _o ; do

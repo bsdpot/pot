@@ -16,7 +16,7 @@ get-attr-help()
 # shellcheck disable=SC3033
 pot-get-attribute()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _attr _value _quiet
 	_pname=
 	_attr=

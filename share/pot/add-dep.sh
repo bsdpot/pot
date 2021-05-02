@@ -15,7 +15,7 @@ add-dep-help()
 # $2 depPot
 _add_dependency()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _depPot _pname _cdir
 	_pname="$1"
 	_depPot="$2"
@@ -26,7 +26,7 @@ _add_dependency()
 # shellcheck disable=SC3033
 pot-add-dep()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _depPot
 	_depPot=
 	_pname=

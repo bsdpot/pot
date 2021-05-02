@@ -28,7 +28,7 @@ _config_echo()
 # shellcheck disable=SC3033
 pot-config()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _quiet
 	_quiet="NO"
 	_get=

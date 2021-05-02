@@ -16,7 +16,7 @@ copy-in-help()
 # $1 source
 _source_validation()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _source
 	_source="$1"
 	if [ -f "$_source" ] || [ -d "$_source" ]; then
@@ -33,7 +33,7 @@ _source_validation()
 
 _mount_source_into_potroot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _source _proot _source_mnt
 	_source="$1"
 	_proot="$2"

@@ -21,7 +21,7 @@ export-ports-help()
 # $2 port list
 _export_ports()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _ports _cdir
 	_pname="$1"
 	_ports="$2"

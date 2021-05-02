@@ -5,7 +5,7 @@
 # $2 : the set-cmd line in the file
 _flv_set_cmd()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _line _cmd
 	_pname="$1"
 	_line="$2"
@@ -19,7 +19,7 @@ _flv_set_cmd()
 
 _exec_flv()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _flv _pdir
 	_pname=$1
 	_flv=$2

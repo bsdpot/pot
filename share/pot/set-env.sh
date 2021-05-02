@@ -15,7 +15,7 @@ set-env-help() {
 # $2 env
 _set_environment()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _tmpfile _cfile
 	_pname="$1"
 	_tmpfile="$2"

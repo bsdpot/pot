@@ -17,7 +17,7 @@ set-rss-help()
 # $3 rss limit
 _set_rss()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _rssname _rsslimit _pname _cdir
 	_pname="$1"
 	_rssname="$2"
@@ -31,7 +31,7 @@ _set_rss()
 _memory_validation()
 {
 	: # Implement
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _number
 	if ! echo "$1" | grep -q -E '^[0-9]+[bBkKmMgG]?$' ; then
 		_error "$1 is not a valid memory constraint"
@@ -52,7 +52,7 @@ _memory_validation()
 # $2 cpus amount
 _set_cpu()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cpus
 	_pname=$1
 	_cpus=$2
@@ -67,7 +67,7 @@ _set_cpu()
 
 _set_memory()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _memory
 	_pname=$1
 	_memory=$2
@@ -77,7 +77,7 @@ _set_memory()
 # shellcheck disable=SC3033
 pot-set-rss()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cpus _memory
 	_pname=
 	_cpus=

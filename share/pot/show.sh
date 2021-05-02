@@ -153,7 +153,7 @@ pot-show()
 			;;
 		esac
 	done
-	# shellcheck disable=SC2235
+	# shellcheck disable=SC2030,SC2031,SC2235
 	if ( [ -n "$_pname" ] && [ -n "$_all" ] ) ||
 		( [ -n "$_pname" ] && [ -n "$_running" ] ) ||
 		( [ -n "$_all" ] && [ -n "$_running" ] ); then
@@ -161,6 +161,7 @@ pot-show()
 		show-help
 		${EXIT} 1
 	fi
+	# shellcheck disable=SC2031
 	if [ -z "$_pname" ] &&
 		[ -z "$_all" ] &&
 		[ -z "$_running" ]; then

@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 set-cmd-help() {
 	echo "pot set-cmd [-hv] -p pot -c cmd"
 	echo '  -h print this help'
@@ -10,9 +10,10 @@ set-cmd-help() {
 	echo '  -c cmd : the command line to start the container'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-set-cmd()
 {
+	# shellcheck disable=SC3043
 	local _pname _cmd
 	_cmd=
 	_pname=

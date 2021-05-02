@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 vnet-start-help()
 {
 	echo 'pot vnet-start [-h][-v]'
@@ -11,7 +11,7 @@ vnet-start-help()
 
 _public_bridge_start()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge
 	_bridge=$(_pot_bridge)
 	if [ -z "$_bridge" ]; then
@@ -33,7 +33,7 @@ _public_bridge_start()
 # $1 bridge_name
 _private_bridge_start()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge_name _bridge _gateway _bridge_net
 	_bridge_name="$1"
 	_bridge=$(_private_bridge "$_bridge_name")
@@ -58,7 +58,7 @@ _private_bridge_start()
 
 _ipv4_start()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge_name pf_file _nat_rules _ext_addr
 	_bridge_name="$1"
 	# activate ip forwarding
@@ -139,7 +139,7 @@ _ipv4_start()
 
 _ipv6_bridge_start()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge
 	_bridge=$(_pot_bridge_ipv6)
 
@@ -155,7 +155,7 @@ _ipv6_bridge_start()
 			_debug "Bridge $_bridge inet6 up"
 		fi
 		if ! ifconfig "$_bridge" addm "$POT_EXTIF" ; then
-			_error "Error while adding $POT_EXTIT to the bridge ($_bridge)"
+			_error "Error while adding $POT_EXTIF to the bridge ($_bridge)"
 		else
 			_debug "Bridge $_bridge addm $POT_EXTIF"
 		fi
@@ -169,10 +169,10 @@ _ipv6_start()
 	_ipv6_bridge_start
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-vnet-start()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge_name
 	OPTIND=1
 	while getopts "hvB:" _o ; do

@@ -1,6 +1,7 @@
 #!/bin/sh
 :
-# shellcheck disable=2039
+
+# shellcheck disable=3033
 term-help()
 {
 	echo "pot term [-h] [potname]"
@@ -14,7 +15,7 @@ term-help()
 # $1 pot name
 _term()
 {
-	# shellcheck disable=2039
+	# shellcheck disable=3043
 	local _pname
 	_pname="$1"
 	jexec -l -U root "$_pname"
@@ -22,10 +23,10 @@ _term()
 	# jexec "$_pname" env -i TERM="$TERM" /usr/bin/login -fp root
 }
 
-# shellcheck disable=2039
+# shellcheck disable=3033
 pot-term()
 {
-	# shellcheck disable=2039
+	# shellcheck disable=3043
 	local _pname _force
 	_pname=
 	_force=

@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 show-help()
 {
 	echo "pot show [-hvq] [-a|-r|-p potname]"
@@ -16,7 +16,7 @@ show-help()
 # show pot static information
 _show_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _bname line _dset
 	_pname=$1
 	printf "pot %s\\n" "$_pname"
@@ -49,7 +49,7 @@ _show_pot()
 # $1 pot name
 _show_pot_run()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _res _vm _pm _ip _network_type _aname
 	_pname=$1
 	if ! _is_uid0 quiet; then
@@ -86,7 +86,7 @@ _show_pot_run()
 
 _show_running_pots()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pots _p _q
 	_q=$1
 	_pots=$( _get_pot_list )
@@ -103,7 +103,7 @@ _show_running_pots()
 
 _show_all_pots()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pots _p _q
 	_q=$1
 	_pots=$( _get_pot_list )
@@ -116,10 +116,10 @@ _show_all_pots()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-show()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _running _all
 	_pname=
 	_running=
@@ -153,7 +153,7 @@ pot-show()
 			;;
 		esac
 	done
-	# shellcheck disable=SC2235
+	# shellcheck disable=SC2030,SC2031,SC2235
 	if ( [ -n "$_pname" ] && [ -n "$_all" ] ) ||
 		( [ -n "$_pname" ] && [ -n "$_running" ] ) ||
 		( [ -n "$_all" ] && [ -n "$_running" ] ); then
@@ -161,6 +161,7 @@ pot-show()
 		show-help
 		${EXIT} 1
 	fi
+	# shellcheck disable=SC2031
 	if [ -z "$_pname" ] &&
 		[ -z "$_all" ] &&
 		[ -z "$_running" ]; then

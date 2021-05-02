@@ -1,6 +1,6 @@
 #!/bin/sh
 :
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 create-fscomp-help()
 {
 	echo "pot create-fscomp [-hv] -f name"
@@ -9,10 +9,10 @@ create-fscomp-help()
 	echo '  -f name : the fs component name (mandatory)'
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-create-fscomp()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset
 	_dset=
 	OPTIND=1

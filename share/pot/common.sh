@@ -50,7 +50,7 @@ __POT_MSG_DBG=2
 # $1 severity
 _msg()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _sev
 	_sev=$1
 	shift
@@ -97,18 +97,18 @@ _qerror()
 
 _set_pipefail()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _major _version
 	_major="$(sysctl -n kern.osrelease | cut -f 1 -d '.')"
 	if [ "$_major" -ge "13" ]; then
-		# shellcheck disable=SC2039
+		# shellcheck disable=SC3040
 		set -o pipefail
 		return
 	fi
 	_version="$(sysctl -n kern.osrelease | cut -f 1 -d '-')"
 	case "$_version" in
 		"12.1"|"12.2")
-			# shellcheck disable=SC2039
+			# shellcheck disable=SC3040
 			set -o pipefail
 			;;
 	esac
@@ -208,7 +208,7 @@ _zfs_dataset_valid()
 # tested
 _zfs_exist()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _mnt_
 	[ -z "$2" ] && return 1 # false
 	if ! _zfs_dataset_valid "$1" ; then
@@ -225,7 +225,7 @@ _zfs_exist()
 # $1 the dataset
 _get_zfs_mountpoint()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _mnt_p _dset
 	_dset=$1
 	_mnt_p="$( zfs list -o mountpoint -H "$_dset" 2> /dev/null )"
@@ -236,7 +236,7 @@ _get_zfs_mountpoint()
 # $1 the mountpoint
 _get_zfs_dataset()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _mnt_p _dset
 	_mnt_p=$1
 	_dset=$(zfs list -o name,mountpoint -H 2>/dev/null | awk -v "mntp=${_mnt_p}" '{ if ($2 == mntp) print $1 }')
@@ -247,7 +247,7 @@ _get_zfs_dataset()
 # $1 pot name
 _pot_zfs_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
@@ -259,7 +259,7 @@ _pot_zfs_snap()
 # $1 pot name
 _remove_oldest_pot_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _snap _pdset
 	_pname=$1
 	_pdset="${POT_ZFS_ROOT}/jails/${_pname}"
@@ -274,7 +274,7 @@ _remove_oldest_pot_snap()
 # DEPRECATED - but still used by create-base
 _pot_zfs_snap_full()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _node _opt _snaptag _dset
 	_pname=$1
 	_snaptag="$(date +%s)"
@@ -298,7 +298,7 @@ _pot_zfs_snap_full()
 # $1 pot name
 _remove_oldest_fscomp_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _fscomp _snap _fdset
 	_fscomp=$1
 	_fdset="${POT_ZFS_ROOT}/fscomp/${_fscomp}"
@@ -311,7 +311,7 @@ _remove_oldest_fscomp_snap()
 # $1 fscomp name
 _fscomp_zfs_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _fscomp _snaptag _dset
 	_fscomp=$1
 	_snaptag="$(date +%s)"
@@ -323,7 +323,7 @@ _fscomp_zfs_snap()
 # $1 the dataset name
 _zfs_last_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset _output
 	_dset="$1"
 	if [ -z "$_dset" ]; then
@@ -341,7 +341,7 @@ _zfs_last_snap()
 # $1 the dataset name
 _zfs_oldest_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset _output
 	_dset="$1"
 	if [ -z "$_dset" ]; then
@@ -359,7 +359,7 @@ _zfs_oldest_snap()
 # $1 the dataset name
 _zfs_count_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset _output
 	_dset="$1"
 	if [ -z "$_dset" ]; then
@@ -377,7 +377,7 @@ _zfs_count_snap()
 # $2 snapshot name
 _is_zfs_pot_snap()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _snap _dset
 	_pname=$1
 	_snap=$2
@@ -391,7 +391,7 @@ _is_zfs_pot_snap()
 # $1 pot name
 # tested (common.sh 7)
 _get_usable_hostname() {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _hname _phname
 	_pname="$1"
 	_hname="$(hostname)"
@@ -411,7 +411,7 @@ _get_usable_hostname() {
 # $2 var name
 _get_bridge_var()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _Bname _cfile _var _value
 	_Bname="$1"
 	_cfile="${POT_FS_ROOT}/bridges/$_Bname"
@@ -424,7 +424,7 @@ _get_bridge_var()
 # $2 var name
 _get_conf_var()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cdir _var _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -437,7 +437,7 @@ _get_conf_var()
 # $2 var name
 _get_ip_var()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cdir _var _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -447,7 +447,7 @@ _get_ip_var()
 
 _get_pot_export_ports()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cdir _var _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -470,7 +470,7 @@ _get_pot_lvl()
 # $1 pot name
 _get_pot_type()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _type
 	_type="$( _get_conf_var "$1" pot.type )"
 	if [ -z "$_type" ]; then
@@ -488,7 +488,7 @@ _get_pot_network_type()
 # $1 pot name
 _is_ip_inherit()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _val
 	_pname="$1"
 	if [ "$(_get_pot_network_type "$_pname" )" = "inherit" ]; then
@@ -501,7 +501,7 @@ _is_ip_inherit()
 # $1 pot name
 _is_pot_vnet()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _val
 	_pname="$1"
 	_val="$( _get_conf_var "$_pname" vnet )"
@@ -515,7 +515,7 @@ _is_pot_vnet()
 # $1 pot name
 _is_pot_prunable()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname
 	_pname="$1"
 	if [ "$( _get_conf_var "$_pname" "pot.attr.prunable" )" = "YES" ]; then
@@ -529,7 +529,7 @@ _is_pot_prunable()
 # $2 quiet / no _error messages are emitted (sometimes useful)
 _is_bridge()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bname _bconf
 	_bname="$1"
 	_bconf="${POT_FS_ROOT}/bridges/$_bname"
@@ -545,7 +545,7 @@ _is_bridge()
 # tested
 _is_fscomp()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _fscomp _fdir _fdset
 	_fscomp="$1"
 	_fdir="${POT_FS_ROOT}/fscomp/$_fscomp"
@@ -566,7 +566,7 @@ _is_fscomp()
 # tested
 _is_base()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _base _bdir _bdset
 	_base="$1"
 	_bdir="${POT_FS_ROOT}/bases/$_base"
@@ -591,7 +591,7 @@ _is_base()
 # tested
 _is_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _pdir
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
@@ -651,7 +651,7 @@ _is_flavour()
 # tested
 _is_in_list()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _e
 	if [ $# -lt 2 ]; then
 		return 1 # false
@@ -685,7 +685,7 @@ _is_natural_number()
 # tested
 _is_mounted()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _mnt_p _mounted
 	_mnt_p=$1
 	if [ -z "$_mnt_p" ]; then
@@ -704,7 +704,7 @@ _is_mounted()
 # tested
 _umount()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _mnt_p
 	_mnt_p=$1
 	if _is_mounted "$_mnt_p" ; then
@@ -719,7 +719,7 @@ _umount()
 # $2 cmd
 _set_command()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _cmd _cdir _cmd1 _cmd2
 	_pname="$1"
 	_cmd="$2"
@@ -739,7 +739,7 @@ _set_command()
 # tested
 _is_cmd_flavorable()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _cmd
 	_cmd=$1
 	case $_cmd in
@@ -756,7 +756,7 @@ _is_cmd_flavorable()
 # tested
 _is_rctl_available()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _racct
 	_racct="$(sysctl -qn kern.racct.enable)"
 	if [ "$_racct" = "1" ]; then
@@ -793,7 +793,7 @@ _get_arch()
 # tested (common7)
 _get_valid_releases()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _arch _file_prefix
 	_file_prefix="$(_get_arch)"
 	if [ -z "$_file_prefix" ]; then
@@ -806,7 +806,7 @@ _get_valid_releases()
 # tested (common7)
 _is_valid_release()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _rel _releases
 	if [ -z "$1" ]; then
 		return 1 # false
@@ -825,7 +825,7 @@ _is_valid_release()
 # it's required to have all the file-system mounted to access /bin/freebsd-version
 _get_os_release()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname
 	_pname="$1"
 	if [ -r "${POT_FS_ROOT}/jails/$_pname/m/bin/freebsd-version" ]; then
@@ -848,7 +848,7 @@ _get_freebsd_release_name()
 
 _fetch_freebsd()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _archpath _rel
 	_archpath="$(_get_arch)"
 
@@ -867,7 +867,7 @@ _fetch_freebsd()
 # $1 release, in short format, major.minor or major.minor-RC#
 _fetch_freebsd_internal()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _rel _sha _sha_m _archpath
 	_rel="$( _get_freebsd_release_name "$1" )"
 	_archpath="$( echo "$2" | sed -e 's:-:/:' )"
@@ -899,7 +899,7 @@ _fetch_freebsd_internal()
 # $1 fscomp.conf absolute pathname
 _print_pot_fscomp()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _dset _mnt_p
 	while read -r line ; do
 		_dset=$( echo "$line" | awk '{print $1}' )
@@ -931,7 +931,7 @@ _get_pot_snaps()
 # $1 pot name
 _pot_mount()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _dset _mnt_p _opt _node
 	_pname="$1"
 	if ! _is_pot "$_pname" ; then
@@ -991,7 +991,7 @@ _pot_mount()
 # $1 pot name
 _pot_umount()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _tmpfile _jdir _node _mnt_p _opt _dset
 	_pname="$1"
 	if ! _tmpfile=$(mktemp -t "${_pname}.XXXXXX") ; then
@@ -1044,10 +1044,10 @@ _get_bridge_list()
 	find "${POT_FS_ROOT}/bridges" -type f 2>/dev/null | xargs -I {} basename {} | tr '\n' ' '
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-cmd()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _cmd _func
 	_cmd=$1
 	shift

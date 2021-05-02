@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 add-dep-help()
 {
 	echo "pot add-dep [-hv] -p pot -P depPot"
@@ -15,7 +15,7 @@ add-dep-help()
 # $2 depPot
 _add_dependency()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _depPot _pname _cdir
 	_pname="$1"
 	_depPot="$2"
@@ -23,10 +23,10 @@ _add_dependency()
 	echo "pot.depend=$_depPot" >> "$_cdir"/pot.conf
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-add-dep()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _depPot
 	_depPot=
 	_pname=

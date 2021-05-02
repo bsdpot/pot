@@ -8,7 +8,7 @@ _pot_bridge()
 
 _pot_bridge_ipv4()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridges
 	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
 	if [ -z "$_bridges" ]; then
@@ -25,7 +25,7 @@ _pot_bridge_ipv4()
 
 _pot_bridge_ipv6()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridges
 	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
 	if [ -z "$_bridges" ]; then
@@ -42,7 +42,7 @@ _pot_bridge_ipv6()
 # $1 bridge name
 _private_bridge()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridges _bridge _bridge_ip
 	_bridge="$1"
 	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
@@ -61,7 +61,7 @@ _private_bridge()
 
 _get_pot_rdr_anchor_name()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname
 	_pname=$1
 	if [ "${#_pname}" -gt "55" ]; then
@@ -79,7 +79,7 @@ _is_vnet_up()
 # $1 bridge name (optional)
 _is_vnet_ipv4_up()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge
 	if [ -z "$1" ]; then
 		_bridge=$(_pot_bridge)
@@ -103,7 +103,7 @@ _is_vnet_ipv4_up()
 
 _is_vnet_ipv6_up()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _bridge
 	_bridge="$(_pot_bridge_ipv6)"
 	if [ -z "$_bridge" ]; then
@@ -115,7 +115,7 @@ _is_vnet_ipv6_up()
 # $1 the number to test
 _is_port_number()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _port
 	_port=$1
 	if [ -z "$_port" ]; then
@@ -135,7 +135,7 @@ _is_port_number()
 # $1: the -e option argument
 _is_export_port_valid()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pot_port _host_port _arg
 	if [ "${1#tcp:}" != "${1}" ]; then
 		_arg="${1#tcp:}"
@@ -163,7 +163,7 @@ _is_export_port_valid()
 # $1 name of the network interface
 _is_valid_netif()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _netif
 	_netif="$1"
 	if ifconfig "$_netif" > /dev/null 2> /dev/null ; then
@@ -175,7 +175,7 @@ _is_valid_netif()
 
 _is_valid_extif_addr()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _netif _ip
 	_netif="$1"
 	_ip="$2"
@@ -185,7 +185,7 @@ _is_valid_extif_addr()
 # get the network stack defined in the global configuration
 _get_network_stack()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _stack
 	_stack="${POT_NETWORK_STACK:-ipv4}"
 	case $_stack in
@@ -203,7 +203,7 @@ _get_network_stack()
 # $1 pot name
 _get_pot_network_stack()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _stack _pname
 	_pname="$1"
 	_stack="$( _get_conf_var "$_pname" pot.stack )"
@@ -218,7 +218,7 @@ _get_pot_network_stack()
 # $2 ipaddr
 _get_alias_ipv4()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _i _ip _nic _output
 	_output=
 	if [ "$( _get_pot_network_stack "$1" )" != "ipv6" ]; then
@@ -246,7 +246,7 @@ _get_alias_ipv4()
 # $2 ipaddr
 _get_alias_ipv6()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _i _ip _nic _output
 	_output=
 	if [ "$( _get_pot_network_stack "$1" )" != "ipv4" ]; then
@@ -274,7 +274,7 @@ _get_alias_ipv6()
 # $2 network stack
 _validate_alias_ipaddr()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _i _nic _ip _ipv4_empty _ipv6_empty _stack
 	_stack="$2"
 	_ipv4_empty="YES"
@@ -320,7 +320,7 @@ _validate_alias_ipaddr()
 # otherwise it print the an error message
 _validate_network_param()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _network_type _ipaddr _private_bridge
 	_network_type=$1
 	_ipaddr=$2

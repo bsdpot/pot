@@ -4,7 +4,7 @@
 # add sha256 check on fetch pot and option to disable it
 # add fscomp.conf management
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 import-help() {
 	echo "pot import [-hv] -p pot -t tag -U URL"
 	echo '  -h print this help'
@@ -19,7 +19,7 @@ import-help() {
 # $3 : URL
 _fetch_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _filename
 	_filename="${1}_${2}.xz"
 	if ! _fetch_pot_internal "$1" "$2" "$3" ; then
@@ -38,7 +38,7 @@ _fetch_pot()
 # $3 : URL
 _fetch_pot_internal()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _rpname _tag _URL _filename
 	_rpname=$1
 	_tag=$2
@@ -72,7 +72,7 @@ _fetch_pot_internal()
 # $3 : local pot name
 _import_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _rpname _tag _filename _network_type _newip _cdir
 	_rpname="$1"
 	_tag="$2"
@@ -110,9 +110,10 @@ _import_pot()
 	esac
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-import()
 {
+	# shellcheck disable=SC3043
 	local _rpname _tag _URL _pname
 	_rpname=
 	_tag=

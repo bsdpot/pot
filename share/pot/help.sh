@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-help()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _cmd _func
 	_cmd=$1
 	shift

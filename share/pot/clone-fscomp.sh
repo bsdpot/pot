@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 clone-fscomp-help()
 {
 	echo "pot clone-fscomp [-hv] -f fscomp -F fscomp"
@@ -15,7 +15,7 @@ clone-fscomp-help()
 # $2 old fscomp name
 _cf_zfs()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _fscomp _cfscomp _fsdset _fsdir _snap
 	_fscomp=$1
 	_cfscomp=$2
@@ -32,10 +32,10 @@ _cf_zfs()
 	return 0 # true
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-clone-fscomp()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _fscomp _cfscomp
 	_fscomp=
 	_cfscomp=

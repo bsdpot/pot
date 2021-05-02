@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 export-ports-help()
 {
 	echo "pot export-ports configure the pot export ports - network type public-bridge only"
@@ -21,7 +21,7 @@ export-ports-help()
 # $2 port list
 _export_ports()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _ports _cdir
 	_pname="$1"
 	_ports="$2"
@@ -30,9 +30,10 @@ _export_ports()
 	echo "pot.export.ports=$_ports" >> "$_cdir/pot.conf"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-export-ports()
 {
+	# shellcheck disable=SC3043
 	local _pname _ports
 	_pname=
 	_ports=

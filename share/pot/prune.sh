@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 prune-help()
 {
 	echo "pot prune [-hvq]"
@@ -13,7 +13,7 @@ prune-help()
 # $1 pot name
 _prune_pot()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _quiet _dry_run
 	_pname=$1
 	_dry_run=$2
@@ -38,7 +38,7 @@ _prune_pot()
 
 _prune_pots()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pots _dry_run _quiet _p
 	_dry_run="$1"
 	_quiet="$2"
@@ -48,10 +48,10 @@ _prune_pots()
 	done
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-prune()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _quiet _dry_run
 	_quiet=
 	_dry_run="NO"

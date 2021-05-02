@@ -1,7 +1,7 @@
 #!/bin/sh
 :
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 get-attr-help()
 {
 	echo "pot get-attr [-hvq] -p pot -A attr"
@@ -13,10 +13,10 @@ get-attr-help()
 	echo '      '"$_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES"
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-get-attribute()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _pname _attr _value _quiet
 	_pname=
 	_attr=

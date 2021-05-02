@@ -2,7 +2,7 @@
 
 : "${_config_names:="fs_root zfs_root gateway syslogd pot_prefix fscomp_prefix network_stack"}"
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 config-help()
 {
 	echo 'pot config [-h][-v][-q] [-g name ]'
@@ -25,10 +25,10 @@ _config_echo()
 	fi
 }
 
-# shellcheck disable=SC2039
+# shellcheck disable=SC3033
 pot-config()
 {
-	# shellcheck disable=SC2039
+	# shellcheck disable=SC3043
 	local _quiet
 	_quiet="NO"
 	_get=

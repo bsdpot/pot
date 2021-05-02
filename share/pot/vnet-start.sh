@@ -155,7 +155,7 @@ _ipv6_bridge_start()
 			_debug "Bridge $_bridge inet6 up"
 		fi
 		if ! ifconfig "$_bridge" addm "$POT_EXTIF" ; then
-			_error "Error while adding $POT_EXTIT to the bridge ($_bridge)"
+			_error "Error while adding $POT_EXTIF to the bridge ($_bridge)"
 		else
 			_debug "Bridge $_bridge addm $POT_EXTIF"
 		fi

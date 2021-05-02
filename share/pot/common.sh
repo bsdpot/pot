@@ -101,14 +101,14 @@ _set_pipefail()
 	local _major _version
 	_major="$(sysctl -n kern.osrelease | cut -f 1 -d '.')"
 	if [ "$_major" -ge "13" ]; then
-		# shellcheck disable=SC3043
+		# shellcheck disable=SC3040
 		set -o pipefail
 		return
 	fi
 	_version="$(sysctl -n kern.osrelease | cut -f 1 -d '-')"
 	case "$_version" in
 		"12.1"|"12.2")
-			# shellcheck disable=SC3043
+			# shellcheck disable=SC3040
 			set -o pipefail
 			;;
 	esac

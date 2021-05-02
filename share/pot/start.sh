@@ -21,6 +21,7 @@ start-help()
 # shellcheck disable=SC3033
 start-cleanup()
 {
+	# shellcheck disable=SC3043
 	local _pname
 	_pname=$1
 	if [ -z "$_pname" ]; then

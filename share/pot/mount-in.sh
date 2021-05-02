@@ -163,6 +163,7 @@ _mount_dir()
 # shellcheck disable=SC3033
 pot-mount-in()
 {
+	# shellcheck disable=SC3043
 	local _pname _fscomp _mnt_p _remount _readonly _opt _dir _real_mnt_p
 	OPTIND=1
 	_pname=

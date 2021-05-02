@@ -48,6 +48,7 @@ _export_pot()
 # shellcheck disable=SC3033
 pot-export()
 {
+	# shellcheck disable=SC3043
 	local _pname _snap _tag _dir _auto_purge _force
 	_pname=
 	_snap=

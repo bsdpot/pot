@@ -149,7 +149,7 @@ _info_pot_snapshots()
 # $1 bridge name
 _info_bridge()
 {
-# shellcheck disable=SC3033
+	# shellcheck disable=SC3043
 	local _bname
 	_bname="$1"
 	if _is_potnet_available ; then

@@ -52,6 +52,7 @@ _purge_dset()
 # shellcheck disable=SC3033
 pot-purge-snapshots()
 {
+	# shellcheck disable=SC3043
 	local _obj _objname _all_snap
 	_all_snap="NO"
 	_obj=""

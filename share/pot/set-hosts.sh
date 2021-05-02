@@ -27,6 +27,7 @@ _set_hosts()
 # shellcheck disable=SC3033
 pot-set-hosts()
 {
+	# shellcheck disable=SC3043
 	local _pname _tmpfile _ip _hostname
 	_pname=
 	_tmpfile="/tmp/pot-set-hosts"

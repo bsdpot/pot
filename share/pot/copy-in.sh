@@ -55,6 +55,7 @@ _mount_source_into_potroot()
 # shellcheck disable=SC3033
 pot-copy-in()
 {
+	# shellcheck disable=SC3043
 	local _pname _source _destination _to_be_umount _rc _force _proot _cp_opt
 	OPTIND=1
 	_pname=

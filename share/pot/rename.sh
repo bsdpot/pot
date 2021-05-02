@@ -114,6 +114,7 @@ _rn_recursive()
 # shellcheck disable=SC3033
 pot-rename()
 {
+	# shellcheck disable=SC3043
 	local _pname _newname
 	_pname=
 	_newname=

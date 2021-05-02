@@ -27,6 +27,7 @@ _set_environment()
 # shellcheck disable=SC3033
 pot-set-env()
 {
+	# shellcheck disable=SC3043
 	local _pname _env _tmpfile
 	_env=
 	_pname=

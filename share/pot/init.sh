@@ -15,6 +15,7 @@ init-help()
 # shellcheck disable=SC3033
 pot-init()
 {
+	# shellcheck disable=SC3043
 	local pf_file
 	OPTIND=1
 	while getopts "hv" _o ; do

@@ -113,6 +113,7 @@ _import_pot()
 # shellcheck disable=SC3033
 pot-import()
 {
+	# shellcheck disable=SC3043
 	local _rpname _tag _URL _pname
 	_rpname=
 	_tag=

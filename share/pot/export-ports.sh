@@ -33,6 +33,7 @@ _export_ports()
 # shellcheck disable=SC3033
 pot-export-ports()
 {
+	# shellcheck disable=SC3043
 	local _pname _ports
 	_pname=
 	_ports=

@@ -13,6 +13,7 @@ set-cmd-help() {
 # shellcheck disable=SC3033
 pot-set-cmd()
 {
+	# shellcheck disable=SC3043
 	local _pname _cmd
 	_cmd=
 	_pname=

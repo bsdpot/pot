@@ -39,6 +39,7 @@ _is_valid_hook()
 # shellcheck disable=SC3033
 pot-set-hook()
 {
+	# shellcheck disable=SC3043
 	local _pname _prestart _poststart _prestop _poststop
 	_pname=
 	_prestart=

@@ -207,6 +207,7 @@ setUp()
 	__arch="amd64"
 	__didfetch="1"
 	common_setUp
+	POT_CACHE="/tmp"
 	FETCH_CALLS=0
 	RM_CALLS=0
 }

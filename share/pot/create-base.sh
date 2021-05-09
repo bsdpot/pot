@@ -58,7 +58,7 @@ _cb_tar_dir()
 	(
 		set -e
 		cd "$_mnt"
-		tar xkf /tmp/"${_rel}"_base.txz
+		tar xkf "${POT_CACHE}/${_rel}"_base.txz
 		# add release information
 		echo "$_rel" > .osrelease
 		cp -a root opt/custom/

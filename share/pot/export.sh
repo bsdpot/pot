@@ -27,8 +27,10 @@ _export_pot()
 {
 	# shellcheck disable=SC3043
 	local _pname _dset _snap _tag _dir _file _clvl
-	local _origin _origin_dset _origin_pname_snapshot
-	local _origin_pname _origin_snapshot _origin_tag _meta
+	# shellcheck disable=SC3043
+	local _meta _origin _origin_pname_snapshot
+	# shellcheck disable=SC3043
+	local _origin_pname _origin_snapshot _origin_tag
 	_pname="$1"
 	_snap="$2"
 	_tag="$3"
@@ -40,10 +42,11 @@ _export_pot()
 
 	_origin=$(zfs get -H origin "${_dset}/m" | awk '{ print $3 }')
 	if [ -n "$_origin" ] && [ "$_origin" != "-" ]; then
-		_origin_dset=$(echo ${_origin} | awk -F@ '{ print $1 }')
-		_origin_pname_snapshot=$(basename $(echo ${_origin} | sed 's|/m@|@|g'))
-		_origin_pname=$(echo ${_origin_pname_snapshot} | awk -F\@ '{ print $1 }')
-		_origin_snapshot=$(echo ${_origin_pname_snapshot} | awk -F@ '{ print $2 }')
+		#_origin_dset=$(echo ${_origin} | awk -F@ '{ print $1 }')
+		_origin=$(echo "${_origin}" | sed 's|/m@|@|g')
+		_origin_pname_snapshot=$(basename "${_origin}")
+		_origin_pname=$(echo "${_origin_pname_snapshot}" | awk -F\@ '{ print $1 }')
+		_origin_snapshot=$(echo "${_origin_pname_snapshot}" | awk -F@ '{ print $2 }')
 		_origin_tag=$(zfs get -H :pot.tag "${_origin}" | awk '{ print $3 }')
 		if [ -z "$_origin_tag" ] || [ "$_origin_tag" = "-" ]; then
 			_error "Origin ${_origin_pname} has no :pot.tag, please export first"
@@ -61,8 +64,8 @@ _export_pot()
 	else
 		echo "$_meta" > "${_file}.meta"
 		(cat "${_file}" "${_file}.meta") | skein1024 -q > "${_file}.skein"
-		zfs set :pot.tag="${_tag}" "${_dset}/m"@"${_snap}"
-		zfs set :pot.tag="${_tag}" "${_dset}"@"${_snap}"
+		zfs set :pot.tag="${_tag}" "${_dset}/m@${_snap}"
+		zfs set :pot.tag="${_tag}" "${_dset}@${_snap}"
 		return 0 # true
 	fi
 }

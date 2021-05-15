@@ -83,6 +83,7 @@ _import_pot()
 {
 	# shellcheck disable=SC3043
 	local _pname _rpname _tag _filename _network_type _newip _cdir
+	# shellcheck disable=SC3043
 	local _origin_pname _origin_snap
 	_rpname="$1"
 	_tag="$2"
@@ -136,7 +137,12 @@ _import_pot()
 # shellcheck disable=SC3033
 _pot_import_do()
 {
+	# shellcheck disable=SC3043
 	local _rpname _tag _URL _pname
+	# shellcheck disable=SC3043
+        local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin
+	# shellcheck disable=SC3043
+        local _filename
 	_rpname="$1"
 	_tag="$2"
 	_URL="$3"
@@ -167,16 +173,15 @@ _pot_import_do()
 		${EXIT} 1
 	fi
 
-        local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin _filename
 	_dep_origin=""
 	_dep_snap=""
 	_filename="${_rpname}_${_tag}.xz"
 	_meta=$(head -n1 "${POT_CACHE}/$_filename.meta")
 	if [ -n "${_meta}" ] && [ "${_meta}" != "-" ]; then
-		_dep_pname_tag=$(echo ${_meta} | awk -F@ '{ print $1 }')
-		_dep_snap=$(echo ${_meta} | awk -F@ '{ print $2 }')
-		_dep_pname=$(echo ${_dep_pname_tag} | awk -F: '{ print $1 }')
-		_dep_tag=$(echo ${_dep_pname_tag} | awk -F: '{ print $2 }')
+		_dep_pname_tag=$(echo "${_meta}" | awk -F@ '{ print $1 }')
+		_dep_snap=$(echo "${_meta}" | awk -F@ '{ print $2 }')
+		_dep_pname=$(echo "${_dep_pname_tag}" | awk -F: '{ print $1 }')
+		_dep_tag=$(echo "${_dep_pname_tag}" | awk -F: '{ print $2 }')
 		_dep_origin=$(echo "${_dep_pname}_${_dep_tag}" | sed "s/\./_/g")
 		_info "Pot $_pname depends on ${_dep_origin} (@${_dep_snap})"
 		# XXX: assumes remote name equals local name
@@ -202,6 +207,7 @@ _pot_import_do()
 # shellcheck disable=SC3033
 pot-import()
 {
+	# shellcheck disable=SC3043
 	local _rpname _tag _URL _pname
 	_rpname=
 	_tag=

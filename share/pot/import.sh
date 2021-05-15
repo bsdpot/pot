@@ -134,19 +134,49 @@ _import_pot()
 	esac
 }
 
+
 # shellcheck disable=SC3033
-_pot_import_do()
+pot-import()
 {
 	# shellcheck disable=SC3043
 	local _rpname _tag _URL _pname
+	_rpname=
+	_tag=
+	_URL=
 	# shellcheck disable=SC3043
         local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin
 	# shellcheck disable=SC3043
         local _filename
-	_rpname="$1"
-	_tag="$2"
-	_URL="$3"
-	_pname="$4"
+
+	OPTIND=1
+	while getopts "hvp:t:U:" _o ; do
+		case "$_o" in
+		h)
+			import-help
+			${EXIT} 0
+			;;
+		v)
+			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			;;
+		p)
+			_rpname="$OPTARG"
+			;;
+		t)
+			_tag="$OPTARG"
+			;;
+		U)
+			if [ -z "$OPTARG" ]; then
+				_error "Argument of -U cannot be empty"
+				import-help
+				${EXIT} 1
+			fi
+			_URL="$OPTARG"
+			;;
+		*)
+			import-help
+			${EXIT} 1
+		esac
+	done
 
 	if [ -z "$_rpname" ]; then
 		_error "A remote pot name is mandatory"
@@ -187,7 +217,7 @@ _pot_import_do()
 		# XXX: assumes remote name equals local name
 		if ! _is_pot "${_dep_origin}" quiet ; then
 			_info "Installing dependency ${_dep_origin}"
-			if ! _pot_import_do "$_dep_pname" "$_dep_tag" "$_URL" "$_dep_pname"; then
+			if ! pot-cmd import -p "$_dep_pname" -t "$_dep_tag" -U "$_URL"; then
 				${EXIT} 1
 			fi
 		else
@@ -199,50 +229,6 @@ _pot_import_do()
 	fi
 
 	if ! _import_pot "$_rpname" "$_tag" "$_pname" "$_dep_origin" "$_dep_snap"; then
-		${EXIT} 1
-	fi
-	return 0
-}
-
-# shellcheck disable=SC3033
-pot-import()
-{
-	# shellcheck disable=SC3043
-	local _rpname _tag _URL _pname
-	_rpname=
-	_tag=
-	_URL=
-	OPTIND=1
-	while getopts "hvp:t:U:" _o ; do
-		case "$_o" in
-		h)
-			import-help
-			${EXIT} 0
-			;;
-		v)
-			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
-			;;
-		p)
-			_rpname="$OPTARG"
-			;;
-		t)
-			_tag="$OPTARG"
-			;;
-		U)
-			if [ -z "$OPTARG" ]; then
-				_error "Argument of -U cannot be empty"
-				import-help
-				${EXIT} 1
-			fi
-			_URL="$OPTARG"
-			;;
-		*)
-			import-help
-			${EXIT} 1
-		esac
-	done
-
-	if ! _pot_import_do "$_rpname" "$_tag" "$_URL" "$_pname" ; then
 		${EXIT} 1
 	fi
 	return 0

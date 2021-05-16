@@ -435,8 +435,8 @@ _cj_single_install()
 	else
 		_rel="$_base"-RELEASE
 	fi
-	if [ ! -r "/tmp/${_rel}_base.txz" ]; then
-		_error "FreeBSD base tarball /tmp/${_rel}_base.txz is missing"
+	if [ ! -r "${POT_CACHE}/${_rel}_base.txz" ]; then
+		_error "FreeBSD base tarball ${POT_CACHE}/${_rel}_base.txz is missing"
 		_cj_undo_create
 		return 1 # falase
 	fi
@@ -444,7 +444,7 @@ _cj_single_install()
 	  set -e
 	  cd "$_proot"
 	  _info "Extract the tarball"
-	  tar xkf "/tmp/${_rel}_base.txz"
+	  tar xkf "${POT_CACHE}/${_rel}_base.txz"
 	  if [ ! -d usr/home ]; then
 		  mkdir -p usr/home
 	  fi

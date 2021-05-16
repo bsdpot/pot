@@ -855,7 +855,7 @@ _fetch_freebsd()
 	if ! _fetch_freebsd_internal "$1" "$_archpath"; then
 		# remove artifact and retry only once
 		_rel="$( _get_freebsd_release_name "$1" )"
-		rm -f /tmp/"${_rel}"_base.txz
+		rm -f "${POT_CACHE}/${_rel}"_base.txz
 		if ! _fetch_freebsd_internal "$1" "$_archpath"; then
 			return 1 # false
 		fi
@@ -872,15 +872,15 @@ _fetch_freebsd_internal()
 	_rel="$( _get_freebsd_release_name "$1" )"
 	_archpath="$( echo "$2" | sed -e 's:-:/:' )"
 
-	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
-		fetch -m https://ftp.freebsd.org/pub/FreeBSD/releases/"$_archpath"/"${_rel}"/base.txz -o /tmp/"${_rel}"_base.txz
+	if [ ! -r "${POT_CACHE}/${_rel}"_base.txz ]; then
+		fetch -m https://ftp.freebsd.org/pub/FreeBSD/releases/"$_archpath"/"${_rel}"/base.txz -o "${POT_CACHE}/${_rel}"_base.txz
 	fi
 
-	if [ ! -r /tmp/"${_rel}"_base.txz ]; then
+	if [ ! -r "${POT_CACHE}/${_rel}"_base.txz ]; then
 		return 1 # false
 	fi
 	if [ -r /usr/local/share/freebsd/MANIFESTS/"$2"-"${_rel}" ]; then
-		_sha=$( sha256 -q /tmp/"${_rel}"_base.txz )
+		_sha=$( sha256 -q "${POT_CACHE}/${_rel}"_base.txz )
 		# shellcheck disable=SC2002
 		_sha_m=$( cat /usr/local/share/freebsd/MANIFESTS/"$2"-"${_rel}" | awk '/^base.txz/ { print $2 }' )
 		# This version would remove the useless cat, but the testability of this function is compromised

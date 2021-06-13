@@ -205,7 +205,8 @@ test_pot_export_040()
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1234321" "$EXPORTS_CALL1_ARG3"
-	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg4" "" "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg5" "." "$EXPORTS_CALL1_ARG5"
 }
 
 test_pot_export_041()
@@ -219,7 +220,8 @@ test_pot_export_041()
 	assertEquals "_export arg1" "test-pot-single" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "1234321" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "v1.0" "$EXPORTS_CALL1_ARG3"
-	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg4" "" "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg5" "." "$EXPORTS_CALL1_ARG5"
 }
 
 test_pot_export_042()
@@ -257,7 +259,8 @@ test_pot_export_050()
 	assertEquals "_export arg1" "test-pot-single-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "4321234" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
-	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg4" "" "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg5" "." "$EXPORTS_CALL1_ARG5"
 }
 
 test_pot_export_051()
@@ -273,7 +276,8 @@ test_pot_export_051()
 	assertEquals "_export arg1" "test-pot-single-2" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "4321234" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
-	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg4" "" "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg5" "." "$EXPORTS_CALL1_ARG5"
 }
 
 test_pot_export_052()
@@ -289,7 +293,8 @@ test_pot_export_052()
 	assertEquals "_export arg1" "test-pot-single-0" "$EXPORTS_CALL1_ARG1"
 	assertEquals "_export arg2" "123123123" "$EXPORTS_CALL1_ARG2"
 	assertEquals "_export arg3" "1.0" "$EXPORTS_CALL1_ARG3"
-	assertEquals "_export arg4" "." "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg4" "" "$EXPORTS_CALL1_ARG4"
+	assertEquals "_export arg5" "." "$EXPORTS_CALL1_ARG5"
 }
 
 setUp()

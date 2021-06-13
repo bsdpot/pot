@@ -22,8 +22,9 @@ export-help() {
 # $1 : pot name
 # $2 : snapshot
 # $3 : tag name
-# $4 : target directory - where to write the file
-# $5 : compression level
+# $4 : check tag - if 'YES', make sure tags are not decreasing
+# $5 : target directory - where to write the file
+# $6 : compression level
 _export_pot()
 {
 	# shellcheck disable=SC3043
@@ -42,36 +43,34 @@ _export_pot()
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
         _meta="-"
 
-	_prev_tag=$(zfs get -H :pot.tag "${_dset}" | awk '{ print $3 }')
-	_prev_snap=$(zfs get -H :pot.snap "${_dset}" | awk '{ print $3 }')
+	_prev_tag=$(zfs get -H -o value :pot.tag "${_dset}")
+	_prev_snap=$(zfs get -H -o value :pot.snap "${_dset}")
 	if [ "$_check_tag" = "YES" ] && \
 	   [ -n "$_prev_tag" ] && [ "$_prev_tag" != "-" ]; then
 		if [ "$_prev_tag" = "$_tag" ] && [ "$_prev_snap" != "$_snap" ]; then
 			_error "Already exported a different snapshot tagged as this version"
-			exit 1
+			return 1 # false
 		fi
 		_highest_version="$( \
 		  (echo "$_tag"; echo "$_prev_tag") | sort -V | tail -n1)"
 		if [ "$_tag" != "$_highest_version" ]; then
 			_error "Tag version lower than the previously exported one"
-			exit 1
+			return 1 # false
 		fi
 	fi
 
-	_origin=$(zfs get -H origin "${_dset}/m" | awk '{ print $3 }')
+	_origin=$(zfs get -H -o value origin "${_dset}/m")
 	if [ -n "$_origin" ] && [ "$_origin" != "-" ]; then
-		#_origin_dset=$(echo ${_origin} | awk -F@ '{ print $1 }')
 		_origin=$(echo "${_origin}" | sed 's|/m@|@|g')
 		_origin_pname_snapshot=$(basename "${_origin}")
 		_origin_pname=$(echo "${_origin_pname_snapshot}" | awk -F\@ '{ print $1 }')
 		_origin_snapshot=$(echo "${_origin_pname_snapshot}" | awk -F@ '{ print $2 }')
-		_origin_tag=$(zfs get -H :pot.tag "${_origin}" | awk '{ print $3 }')
+		_origin_tag=$(zfs get -H -o value :pot.tag "${_origin}")
 		if [ -z "$_origin_tag" ] || [ "$_origin_tag" = "-" ]; then
 			_error "Origin ${_origin_pname} has no :pot.tag, please export first"
 			return 1 # false
 		fi
 		_meta="${_origin_pname}:${_origin_tag}@${_origin_snapshot}"
-		#_origin=$(zfs get -H origin "${_origin_dset}" | awk '{ print $3 }')
 	fi
 
 	if ! zfs send -R "${_dset}"@"${_snap}" | xz -"${_clvl}" -T 0 > "${_file}" ; then

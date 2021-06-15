@@ -12,6 +12,7 @@ export-help() {
 	echo '  -p pot : the working pot'
 	echo '  -t tag : the tag to be used as suffix in the filename'
 	echo '           if no tag is specified, tha snapshot will be used as suffix'
+	echo '  -c : Treat tags as versions and check if they are decreasing'
 	echo '  -D directory : where to store the compressed file with the pot'
 	echo '  -l compression-level : from 0 (fast) to 9 (best). Defaul level 6. (man xz for more information)'
 	echo '  -F : force exports of multiple snapshot (only 1 snapshot should be allowed)'
@@ -21,26 +22,67 @@ export-help() {
 # $1 : pot name
 # $2 : snapshot
 # $3 : tag name
-# $4 : target directory - where to write the file
-# $5 : compression level
+# $4 : check tag - if 'YES', make sure tags are not decreasing
+# $5 : target directory - where to write the file
+# $6 : compression level
 _export_pot()
 {
 	# shellcheck disable=SC3043
-	local _pname _dset _snap _tag _dir _file _clvl
+	local _pname _dset _snap _tag _check_tag _prev_tag _prev_snap
+	# shellcheck disable=SC3043
+	local  _dir _file _clvl _meta _origin _origin_pname_snapshot
+	# shellcheck disable=SC3043
+	local _origin_pname _origin_snapshot _origin_tag _highest_version
 	_pname="$1"
 	_snap="$2"
 	_tag="$3"
-	_dir="$4"
-	_clvl="$5"
+	_check_tag="$4"
+	_dir="$5"
+	_clvl="$6"
 	_file="${_dir}/${_pname}_${_tag}.xz"
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
+        _meta="-"
+
+	_prev_tag=$(zfs get -H -o value :pot.tag "${_dset}")
+	_prev_snap=$(zfs get -H -o value :pot.snap "${_dset}")
+	if [ "$_check_tag" = "YES" ] && \
+	   [ -n "$_prev_tag" ] && [ "$_prev_tag" != "-" ]; then
+		if [ "$_prev_tag" = "$_tag" ] && [ "$_prev_snap" != "$_snap" ]; then
+			_error "Already exported a different snapshot tagged as this version"
+			return 1 # false
+		fi
+		_highest_version="$( \
+		  (echo "$_tag"; echo "$_prev_tag") | sort -V | tail -n1)"
+		if [ "$_tag" != "$_highest_version" ]; then
+			_error "Tag version lower than the previously exported one"
+			return 1 # false
+		fi
+	fi
+
+	_origin=$(zfs get -H -o value origin "${_dset}/m")
+	if [ -n "$_origin" ] && [ "$_origin" != "-" ]; then
+		_origin=$(echo "${_origin}" | sed 's|/m@|@|g')
+		_origin_pname_snapshot=$(basename "${_origin}")
+		_origin_pname=$(echo "${_origin_pname_snapshot}" | awk -F\@ '{ print $1 }')
+		_origin_snapshot=$(echo "${_origin_pname_snapshot}" | awk -F@ '{ print $2 }')
+		_origin_tag=$(zfs get -H -o value :pot.tag "${_origin}")
+		if [ -z "$_origin_tag" ] || [ "$_origin_tag" = "-" ]; then
+			_error "Origin ${_origin_pname} has no :pot.tag, please export first"
+			return 1 # false
+		fi
+		_meta="${_origin_pname}:${_origin_tag}@${_origin_snapshot}"
+	fi
+
 	if ! zfs send -R "${_dset}"@"${_snap}" | xz -"${_clvl}" -T 0 > "${_file}" ; then
 		rm -f "${_file}"
 		return 1 # false
 	elif [ ! -r "${_file}" ]; then
-		return 1 # fasle
+		return 1 # false
 	else
-		skein1024 -q "${_file}" > "${_file}.skein"
+		echo "$_meta" > "${_file}.meta"
+		(cat "${_file}" "${_file}.meta") | skein1024 -q > "${_file}.skein"
+		zfs set :pot.tag="${_tag}" "${_dset}"
+		zfs set :pot.snap="${_snap}" "${_dset}"
 		return 0 # true
 	fi
 }
@@ -49,7 +91,7 @@ _export_pot()
 pot-export()
 {
 	# shellcheck disable=SC3043
-	local _pname _snap _tag _dir _auto_purge _force
+	local _pname _snap _tag _dir _auto_purge _force _check_tag
 	_pname=
 	_snap=
 	_tag=
@@ -57,8 +99,9 @@ pot-export()
 	_clvl=6
 	_auto_purge=
 	_force=
+	_check_tag=
 	OPTIND=1
-	while getopts "hvp:t:D:l:FA" _o ; do
+	while getopts "hvcp:t:D:l:FA" _o ; do
 		case "$_o" in
 		h)
 			export-help
@@ -66,6 +109,9 @@ pot-export()
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
+			;;
+		c)
+			_check_tag="YES"
 			;;
 		p)
 			_pname="$OPTARG"
@@ -154,6 +200,6 @@ pot-export()
 		${EXIT} 1
 	fi
 	_info "exporting $_pname @ $_snap to ${_dir}/${_pname}_${_tag}.xz"
-	_export_pot "$_pname" "$_snap" "$_tag" "${_dir}" "${_clvl}"
+	_export_pot "$_pname" "$_snap" "$_tag" "$_check_tag" "${_dir}" "${_clvl}"
 	return $?
 }

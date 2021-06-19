@@ -5,9 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- import-export: add support for layered images (#151)
+
+### Changed
+- start: simplify startup, use jexec to run pot.cmd (#150)
+
+### Fixed
 - start/stop: prevent stopping non-persistent jails twice (#152)
 - stop: garbage collect POSIX shared memory (#150)
-- import-export: add support for layered images (#151)
 
 ## [0.12.0] 2021-05-22
 ### Added

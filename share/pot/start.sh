@@ -390,43 +390,15 @@ _js_env()
 	rm -f "$_shfile"
 }
 
-_bg_start()
-{
-	# shellcheck disable=SC3043
-	local _pname _persist _conf
-	_pname=$1
-	_conf="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
-	sleep 3
-	if _is_pot_running "$_pname" && [ "$_persist" = "NO" ]; then
-		jail -m name="$_pname" nopersist
-	fi
-	if [ -e "$_conf" ]; then
-		if _is_pot_prunable "$_pname" ; then
-			# set-attr cannot be used for read-only attributes
-			${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" "$_conf"
-			echo "pot.attr.to-be-pruned=YES" >> "$_conf"
-		fi
-	fi
-	if _is_pot_running "$_pname" ; then
-		_js_rss "$_pname"
-	fi
-	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/poststart.sh" ]; then
-		_info "Executing the post-start script for the pot $_pname"
-		(
-			# shellcheck disable=SC2046
-			eval $( pot info -E -p "$_pname" )
-			"${POT_FS_ROOT}/jails/$_pname"/conf/poststart.sh
-		)
-	fi
-}
-
 # $1 jail name
 _js_start()
 {
 	# shellcheck disable=SC3043
-	local _pname _iface _hostname _osrelease _param _ip _cmd _persist _stack _value _name _type
+	local _pname _confdir _iface _hostname _osrelease _param _ip _cmd _persist
+	# shellcheck disable=SC3043
+	local _stack _value _name _type
 	_pname="$1"
+	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags exec.clean mount.devfs"
@@ -452,6 +424,8 @@ _js_start()
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	if [ "$_persist" != "NO" ]; then
 		_param="$_param persist"
+	else
+		_param="$_param nopersist"
 	fi
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"inherit")
@@ -533,21 +507,47 @@ _js_start()
 	else
 		_cmd="$( _js_get_cmd "$_pname" )"
 	fi
-	if [ -x "${POT_FS_ROOT}/jails/$_pname/conf/prestart.sh" ]; then
+	if [ -x "$_confdir/prestart.sh" ]; then
 		_info "Executing the pre-start script for the pot $_pname"
 		(
 			# shellcheck disable=SC2046
 			eval $( pot info -E -p "$_pname" )
-			"${POT_FS_ROOT}/jails/$_pname"/conf/prestart.sh
+			"$_confdir/conf/prestart.sh"
 		)
 	fi
 
 	rm -f "/tmp/pot_stopped_${_pname}"
-	_bg_start "$_pname" &
+
 	_info "Starting the pot $_pname"
 	# shellcheck disable=SC2086
-	jail -c -J "/tmp/${_pname}.jail.conf" $_param exec.start="$_cmd"
-	sleep 1
+	jail -c -J "/tmp/${_pname}.jail.conf" $_param exec.start="sh -c 'sleep 5&'"
+
+	if [ -e "$_confdir/pot.conf" ] && _is_pot_prunable "$_pname" ; then
+		# set-attr cannot be used for read-only attributes
+		${SED} -i '' -e "/^pot.attr.to-be-pruned=.*/d" \
+		    "$_confdir/pot.conf"
+		echo "pot.attr.to-be-pruned=YES" >> "$_confdir/pot.conf"
+	fi
+
+	if _is_pot_running "$_pname" ; then
+		_js_rss "$_pname"
+	fi
+
+	# shellcheck disable=SC2086
+	jexec "$_pname" $_cmd &
+	_wait_pid=$!
+
+	if [ -x "$_confdir/poststart.sh" ]; then
+		_info "Executing the post-start script for the pot $_pname"
+		(
+			# shellcheck disable=SC2046
+			eval $( pot info -E -p "$_pname" )
+			"$_confdir/conf/poststart.sh"
+		)
+	fi
+
+	wait "$_wait_pid"
+
 	if ! _is_pot_running "$_pname" ; then
 		if [ ! -e "/tmp/pot_stopped_${_pname}" ]; then
 			start-cleanup "$_pname" "${_iface}"

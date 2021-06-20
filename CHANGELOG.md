@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - import-export: add support for layered images (#151)
 
+### Changed
+- start: simplify startup, use jexec to run pot.cmd (#150)
+
 ### Fixed
 - start/stop: prevent stopping non-persistent jails twice (#152)
 - stop: garbage collect POSIX shared memory (#150)

@@ -44,6 +44,7 @@ _js_stop()
 			)
 		fi
 		_debug "Stop the pot $_pname"
+		touch "/tmp/pot_stopped_${_pname}"
 		jail -q -r "$_pname"
 		if [ -n "$_epair" ]; then
 			_debug "Remove ${_epair%b}[a|b] network interfaces"
@@ -117,7 +118,7 @@ _js_stop()
 		)
 	fi
 	rm -f "/tmp/pot_${_pname}_pfrules"
-	rm -f "/tmp/pot_environment_$_pname.sh"
+	rm -f "/tmp/pot_environment_${_pname}.sh"
 	return 0 # true
 }
 

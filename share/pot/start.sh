@@ -541,13 +541,17 @@ _js_start()
 			"${POT_FS_ROOT}/jails/$_pname"/conf/prestart.sh
 		)
 	fi
+
+	rm -f "/tmp/pot_stopped_${_pname}"
 	_bg_start "$_pname" &
 	_info "Starting the pot $_pname"
 	# shellcheck disable=SC2086
 	jail -c -J "/tmp/${_pname}.jail.conf" $_param exec.start="$_cmd"
 	sleep 1
 	if ! _is_pot_running "$_pname" ; then
-		start-cleanup "$_pname" "${_iface}"
+		if [ ! -e "/tmp/pot_stopped_${_pname}" ]; then
+			start-cleanup "$_pname" "${_iface}"
+		fi
 		if [ "$_persist" = "NO" ]; then
 			return 0
 		else

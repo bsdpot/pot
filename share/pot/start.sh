@@ -533,7 +533,8 @@ _js_start()
 		_js_rss "$_pname"
 	fi
 
-	jexec "$_pname" "$_cmd" &
+	# shellcheck disable=SC2086
+	jexec "$_pname" $_cmd &
 	_wait_pid=$!
 
 	if [ -x "$_confdir/poststart.sh" ]; then

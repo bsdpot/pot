@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - start/stop: prevent stopping non-persistent jails twice (#152)
+- stop: garbage collect POSIX shared memory (#150)
+- import-export: add support for layered images (#151)
 
 ## [0.12.0] 2021-05-22
 ### Added

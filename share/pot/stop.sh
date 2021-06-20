@@ -101,6 +101,14 @@ _js_stop()
 		pkill -f "$_pdir/ncat-$_pname"
 	fi
 
+	# Garbage collect POSIX shared memory
+	if command -v posixshmcontrol >/dev/null; then
+		_shm_paths=$( posixshmcontrol ls | cut -f 5 | grep "^$_pdir/" )
+		for _shm_path in $_shm_paths ; do
+			posixshmcontrol rm "$_shm_path"
+		done
+	fi
+
 	if [ -x "$_pdir/conf/poststop.sh" ]; then
 		_info "Executing the post-stop script for the pot $_pname"
 		(

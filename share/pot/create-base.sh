@@ -124,7 +124,7 @@ pot-create-base()
 			;;
 		r)
 			if ! _is_valid_release "$OPTARG" ; then
-				_error "$2 is not a supported release"
+				_error "$OPTARG is not a supported release"
 				create-base-help
 				${EXIT} 1
 			fi

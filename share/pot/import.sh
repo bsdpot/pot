@@ -23,8 +23,8 @@ _fetch_pot()
 	local _filename
 	_filename="${1}_${2}.xz"
 	if ! _fetch_pot_internal "$1" "$2" "$3" ; then
-		# remove the artifact and retry only once
-		rm -f "${POT_CACHE}/$_filename"
+		# remove the artifacts and retry, but only once
+		rm -f "${POT_CACHE}/$_filename" "${POT_CACHE}/${_filename}.meta" "${POT_CACHE}/${_filename}.skein"
 		if ! _fetch_pot_internal "$1" "$2" "$3" ; then
 			return 1 # false
 		fi
@@ -63,7 +63,6 @@ _fetch_pot_internal()
 			# At the moment, ignore this to be backwards compatible
 			_info "No ${POT_CACHE}/$_filename.meta, ignoring"
 			touch "${POT_CACHE}/$_filename.meta"
-			#return 1 # false
 		fi
 	fi
 	if (cat "${POT_CACHE}/$_filename" "${POT_CACHE}/$_filename.meta" |\

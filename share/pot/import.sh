@@ -24,7 +24,9 @@ _fetch_pot()
 	_filename="${1}_${2}.xz"
 	if ! _fetch_pot_internal "$1" "$2" "$3" ; then
 		# remove the artifacts and retry, but only once
-		rm -f "${POT_CACHE}/$_filename" "${POT_CACHE}/${_filename}.meta" "${POT_CACHE}/${_filename}.skein"
+		rm -f "${POT_CACHE}/${_filename}" \
+			"${POT_CACHE}/${_filename}.meta" \
+			"${POT_CACHE}/${_filename}.skein"
 		if ! _fetch_pot_internal "$1" "$2" "$3" ; then
 			return 1 # false
 		fi

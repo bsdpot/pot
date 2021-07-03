@@ -9,7 +9,7 @@ create-base-help()
 	echo "pot create-base [-h] [-r RELEASE] [-b basename]"
 	echo '  -h print this help'
 	echo '  -v verbose'
-	echo '  -r RELEASE : supported release are:'"${_POT_RELEASES}"
+	echo '  -r RELEASE : supported release are:'"$( _get_valid_releases )"
 	echo '  -b base name : optional, (default: the release)'
 }
 
@@ -124,7 +124,7 @@ pot-create-base()
 			;;
 		r)
 			if ! _is_valid_release "$OPTARG" ; then
-				_error "$2 is not a supported release"
+				_error "$OPTARG is not a supported release"
 				create-base-help
 				${EXIT} 1
 			fi

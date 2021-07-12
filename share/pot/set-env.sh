@@ -35,7 +35,7 @@ pot-set-env()
 		_error "Failed to create the POT_TMP directory"
 		return 1
 	fi
-	_tmpfile="$(mktemp "${POT_TMP:-/tmp}/pot-set-env${POT_MKTEMP_SUFFIX}")"
+	_tmpfile="$(mktemp "${POT_TMP:-/tmp}/pot-set-env${POT_MKTEMP_SUFFIX}")" || exit 1
 	OPTIND=1
 	while getopts "hvp:E:" _o ; do
 		case "$_o" in

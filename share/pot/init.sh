@@ -84,7 +84,7 @@ pot-init()
 	mkdir -p /usr/local/etc/newsyslog.conf.d
 	mkdir -p /var/log/pot
 
-	if _is_pot_tmp_dir ; then
+	if ! _is_pot_tmp_dir ; then
 		_error "The POT_TMP directory has not been created - aborting"
 		${EXIT} 1
 	fi

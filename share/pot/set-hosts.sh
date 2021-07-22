@@ -40,6 +40,7 @@ pot-set-hosts()
 		case "$_o" in
 		h)
 			set-hosts-help
+			rm -f "$_tmpfile"
 			return 0
 			;;
 		v)
@@ -51,6 +52,7 @@ pot-set-hosts()
 				_error "$OPTARG not in a valid form"
 				_error "hostname:IP is accepted"
 				set-hosts-help
+				rm -f "$_tmpfile"
 				return 1
 			fi
 			# validate IP address
@@ -59,11 +61,13 @@ pot-set-hosts()
 			if [ -z "$_ip" ] || [ -z "$_hostname" ]; then
 				_error "Submitted ip or hostname are empty"
 				set-hosts-help
+				rm -f "$_tmpfile"
 				return 1
 			fi
 			if ! potnet ipcheck -H "$_ip" ; then
 				_error "Submitted ip $_ip is not a valid one"
 				set-hosts-help
+				rm -f "$_tmpfile"
 				return 1
 			fi
 			echo "$_ip $_hostname" >> "$_tmpfile"
@@ -73,6 +77,7 @@ pot-set-hosts()
 			;;
 		?)
 			set-hosts-help
+			rm -f "$_tmpfile"
 			return 1
 		esac
 	done
@@ -80,14 +85,17 @@ pot-set-hosts()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-hosts-help
+		rm -f "$_tmpfile"
 		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		set-hosts-help
+		rm -f "$_tmpfile"
 		return 1
 	fi
 	if ! _is_uid0 ; then
+		rm -f "$_tmpfile"
 		return 1
 	fi
 	_set_hosts "$_pname" "$_tmpfile"

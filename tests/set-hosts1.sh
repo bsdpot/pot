@@ -27,6 +27,11 @@ rm()
 	__monitor RM "$@"
 }
 
+mktemp()
+{
+	echo "/tmp/pot-set-hosts"
+}
+
 _set_hosts()
 {
 	__monitor SETHOSTS "$@"
@@ -40,6 +45,7 @@ test_pot_set_hosts_001()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-hosts -bv
@@ -48,6 +54,7 @@ test_pot_set_hosts_001()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-hosts -b bb
@@ -56,6 +63,7 @@ test_pot_set_hosts_001()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-hosts -h
@@ -64,6 +72,7 @@ test_pot_set_hosts_001()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_002()
@@ -74,6 +83,7 @@ test_pot_set_hosts_002()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_003()
@@ -83,6 +93,7 @@ test_pot_set_hosts_003()
 	assertEquals "Help calls" "1" "$HELP_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_020()
@@ -93,6 +104,7 @@ test_pot_set_hosts_020()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_021()
@@ -103,6 +115,7 @@ test_pot_set_hosts_021()
 	assertEquals "Error calls" "2" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_022()
@@ -113,6 +126,7 @@ test_pot_set_hosts_022()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_023()
@@ -123,6 +137,7 @@ test_pot_set_hosts_023()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_hosts calls" "0" "$SETHOSTS_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_040()
@@ -136,6 +151,7 @@ test_pot_set_hosts_040()
 	assertEquals "_set_hosts arg1" "test-pot" "$SETHOSTS_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '10.1.2.3 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_041()
@@ -149,6 +165,7 @@ test_pot_set_hosts_041()
 	assertEquals "_tmpfile length" "2" "$( awk 'END {print NR}' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '10.1.2.3 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '10.1.2.4 test-pot-3' "$(sed '2!d' /tmp/pot-set-hosts)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_042()
@@ -162,6 +179,7 @@ test_pot_set_hosts_042()
 	assertEquals "_set_hosts arg1" "test-pot" "$SETHOSTS_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" 'fe00::2 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_043()
@@ -175,6 +193,7 @@ test_pot_set_hosts_043()
 	assertEquals "_set_hosts arg1" "test-pot" "$SETHOSTS_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '::1 test-pot-2' "$(sed '1!d' /tmp/pot-set-hosts)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_hosts_044()
@@ -191,6 +210,7 @@ test_pot_set_hosts_044()
 	assertEquals "_tmpfile" '10.1.2.4 test-pot-3' "$(sed '2!d' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" '::1 test-pot-4' "$(sed '3!d' /tmp/pot-set-hosts)"
 	assertEquals "_tmpfile" 'fe00::2 test-pot-5' "$(sed '4!d' /tmp/pot-set-hosts)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 setUp()
@@ -198,6 +218,7 @@ setUp()
 	common_setUp
 	HELP_CALLS=0
 	SETHOSTS_CALLS=0
+	RM_CALLS=0
 	/bin/rm -f /tmp/pot-set-hosts
 }
 

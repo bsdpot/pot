@@ -37,6 +37,7 @@ test_pot_set_env_001()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-env -bv
@@ -45,6 +46,7 @@ test_pot_set_env_001()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-env -b bb
@@ -53,6 +55,7 @@ test_pot_set_env_001()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-env -h
@@ -61,6 +64,7 @@ test_pot_set_env_001()
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_002()
@@ -71,6 +75,7 @@ test_pot_set_env_002()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 
 	setUp
 	pot-set-env -E VAR=value
@@ -79,6 +84,7 @@ test_pot_set_env_002()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_020()
@@ -89,6 +95,7 @@ test_pot_set_env_020()
 	assertEquals "Error calls" "1" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "1" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_021()
@@ -99,6 +106,7 @@ test_pot_set_env_021()
 	assertEquals "Error calls" "2" "$ERROR_CALLS"
 	assertEquals "_is_pot calls" "0" "$ISPOT_CALLS"
 	assertEquals "_set_environment calls" "0" "$SETENV_CALLS"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_040()
@@ -112,6 +120,7 @@ test_pot_set_env_040()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_041()
@@ -125,6 +134,7 @@ test_pot_set_env_041()
 	assertEquals "_tmpfile length" "2" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value"' "$(sed '1!d' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR2=value2"' "$(sed '2!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_042()
@@ -138,6 +148,7 @@ test_pot_set_env_042()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 value2"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_043()
@@ -152,6 +163,7 @@ test_pot_set_env_043()
 	assertEquals "_tmpfile length" "2" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 value2"' "$(sed '1!d' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR2=value3"' "$(sed '2!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_044()
@@ -165,6 +177,7 @@ test_pot_set_env_044()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"EMPTYVAR="' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_045()
@@ -178,6 +191,7 @@ test_pot_set_env_045()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=12*"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_046()
@@ -192,6 +206,7 @@ test_pot_set_env_046()
 	assertEquals "_tmpfile length" "2" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=12*"' "$(sed '1!d' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR2=?h* "' "$(sed '2!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_027()
@@ -205,6 +220,7 @@ test_pot_set_env_027()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 \"value2\""' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_060()
@@ -218,6 +234,7 @@ test_pot_set_env_060()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 value2"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_061()
@@ -231,6 +248,7 @@ test_pot_set_env_061()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 value2"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_062()
@@ -244,6 +262,7 @@ test_pot_set_env_062()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 value2"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 test_pot_set_env_063()
@@ -257,6 +276,7 @@ test_pot_set_env_063()
 	assertEquals "_set_environment arg1" "test-pot" "$SETENV_CALL1_ARG1"
 	assertEquals "_tmpfile length" "1" "$( awk 'END {print NR}' /tmp/pot-set-env)"
 	assertEquals "_tmpfile" '"VAR=value1 value2"' "$(sed '1!d' /tmp/pot-set-env)"
+	assertEquals "_rm calls" "1" "$RM_CALLS"
 }
 
 setUp()
@@ -264,6 +284,7 @@ setUp()
 	common_setUp
 	HELP_CALLS=0
 	SETENV_CALLS=0
+	RM_CALLS=0
 	/bin/rm -f /tmp/pot-set-env
 }
 

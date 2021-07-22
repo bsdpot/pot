@@ -30,12 +30,17 @@ pot-set-hosts()
 	# shellcheck disable=SC3043
 	local _pname _tmpfile _ip _hostname
 	_pname=
-	_tmpfile="/tmp/pot-set-hosts"
+	if ! _is_pot_tmp_dir ; then
+		_error "Failed to create the POT_TMP directory"
+		return 1
+	fi
+	_tmpfile="$(mktemp "${POT_TMP:-/tmp}/pot-set-hosts${POT_MKTMP_SUFFIX}")" || exit 1
 	OPTIND=1
 	while getopts "hvp:H:" _o ; do
 		case "$_o" in
 		h)
 			set-hosts-help
+			rm -f "$_tmpfile"
 			return 0
 			;;
 		v)
@@ -47,6 +52,7 @@ pot-set-hosts()
 				_error "$OPTARG not in a valid form"
 				_error "hostname:IP is accepted"
 				set-hosts-help
+				rm -f "$_tmpfile"
 				return 1
 			fi
 			# validate IP address
@@ -55,20 +61,23 @@ pot-set-hosts()
 			if [ -z "$_ip" ] || [ -z "$_hostname" ]; then
 				_error "Submitted ip or hostname are empty"
 				set-hosts-help
+				rm -f "$_tmpfile"
 				return 1
 			fi
 			if ! potnet ipcheck -H "$_ip" ; then
 				_error "Submitted ip $_ip is not a valid one"
 				set-hosts-help
+				rm -f "$_tmpfile"
 				return 1
 			fi
-			echo "$_ip $_hostname" >> $_tmpfile
+			echo "$_ip $_hostname" >> "$_tmpfile"
 			;;
 		p)
 			_pname="$OPTARG"
 			;;
 		?)
 			set-hosts-help
+			rm -f "$_tmpfile"
 			return 1
 		esac
 	done
@@ -76,16 +85,19 @@ pot-set-hosts()
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-hosts-help
+		rm -f "$_tmpfile"
 		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "pot $_pname is not valid"
 		set-hosts-help
+		rm -f "$_tmpfile"
 		return 1
 	fi
 	if ! _is_uid0 ; then
+		rm -f "$_tmpfile"
 		return 1
 	fi
 	_set_hosts "$_pname" "$_tmpfile"
-	rm "$_tmpfile"
+	rm -f "$_tmpfile"
 }

@@ -19,6 +19,11 @@ rm()
 	__monitor RM "$@"
 }
 
+mktemp()
+{
+	echo /tmp/pot-set-env
+}
+
 _set_environment()
 {
 	__monitor SETENV "$@"

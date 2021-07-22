@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - import-export: add support for layered images (#151)
+- POT_TMP: add a parameter to select the folder used to create temporary files
 
 ### Changed
 - start: simplify startup, use jexec to run pot.cmd (#150)

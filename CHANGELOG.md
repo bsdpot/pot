@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - import-export: add support for layered images (#151)
 - POT_TMP: add a parameter to select the folder used to create temporary files
+- flavour: -f option support a full pathname (#161)
 
 ### Changed
 - start: simplify startup, use jexec to run pot.cmd (#150)
+- flavour: the current directory is added to the flavour search path (#161)
 
 ### Fixed
 - start/stop: prevent stopping non-persistent jails twice (#152)

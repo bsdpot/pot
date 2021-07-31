@@ -34,7 +34,11 @@ _get_flavour_cmd_file()
     # shellcheck disable=SC3043
     local _flv_name
 	_flv_name="$1"
-	if [ -f "$_flv_name" ] && [ -r "$_flv_name" ] && [ "$_flv_name" = "${_flv_name%%.sh}" ]; then ## it's a cmd file path name
+	# if the flavor name ends with .sh return immediately
+	if [ "$_flv_name" != "${_flv_name%%.sh}" ]; then
+		return
+	fi
+	if [ -f "$_flv_name" ] && [ -r "$_flv_name" ]; then ## it's a cmd file path name
 		echo "$_flv_name"
 	elif [ -f "./$_flv_name" ] && [ -r "./$_flv_name" ]; then
 		echo "./$_flv_name"

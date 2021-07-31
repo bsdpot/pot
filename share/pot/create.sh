@@ -565,10 +565,6 @@ pot-create()
 			esac
 			;;
 		f)
-			if ! _is_flavourdir ; then
-				_error "The flavour directory is missing"
-				${EXIT} 1
-			fi
 			if _is_flavour "$OPTARG" ; then
 				if [ -z "$_flv" ]; then
 					_flv=$OPTARG

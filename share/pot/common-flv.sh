@@ -82,12 +82,13 @@ _flv_set_cmd()
 _exec_flv()
 {
 	# shellcheck disable=SC3043
-	local _pname _flv _pdir
+	local _pname _flv _pdir _flv_cmd_file _flv_script
 	_pname=$1
 	_flv=$2
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_debug "Flavour: $_flv"
-	if [ -r "${_POT_FLAVOUR_DIR}/${_flv}" ]; then
+	_flv_cmd_file="$( _get_flavour_cmd_file "$_flv" )"
+	if [ -n "${_flv_cmd_file}" ]; then
 		_debug "Executing $_flv pot commands on $_pname"
 		while read -r line ; do
 			# shellcheck disable=SC2086
@@ -104,14 +105,15 @@ _exec_flv()
 			else
 				_error "Flavor $_flv: line $line not valid - ignoring"
 			fi
-		done < "${_POT_FLAVOUR_DIR}/${_flv}"
+		done < "${_flv_cmd_file}"
 	fi
-	if [ -x "${_POT_FLAVOUR_DIR}/${_flv}.sh" ]; then
+	_flv_script="$( _get_clavour_script "$_flv" )"
+	if [ -n "${_flv_script}" ]; then
 		_debug "Starting $_pname pot for the initial bootstrap"
 		pot-cmd start "$_pname"
 		cp -v "${_POT_FLAVOUR_DIR}/${_flv}.sh" "$_pdir/m/tmp"
 		_debug "Executing $_flv script on $_pname"
-		if ! jexec "$_pname" "/tmp/${_flv}.sh" "$_pname" ; then
+		if ! jexec "$_pname" "/tmp/${_flv_script}" "$_pname" ; then
 			_error "create: flavour $_flv failed (script)"
 			return 1
 		fi

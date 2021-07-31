@@ -111,11 +111,11 @@ _exec_flv()
 			fi
 		done < "${_flv_cmd_file}"
 	fi
-	_flv_script="$( _get_clavour_script "$_flv" )"
+	_flv_script="$( _get_flavour_script "$_flv" )"
 	if [ -n "${_flv_script}" ]; then
 		_debug "Starting $_pname pot for the initial bootstrap"
 		pot-cmd start "$_pname"
-		cp -v "${_POT_FLAVOUR_DIR}/${_flv}.sh" "$_pdir/m/tmp"
+		cp -v "${_flv_script}" "$_pdir/m/tmp"
 		_debug "Executing $_flv script on $_pname"
 		if ! jexec "$_pname" "/tmp/${_flv_script}" "$_pname" ; then
 			_error "create: flavour $_flv failed (script)"

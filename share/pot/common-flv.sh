@@ -1,5 +1,67 @@
 #!/bin/sh
 
+# $1 flavour name
+_is_flavour()
+{
+    # shellcheck disable=SC3043
+    local _flv_name
+	_flv_name="$1"
+	if [ -n "$( _get_flavour_script "$_flv_name" )" ] ||
+		[ -n "$( _get_flavour_cmd_file "$_flv_name" )" ]; then
+		return 0 # true
+	fi
+	return 1 # false
+}
+
+_get_flavour_script()
+{
+    # shellcheck disable=SC3043
+    local _flv_name
+	_flv_name="$1"
+	if [ -f "$_flv_name" ] && [ -x "$_flv_name" ] && [ "$_flv_name" != "${_flv_name%%.sh}" ]; then ## it's a script path name
+		echo "$_flv_name"
+	elif [ -f "$_flv_name.sh" ] && [ -x "$_flv_name.sh" ];  then ## it's a path name
+		echo "$_flv_name.sh"
+	elif [ -f "./$_flv_name.sh" ] && [ -x "./$_flv_name.sh" ]; then
+		echo "./$_flv_name.sh"
+	elif [ -f "${_POT_FLAVOUR_DIR}/$_flv_name.sh" ] || [ -x "${_POT_FLAVOUR_DIR}/$_flv_name.sh" ]; then
+		echo "${_POT_FLAVOUR_DIR}/$_flv_name.sh"
+	fi
+}
+
+_get_flavour_cmd_file()
+{
+    # shellcheck disable=SC3043
+    local _flv_name
+	_flv_name="$1"
+	if [ -f "$_flv_name" ] && [ -r "$_flv_name" ] && [ "$_flv_name" = "${_flv_name%%.sh}" ]; then ## it's a cmd file path name
+		echo "$_flv_name"
+	elif [ -f "./$_flv_name" ] && [ -r "./$_flv_name" ]; then
+		echo "./$_flv_name"
+	elif [ -f "${_POT_FLAVOUR_DIR}/$_flv_name" ] || [ -r "${_POT_FLAVOUR_DIR}/$_flv_name" ]; then
+		echo "${_POT_FLAVOUR_DIR}/$_flv_name"
+	fi
+}
+
+# $1 the cmd
+# all other parameter will be ignored
+# tested
+_is_cmd_flavorable()
+{
+    # shellcheck disable=SC3043
+    local _cmd
+    _cmd=$1
+    case $_cmd in
+        add-dep|set-attribute|\
+        copy-in|mount-in|\
+        set-rss|export-ports|\
+        set-cmd|set-env)
+            return 0
+            ;;
+    esac
+    return 1 # false
+}
+
 # Special version of set-cmd usable only for flavours
 # $1 : pot name
 # $2 : the set-cmd line in the file

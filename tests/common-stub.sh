@@ -1,5 +1,6 @@
 #!/bin/sh
 . ../share/pot/common.sh
+. ../share/pot/common-flv.sh
 . ../share/pot/network.sh
 EXIT="return"
 

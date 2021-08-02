@@ -117,7 +117,7 @@ _exec_flv()
 		pot-cmd start "$_pname"
 		cp -v "${_flv_script}" "$_pdir/m/tmp"
 		_debug "Executing $_flv script on $_pname"
-		if ! jexec "$_pname" "/tmp/${_flv_script}" "$_pname" ; then
+		if ! jexec "$_pname" "/tmp/$(basename "${_flv_script}")" "$_pname" ; then
 			_error "create: flavour $_flv failed (script)"
 			return 1
 		fi

@@ -27,6 +27,11 @@ jail() {
 	__monitor JAIL "$@"
 }
 
+mktemp() {
+	__monitor MKTEMP "$@"
+	echo /tmp/copy-in.asdf
+}
+
 umount() {
 	__monitor UMOUNT "$@"
 }
@@ -200,7 +205,7 @@ test_pot_copy_in_020()
 	assertEquals "_jexec calls" "0" "$JEXEC_CALLS"
 	assertEquals "_jail calls" "1" "$JAIL_CALLS"
 	assertEquals "_jail args" "-c" "$JAIL_CALL1_ARG1"
-	assertEquals "_jail args" "/tmp/tmp/test-file" "$JAIL_CALL1_ARG5"
+	assertEquals "_jail args" "/tmp/copy-in.asdf/test-file" "$JAIL_CALL1_ARG5"
 	assertEquals "_jail args" "/test-mnt" "$JAIL_CALL1_ARG6"
 	assertEquals "_pot_umount calls" "1" "$PUMOUNT_CALLS"
 }
@@ -218,7 +223,7 @@ test_pot_copy_in_021()
 	assertEquals "_jexec calls" "1" "$JEXEC_CALLS"
 	assertEquals "_jexec args" "test-pot-run" "$JEXEC_CALL1_ARG1"
 	assertEquals "_jexec args" "-a" "$JEXEC_CALL1_ARG3"
-	assertEquals "_jexec args" "/tmp/tmp/test-file" "$JEXEC_CALL1_ARG4"
+	assertEquals "_jexec args" "/tmp/copy-in.asdf/test-file" "$JEXEC_CALL1_ARG4"
 	assertEquals "_jexec args" "/test-mnt" "$JEXEC_CALL1_ARG5"
 	assertEquals "_jail calls" "0" "$JAIL_CALLS"
 	assertEquals "_pot_umount calls" "0" "$PUMOUNT_CALLS"
@@ -237,7 +242,7 @@ test_pot_copy_in_022()
 	assertEquals "_jexec calls" "1" "$JEXEC_CALLS"
 	assertEquals "_jexec args" "test-pot-run" "$JEXEC_CALL1_ARG1"
 	assertEquals "_jexec args" "-va" "$JEXEC_CALL1_ARG3"
-	assertEquals "_jexec args" "/tmp/tmp/test-file" "$JEXEC_CALL1_ARG4"
+	assertEquals "_jexec args" "/tmp/copy-in.asdf/test-file" "$JEXEC_CALL1_ARG4"
 	assertEquals "_jexec args" "/test-mnt" "$JEXEC_CALL1_ARG5"
 	assertEquals "_jail calls" "0" "$JAIL_CALLS"
 	assertEquals "_pot_umount calls" "0" "$PUMOUNT_CALLS"
@@ -256,7 +261,7 @@ test_pot_copy_in_023()
 	assertEquals "_jexec calls" "0" "$JEXEC_CALLS"
 	assertEquals "_jail calls" "1" "$JAIL_CALLS"
 	assertEquals "_jail args" "-c" "$JAIL_CALL1_ARG1"
-	assertEquals "_jail args" "/tmp/tmp" "$JAIL_CALL1_ARG5"
+	assertEquals "_jail args" "/tmp/copy-in.asdf" "$JAIL_CALL1_ARG5"
 	assertEquals "_jail args" "/test-mnt" "$JAIL_CALL1_ARG6"
 	assertEquals "_pot_umount calls" "1" "$PUMOUNT_CALLS"
 }
@@ -270,6 +275,7 @@ setUp()
 	SRCVALID_CALLS=0
 	JAIL_CALLS=0
 	JEXEC_CALLS=0
+	MKTEMP_CALLS=0
 	UMOUNT_CALLS=0
 	PMOUNT_CALLS=0
 	PUMOUNT_CALLS=0

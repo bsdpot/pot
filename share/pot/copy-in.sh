@@ -9,7 +9,7 @@ copy-in-help()
 	echo '  -v verbose'
 	echo '  -F force copy operation for running jails (can partially expose the host file system)'
 	echo '  -p pot : the working pot'
-	echo '  -s source : the file to be added component to be added'
+	echo '  -s source : the file or directory to be copied in'
 	echo '  -d destination : the final location inside the pot'
 }
 
@@ -31,24 +31,28 @@ _source_validation()
 	fi
 }
 
+_make_temp_source()
+{
+	# shellcheck disable=SC3043
+	local _proot
+	_proot="$2"
+	mktemp -d "$_proot/tmp/copy-in${POT_MKTEMP_SUFFIX}"
+}
+
 _mount_source_into_potroot()
 {
 	# shellcheck disable=SC3043
-	local _source _proot _source_mnt
+	local _source _mountpoint _source_mnt
 	_source="$1"
-	_proot="$2"
+	_mountpoint="$2"
 	if [ -f "$_source" ]; then
 		_source_mnt="$( dirname "$_source" )"
 	else
 		_source_mnt="$_source"
 	fi
-
-	if ! mkdir "$_proot/tmp/tmp" ; then
-		_error "Failed to created the temporary mount point inside the pot"
-		return 1
-	fi
-	if ! mount_nullfs -o ro "$_source_mnt" "$_proot/tmp/tmp" ; then
+	if ! mount_nullfs -o ro "$_source_mnt" "$_mountpoint" ; then
 		_error "Failed to mount source inside the pot"
+		return 1
 	fi
 }
 
@@ -136,16 +140,23 @@ pot-copy-in()
 		_to_be_umount=1
 	fi
 	_proot=${POT_FS_ROOT}/jails/$_pname/m
-	if ! _mount_source_into_potroot "$_source" "$_proot" ; then
+	if ! _source_mountpoint="$( _make_temp_source "$_proot" )" ; then
+		_error "Failed to build a temporary folder in the pot /tmp"
+		if [ "$_to_be_umount" = "1" ]; then
+			_pot_umount "$_pname"
+		fi
+		return 1
+	fi
+	if ! _mount_source_into_potroot "$_source" "$_source_mountpoint" ; then
 		if [ "$_to_be_umount" = "1" ]; then
 			_pot_umount "$_pname"
 		fi
 		return 1
 	fi
 	if [ -f "$_source" ]; then
-		_cp_source="/tmp/tmp/$( basename "$_source" )"
+		_cp_source="/tmp/$( basename "$_source_mountpoint" )/$( basename "$_source" )"
 	else
-		_cp_source=/tmp/tmp
+		_cp_source="/tmp/$( basename "$_source_mountpoint" )"
 	fi
 	if _is_pot_running "$_pname" ; then
 		if jexec "$_pname" /bin/cp "$_cp_opt" "$_cp_source" "$_destination" ; then
@@ -165,7 +176,7 @@ pot-copy-in()
 		fi
 	fi
 
-	if ! umount "$_proot/tmp/tmp" ; then
+	if ! umount -f "$_source_mountpoint" ; then
 		_error "Failed to unmount the source tmp folder from the pot"
 		_rc=1
 	fi

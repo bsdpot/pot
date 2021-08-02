@@ -180,15 +180,6 @@ _is_init()
 	fi
 }
 
-# checks if the flavour dir is set up and exist
-_is_flavourdir()
-{
-	if [ -z "${_POT_FLAVOUR_DIR}" ] || [ ! -d "${_POT_FLAVOUR_DIR}" ]; then
-		return 1 # false
-	fi
-	return 0 # true
-}
-
 # check the POT_TMP directory
 # if missing, it will initialize it
 _is_pot_tmp_dir()
@@ -652,15 +643,6 @@ _is_valid_potname()
 	fi
 }
 
-# $1 flavour name
-_is_flavour()
-{
-	if [ -r "${_POT_FLAVOUR_DIR}/$1" ] || [ -x "${_POT_FLAVOUR_DIR}/$1.sh" ]; then
-		return 0 # true
-	fi
-	return 1 # false
-}
-
 # $1 the element to search
 # $2.. the list
 # tested
@@ -747,25 +729,6 @@ _set_command()
 		_cmd2="$( echo "$_cmd1" | sed 's/"$//' )"
 		echo "pot.cmd=$_cmd2" >> "$_cdir/pot.conf"
 	fi
-}
-
-# $1 the cmd
-# all other parameter will be ignored
-# tested
-_is_cmd_flavorable()
-{
-	# shellcheck disable=SC3043
-	local _cmd
-	_cmd=$1
-	case $_cmd in
-		add-dep|set-attribute|\
-		copy-in|mount-in|\
-		set-rss|export-ports|\
-		set-cmd|set-env)
-			return 0
-			;;
-	esac
-	return 1 # false
 }
 
 # tested

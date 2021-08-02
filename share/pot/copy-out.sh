@@ -168,6 +168,8 @@ pot-copy-out()
 	fi
 	if [ "$_to_be_umount" = "1" ]; then
 		_pot_umount "$_pname"
+	else
+		rmdir "$_destination_mountpoint"
 	fi
 	return $_rc
 }

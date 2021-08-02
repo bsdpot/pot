@@ -32,6 +32,10 @@ mktemp() {
 	echo /tmp/copy-out.asdf
 }
 
+rmdir() {
+	__monitor RMDIR "$@"
+}
+
 umount() {
 	__monitor UMOUNT "$@"
 }
@@ -206,6 +210,7 @@ test_pot_copy_out_020()
 	assertEquals "_jail args" "/test-file" "$JAIL_CALL1_ARG5"
 	assertEquals "_jail args" "/tmp/copy-out.asdf" "$JAIL_CALL1_ARG6"
 	assertEquals "_pot_umount calls" "1" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "0" "$RMDIR_CALLS"
 }
 
 test_pot_copy_out_021()
@@ -225,6 +230,7 @@ test_pot_copy_out_021()
 	assertEquals "_jexec args" "/tmp/copy-out.asdf" "$JEXEC_CALL1_ARG5"
 	assertEquals "_jail calls" "0" "$JAIL_CALLS"
 	assertEquals "_pot_umount calls" "0" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "1" "$RMDIR_CALLS"
 }
 
 test_pot_copy_out_022()
@@ -244,6 +250,7 @@ test_pot_copy_out_022()
 	assertEquals "_jexec args" "/tmp/copy-out.asdf" "$JEXEC_CALL1_ARG5"
 	assertEquals "_jail calls" "0" "$JAIL_CALLS"
 	assertEquals "_pot_umount calls" "0" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "1" "$RMDIR_CALLS"
 }
 
 test_pot_copy_out_023()
@@ -262,6 +269,7 @@ test_pot_copy_out_023()
 	assertEquals "_jail args" "/test-dir" "$JAIL_CALL1_ARG5"
 	assertEquals "_jail args" "/tmp/copy-out.asdf" "$JAIL_CALL1_ARG6"
 	assertEquals "_pot_umount calls" "1" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "0" "$RMDIR_CALLS"
 }
 
 setUp()
@@ -274,6 +282,7 @@ setUp()
 	JAIL_CALLS=0
 	JEXEC_CALLS=0
 	MKTEMP_CALLS=0
+	RMDIR_CALLS=0
 	UMOUNT_CALLS=0
 	PMOUNT_CALLS=0
 	PUMOUNT_CALLS=0

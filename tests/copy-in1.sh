@@ -36,6 +36,10 @@ umount() {
 	__monitor UMOUNT "$@"
 }
 
+rmdir() {
+	__monitor RMDIR "$@"
+}
+
 # UUT
 . ../share/pot/copy-in.sh
 
@@ -208,6 +212,7 @@ test_pot_copy_in_020()
 	assertEquals "_jail args" "/tmp/copy-in.asdf/test-file" "$JAIL_CALL1_ARG5"
 	assertEquals "_jail args" "/test-mnt" "$JAIL_CALL1_ARG6"
 	assertEquals "_pot_umount calls" "1" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "0" "$RMDIR_CALLS"
 }
 
 test_pot_copy_in_021()
@@ -227,6 +232,7 @@ test_pot_copy_in_021()
 	assertEquals "_jexec args" "/test-mnt" "$JEXEC_CALL1_ARG5"
 	assertEquals "_jail calls" "0" "$JAIL_CALLS"
 	assertEquals "_pot_umount calls" "0" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "1" "$RMDIR_CALLS"
 }
 
 test_pot_copy_in_022()
@@ -246,6 +252,7 @@ test_pot_copy_in_022()
 	assertEquals "_jexec args" "/test-mnt" "$JEXEC_CALL1_ARG5"
 	assertEquals "_jail calls" "0" "$JAIL_CALLS"
 	assertEquals "_pot_umount calls" "0" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "1" "$RMDIR_CALLS"
 }
 
 test_pot_copy_in_023()
@@ -264,6 +271,7 @@ test_pot_copy_in_023()
 	assertEquals "_jail args" "/tmp/copy-in.asdf" "$JAIL_CALL1_ARG5"
 	assertEquals "_jail args" "/test-mnt" "$JAIL_CALL1_ARG6"
 	assertEquals "_pot_umount calls" "1" "$PUMOUNT_CALLS"
+	assertEquals "_rmdir calls" "0" "$RMDIR_CALLS"
 }
 
 setUp()
@@ -279,6 +287,7 @@ setUp()
 	UMOUNT_CALLS=0
 	PMOUNT_CALLS=0
 	PUMOUNT_CALLS=0
+	RMDIR_CALLS=0
 
 	POT_FS_ROOT=/tmp
 	POT_ZFS_ROOT=zpot

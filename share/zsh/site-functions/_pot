@@ -202,6 +202,15 @@ _pot() {
 						'-s[source]:source:_normal' \
 						'-d[destination]:destination:_normal'
 					;;
+				copy-out)
+					_arguments -s \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-F[Force with running pots]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-s[source]:source:_normal' \
+						'-d[destination]:destination:_normal'
+					;;
 				mount-in)
 					_arguments -s \
 						'-h[Show help]' \

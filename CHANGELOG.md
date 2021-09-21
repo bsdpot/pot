@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - start/stop: prevent stopping non-persistent jails twice (#152)
 - stop: garbage collect POSIX shared memory (#150)
+- start: fix localhost-tunnel for tcp ports
 
 ## [0.12.0] 2021-05-22
 ### Added

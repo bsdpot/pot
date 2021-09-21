@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - start/stop: prevent stopping non-persistent jails twice (#152)
 - stop: garbage collect POSIX shared memory (#150)
+- start: fix ncat failing to start due to argv handling (#167)
 
 ## [0.12.0] 2021-05-22
 ### Added

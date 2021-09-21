@@ -307,7 +307,7 @@ _js_export_ports()
 			_pdir="${POT_FS_ROOT}/jails/$_pname"
 			if [ -x "/usr/local/bin/ncat" ]; then
 				cp /usr/local/bin/ncat "$_pdir/ncat-$_pname-$_pot_port"
-				daemon -f -p "$_pdir/ncat-$_pot_port.pid" "$_pdir/ncat-$_pname-$_pot_port" -lk "${_ncat_opt}" "$_host_port" -c "/usr/local/bin/ncat $_ncat_opt $_ip $_pot_port"
+				daemon -f -p "$_pdir/ncat-$_pot_port.pid" "$_pdir/ncat-$_pname-$_pot_port" -lk ${_ncat_opt} "$_host_port" -c "/usr/local/bin/ncat $_ncat_opt $_ip $_pot_port"
 			else
 				_error "nmap package is missing, localhost-tunnel attribute ignored"
 			fi

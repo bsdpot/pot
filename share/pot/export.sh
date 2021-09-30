@@ -1,10 +1,11 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
+
 # TODO
 # Add a way to directly upload the compressed file
 # Add a way to change compression utility
 
-# shellcheck disable=SC3033
 export-help() {
 	echo "pot export [-hv] -p pot [-s snapshot] [-t tag] [-D directory] [-l level]"
 	echo '  -h print this help'
@@ -27,11 +28,8 @@ export-help() {
 # $6 : compression level
 _export_pot()
 {
-	# shellcheck disable=SC3043
 	local _pname _dset _snap _tag _check_tag _prev_tag _prev_snap
-	# shellcheck disable=SC3043
 	local  _dir _file _clvl _meta _origin _origin_pname_snapshot
-	# shellcheck disable=SC3043
 	local _origin_pname _origin_snapshot _origin_tag _highest_version
 	_pname="$1"
 	_snap="$2"
@@ -41,7 +39,7 @@ _export_pot()
 	_clvl="$6"
 	_file="${_dir}/${_pname}_${_tag}.xz"
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
-        _meta="-"
+	_meta="-"
 
 	_prev_tag=$(zfs get -H -o value :pot.tag "${_dset}")
 	_prev_snap=$(zfs get -H -o value :pot.snap "${_dset}")
@@ -87,10 +85,8 @@ _export_pot()
 	fi
 }
 
-# shellcheck disable=SC3033
 pot-export()
 {
-	# shellcheck disable=SC3043
 	local _pname _snap _tag _dir _auto_purge _force _check_tag
 	_pname=
 	_snap=

@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 set-attr-help()
 {
 	echo "pot set-attr [-hv] -p pot -A attr -V value"
@@ -36,7 +36,6 @@ _normalize_true_false() {
 # $3 value
 _set_boolean_attribute()
 {
-	# shellcheck disable=SC3043
 	local _pname _value _cdir
 	_pname=$1
 	_attr=$2
@@ -56,7 +55,6 @@ _set_boolean_attribute()
 # $3 value
 _set_uint_attribute()
 {
-	# shellcheck disable=SC3043
 	local _pname _value _cdir
 	_pname=$1
 	_attr=$2
@@ -74,16 +72,13 @@ _set_uint_attribute()
 
 _ignored_parameter()
 {
-	# shellcheck disable=SC3043
 	local _attr
 	_attr=$1
 	_info "The attribute $_attr is not implemented and it will be ignored"
 }
 
-# shellcheck disable=SC3033
 pot-set-attribute()
 {
-	# shellcheck disable=SC3043
 	local _pname _attr _value _type
 	_pname=
 	_attr=

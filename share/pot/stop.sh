@@ -1,6 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
-# shellcheck disable=SC3033
+
 stop-help()
 {
 	echo "pot stop [-hv] [-p] potname"
@@ -24,7 +25,6 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	# shellcheck disable=SC3043
 	local _pname _pdir _epair _ip _aname
 	_pname="$1"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
@@ -125,7 +125,6 @@ _js_stop()
 # $1 pot name
 _js_rm_resolv()
 {
-	# shellcheck disable=SC3043
 	local _pname _jdir _dns
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
@@ -139,7 +138,6 @@ _js_rm_resolv()
 
 _epair_cleanup()
 {
-	# shellcheck disable=SC3043
 	local _epairs_a _epairs_b
 	_epairs_b="$(ifconfig | grep '^epair[0-9][0-9]*b' | sed 's/:.*$//' | sort)"
 	_epairs_a="$(ifconfig | grep '^epair[0-9][0-9]*a' | sed 's/:.*$//' | sort)"
@@ -151,10 +149,8 @@ _epair_cleanup()
 	done
 }
 
-# shellcheck disable=SC3033
 pot-stop()
 {
-	# shellcheck disable=SC3043
 	local _pname
 	_pname=
 

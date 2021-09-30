@@ -1,10 +1,11 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
+
 # TODO
 # add sha256 check on fetch pot and option to disable it
 # add fscomp.conf management
 
-# shellcheck disable=SC3033
 import-help() {
 	echo "pot import [-hv] -p pot -t tag -U URL"
 	echo '  -h print this help'
@@ -19,7 +20,6 @@ import-help() {
 # $3 : URL
 _fetch_pot()
 {
-	# shellcheck disable=SC3043
 	local _filename
 	_filename="${1}_${2}.xz"
 	if ! _fetch_pot_internal "$1" "$2" "$3" ; then
@@ -40,7 +40,6 @@ _fetch_pot()
 # $3 : URL
 _fetch_pot_internal()
 {
-	# shellcheck disable=SC3043
 	local _rpname _tag _URL _filename
 	_rpname=$1
 	_tag=$2
@@ -82,9 +81,7 @@ _fetch_pot_internal()
 # $3 : local pot name
 _import_pot()
 {
-	# shellcheck disable=SC3043
 	local _pname _rpname _tag _filename _network_type _newip _cdir
-	# shellcheck disable=SC3043
 	local _origin_pname _origin_snap
 	_rpname="$1"
 	_tag="$2"
@@ -135,19 +132,14 @@ _import_pot()
 	esac
 }
 
-
-# shellcheck disable=SC3033
 pot-import()
 {
-	# shellcheck disable=SC3043
 	local _rpname _tag _URL _pname
 	_rpname=
 	_tag=
 	_URL=
-	# shellcheck disable=SC3043
-        local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin
-	# shellcheck disable=SC3043
-        local _filename
+	local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin
+	local _filename
 
 	OPTIND=1
 	while getopts "hvp:t:U:" _o ; do

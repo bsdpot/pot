@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 copy-out-help()
 {
 	echo "pot copy-out [-hv] -p pot -s source -d destination"
@@ -16,7 +16,6 @@ copy-out-help()
 # $1 source
 _destination_validation()
 {
-	# shellcheck disable=SC3043
 	local _destination
 	_destination="$1"
 	if [ -r "$_destination" ] && [ -d "$_destination" ] && [ -x "$_destination" ]; then
@@ -28,7 +27,6 @@ _destination_validation()
 
 _make_temp_destination()
 {
-	# shellcheck disable=SC3043
 	local _proot
 	_proot="$1"
 	mktemp -d "$_proot/tmp/copy-out${POT_MKTEMP_SUFFIX}"
@@ -36,7 +34,6 @@ _make_temp_destination()
 
 _mount_destination_into_potroot()
 {
-	# shellcheck disable=SC3043
 	local _destination _mountpoint
 	_destination="$1"
 	_mountpoint="$2"
@@ -46,10 +43,8 @@ _mount_destination_into_potroot()
 	fi
 }
 
-# shellcheck disable=SC3033
 pot-copy-out()
 {
-	# shellcheck disable=SC3043
 	local _pname _source _destination _to_be_umount _rc _force _proot _cp_opt _destination_mountpoint
 	OPTIND=1
 	_pname=

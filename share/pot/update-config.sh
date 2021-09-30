@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 update-config-help()
 {
 	echo "pot update-config [-h] [-p pot|-a]"
@@ -14,7 +14,6 @@ update-config-help()
 # $1 pname
 _get_conf_static_ports()
 {
-	# shellcheck disable=SC3043
 	local _pname _cdir _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -25,7 +24,6 @@ _get_conf_static_ports()
 # $1 pname
 _update_one_pot()
 {
-	# shellcheck disable=SC3043
 	local _pname _conf _attr _value
 	_pname="$1"
 	if ! _is_pot "$_pname" ; then
@@ -130,7 +128,6 @@ _update_one_pot()
 
 _update_all_pots()
 {
-	# shellcheck disable=SC3043
 	local _pots
 	_pots="$( _get_pot_list )"
 	for _pname in $_pots ; do
@@ -142,10 +139,8 @@ _update_all_pots()
 	done
 }
 
-# shellcheck disable=SC3033
 pot-update-config()
 {
-	# shellcheck disable=SC3043
 	local _pname _o _all
 	_pname=
 	_all=

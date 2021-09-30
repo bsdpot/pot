@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 destroy-help()
 {
 	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp|-B bridge]"
@@ -19,7 +19,6 @@ destroy-help()
 # $1 zfs dataset
 _zfs_dataset_destroy()
 {
-	# shellcheck disable=SC3043
 	local _dset _zopt
 	_dset=$1
 	_zopt=
@@ -34,7 +33,6 @@ _zfs_dataset_destroy()
 # $2 force parameter
 _pot_zfs_destroy()
 {
-	# shellcheck disable=SC3043
 	local _pname _zopt _jdset _force
 	_pname=$1
 	_force=$2
@@ -68,7 +66,6 @@ _pot_zfs_destroy()
 # $1 base name
 _base_zfs_destroy()
 {
-	# shellcheck disable=SC3043
 	local _bname _bdset
 	_bname=$1
 	_bdset=${POT_ZFS_ROOT}/bases/$_bname
@@ -79,7 +76,6 @@ _base_zfs_destroy()
 # $1 base name
 _fscomp_zfs_destroy()
 {
-	# shellcheck disable=SC3043
 	local _fname _fdset
 	_fname=$1
 	_fdset=${POT_ZFS_ROOT}/fscomp/$_fname
@@ -87,10 +83,8 @@ _fscomp_zfs_destroy()
 	return $?
 }
 
-# shellcheck disable=SC3033
 pot-destroy()
 {
-	# shellcheck disable=SC3043
 	local _pname _bname _fname _force _recursive _pots _depPot _bridge_name
 	_pname=
 	_bname=

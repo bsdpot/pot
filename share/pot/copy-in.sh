@@ -11,6 +11,7 @@ copy-in-help()
 	echo '  -p pot : the working pot'
 	echo '  -s source : the file or directory to be copied in'
 	echo '  -d destination : the final location inside the pot'
+	echo '  -c create missing path components to dirname(destination) inside the pot'
 }
 
 # $1 source
@@ -35,7 +36,7 @@ _make_temp_source()
 {
 	# shellcheck disable=SC3043
 	local _proot
-	_proot="$2"
+	_proot="$1"
 	mktemp -d "$_proot/tmp/copy-in${POT_MKTEMP_SUFFIX}"
 }
 
@@ -60,13 +61,14 @@ _mount_source_into_potroot()
 pot-copy-in()
 {
 	# shellcheck disable=SC3043
-	local _pname _source _destination _to_be_umount _rc _force _proot _cp_opt
+	local _pname _source _destination _to_be_umount _rc _force _proot _cp_opt _create_dirs
 	OPTIND=1
 	_pname=
 	_destination=
 	_force=
 	_cp_opt="-a"
-	while getopts "hvs:d:p:F" _o ; do
+	_create_dirs=
+	while getopts "hvs:d:p:Fc" _o ; do
 		case "$_o" in
 		h)
 			copy-in-help
@@ -87,6 +89,9 @@ pot-copy-in()
 			;;
 		d)
 			_destination="$OPTARG"
+			;;
+		c)
+			_create_dirs="YES"
 			;;
 		*)
 			copy-in-help
@@ -140,6 +145,29 @@ pot-copy-in()
 		_to_be_umount=1
 	fi
 	_proot=${POT_FS_ROOT}/jails/$_pname/m
+	if [ "$_create_dirs" = "YES" ]; then
+		if _is_pot_running "$_pname" ; then
+			if jexec "$_pname" /bin/mkdir -p "$(dirname "$_destination")" ; then
+				_debug "Destination path $_destination created in the pot $_pname"
+			else
+				_error "Destination path $_destination NOT created because of an error"
+				if [ "$_to_be_umount" = "1" ]; then
+					_pot_umount "$_pname"
+				fi
+				return 1
+			fi
+		else
+			if jail -c path="$_proot" command=/bin/mkdir -p "$(dirname "$_destination")" ; then
+				_debug "Destination path $_destination created in the pot $_pname"
+			else
+				_error "Destination path $_destination NOT created because of an error"
+				if [ "$_to_be_umount" = "1" ]; then
+					_pot_umount "$_pname"
+				fi
+				return 1
+			fi
+		fi
+	fi
 	if ! _source_mountpoint="$( _make_temp_source "$_proot" )" ; then
 		_error "Failed to build a temporary folder in the pot /tmp"
 		if [ "$_to_be_umount" = "1" ]; then

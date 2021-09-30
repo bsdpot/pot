@@ -57,7 +57,7 @@ _is_cmd_flavorable()
     _cmd=$1
     case $_cmd in
         add-dep|set-attribute|\
-        copy-in|mount-in|\
+        copy-in|copy-in-flv|mount-in|\
         set-rss|export-ports|\
         set-cmd|set-env)
             return 0
@@ -92,16 +92,9 @@ _exec_flv()
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_debug "Flavour: $_flv"
 	_flv_cmd_file="$( _get_flavour_cmd_file "$_flv" )"
+	_flv_dir=$(dirname "${_flv_cmd_file}")
 	if [ -n "${_flv_cmd_file}" ]; then
 		_debug "Executing $_flv pot commands on $_pname"
-		# change to flavourdir to allow relative paths in command file
-		# without inspecting commands in detail
-		_flv_dir=$(dirname "${_flv_cmd_file}")
-		_previous_pwd=$PWD
-		if ! cd "$_flv_dir"; then
-			_error "Can't chdir to flavour dir $_flv_dir"
-			return 1
-		fi
 		while read -r line ; do
 			# shellcheck disable=SC2086
 			if _is_cmd_flavorable $line ; then
@@ -110,18 +103,31 @@ _exec_flv()
 					if ! _flv_set_cmd "$_pname" "$line" ; then
 						return 1
 					fi
+				elif [ "$line" != "${line#copy-in-flv}" ]; then
+					# copy-in relative to flavour dir
+					_previous_pwd=$PWD
+					if ! cd "$_flv_dir"; then
+						_error "Can't chdir to flavour dir $_flv_dir"
+						return 1
+					fi
+					line=$(echo "$line" | sed "s/^copy-in-flv/copy-in/")
+					if ! pot-cmd $line -p "$_pname" ; then
+						return 1
+					fi
+					if ! cd "$_previous_pwd"; then
+						_error "Can't chdir to previous pwd $_previous_pwd"
+						return 1
+					fi
 				else
 					# shellcheck disable=SC2086
-					pot-cmd $line -p "$_pname"
+					if ! pot-cmd $line -p "$_pname" ; then
+						return 1
+					fi
 				fi
 			else
 				_error "Flavor $_flv: line $line not valid - ignoring"
 			fi
 		done < "${_flv_cmd_file}"
-		if ! cd "$_previous_pwd"; then
-			_error "Can't chdir to previous pwd $_previous_pwd"
-			return 1
-		fi
 	fi
 	_flv_script="$( _get_flavour_script "$_flv" )"
 	if [ -n "${_flv_script}" ]; then

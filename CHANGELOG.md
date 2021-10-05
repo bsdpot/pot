@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- start/stop: remove pot_stopped files from TMP_DIR after stopping non-persistent jails (#179)
 
 ## [0.13.0] 2021-09-21
 ### Added

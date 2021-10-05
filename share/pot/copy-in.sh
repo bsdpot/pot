@@ -35,7 +35,7 @@ _make_temp_source()
 {
 	# shellcheck disable=SC3043
 	local _proot
-	_proot="$2"
+	_proot="$1"
 	mktemp -d "$_proot/tmp/copy-in${POT_MKTEMP_SUFFIX}"
 }
 

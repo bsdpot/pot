@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- prepare: fix -N option to allow host network-type "host" as used by nomad-pot-driver (#177)
 
 ## [0.13.0] 2021-09-21
 ### Added

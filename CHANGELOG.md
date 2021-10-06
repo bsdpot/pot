@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - start: do not write jid files to POT_TMP (#178)
 
-### Fix
+### Fixed
+- prepare: fix -N option to allow host network-type "host" as used by nomad-pot-driver (#177)
 - copy-in: fix tmp source directory creation
 
 ## [0.13.0] 2021-09-21

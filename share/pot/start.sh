@@ -520,7 +520,7 @@ _js_start()
 
 	_info "Starting the pot $_pname"
 	# shellcheck disable=SC2086
-	jail -c -J "${POT_TMP:-/tmp}/${_pname}.jail.conf" $_param exec.start="sh -c 'sleep 5&'"
+	jail -c $_param exec.start="sh -c 'sleep 5&'"
 
 	if [ -e "$_confdir/pot.conf" ] && _is_pot_prunable "$_pname" ; then
 		# set-attr cannot be used for read-only attributes

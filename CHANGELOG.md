@@ -5,8 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- create: New command copy-in-flv, which is the same as copy-in, but always relative to flavourdir (#173)
+
 ### Changed
+- start: do not write jid files to POT_TMP (#178)
 - start/stop: remove pot_stopped files from TMP_DIR after stopping non-persistent jails (#179)
+
+### Fixed
+- prepare: fix -N option to allow host network-type "host" as used by nomad-pot-driver (#177)
+- copy-in: fix tmp source directory creation
 
 ## [0.13.0] 2021-09-21
 ### Added

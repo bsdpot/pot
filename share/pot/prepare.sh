@@ -86,9 +86,9 @@ pot-prepare()
 				_network_type="$OPTARG"
 			fi
 			# shellcheck disable=SC2086
-			if ! _is_in_list "$OPTARG" $_POT_NETWORK_TYPES ; then
-				_error "Network type $OPTARG not recognized"
-				clone-help
+			if ! _is_in_list "$_network_type" $_POT_NETWORK_TYPES ; then
+				_error "Network type $_network_type not recognized"
+				prepare-help
 				${EXIT} 1
 			fi
 			;;

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - start: do not write jid files to POT_TMP (#178)
+- start/stop: remove pot_stopped files from TMP_DIR after stopping non-persistent jails (#179)
 
 ### Fixed
 - prepare: fix -N option to allow host network-type "host" as used by nomad-pot-driver (#177)

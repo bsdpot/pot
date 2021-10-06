@@ -552,6 +552,7 @@ _js_start()
 		if [ ! -e "${POT_TMP:-/tmp}/pot_stopped_${_pname}" ]; then
 			start-cleanup "$_pname" "${_iface}"
 		fi
+		rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
 		if [ "$_persist" = "NO" ]; then
 			return 0
 		else

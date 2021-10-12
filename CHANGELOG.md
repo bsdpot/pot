@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- copy-in: -c option to create missing dirs on copy-in (#172)
 - create: New command copy-in-flv, which is the same as copy-in, but always relative to flavourdir (#173)
 
 ### Changed

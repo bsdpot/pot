@@ -1,6 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
-# shellcheck disable=SC3033
+
 start-help()
 {
 	echo "pot start [-h] [-p] potname"
@@ -15,13 +16,10 @@ start-help()
 	echo '  potname : the jail that has to start'
 }
 
-# shellcheck disable=SC3033
 # $1 pot name
 # $2 the network interface, if created
-# shellcheck disable=SC3033
 start-cleanup()
 {
-	# shellcheck disable=SC3043
 	local _pname
 	_pname=$1
 	if [ -z "$_pname" ]; then
@@ -36,7 +34,6 @@ start-cleanup()
 # $1 pot name
 _js_dep()
 {
-	# shellcheck disable=SC3043
 	local _pname _depPot
 	_pname=$1
 	_depPot="$( _get_conf_var "$_pname" pot.depend )"
@@ -52,7 +49,6 @@ _js_dep()
 # $1 pot name
 _js_resolv()
 {
-	# shellcheck disable=SC3043
 	local _pname _jdir _dns
 	_pname="$1"
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
@@ -99,7 +95,6 @@ _js_resolv()
 # $1 pot name
 _js_etc_hosts()
 {
-	# shellcheck disable=SC3043
 	local _pname _phosts _hostname _bridge_name _cfile
 	_pname="$1"
 	_phosts="${POT_FS_ROOT}/jails/$_pname/m/etc/hosts"
@@ -121,7 +116,6 @@ _js_etc_hosts()
 
 _js_create_epair()
 {
-	# shellcheck disable=SC3043
 	local _epair
 	_epair=$(ifconfig epair create)
 	if [ -z "${_epair}" ]; then
@@ -136,7 +130,6 @@ _js_create_epair()
 # $2 epair interface
 _js_vnet()
 {
-	# shellcheck disable=SC3043
 	local _pname _bridge _epair _epairb _ip
 	_pname=$1
 	if ! _is_vnet_ipv4_up ; then
@@ -168,7 +161,6 @@ _js_vnet()
 # $2 epair interface
 _js_vnet_ipv6()
 {
-	# shellcheck disable=SC3043
 	local _pname _bridge _epair _epairb _ip
 	_pname=$1
 	if ! _is_vnet_ipv6_up ; then
@@ -200,7 +192,6 @@ _js_vnet_ipv6()
 # $2 epair interface
 _js_private_vnet()
 {
-	# shellcheck disable=SC3043
 	local _pname _bridge_name _bridge _epair _epairb _ip _net_size _gateway
 	_pname=$1
 	_bridge_name="$( _get_conf_var "$_pname" bridge )"
@@ -235,7 +226,6 @@ _js_private_vnet()
 # $1: exclude list
 _js_get_free_rnd_port()
 {
-	# shellcheck disable=SC3043
 	local _min _max excl_ports used_ports rdr_ports rand
 	excl_ports="$1"
 	_min=$( sysctl -n net.inet.ip.portrange.reservedhigh )
@@ -264,7 +254,6 @@ _js_get_free_rnd_port()
 # $1 pot name
 _js_export_ports()
 {
-	# shellcheck disable=SC3043
 	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt _to_arg
 	_pname=$1
 	_ip="$( _get_ip_var "$_pname" )"
@@ -326,7 +315,6 @@ _js_export_ports()
 # $1 jail name
 _js_rss()
 {
-	# shellcheck disable=SC3043
 	local _pname _jid _cpus _cpuset _memory
 	_pname=$1
 	_cpus="$( _get_conf_var "$_pname" pot.rss.cpus)"
@@ -348,7 +336,6 @@ _js_rss()
 # $1 pot name
 _js_get_cmd()
 {
-	# shellcheck disable=SC3043
 	local _pname _cdir _value
 	_pname="$1"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -359,7 +346,6 @@ _js_get_cmd()
 
 _js_norc()
 {
-	# shellcheck disable=SC3043
 	local _pname
 	_pname="$1"
 	_cmd="$(_js_get_cmd "$_pname")"
@@ -375,7 +361,6 @@ _js_norc()
 
 _js_env()
 {
-	# shellcheck disable=SC3043
 	local _pname _shfile _cfile
 	_pname="$1"
 	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
@@ -393,9 +378,7 @@ _js_env()
 # $1 jail name
 _js_start()
 {
-	# shellcheck disable=SC3043
 	local _pname _confdir _iface _hostname _osrelease _param _ip _cmd _persist
-	# shellcheck disable=SC3043
 	local _stack _value _name _type
 	_pname="$1"
 	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
@@ -442,7 +425,6 @@ _js_start()
 		esac
 		;;
 	"alias")
-		# shellcheck disable=SC3043
 		local _ip4addr _ip6addr
 		_ip=$( _get_ip_var "$_pname" )
 		case "$( _get_pot_network_stack "$_pname" )" in
@@ -561,10 +543,8 @@ _js_start()
 	fi
 }
 
-# shellcheck disable=SC3033
 pot-start()
 {
-	# shellcheck disable=SC3043
 	local _pname _snap
 	_snap=none
 	_pname=

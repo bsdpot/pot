@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 rename-help()
 {
 	echo "pot rename [-h][-v] -p OldPotName -n NewPotName"
@@ -13,7 +13,6 @@ rename-help()
 
 _rn_conf()
 {
-	# shellcheck disable=SC3043
 	local _pname _newname _cdir
 	_pname=$1
 	_newname=$2
@@ -35,7 +34,6 @@ _rn_conf()
 
 _rn_zfs()
 {
-	# shellcheck disable=SC3043
 	local _pname _newname _dset _nset _type
 	_pname=$1
 	_newname=$2
@@ -98,7 +96,6 @@ _rn_zfs()
 # rename also on all lvl2 and dependencies
 _rn_recursive()
 {
-	# shellcheck disable=SC3043
 	local _pname _newname _pots _cdir
 	_pname=$1
 	_newname=$2
@@ -111,10 +108,8 @@ _rn_recursive()
 	done
 }
 
-# shellcheck disable=SC3033
 pot-rename()
 {
-	# shellcheck disable=SC3043
 	local _pname _newname
 	_pname=
 	_newname=

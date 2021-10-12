@@ -1,10 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 
 # $1 flavour name
 _is_flavour()
 {
-    # shellcheck disable=SC3043
-    local _flv_name
+	local _flv_name
 	_flv_name="$1"
 	if [ -n "$( _get_flavour_script "$_flv_name" )" ] ||
 		[ -n "$( _get_flavour_cmd_file "$_flv_name" )" ]; then
@@ -15,8 +15,7 @@ _is_flavour()
 
 _get_flavour_script()
 {
-    # shellcheck disable=SC3043
-    local _flv_name
+	local _flv_name
 	_flv_name="$1"
 	if [ -f "$_flv_name" ] && [ -x "$_flv_name" ] && [ "$_flv_name" != "${_flv_name%%.sh}" ]; then ## it's a script path name
 		echo "$_flv_name"
@@ -31,8 +30,7 @@ _get_flavour_script()
 
 _get_flavour_cmd_file()
 {
-    # shellcheck disable=SC3043
-    local _flv_name
+	local _flv_name
 	_flv_name="$1"
 	# if the flavor name ends with .sh return immediately
 	if [ "$_flv_name" != "${_flv_name%%.sh}" ]; then
@@ -52,18 +50,17 @@ _get_flavour_cmd_file()
 # tested
 _is_cmd_flavorable()
 {
-    # shellcheck disable=SC3043
-    local _cmd
-    _cmd=$1
-    case $_cmd in
-        add-dep|set-attribute|\
-        copy-in|copy-in-flv|mount-in|\
-        set-rss|export-ports|\
-        set-cmd|set-env)
-            return 0
-            ;;
-    esac
-    return 1 # false
+	local _cmd
+	_cmd=$1
+	case $_cmd in
+		add-dep|set-attribute|\
+		copy-in|copy-in-flv|mount-in|\
+		set-rss|export-ports|\
+		set-cmd|set-env)
+		return 0
+		;;
+	esac
+	return 1 # false
 }
 
 # Special version of set-cmd usable only for flavours
@@ -71,7 +68,6 @@ _is_cmd_flavorable()
 # $2 : the set-cmd line in the file
 _flv_set_cmd()
 {
-	# shellcheck disable=SC3043
 	local _pname _line _cmd
 	_pname="$1"
 	_line="$2"
@@ -85,7 +81,6 @@ _flv_set_cmd()
 
 _exec_flv()
 {
-	# shellcheck disable=SC3043
 	local _pname _flv _pdir _flv_cmd_file _flv_script _flv_dir _previous_pwd
 	_pname=$1
 	_flv=$2

@@ -1,6 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
-# shellcheck disable=SC3033
+
 revert-help()
 {
 	echo "pot revert [-hva] -p potname|-f fscomp"
@@ -13,7 +14,6 @@ revert-help()
 # $1 pot name
 _pot_zfs_rollback()
 {
-	# shellcheck disable=SC3043
 	local _pname _pdset _snap
 	_pname=$1
 	_pdset=${POT_ZFS_ROOT}/jails/$_pname
@@ -29,7 +29,6 @@ _pot_zfs_rollback()
 
 _fscomp_zfs_rollback()
 {
-	# shellcheck disable=SC3043
 	local _fscomp _fdset _snap
 	_fscomp=$1
 	_fdset=${POT_ZFS_ROOT}/fscomp/$_fscomp
@@ -43,10 +42,8 @@ _fscomp_zfs_rollback()
 	done
 }
 
-# shellcheck disable=SC3033
 pot-revert()
 {
-	# shellcheck disable=SC3043
 	local _obj
 	_obj=
 	OPTIND=1

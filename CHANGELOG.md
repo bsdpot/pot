@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start/stop: remove pot_stopped files from TMP_DIR after stopping non-persistent jails (#179)
 
 ### Fixed
-- prepare: fix -N option to allow host network-type "host" as used by nomad-pot-driver (#177)
+- prepare: fix -N option to allow network-type "host" as used by nomad-pot-driver (#177)
 - copy-in: fix tmp source directory creation
 
 ## [0.13.0] 2021-09-21

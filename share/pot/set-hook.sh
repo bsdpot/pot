@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 set-hook-help() {
 	echo "pot set-hook [-hv] -p pot [-s hook]"
 	echo '  -h print this help'
@@ -18,7 +18,6 @@ set-hook-help() {
 # $3 hook type
 _set_hook()
 {
-	# shellcheck disable=SC3043
 	local _pname _script
 	_pname="$1"
 	_script="$2"
@@ -36,10 +35,8 @@ _is_valid_hook()
 	return 1 # false
 }
 
-# shellcheck disable=SC3033
 pot-set-hook()
 {
-	# shellcheck disable=SC3043
 	local _pname _prestart _poststart _prestop _poststop
 	_pname=
 	_prestart=

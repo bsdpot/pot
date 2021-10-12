@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 version-help()
 {
 	echo 'pot version [-h][-v][-q]'
@@ -11,10 +11,8 @@ version-help()
 }
 
 
-# shellcheck disable=SC3033
 pot-version()
 {
-	# shellcheck disable=SC3043
 	local _quiet
 	_quiet="NO"
 	OPTIND=1

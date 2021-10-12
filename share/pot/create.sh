@@ -1,10 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
 trap _cj_undo_create TERM INT
 _set_pipefail
 
-# shellcheck disable=SC3033
 create-help()
 {
 	echo "pot create [-hv] -p potname [-N network-type] [-i ipaddr] [-l lvl] [-f flavour]"
@@ -52,7 +52,6 @@ _cj_undo_create()
 # $2 pot-base name
 _c_zfs_single()
 {
-	# shellcheck disable=SC3043
 	local _pname _base _potbase _jdset _snap _dset
 	_pname=$1
 	_potbase=$2
@@ -106,7 +105,6 @@ _c_zfs_single()
 # $4 pot-base name
 _c_zfs_multi()
 {
-	# shellcheck disable=SC3043
 	local _pname _base _potbase _jdset _snap _dset
 	_pname=$1
 	_lvl=$2
@@ -198,7 +196,6 @@ _c_zfs_multi()
 # $5 pot-base name
 _cj_zfs()
 {
-	# shellcheck disable=SC3043
 	local _pname _base _type _potbase _jdset _snap _dset
 	_pname=$1
 	_type=$2
@@ -227,9 +224,7 @@ _cj_zfs()
 # $10 network-stack
 _cj_conf()
 {
-	# shellcheck disable=SC3043
 	local _pname _base _ip _network_type _lvl _jdir _bdir _potbase _dns _type _pblvl _pbpb
-	# shellcheck disable=SC3043
 	local _jdset _bdset _pbdset _baseos _bridge_name _stack
 	_pname=$1
 	_base=$2
@@ -372,7 +367,6 @@ _cj_conf()
 # $4 ip
 _cj_internal_conf()
 {
-	# shellcheck disable=SC3043
 	local _pname _type _lvl _ip _jdir
 	_pname=$1
 	_type=$2
@@ -419,7 +413,6 @@ _cj_internal_conf()
 # $2 freebsd version
 _cj_single_install()
 {
-	# shellcheck disable=SC3043
 	local _pname _base _proot _rel
 	_pname=$1
 	_base=$2
@@ -455,10 +448,8 @@ _cj_single_install()
 	return 0
 }
 
-# shellcheck disable=SC3033
 pot-create()
 {
-	# shellcheck disable=SC3043
 	local _pname _ipaddr _lvl _base _flv _potbase _dns _type _new_lvl _network_type _private_bridge _network_stack
 	OPTIND=1
 	_type="multi"

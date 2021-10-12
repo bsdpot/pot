@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 purge-snapshots-help()
 {
 	echo "pot purge-snapshots [-h][-v][-a] [-p potname|-f fscomp]"
@@ -15,7 +15,6 @@ purge-snapshots-help()
 # $1 zfs dataset
 _zfs_old_snapshots()
 {
-	# shellcheck disable=SC3043
 	local _dset
 	_output="$(zfs list -d 1 -H -t snap "$_dset" | sort -r | sed '1d' | sort | cut -d'@' -f2 | cut -f1 )"
 	echo "$_output"
@@ -24,7 +23,6 @@ _zfs_old_snapshots()
 # $1 zfs dataset
 _zfs_all_snapshots()
 {
-	# shellcheck disable=SC3043
 	local _dset
 	_output="$(zfs list -d 1 -H -t snap "$_dset" | sort | cut -d'@' -f2 | cut -f1 )"
 	echo "$_output"
@@ -32,7 +30,6 @@ _zfs_all_snapshots()
 
 _purge_dset()
 {
-	# shellcheck disable=SC3043
 	local _dset _snaps _all_snap
 	_dset=$1
 	_all_snap=${2:-"NO"}
@@ -49,10 +46,8 @@ _purge_dset()
 	done
 }
 
-# shellcheck disable=SC3033
 pot-purge-snapshots()
 {
-	# shellcheck disable=SC3043
 	local _obj _objname _all_snap
 	_all_snap="NO"
 	_obj=""

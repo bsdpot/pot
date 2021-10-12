@@ -1,9 +1,9 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
 # supported releases are defined in common.sh
 
-# shellcheck disable=SC3033
 create-base-help()
 {
 	echo "pot create-base [-h] [-r RELEASE] [-b basename]"
@@ -16,7 +16,6 @@ create-base-help()
 # $1 base name
 _cb_zfs()
 {
-	# shellcheck disable=SC3043
 	local _bname _dset _mnt
 	_bname=$1
 	_dset="${POT_ZFS_ROOT}/bases/${_bname}"
@@ -46,7 +45,6 @@ _cb_zfs()
 # $2 base name
 _cb_tar_dir()
 {
-	# shellcheck disable=SC3043
 	local _rel _bname _mnt
 	if echo "$1" | grep -q "RC" ; then
 		_rel="$1"
@@ -94,7 +92,6 @@ _cb_tar_dir()
 # $1 base name
 _cb_base_pot()
 {
-	# shellcheck disable=SC3043
 	local _bname _pname _tmp
 	_bname=$1
 	_tmp=$(echo "$_bname" | sed 's/\./_/')
@@ -107,10 +104,8 @@ _cb_base_pot()
 	_pot_zfs_snap_full "$_pname"
 }
 
-# shellcheck disable=SC3033
 pot-create-base()
 {
-	# shellcheck disable=SC3043
 	local _rel _bname
 	OPTIND=1
 	while getopts "hr:b:v" _o ; do

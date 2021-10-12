@@ -1,6 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
-# shellcheck disable=SC3033
+
 top-help()
 {
 	echo "pot top [-h] -p pot"
@@ -8,10 +9,8 @@ top-help()
 	echo '  -p pot : the working pot'
 }
 
-# shellcheck disable=SC3033
 pot-top()
 {
-	# shellcheck disable=SC3043
 	local _pname _o
 	_pname=
 	OPTIND=1

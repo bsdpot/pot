@@ -1,6 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
-# shellcheck disable=SC3033
+
 vnet-start-help()
 {
 	echo 'pot vnet-start [-h][-v]'
@@ -11,7 +12,6 @@ vnet-start-help()
 
 _public_bridge_start()
 {
-	# shellcheck disable=SC3043
 	local _bridge
 	_bridge=$(_pot_bridge)
 	if [ -z "$_bridge" ]; then
@@ -33,7 +33,6 @@ _public_bridge_start()
 # $1 bridge_name
 _private_bridge_start()
 {
-	# shellcheck disable=SC3043
 	local _bridge_name _bridge _gateway _bridge_net
 	_bridge_name="$1"
 	_bridge=$(_private_bridge "$_bridge_name")
@@ -58,7 +57,6 @@ _private_bridge_start()
 
 _ipv4_start()
 {
-	# shellcheck disable=SC3043
 	local _bridge_name pf_file _nat_rules _ext_addr
 	_bridge_name="$1"
 	# activate ip forwarding
@@ -94,12 +92,12 @@ _ipv4_start()
 			_info "The value $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not a valid IPv4 address - ignoring"
 			_ext_addr=
 		elif ! _is_valid_extif_addr "$POT_EXTIF" "$POT_EXTIF_ADDR" ; then
-            _info "The IP address $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not available on the network interface $POT_EXTIF [POT_EXTIF]    "
+			_info "The IP address $POT_EXTIF_ADDR [POT_EXTIF_ADDR] is not available on the network interface $POT_EXTIF [POT_EXTIF]    "
 			_ext_addr=
 		else
 			_ext_addr=$POT_EXTIF_ADDR
-        fi
-    fi
+		fi
+	fi
 	# NAT rules
 	(
 		echo "ext_if = \"${POT_EXTIF}\""
@@ -140,7 +138,6 @@ _ipv4_start()
 
 _ipv6_bridge_start()
 {
-	# shellcheck disable=SC3043
 	local _bridge
 	_bridge=$(_pot_bridge_ipv6)
 
@@ -170,10 +167,8 @@ _ipv6_start()
 	_ipv6_bridge_start
 }
 
-# shellcheck disable=SC3033
 pot-vnet-start()
 {
-	# shellcheck disable=SC3043
 	local _bridge_name
 	OPTIND=1
 	while getopts "hvB:" _o ; do

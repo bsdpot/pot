@@ -1,10 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
 # TODO
 # check the return code of all commands
 
-# shellcheck disable=SC3033
 init-help()
 {
 	echo 'pot init [-h][-v]'
@@ -12,10 +12,8 @@ init-help()
 	echo '  -v verbose'
 }
 
-# shellcheck disable=SC3033
 pot-init()
 {
-	# shellcheck disable=SC3043
 	local pf_file
 	OPTIND=1
 	while getopts "hv" _o ; do

@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 snapshot-help()
 {
 	echo "pot snapshot [-h][-v][-a] [-p potname|-f fscomp]"
@@ -12,10 +12,8 @@ snapshot-help()
 	echo '  -f fscomp : the fs component target of the snapshot'
 }
 
-# shellcheck disable=SC3033
 pot-snapshot()
 {
-	# shellcheck disable=SC3043
 	local _full_pot _obj _objname
 	_full_pot="NO"
 	_obj=""

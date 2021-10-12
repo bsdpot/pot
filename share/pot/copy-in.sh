@@ -1,7 +1,7 @@
 #!/bin/sh
+# shellcheck disable=SC3033,SC3040,SC3043
 :
 
-# shellcheck disable=SC3033
 copy-in-help()
 {
 	echo "pot copy-in [-hv] -p pot -s source -d destination"
@@ -16,7 +16,6 @@ copy-in-help()
 # $1 source
 _source_validation()
 {
-	# shellcheck disable=SC3043
 	local _source
 	_source="$1"
 	if [ -f "$_source" ] || [ -d "$_source" ]; then
@@ -33,7 +32,6 @@ _source_validation()
 
 _make_temp_source()
 {
-	# shellcheck disable=SC3043
 	local _proot
 	_proot="$1"
 	mktemp -d "$_proot/tmp/copy-in${POT_MKTEMP_SUFFIX}"
@@ -41,7 +39,6 @@ _make_temp_source()
 
 _mount_source_into_potroot()
 {
-	# shellcheck disable=SC3043
 	local _source _mountpoint _source_mnt
 	_source="$1"
 	_mountpoint="$2"
@@ -56,10 +53,8 @@ _mount_source_into_potroot()
 	fi
 }
 
-# shellcheck disable=SC3033
 pot-copy-in()
 {
-	# shellcheck disable=SC3043
 	local _pname _source _destination _to_be_umount _rc _force _proot _cp_opt
 	OPTIND=1
 	_pname=

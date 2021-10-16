@@ -7,7 +7,9 @@
 
 init-help()
 {
-	echo 'pot init [-h][-v]'
+	echo 'pot init [-h][-v] [-f pf_file]'
+	echo '  -f pf_file : write pot anchors to this file (empty to skip),'
+	echo '     defaults to result of "sysrc -n pf_rules"'
 	echo '  -h print this help'
 	echo '  -v verbose'
 }
@@ -15,9 +17,12 @@ init-help()
 pot-init()
 {
 	local pf_file
+	pf_file="$(sysrc -n pf_rules)"
 	OPTIND=1
-	while getopts "hv" _o ; do
+	while getopts "hvf:" _o ; do
 		case "$_o" in
+		f)	pf_file="$OPTARG"
+			;;
 		h)
 			init-help
 			${EXIT} 0
@@ -122,21 +127,24 @@ pot-init()
 	# service syslogd restart
 
 	# Add pot anchors if needed
-	pf_file="$(sysrc -n pf_rules)"
-	if [ -r "$pf_file" ] && [ "$(grep -c '^nat-anchor pot-nat$' "$pf_file" )" -eq 1 ] && [ "$(grep -c '^rdr-anchor "pot-rdr/\*"$' "$pf_file" )" -eq 1 ] ; then
-		_debug "pf alredy properly configured"
-	else
-		if [ -w "$pf_file" ]; then
-			echo "Creating a backup of your $pf_file"
-			cp -v "$pf_file" "$pf_file".bkp-pot
-			# delete incomplete/broken ancory entries - just in case
-			sed -i '' '/^nat-anchor pot-nat$/d' "$pf_file"
-			sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' "$pf_file"
+	if [ -n "$pf_file" ]; then
+		if [ -r "$pf_file" ] && [ "$(grep -c '^nat-anchor pot-nat$' "$pf_file" )" -eq 1 ] && [ "$(grep -c '^rdr-anchor "pot-rdr/\*"$' "$pf_file" )" -eq 1 ] ; then
+			_debug "pf already properly configured"
 		else
-			touch "$pf_file"
+			if [ -w "$pf_file" ]; then
+				echo "Creating a backup of your $pf_file"
+				cp -v "$pf_file" "$pf_file".bkp-pot
+				# delete incomplete/broken ancory entries - just in case
+				sed -i '' '/^nat-anchor pot-nat$/d' "$pf_file"
+				sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' "$pf_file"
+			else
+				touch "$pf_file"
+			fi
+			echo "auto-magically editing your $pf_file"
+			printf "%s\n" 0a "nat-anchor pot-nat" "rdr-anchor \"pot-rdr/*\"" . x | ex "$pf_file"
+			echo "Please, check that your PF configuration file $pf_file is still valid!"
 		fi
-		echo "auto-magically editing your $pf_file"
-		printf "%s\n" 0a "nat-anchor pot-nat" "rdr-anchor \"pot-rdr/*\"" . x | ex "$pf_file"
-		echo "Please, check that your PF configuration file $pf_file is still valid!"
+	else
+		_debug "pf configuration skipped"
 	fi
 }

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - copy-in: -c option to create missing dirs on copy-in (#172)
 - create: New command copy-in-flv, which is the same as copy-in, but always relative to flavourdir (#173)
+- init: -f option to specify pf file to patch on init (#181)
 
 ### Changed
 - start: do not write jid files to POT_TMP (#178)

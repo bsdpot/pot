@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.14.0] 2021-10-31
 ### Added
 - copy-in: -c option to create missing dirs on copy-in (#172)
 - create: New command copy-in-flv, which is the same as copy-in, but always relative to flavourdir (#173)

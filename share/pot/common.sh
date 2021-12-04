@@ -843,7 +843,7 @@ _print_pot_fscomp()
 	while read -r line ; do
 		_dset=$( echo "$line" | awk '{print $1}' )
 		_mnt_p=$( echo "$line" | awk '{print $2}' )
-		printf "\\t\\t%s => %s\\n" "${_mnt_p##${POT_FS_ROOT}/jails/}" "${_dset##${POT_ZFS_ROOT}/}"
+		printf "\\t\\t%s => %s\\n" "${_mnt_p##"${POT_FS_ROOT}"/jails/}" "${_dset##"${POT_ZFS_ROOT}"/}"
 	done < "$1"
 }
 

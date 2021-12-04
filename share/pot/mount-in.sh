@@ -82,7 +82,7 @@ _directory_validation()
 	_dir="$2"
 	_proot=$POT_FS_ROOT/jails/$_pname
 	_conf=$POT_FS_ROOT/jails/$_pname/conf/fscomp.conf
-	if [ "$_dir" != "${_dir%$_proot}" ]; then
+	if [ "$_dir" != "${_dir%"$_proot"}" ]; then
 		# dir is inside the pot
 		return 1 # false
 	fi

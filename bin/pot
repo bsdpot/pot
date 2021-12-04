@@ -185,7 +185,7 @@ case "${CMD}" in
 	init|de-init|vnet-start|\
 	create-base|create-fscomp|create|\
 	create-private-bridge|\
-	copy-in|copy-out|mount-in|prune|set-hook|\
+	copy-in|copy-out|mount-in|mount-out|prune|set-hook|\
 	destroy|add-dep|set-rss|get-rss|set-cmd|set-env|set-hosts|\
 	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\

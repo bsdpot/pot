@@ -33,9 +33,9 @@ _show_pot()
 				# dset is a folder mounted via nullfs
 				continue;
 			fi
-			if [ "$_dset" = "${_dset#${POT_ZFS_ROOT}/jails/$_pname}" ] &&
-				[ "$_dset" = "${_dset#${POT_ZFS_ROOT}/bases/$_bname}" ]; then
-				printf "\\tdataset %s usage  : %s\\n" "${_dset##${POT_ZFS_ROOT}/}" "$( zfs list -o used -H "$_dset")"
+			if [ "$_dset" = "${_dset#"${POT_ZFS_ROOT}/jails/$_pname"}" ] &&
+				[ "$_dset" = "${_dset#"${POT_ZFS_ROOT}/bases/$_bname"}" ]; then
+				printf "\\tdataset %s usage  : %s\\n" "${_dset##"${POT_ZFS_ROOT}"/}" "$( zfs list -o used -H "$_dset")"
 			fi
 		done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
 	fi

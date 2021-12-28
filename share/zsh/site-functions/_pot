@@ -223,6 +223,13 @@ _pot() {
 						'-w[zfs remount]' \
 						'-r[readonly]'
 					;;
+				mount-out)
+					_arguments -s \
+						'-h[Show help]' \
+						'-v[Verbose output]' \
+						'-p[pot name]:pot name:_pot_pots' \
+						'-m[mount point]:mount point:'
+					;;
 				add-dep)
 					_arguments -s \
 						'-h[Show help]' \

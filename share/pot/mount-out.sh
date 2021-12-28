@@ -20,6 +20,9 @@ _is_mountpoint_used()
 	_mnt_p="${2#/}"
 	_conf=$POT_FS_ROOT/jails/$_pname/conf/fscomp.conf
 	_proot=$POT_FS_ROOT/jails/$_pname/m
+	## spaces in this sequences of grep have been introduced to detect exact matches only
+	## a pattern like /mnt/test would match /mnt/test and /mnt/test2
+	## with those spaces we try be more precise in detecting the exact match
 	if grep -q " $_proot/$_mnt_p$" "$_conf" ||
 		grep -q " $_proot/$_mnt_p " "$_conf" ; then
 		# mount point already used

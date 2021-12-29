@@ -146,6 +146,13 @@ pot-set-attribute()
 		"localhost-tunnel")
 			_cmd=_set_boolean_attribute
 			;;
+		"no-tmpfs")
+			if "$(_get_conf_var $_pname pot.type)" = "single" ; then
+				_cmd=_set_boolean_attribute
+			else
+				_error "Attribute no-tmpfs is only usable with single type pot"
+				return 1
+			fi
 		*)
 			# shellcheck disable=SC1083,2086
 			eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"

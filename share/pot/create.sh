@@ -306,6 +306,7 @@ _cj_conf()
 		echo "pot.attr.persistent=YES"
 		echo "pot.attr.start-at-boot=NO"
 		echo "pot.attr.prunable=NO"
+		echo "pot.attr.no-tmpfs=NO"
 		# jail attributes
 		for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 			if [ -z "$(_get_conf_var "$_pname" "pot.attr.${_attr}")" ]; then

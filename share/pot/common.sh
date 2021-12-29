@@ -917,11 +917,15 @@ _pot_mount()
 			fi
 		fi
 	done < "${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
-	if ! mount -t tmpfs tmpfs "${POT_FS_ROOT}/jails/$_pname/m/tmp" ; then
-		_error "Error mounting tmpfs"
-		return 1
+	if [ "$(_get_conf_var "$_pname" pot.attr.no-tmpfs)" = "YES" ]; then
+		_debug "Not mounting tmpfs because of no-tmppfs attribure"
 	else
-		_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
+		if ! mount -t tmpfs tmpfs "${POT_FS_ROOT}/jails/$_pname/m/tmp" ; then
+			_error "Error mounting tmpfs"
+			return 1
+		else
+			_debug "mount ${POT_FS_ROOT}/jails/$_pname/m/tmp"
+		fi
 	fi
 	return 0 # true
 }
@@ -937,7 +941,11 @@ _pot_umount()
 	fi
 	_jdir="${POT_FS_ROOT}/jails/$_pname"
 
-	_umount "$_jdir/m/tmp"
+	if [ "$(_get_conf_var "$_pname" pot.attr.no-tmpfs)" = "YES" ]; then
+		_debug "Not umounting tmpfs because of no-tmppfs attribure"
+	else
+		_umount "$_jdir/m/tmp"
+	fi
 	if [ "$(_get_conf_var "$_pname" "pot.attr.fdescfs")" = "YES" ]; then
 		_umount "$_jdir/m/dev/fs"
 	fi

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - mount-out: new command to remove or unmount a previously mount-in folder or fs
+- attribute no-tmpfs: an attribute, for single dataset only, to not use tmpfs for /tmp
 
 ## [0.14.0] 2021-10-31
 ### Added

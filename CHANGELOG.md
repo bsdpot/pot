@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - mount-out: new command to remove or unmount a previously mount-in folder or fs
 
+### Changed
+- Stop logging trivial commands like get-rss to syslog by default (#xxx)
+
 ## [0.14.0] 2021-10-31
 ### Added
 - copy-in: -c option to create missing dirs on copy-in (#172)

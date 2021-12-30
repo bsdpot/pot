@@ -1011,6 +1011,12 @@ pot-cmd()
 				lockf -k /tmp/pot-lock-file "$_POT_PATHNAME" "$_cmd" "$@"
 			fi
 			;;
+		config|get-attr|get-rss|info|list|ps|show|top)
+			if _is_verbose ; then
+				logger -p "${POT_LOG_FACILITY}".debug -t pot "$_func $*"
+			fi
+			$_func "$@"
+			;;
 		*)
 			logger -p "${POT_LOG_FACILITY}".info -t pot "$_func $*"
 			$_func "$@"

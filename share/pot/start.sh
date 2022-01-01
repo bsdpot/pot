@@ -101,15 +101,19 @@ _js_etc_hosts()
 	_hostname="$( _get_conf_var "$_pname" host.hostname )"
 	printf "::1 localhost %s\n" "$_hostname" > "$_phosts"
 	printf "127.0.0.1 localhost %s\n" "$_hostname" >> "$_phosts"
-	case "$( _get_conf_var "$_pname" network_type )" in
-	"public-bridge")
-		potnet etc-hosts >> "$_phosts"
-		;;
-	"private-bridge")
-		_bridge_name="$( _get_conf_var "$_pname" bridge )"
-		potnet etc-hosts -b "$_bridge_name" >> "$_phosts"
-		;;
-	esac
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-etc-hosts")" = "YES" ]; then
+		_debug "Attribute no-etchosts: no additional /etc/hosts entries injected"
+	else
+		case "$( _get_conf_var "$_pname" network_type )" in
+		"public-bridge")
+			potnet etc-hosts >> "$_phosts"
+			;;
+		"private-bridge")
+			_bridge_name="$( _get_conf_var "$_pname" bridge )"
+			potnet etc-hosts -b "$_bridge_name" >> "$_phosts"
+			;;
+		esac
+	fi
 	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
 	grep '^pot.hosts=' "$_cfile" | sed 's/^pot.hosts=//g' >> "$_phosts"
 }

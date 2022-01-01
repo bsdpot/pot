@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - mount-out: new command to remove or unmount a previously mount-in folder or fs
 - attribute no-tmpfs: an attribute, for single dataset only, to not use tmpfs for /tmp
+- attribute no-etchosts: an attribute, to not inject additional /etc/hosts entries from `potnet`
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)

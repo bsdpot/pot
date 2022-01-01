@@ -81,6 +81,10 @@ _update_one_pot()
 		_debug "pot.attr.no-tmpfs=NO"
 		echo "pot.attr.no-tmpfs=NO" >> "$_conf"
 	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.no-tmpfs")" ]; then
+		_debug "pot.attr.no-etc-hosts=NO"
+		echo "pot.attr.no-etc-hosts=NO" >> "$_conf"
+	fi
 
 	# convert pot.export.static.ports=80 to the new format pot.export.ports=80:80
 	# being aware that pot.export.ports may already exist

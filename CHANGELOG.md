@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - mount-out: new command to remove or unmount a previously mount-in folder or fs
 - attribute no-tmpfs: an attribute, for single dataset only, to not use tmpfs for /tmp
+- create/import: inherit ZFS encryption property from parent filesystem (#196)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)

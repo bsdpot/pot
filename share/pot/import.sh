@@ -92,19 +92,19 @@ _import_pot()
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 
 	if [ -n "$_origin_pname" ] && [ -n "$_origin_snap" ]; then
-		xzcat "${POT_CACHE}/$_filename" | zfs recv -uo \
+		# shellcheck disable=SC2046
+		xzcat "${POT_CACHE}/$_filename" | zfs receive -uo \
 		  "origin=${POT_ZFS_ROOT}/jails/$_origin_pname@$_origin_snap" \
+		  $(_get_zfs_receive_extra_args) \
 		  "${POT_ZFS_ROOT}/jails/$_pname"
 		zfs inherit mountpoint "${POT_ZFS_ROOT}/jails/$_pname/m"
 		zfs mount "${POT_ZFS_ROOT}/jails/$_pname"
 		zfs mount "${POT_ZFS_ROOT}/jails/$_pname/m"
 	else
-		xzcat "${POT_CACHE}/$_filename" | zfs recv "${POT_ZFS_ROOT}/jails/$_pname"
+		# shellcheck disable=SC2046
+		xzcat "${POT_CACHE}/$_filename" | zfs receive \
+		  $(_get_zfs_receive_extra_args) "${POT_ZFS_ROOT}/jails/$_pname"
 	fi
-
-	# xzcat  "${POT_CACHE}/$_filename" | zfs recv -u ${POT_ZFS_ROOT}/jails/$_pname
-	# zfs set mountpoint=${POT_FS_ROOT}/jails/$_rpname
-	# zfs set to be repeated for all children or zfs mount
 
 	# pot.conf modifications
 	_hostname="${_pname}.$( hostname )"

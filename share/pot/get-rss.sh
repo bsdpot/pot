@@ -70,8 +70,8 @@ pot-get-rss()
 		get-rss-help
 		${EXIT} 1
 	fi
-	if ! _is_pot "$_pname" quiet ; then
-		_error "The pot $_pname is not a valid pot"
+	if ! _is_pot_running "$_pname" ; then
+		_error "The pot $_pname is not running"
 		${EXIT} 1
 	fi
 	if ! _is_uid0 ; then

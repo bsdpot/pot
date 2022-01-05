@@ -27,7 +27,7 @@ _pot_flavours() {
 }
 
 _pot_attributes() {
-	_values "pot attributes" 'start-at-boot' 'early-start-at-boot' 'persistent' 'no-rc-script' 'prunable' 'localhost-tunnel' 'no-tmps' 'no-etc-hosts' 'enforce_statfs' 'mount' 'fdescfs' 'linprocfs' 'nullfs' 'procfs' 'tmpfs' 'zfs' 'children'
+	_values "pot attributes" 'start-at-boot' 'early-start-at-boot' 'persistent' 'no-rc-script' 'prunable' 'localhost-tunnel' 'no-tmpfs' 'no-etc-hosts' 'enforce_statfs' 'mount' 'fdescfs' 'linprocfs' 'nullfs' 'procfs' 'tmpfs' 'zfs' 'children'
 }
 
 _pot_network_type() {

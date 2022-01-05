@@ -84,7 +84,9 @@ _c_zfs_single()
 		_snap=$(_zfs_last_snap "$_dset")
 		if [ -n "$_snap" ]; then
 			_debug "Clone zfs snapshot $_dset@$_snap"
-			if ! zfs send "$_dset@$_snap" | zfs receive "$_pdset/m" ; then
+			# shellcheck disable=SC2046
+			if ! zfs send "$_dset@$_snap" | zfs receive \
+			    $(_get_zfs_receive_extra_args) "$_pdset/m" ; then
 				_error "create: zfs send/receive failed"
 				_cj_undo_create
 				return 1 # false
@@ -143,7 +145,9 @@ _c_zfs_multi()
 			_snap=$(_zfs_last_snap "$_dset/usr.local")
 			if [ -n "$_snap" ]; then
 				_debug "Import zfs snapshot $_dset/usr.local@$_snap"
-				if ! zfs send "$_dset/usr.local@$_snap" | zfs receive "$_pdset/usr.local" ; then
+				# shellcheck disable=SC2046
+				if ! zfs send "$_dset/usr.local@$_snap" | zfs receive \
+				    $(_get_zfs_receive_extra_args) "$_pdset/usr.local" ; then
 					_error "create: zfs send/receive failed"
 					_cj_undo_create
 					return 1 # false
@@ -171,7 +175,9 @@ _c_zfs_multi()
 		_snap=$(_zfs_last_snap "$_dset")
 		if [ -n "$_snap" ]; then
 			_debug "Clone zfs snapshot $_dset@$_snap"
-			if ! zfs send "$_dset@$_snap" | zfs receive "$_pdset/custom" ; then
+			# shellcheck disable=SC2046
+			if ! zfs send "$_dset@$_snap" | zfs receive \
+			    $(_get_zfs_receive_extra_args) "$_pdset/custom" ; then
 				_error "create: zfs send/receive failed"
 				_cj_undo_create
 				return 1 # false

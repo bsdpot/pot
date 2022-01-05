@@ -243,6 +243,55 @@ _get_zfs_dataset()
 	echo "$_dset"
 }
 
+# check if POT_ZFS_ROOT supports given property
+# $1 the property to check
+_is_zfs_property_supported()
+{
+	local _properties _ret
+
+	_properties=$(zfs get -o property all "${POT_ZFS_ROOT}")
+	_ret=$?
+	if [ $_ret -ne 0 ]; then
+		_error "Could not determine if $POT_ZFS_ROOT supports encryption"
+		return 2 # error
+	fi
+	if echo "$_properties" | grep -xq "$1" ; then
+		return 0 # true
+	else
+		return 1 # false
+	fi
+}
+
+# get extra arguments to be added to the zfs receive command.
+# Output can be used without addional escaping.
+# In case of errors, the returned string will make sure
+# the zfs receive command fails in case the called
+# didn't check the return value.
+#
+# Usage:
+#     zfs receive $(_get_zfs_receive_extra_args) pool/fs
+_get_zfs_receive_extra_args()
+{
+	local _ret
+
+	_is_zfs_property_supported "encryption"
+	_ret=$?
+	case $_ret in
+		0)	# encryption supported
+			echo "-x encryption"
+			return 0
+			;;
+		1)	# encryption not supported
+			echo ""
+			return 0
+			;;
+		*)	# communicate error
+			echo "-x therewasanerror"
+			return 1
+			;;
+	esac
+}
+
 # take a zfs recursive snapshot of a pot
 # $1 pot name
 _pot_zfs_snap()

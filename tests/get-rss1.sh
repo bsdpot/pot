@@ -59,23 +59,23 @@ test_pot_get_rss_002()
 
 test_pot_get_rss_020()
 {
-	pot-get-rss -p test-pot
+	pot-get-rss -p test-pot-run
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "print_rss calls" "1" "$PRINT_CALLS"
-	assertEquals "print_rss arg1" "test-pot" "$PRINT_CALL1_ARG1"
+	assertEquals "print_rss arg1" "test-pot-run" "$PRINT_CALL1_ARG1"
 	assertEquals "print_rss arg2" "" "$PRINT_CALL1_ARG2"
 }
 
 test_pot_get_rss_021()
 {
-	pot-get-rss -p test-pot-2 -J
+	pot-get-rss -p test-pot-run-2 -J
 	assertEquals "Exit rc" "0" "$?"
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "print_rss calls" "1" "$PRINT_CALLS"
-	assertEquals "print_rss arg1" "test-pot-2" "$PRINT_CALL1_ARG1"
+	assertEquals "print_rss arg1" "test-pot-run-2" "$PRINT_CALL1_ARG1"
 	assertEquals "print_rss arg2" "YES" "$PRINT_CALL1_ARG2"
 }
 

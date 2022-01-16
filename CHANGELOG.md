@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)
 - get-rss: test if the pot is running, instead of it only exists during input validation
+- mount-in: mountpoint cannot contain spaces anymore (#187)
 
 ## [0.14.0] 2021-10-31
 ### Added

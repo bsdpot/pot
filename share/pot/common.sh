@@ -698,6 +698,17 @@ _is_natural_number()
 	esac
 }
 
+# $1 a string
+# tested ( common8 )
+_contains_spaces()
+{
+	if [ "$1" = "${1% *}" ]; then
+		return 1 # false
+	else
+		return 0 # true
+	fi
+}
+
 # $1 mountpoint
 # tested
 _is_mounted()

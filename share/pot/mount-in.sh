@@ -243,6 +243,10 @@ pot-mount-in()
 		_error "/ is not a valid mount point"
 		return 1
 	fi
+	if _contains_spaces "$_mnt_p" ; then
+		_error "The mountpoint cannot contain spaces"
+		return 1
+	fi
 
 	if [ "$_remount" = "YES" ]; then
 		if [ -n "$_dir" ]; then

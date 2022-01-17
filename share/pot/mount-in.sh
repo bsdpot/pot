@@ -235,16 +235,16 @@ pot-mount-in()
 		mount-in-help
 		return 1
 	fi
+	if _contains_spaces "$_mnt_p" ; then
+		_error "The mountpoint cannot contain spaces"
+		return 1
+	fi
 	if ! _is_absolute_path "$_mnt_p" ; then
 		_error "The mount point has to be an absolute pathname"
 		return 1
 	fi
 	if [ "${_mnt_p}" = "/" ]; then
 		_error "/ is not a valid mount point"
-		return 1
-	fi
-	if _contains_spaces "$_mnt_p" ; then
-		_error "The mountpoint cannot contain spaces"
 		return 1
 	fi
 

@@ -702,11 +702,7 @@ _is_natural_number()
 # tested ( common8 )
 _contains_spaces()
 {
-	if [ "$1" = "${1% *}" ]; then
-		return 1 # false
-	else
-		return 0 # true
-	fi
+	echo "$1" | grep -q "[[:space:]]"
 }
 
 # $1 mountpoint

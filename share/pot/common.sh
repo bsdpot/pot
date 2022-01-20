@@ -698,6 +698,13 @@ _is_natural_number()
 	esac
 }
 
+# $1 a string
+# tested ( common8 )
+_contains_spaces()
+{
+	echo "$1" | grep -q "[[:space:]]"
+}
+
 # $1 mountpoint
 # tested
 _is_mounted()

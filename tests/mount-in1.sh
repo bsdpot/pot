@@ -351,7 +351,7 @@ test_pot_mount_in_008()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	
+
 	setUp
 	pot-mount-in -p test-no-pot -m /test-no-mnt -z zroot/test-dataset
 	assertEquals "Exit rc" "1" "$?"
@@ -359,7 +359,7 @@ test_pot_mount_in_008()
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
 	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
-	
+
 	setUp
 	pot-mount-in -p test-no-pot -m /test-no-mnt -d test-dir
 	assertEquals "Exit rc" "1" "$?"
@@ -409,6 +409,35 @@ test_pot_mount_in_010()
 
 	setUp
 	pot-mount-in -p test-pot -z zroot/test-dataset -m /
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
+	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
+}
+
+test_pot_mount_in_011()
+{
+	pot-mount-in -p test-pot -f test-fscomp -m "/mnt/with space"
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
+	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
+
+	setUp
+	pot-mount-in -p test-pot -d test-dir -m "/mnt/with space"
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
+	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
+
+	setUp
+	pot-mount-in -p test-pot -z zroot/test-dataset -m "/mnt/with space"
+	assertEquals "Exit rc" "1" "$?"
+	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
+	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"
+	assertEquals "_mount_dataset calls" "0" "$MOUNTDSET_CALLS"
+
+	pot-mount-in -p test-pot -f test-fscomp -m "/mnt/space  "
 	assertEquals "Exit rc" "1" "$?"
 	assertEquals "_is_uid0 calls" "0" "$ISUID0_CALLS"
 	assertEquals "_mount_dir calls" "0" "$MOUNTDIR_CALLS"

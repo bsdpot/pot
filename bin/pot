@@ -137,7 +137,7 @@ Commands:
 	import -- Import a pot from a file or a URL
 	prepare -- Import and prepare a pot - designed for jail orchestrator
 	update-config -- Update the configuration of a pot
-	last-run-stats -- Get statistics about a pots last run
+	last-run-stats -- Get statistics about a pot's last run
 EOF
 }
 

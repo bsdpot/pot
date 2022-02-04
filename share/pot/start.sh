@@ -26,6 +26,10 @@ start-cleanup()
 		return
 	fi
 	if [ -n "$2" ] && _is_valid_netif "${2}a" ; then
+		sleep 1 # try to avoid a race condition in the epair driver,
+			# potentially causing a kernel panic, which should
+			# be fixed in FreeBSD 13.1:
+			# https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
 		ifconfig "${2}a" destroy
 	fi
 	pot-cmd stop "$_pname"

@@ -550,7 +550,6 @@ _js_start()
 			start-cleanup "$_pname" "${_iface}"
 		fi
 		rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
-		# store exit_code of process
 
 		if [ "$_exit_code" -ne 0 ]; then
 			# return code to signal application exit error

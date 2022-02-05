@@ -26,6 +26,10 @@ start-cleanup()
 		return
 	fi
 	if [ -n "$2" ] && _is_valid_netif "${2}a" ; then
+		sleep 1 # try to avoid a race condition in the epair driver,
+			# potentially causing a kernel panic, which should
+			# be fixed in FreeBSD 13.1:
+			# https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
 		ifconfig "${2}a" destroy
 	fi
 	pot-cmd stop "$_pname"
@@ -383,7 +387,7 @@ _js_env()
 _js_start()
 {
 	local _pname _confdir _iface _hostname _osrelease _param _ip _cmd _persist
-	local _stack _value _name _type
+	local _stack _value _name _type _wait_pid _exit_code
 	_pname="$1"
 	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_iface=
@@ -498,7 +502,7 @@ _js_start()
 		(
 			# shellcheck disable=SC2046
 			eval $( pot info -E -p "$_pname" )
-			"$_confdir/conf/prestart.sh"
+			"$_confdir/prestart.sh"
 		)
 	fi
 
@@ -506,7 +510,7 @@ _js_start()
 
 	_info "Starting the pot $_pname"
 	# shellcheck disable=SC2086
-	jail -c $_param exec.start="sh -c 'sleep 5&'"
+	jail -c $_param exec.start="sh -c 'sleep 1234&'"
 
 	if [ -e "$_confdir/pot.conf" ] && _is_pot_prunable "$_pname" ; then
 		# set-attr cannot be used for read-only attributes
@@ -528,28 +532,42 @@ _js_start()
 		(
 			# shellcheck disable=SC2046
 			eval $( pot info -E -p "$_pname" )
-			"$_confdir/conf/poststart.sh"
+			"$_confdir/poststart.sh"
 		)
 	fi
 
-	wait "$_wait_pid"
+	sleep 0.5
+	pkill -f -j "$_pname" "^sleep 1234$"
 
-	if ! _is_pot_running "$_pname" ; then
+	wait "$_wait_pid"
+	_exit_code=$?
+
+	echo "{ \"ExitCode\": $_exit_code }" > "$_confdir/.last_run_stats"
+
+	if [ "$_persist" = "NO" ]; then
+		# non-persistent jails always need to die
 		if [ ! -e "${POT_TMP:-/tmp}/pot_stopped_${_pname}" ]; then
 			start-cleanup "$_pname" "${_iface}"
 		fi
 		rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
-		if [ "$_persist" = "NO" ]; then
-			return 0
-		else
-			return 1
+
+		if [ "$_exit_code" -ne 0 ]; then
+			# return code to signal application exit error
+			return 125
 		fi
+	elif ! _is_pot_running "$_pname" ; then
+		# persistent jail didn't come up, this is an error
+		if [ ! -e "${POT_TMP:-/tmp}/pot_stopped_${_pname}" ]; then
+			start-cleanup "$_pname" "${_iface}"
+		fi
+		rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
+		return 1
 	fi
 }
 
 pot-start()
 {
-	local _pname _snap
+	local _pname _snap _start_result
 	_snap=none
 	_pname=
 	OPTIND=1
@@ -648,7 +666,12 @@ pot-start()
 		return 1
 	fi
 	_js_etc_hosts "$_pname"
-	if ! _js_start "$_pname" ; then
+	_js_start "$_pname"
+	_start_result=$?
+	if [ $_start_result -eq 125 ]; then
+		_error "$_pname reported application error"
+		return 125
+	elif [ $_start_result -ne 0 ]; then
 		_error "$_pname failed to start"
 		return 1
 	fi

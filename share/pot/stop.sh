@@ -48,7 +48,10 @@ _js_stop()
 		jail -q -r "$_pname"
 		if [ -n "$_epair" ]; then
 			_debug "Remove ${_epair%b}[a|b] network interfaces"
-			sleep 1 # try to avoid a race condition in the epair driver, potentially causing a kernel panic
+			sleep 1 # try to avoid a race condition in the epair driver,
+			        # potentially causing a kernel panic, which should
+			        # be fixed in FreeBSD 13.1:
+			        # https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
 			ifconfig "${_epair%b}"a destroy
 		else
 			if [ "$_network_type" = "alias" ]; then

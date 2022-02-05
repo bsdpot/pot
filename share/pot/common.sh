@@ -1067,7 +1067,7 @@ pot-cmd()
 				lockf -k /tmp/pot-lock-file "$_POT_PATHNAME" "$_cmd" "$@"
 			fi
 			;;
-		config|get-attr|get-rss|info|list|ps|show|top)
+		config|get-attr|get-rss|info|last-run-stats|list|ps|show|top)
 			if _is_verbose ; then
 				logger -p "${POT_LOG_FACILITY}".debug -t pot "$_func $*"
 			fi

@@ -137,6 +137,7 @@ Commands:
 	import -- Import a pot from a file or a URL
 	prepare -- Import and prepare a pot - designed for jail orchestrator
 	update-config -- Update the configuration of a pot
+	last-run-stats -- Get statistics about a pot's last run
 EOF
 }
 
@@ -191,7 +192,8 @@ case "${CMD}" in
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
-	snapshot|revert|purge-snapshots|update-config)
+	snapshot|revert|purge-snapshots|update-config|\
+	last-run-stats)
 		pot-cmd "${CMD}" "$@"
 		exit $?
 		;;

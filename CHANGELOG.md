@@ -10,11 +10,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - attribute no-tmpfs: an attribute, for single dataset only, to not use tmpfs for /tmp
 - create/import: inherit ZFS encryption property from parent filesystem (#196)
 - attribute no-etchosts: an attribute, to not inject additional /etc/hosts entries from `potnet`
+- last-run-stats: new command to get statistics on the last run of a pot, currently contains "ExitCode", which is the exit code of pot.cmd (#200)
+- start: return with code 125 in case pot.cmd of a non-persistent pot failed (#200)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)
 - get-rss: test if the pot is running, instead of it only exists during input validation
 - mount-in: mountpoint cannot contain spaces anymore (#187)
+- start: allow pots to run for less than 5 seconds (#200)
+- start: always stop and cleanup non-persistent pots once pot.cmd finished, prevents stray background tasks from keeping them alive (#200)
+- prune: add flag "-g" to delay pruning of pots that just stopped, so users have a chance to inspect last-run-stats (#200)
+
+### Fixed
+- start: correct invocation of prestart and poststart hooks (#200)
 
 ## [0.14.0] 2021-10-31
 ### Added

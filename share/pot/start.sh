@@ -153,8 +153,17 @@ _js_vnet()
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		touch "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
-		echo "ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
-		echo "route add default $POT_GATEWAY" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
+		    sleep 1
+		    if ! ifconfig ${_epairb} >/dev/null 2>&1; then
+		        >&2 echo "Interface ${_epairb} does not exist"
+		        exit 1
+		    fi
+		fi
+		ifconfig ${_epairb} inet $_ip netmask $POT_NETMASK
+		route add default $POT_GATEWAY
+		EOT
 	else # use rc scripts
 		# set the network configuration in the pot's rc.conf
 		if [ -w "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf" ]; then

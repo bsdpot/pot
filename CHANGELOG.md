@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - attribute no-etchosts: an attribute, to not inject additional /etc/hosts entries from `potnet`
 - last-run-stats: new command to get statistics on the last run of a pot, currently contains "ExitCode", which is the exit code of pot.cmd (#200)
 - start: return with code 125 in case pot.cmd of a non-persistent pot failed (#200)
+- tinirc: wait for epair interface, exit early if it doesn't become available (#204)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)

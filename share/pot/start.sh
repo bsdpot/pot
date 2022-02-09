@@ -152,7 +152,6 @@ _js_vnet()
 	_ip=$( _get_ip_var "$_pname" )
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
-		touch "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
 		    sleep 1
@@ -190,9 +189,17 @@ _js_vnet_ipv6()
 	ifconfig "${_epair}" up
 	ifconfig "$_bridge" addm "${_epair}"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
-		touch "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
-		echo "ifconfig ${_epairb} inet6 up accept_rtadv" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
-		echo "/sbin/rtsol -d ${_epairb}" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
+		    sleep 1
+		    if ! ifconfig ${_epairb} >/dev/null 2>&1; then
+		        >&2 echo "Interface ${_epairb} does not exist"
+		        exit 1
+		    fi
+		fi
+		ifconfig ${_epairb} inet6 up accept_rtadv
+		/sbin/rtsol -d ${_epairb}
+		EOT
 	else # use rc scripts
 		# set the network configuration in the pot's rc.conf
 		if [ -w "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf" ]; then
@@ -227,9 +234,17 @@ _js_private_vnet()
 	_gateway="$(_get_bridge_var "$_bridge_name" gateway)"
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
-		touch "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
-		echo "ifconfig ${_epairb} inet $_ip/$_net_size" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
-		echo "route add default $_gateway" >> "${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc"
+		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
+		    sleep 1
+		    if ! ifconfig ${_epairb} >/dev/null 2>&1; then
+		        >&2 echo "Interface ${_epairb} does not exist"
+		        exit 1
+		    fi
+		fi
+		ifconfig ${_epairb} inet $_ip/$_net_size
+		route add default $_gateway
+		EOT
 	else # use rc scripts
 		# set the network configuration in the pot's rc.conf
 		if [ -w "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.con"f ]; then
@@ -426,6 +441,29 @@ _js_start()
 		_param="$_param persist"
 	else
 		_param="$_param nopersist"
+	fi
+	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
+		if [ "$( _get_pot_network_stack "$_pname" )" = "ipv4" ]; then
+			prec=100
+		else
+			prec=35
+		fi
+		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		if sysctl -n kern.features.inet6 >/dev/null 2>&1; then
+		        ip6addrctl flush >/dev/null 2>&1
+		        ip6addrctl install /dev/stdin <<EOF
+		        ::1/128		 50	 0
+		        ::/0		 40	 1
+		        ::ffff:0:0/96	 $prec	 4
+		        2002::/16	 30	 2
+		        2001::/32	  5	 5
+		        fc00::/7	  3	13
+		        ::/96		  1	 3
+		        fec0::/10	  1	11
+		        3ffe::/16	  1	12
+		EOF
+		fi
+		EOT
 	fi
 	case "$( _get_conf_var "$_pname" network_type )" in
 	"inherit")

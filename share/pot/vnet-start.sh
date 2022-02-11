@@ -15,7 +15,7 @@ _public_bridge_start()
 	local _bridge
 	_bridge=$(_pot_bridge)
 	if [ -z "$_bridge" ]; then
-		if _bridge=$(ifconfig bridge create) ; then
+		if _bridge=$(ifconfig bridge create descr "pot public bridge" group "pot") ; then
 			_debug "Bridge created $_bridge"
 		else
 			_error "Bridge not created"
@@ -37,7 +37,7 @@ _private_bridge_start()
 	_bridge_name="$1"
 	_bridge=$(_private_bridge "$_bridge_name")
 	if [ -z "$_bridge" ]; then
-		if _bridge=$(ifconfig bridge create) ; then
+		if _bridge=$(ifconfig bridge create descr "pot private bridge" group "pot") ; then
 			_debug "Bridge created $_bridge"
 		else
 			_error "Bridge not created"
@@ -142,7 +142,7 @@ _ipv6_bridge_start()
 	_bridge=$(_pot_bridge_ipv6)
 
 	if [ -z "$_bridge" ]; then
-		if _bridge=$(ifconfig bridge create) ; then
+		if _bridge=$(ifconfig bridge create descr "pot ipv6 bridge" group "pot") ; then
 			_debug "Bridge created $_bridge"
 		else
 			_error "Bridge not created"

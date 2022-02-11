@@ -125,7 +125,8 @@ _js_etc_hosts()
 _js_create_epair()
 {
 	local _epair
-	_epair=$(ifconfig epair create)
+	_epair=$(ifconfig epair create descr "$_pname" group "pot")
+
 	if [ -z "${_epair}" ]; then
 		_error "ifconfig epair failed"
 		start-cleanup "$_pname"

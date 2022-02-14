@@ -557,7 +557,7 @@ pot-create()
 					fi
 					;;
 				*)
-					_error "The dns $OPTARG is not a valid option: choose between inherit or pot"
+					_error "The dns $OPTARG is not a valid option"
 					create-help
 					${EXIT} 1
 			esac

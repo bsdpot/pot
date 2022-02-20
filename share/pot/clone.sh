@@ -330,7 +330,6 @@ pot-clone()
 					inherit|pot|off)
 						_dns=$OPTARG
 						;;
-
 					custom:*)
 						if [ -r "${OPTARG##custom:}" ]; then
 							_dns=$OPTARG
@@ -340,7 +339,7 @@ pot-clone()
 						fi
 						;;
 					*)
-							_error "'${OPTARG}' is not valid dns option"
+							_error "'${OPTARG}' is not a valid dns option"
 							clone-help
 							${EXIT} 1
 				esac

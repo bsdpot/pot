@@ -552,7 +552,7 @@ pot-create()
 					fi
 					;;
 				*)
-					_error "'${OPTARG}' is not valid dns option"
+					_error "'${OPTARG}' is not a valid dns option"
 					create-help
 					${EXIT} 1
 			esac

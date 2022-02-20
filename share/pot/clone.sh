@@ -1,4 +1,4 @@
-#!/bin/sh
+z!/bin/sh
 # shellcheck disable=SC3033,SC3040,SC3043
 :
 
@@ -19,7 +19,8 @@ clone-help()
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
-	echo '  -d dns : change dns with one between inherit, pot, off or custom:filename'
+	echo '  -d dns : change dns to one of: inherit, pot, off or custom:filename'
+	echo '           the latter case will copy the file in the pot configuration'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 

@@ -540,20 +540,14 @@ pot-create()
 			;;
 		d)
 			case $OPTARG in
-				"inherit")
-					;;
-				"pot")
-					_dns=pot
-					;;
-				"off")
-					_dns=off
+				"inherit"|"pot"|"off")
+					_dns=$OPTARG
 					;;
 				custom:*)
 					if [ -r "${OPTARG##custom:}" ]; then
 						_dns=$OPTARG
 					else
 						_error "The file ${OPTARG##custom:} is not valid or readable"
-						create-help
 						${EXIT} 1
 					fi
 					;;

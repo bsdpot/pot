@@ -194,8 +194,8 @@ _cj_conf()
 	if [ ! -d "$_pdir/conf" ]; then
 		mkdir -p "$_pdir/conf"
 	fi
-	if [ "$_dns" != "${_dns##custom:}" ]; then
-		cp "${_dns##custom:}" "$_pdir/conf/resolv.conf"
+	if [ "$_dns" != "${_dns##custom:}" ]; then # if dns is custom:filename
+		cp "${_dns##custom:}" "$_pdir/conf/resolv.conf" # copy custom dns config to pot config
 		_potdns=custom
 	else
 		_potdns="$_dns"

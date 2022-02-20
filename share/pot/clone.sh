@@ -19,8 +19,11 @@ clone-help()
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
-	echo '  -d dns : change dns to one of: inherit, pot, off or custom:filename'
-	echo '           the latter case will copy the file in the pot configuration'
+	echo '  -d dns : change dns resolver to one of:'
+	echo '           inherit       - inherit from jailhost (default)'
+	echo '           pot           - the pot configured in POT_DNS_NAME'
+	echo '           custom:<file> - copy <file> into pot configuration'
+	echo '           off           - leave resolver config unaltered'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 

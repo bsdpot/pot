@@ -340,7 +340,7 @@ pot-clone()
 						if [ -r "${OPTARG##custom:}" ]; then
 							_dns=$OPTARG
 						else
-							_error "The file ${OPTARG##custom:} is not valid or reabale"
+							_error "The file ${OPTARG##custom:} is not valid or readable"
 							clone-help
 							${EXIT} 1
 						fi

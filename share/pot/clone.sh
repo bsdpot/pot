@@ -336,12 +336,12 @@ pot-clone()
 							_dns=$OPTARG
 						else
 							_error "The file ${OPTARG##custom:} is not valid or readable"
-							clone-help
 							${EXIT} 1
 						fi
 						;;
 					*)
 							_error "'${OPTARG}' is not valid dns option"
+							clone-help
 							${EXIT} 1
 				esac
 				;;

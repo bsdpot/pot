@@ -342,7 +342,6 @@ pot-clone()
 						;;
 					*)
 							_error "'${OPTARG}' is not valid dns option"
-							clone-help
 							${EXIT} 1
 				esac
 				;;

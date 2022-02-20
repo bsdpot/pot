@@ -16,7 +16,11 @@ create-help()
 	echo '  -l lvl : pot level (only for type multi)'
 	echo '  -b base : the base pot'
 	echo '  -P pot : the pot to be used as reference'
-	echo '  -d dns : one between inherit(default), pot, off or custom:filename'
+	echo '  -d dns : change dns resolver to one of:'
+	echo '           inherit       - inherit from jailhost (default)'
+	echo '           pot           - the pot configured in POT_DNS_NAME'
+	echo '           custom:<file> - copy <file> into pot configuration'
+	echo '           off           - leave resolver config unaltered'
 	echo '  -f flavour : flavour to be used'
 	echo '  -t type: single or multi (default multi)'
 	echo '         single: the pot is based on a unique ZFS dataset'
@@ -539,25 +543,19 @@ pot-create()
 			;;
 		d)
 			case $OPTARG in
-				"inherit")
-					;;
-				"pot")
-					_dns=pot
-					;;
-				"off")
-					_dns=off
+				"inherit"|"pot"|"off")
+					_dns=$OPTARG
 					;;
 				custom:*)
 					if [ -r "${OPTARG##custom:}" ]; then
 						_dns=$OPTARG
 					else
 						_error "The file ${OPTARG##custom:} is not valid or readable"
-						create-help
 						${EXIT} 1
 					fi
 					;;
 				*)
-					_error "The dns $OPTARG is not a valid option: choose between inherit or pot"
+					_error "'${OPTARG}' is not a valid dns option"
 					create-help
 					${EXIT} 1
 			esac

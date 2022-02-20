@@ -19,6 +19,11 @@ clone-help()
 	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
 	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
 	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
+	echo '  -d dns : change dns resolver to one of:'
+	echo '           inherit       - inherit from jailhost (default)'
+	echo '           pot           - the pot configured in POT_DNS_NAME'
+	echo '           custom:<file> - copy <file> into pot configuration'
+	echo '           off           - leave resolver config unaltered'
 	echo '  -F : automatically take snapshots of dataset that has no one'
 }
 
@@ -176,21 +181,29 @@ _cj_zfs()
 # $4 ip
 # $5 bridge name
 # $6 network stack
+# $7 dns
 _cj_conf()
 {
-	local _pname _potbase _ip _network_type _bridge_name _stack
+	local _pname _potbase _ip _network_type _bridge_name _stack _dns _potdns
 	_pname=$1
 	_potbase=$2
 	_network_type=$3
 	_ip=$4
 	_bridge_name=$5
 	_stack=$6
+	_dns=$7
 	_pdir=${POT_FS_ROOT}/jails/$_pname
 	_pbdir=${POT_FS_ROOT}/jails/$_potbase
 	if [ ! -d "$_pdir/conf" ]; then
 		mkdir -p "$_pdir/conf"
 	fi
-	grep -vE '^(host.hostname|bridge|ip|vnet|network_type|pot.stack)' "$_pbdir/conf/pot.conf" > "$_pdir/conf/pot.conf"
+	if [ "$_dns" != "${_dns##custom:}" ]; then # if dns is custom:filename
+		cp "${_dns##custom:}" "$_pdir/conf/resolv.conf" # copy custom dns config to pot config
+		_potdns=custom
+	else
+		_potdns="$_dns"
+	fi
+	grep -vE '^(host.hostname|bridge|ip|vnet|network_type|pot.stack|pot.dns)' "$_pbdir/conf/pot.conf" > "$_pdir/conf/pot.conf"
 	{
 		echo "host.hostname=\"$( _get_usable_hostname "${_pname}" )\""
 		echo "pot.stack=$_stack"
@@ -210,9 +223,10 @@ _cj_conf()
 		"private-bridge")
 			echo "vnet=true"
 			echo "ip=$_ip"
-			echo "bridge=$_bridge_name" >> "$_pdir/conf/pot.conf"
+			echo "bridge=$_bridge_name"
 			;;
 		esac
+		echo "pot.dns=$_potdns"
 	} >> "$_pdir/conf/pot.conf"
 	if [ -e "$_pbdir/conf/prestart.sh" ]; then
 		cp "$_pbdir/conf/prestart.sh" "$_pdir/conf/prestart.sh"
@@ -233,7 +247,7 @@ _cj_conf()
 
 pot-clone()
 {
-	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack _snap _flv
+	local _pname _ipaddr _potbase _pblvl _autosnap _pb_type _pb_network_type _network_type _bridge_name _network_stack _snap _flv _dns
 	_pname=
 	_ipaddr=
 	_potbase=
@@ -244,8 +258,9 @@ pot-clone()
 	_cleanup_keep="NO"
 	_snap=
 	_flv=
+	_dns=
 	OPTIND=1
-	while getopts "hvp:i:P:FN:B:S:f:ks:" _o ; do
+	while getopts "hvp:i:P:FN:B:S:f:ks:d:" _o ; do
 		case "$_o" in
 			h)
 				clone-help
@@ -313,6 +328,26 @@ pot-clone()
 					${EXIT} 1
 				fi
 				;;
+			d)
+				case $OPTARG in
+					inherit|pot|off)
+						_dns=$OPTARG
+						;;
+					custom:*)
+						if [ -r "${OPTARG##custom:}" ]; then
+							_dns=$OPTARG
+						else
+							_error "The file ${OPTARG##custom:} is not valid or readable"
+							${EXIT} 1
+						fi
+						;;
+					*)
+							_error "'${OPTARG}' is not a valid dns option"
+							clone-help
+							${EXIT} 1
+				esac
+				;;
+
 			*)
 				clone-help
 				${EXIT} 1
@@ -371,6 +406,9 @@ pot-clone()
 		clone-help
 		${EXIT} 1
 	fi
+	if [ -z "$_dns" ]; then
+		_dns="$(_get_conf_var "$_potbase" pot.dns)"
+	fi
 	_pblvl="$( _get_conf_var "$_potbase" pot.level )"
 	_pb_type="$( _get_conf_var "$_potbase" pot.type )"
 	if [ "$_pblvl" = "0" ] && [ "$_pb_type" != "single" ]; then
@@ -386,7 +424,7 @@ pot-clone()
 	if ! _cj_zfs "$_pname" "$_potbase" "$_autosnap" "$_snap" ; then
 		${EXIT} 1
 	fi
-	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" "$_network_stack" ; then
+	if ! _cj_conf "$_pname" "$_potbase" "$_network_type" "$_ipaddr" "$_bridge_name" "$_network_stack" "$_dns"; then
 		${EXIT} 1
 	fi
 	if [ -n "$_flv" ]; then

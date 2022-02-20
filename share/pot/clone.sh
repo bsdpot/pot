@@ -327,15 +327,10 @@ pot-clone()
 				;;
 			d)
 				case $OPTARG in
-					"inherit")
-						_dns="inherit"
+					inherit|pot|off)
+						_dns=$OPTARG
 						;;
-					"pot")
-						_dns="pot"
-						;;
-					"off")
-						_dns="off"
-						;;
+
 					custom:*)
 						if [ -r "${OPTARG##custom:}" ]; then
 							_dns=$OPTARG

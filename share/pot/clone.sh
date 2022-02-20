@@ -1,4 +1,4 @@
-z!/bin/sh
+#!/bin/sh
 # shellcheck disable=SC3033,SC3040,SC3043
 :
 

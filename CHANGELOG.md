@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: return with code 125 in case pot.cmd of a non-persistent pot failed (#200)
 - tinirc: wait for epair interface, exit early if it doesn't become available (#204)
 - ifconfig: label and group interfaces created by pot (#206)
+- clone: add dns option, to customize DNS configuration while cloning (#199)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)

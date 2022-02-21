@@ -4,11 +4,13 @@
 
 clone-fscomp-help()
 {
-	echo "pot clone-fscomp [-hv] -f fscomp -F fscomp"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -F fscomp : the fscomp to be cloned (mandatory)'
-	echo '  -f fscomp : the fscomp name (mandatory)'
+	cat <<-"EOH"
+	pot clone-fscomp [-hv] -f fscomp -F fscomp
+	  -h print this help
+	  -v verbose
+	  -F fscomp : the fscomp to be cloned (mandatory)
+	  -f fscomp : the fscomp name (mandatory)
+	EOH
 }
 
 # $1 new fscomp name

@@ -4,15 +4,17 @@
 
 info-help()
 {
-	echo "pot info [-hvqr] [-p pname|-B bname]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
-	echo '  -p pname: pot name'
-	echo '  -B bname: bridge name'
-	echo '  -r check only if the pot is running'
-	echo '  -E print few pot information as environment variables'
-	echo '  -s list the available snapshots for the pot'
+	cat <<-"EOH"
+	pot info [-hvqr] [-p pname|-B bname]
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	  -p pname : pot name
+	  -B bname : bridge name
+	  -r check only if the pot is running
+	  -E output some pot information as environment variables
+	  -s list the available snapshots for the pot
+	EOH
 }
 
 # $! pot name

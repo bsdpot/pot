@@ -3,12 +3,14 @@
 :
 
 set-hosts-help() {
-	echo "pot set-hosts [-hv] -p pot -H env"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -H hostname:IP : the hostname and the ip to be added in the /etc/hosts'
-	echo '     this option can be repeated more than once'
+	cat <<-"EOH"
+	pot set-hosts [-hv] -p pot -H hostname:IP
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -H hostname:IP : hostname-to-IP resolution to be added
+	                   to /etc/hosts, can be used multiple times
+	EOH
 }
 
 # $1 pot

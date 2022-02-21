@@ -4,12 +4,14 @@
 
 snapshot-help()
 {
-	echo "pot snapshot [-h][-v][-a] [-p potname|-f fscomp]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -r replace the oldest available snapshot with the new one (not compatible with -a)'
-	echo '  -p potname : the pot target of the snapshot'
-	echo '  -f fscomp : the fs component target of the snapshot'
+	cat <<-"EOH"
+	pot snapshot [-hv] -p potname|-f fscomp
+	  -h print this help
+	  -v verbose
+	  -r replace the oldest available snapshot with the new one
+	  -p potname : the pot target of the snapshot
+	  -f fscomp : the fs component target of the snapshot
+	EOH
 }
 
 pot-snapshot()

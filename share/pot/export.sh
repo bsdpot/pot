@@ -7,17 +7,21 @@
 # Add a way to change compression utility
 
 export-help() {
-	echo "pot export [-hv] -p pot [-s snapshot] [-t tag] [-D directory] [-l level]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -t tag : the tag to be used as suffix in the filename'
-	echo '           if no tag is specified, tha snapshot will be used as suffix'
-	echo '  -c : Treat tags as versions and check if they are decreasing'
-	echo '  -D directory : where to store the compressed file with the pot'
-	echo '  -l compression-level : from 0 (fast) to 9 (best). Defaul level 6. (man xz for more information)'
-	echo '  -F : force exports of multiple snapshot (only 1 snapshot should be allowed)'
-	echo '  -A : auto-fix snapshots number (exactly 1 snapshot is allowed)'
+	cat <<-"EOH"
+	pot export [-hv] -p pot [-s snapshot] [-t tag] [-D dir] [-l level]
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -t tag : the tag to be used as suffix in the filename
+	           if not specified, the snapshot name will be used as suffix
+	  -c : treat tags as versions and check if they are decreasing
+	  -D dir : where to store the compressed file with the pot
+	  -l level : compression level from 0 (fast) to 9 (best).
+	             Default level 6. (see `man xz` for more information)
+	  -F : force export of multiple snapshot
+	       (by default, only one snapshot is allowed)
+	  -A : auto-fix number of snapshots (only one snapshot is allowed)
+	EOH
 }
 
 # $1 : pot name

@@ -4,11 +4,13 @@
 
 rename-help()
 {
-	echo "pot rename [-h][-v] -p OldPotName -n NewPotName"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p oldname : the previous pot name'
-	echo '  -n newname : the new pot name'
+	cat <<-"EOH"
+	pot rename [-hv] -p oldname -n newname
+	  -h print this help
+	  -v verbose
+	  -p oldname : the name of an existing pot to rename
+	  -n newname : the new name for an existing pot
+	EOH
 }
 
 _rn_conf()

@@ -4,11 +4,13 @@
 
 mount-out-help()
 {
-	echo "pot mount-out [-hvwr] -p pot -m mnt"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -m mnt : the mount point inside the pot'
+	cat <<-"EOH"
+	pot mount-out [-hvwr] -p pot -m mnt
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -m mnt : the mount point inside the pot
+	EOH
 }
 
 # $1 pot

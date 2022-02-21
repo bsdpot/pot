@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: allow pots to run for less than 5 seconds (#200)
 - start: always stop and cleanup non-persistent pots once pot.cmd finished, prevents stray background tasks from keeping them alive (#200)
 - prune: add flag "-g" to delay pruning of pots that just stopped, so users have a chance to inspect last-run-stats (#200)
+- help: rework usage screens (#209)
 
 ### Fixed
 - start: correct invocation of prestart and poststart hooks (#200)

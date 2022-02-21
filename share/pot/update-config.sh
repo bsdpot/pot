@@ -4,11 +4,13 @@
 
 update-config-help()
 {
-	echo "pot update-config [-h] [-p pot|-a]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -a : all the pots'
+	cat <<-"EOH"
+	pot update-config [-h] -p pot|-a
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -a : apply to all pots
+	EOH
 }
 
 # $1 pname

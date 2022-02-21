@@ -4,12 +4,14 @@
 
 purge-snapshots-help()
 {
-	echo "pot purge-snapshots [-h][-v][-a] [-p potname|-f fscomp]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p potname : the pot target of the purge-snapshots'
-	echo '  -f fscomp : the fs component target of the purge-snapshots'
-	echo '  -a : remove all snapshot, the last one included'
+	cat <<-"EOH"
+	pot purge-snapshots [-hva] -p potname|-f fscomp
+	  -h print this help
+	  -v verbose
+	  -p potname : the pot target of the purge-snapshots
+	  -f fscomp : the fs component target of the purge-snapshots
+	  -a remove all snapshot, including the latest one
+	EOH
 }
 
 # $1 zfs dataset

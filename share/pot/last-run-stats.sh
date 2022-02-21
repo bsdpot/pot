@@ -4,10 +4,12 @@
 
 last-run-stats-help()
 {
-	echo "pot last-run-stats [-hv] [-p pname]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pname: pot name'
+	cat <<-"EOH"
+	pot last-run-stats [-hv] [-p pname]
+	  -h print this help
+	  -v verbose
+	  -p pname : pot name
+	EOH
 }
 
 pot-last-run-stats()

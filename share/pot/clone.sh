@@ -7,24 +7,26 @@ _set_pipefail
 
 clone-help()
 {
-	echo "pot clone [-hvF] -p potname -P basepot [-i ipaddr]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -k keep the pot, if clone fails'
-	echo '  -P potname : the pot to be cloned (template)'
-	echo '  -s snapshot : the snapshot to be used to clone'
-	echo '  -p potname : the new pot name'
-	echo '  -f flavour : flavour to be used'
-	echo '  -N network-type : new network type of the cloned pot'
-	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
-	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
-	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
-	echo '  -d dns : change dns resolver to one of:'
-	echo '           inherit       - inherit from jailhost (default)'
-	echo '           pot           - the pot configured in POT_DNS_NAME'
-	echo '           custom:<file> - copy <file> into pot configuration'
-	echo '           off           - leave resolver config unaltered'
-	echo '  -F : automatically take snapshots of dataset that has no one'
+	cat <<-"EOH"
+	pot clone [-hvF] -p potname -P basepot [-i ipaddr]
+	  -h print this help
+	  -v verbose
+	  -k keep the pot, if clone fails
+	  -P potname : the pot to be cloned (template)
+	  -s snapshot : the snapshot to be used to clone
+	  -p potname : the name of the pot that is created
+	  -f flavour : flavour to be used
+	  -N network-type : new network type of the cloned pot
+	  -i ipaddr : an ip address or the keyword auto (if applicable)
+	  -B bridge-name : the name of the private bridge to be used
+	  -S network-stack : the network stack (ipv4, ipv6 or dual)
+	  -d dns : change pot dns resolver configuration, one of
+	           inherit       - inherit from jailhost
+	           pot           - the pot configured in POT_DNS_NAME
+	           custom:<file> - copy <file> into pot configuration
+	           off           - leave resolver config unaltered
+	  -F : automatically take snapshots of dataset that has none
+	EOH
 }
 
 # $1 pot name

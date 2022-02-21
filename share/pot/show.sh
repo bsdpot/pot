@@ -4,13 +4,15 @@
 
 show-help()
 {
-	echo "pot show [-hvq] [-a|-r|-p potname]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
-	echo '  -a all pots'
-	echo '  -r all running pots (default)'
-	echo '  -p potname select the pot by name'
+	cat <<-"EOH"
+	pot show [-hvq] [-a|-r|-p potname]
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	  -a all pots
+	  -r all running pots (default)
+	  -p potname : select pot by name
+	EOH
 }
 
 # show pot static information

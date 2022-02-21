@@ -4,12 +4,14 @@
 
 set-rss-help()
 {
-	echo "pot set-rss [-hv] -p pot -C cpus -M memory"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -C cpus : the max amount of CPUs'
-	echo '  -M memory : max memory usable (integer values)'
+	cat <<-"EOH"
+	pot set-rss [-hv] -p pot [-C cpus] [-M memory]
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -C cpus : the max amount of CPUs
+	  -M memory : max memory usable (integer values)
+	EOH
 }
 
 # $1 pot

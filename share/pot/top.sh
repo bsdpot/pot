@@ -4,9 +4,11 @@
 
 top-help()
 {
-	echo "pot top [-h] -p pot"
-	echo '  -h print this help'
-	echo '  -p pot : the working pot'
+	cat <<-"EOH"
+	pot top [-h] -p pot
+	  -h print this help
+	  -p pot : the working pot
+	EOH
 }
 
 pot-top()

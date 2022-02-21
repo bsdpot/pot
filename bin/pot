@@ -89,56 +89,56 @@ if [ -r "$_POT_ETC/pot.conf" ]; then
 fi
 
 usage() {
-	cat << EOF
-Usage: pot command [options]
+	cat <<-"EOF"
+	Usage: pot command [options]
 
-Commands:
-	help	-- Show help
-	version -- Show the pot version
-	config  -- Show pot framework configuration
-	ls/list	-- List of the installed pots
-	show	-- Show pot information
-	info    -- Print minimal information on a pot
-	top     -- Run the unix top in the pot
-	ps      -- Show running pots
-	init	-- Initialize the ZFS layout
-	de-init	-- Deinstall pot from your system
-	vnet-start -- Start the vnet configuration
-	create-base	-- Create a new base image
-	create-fscomp -- Create a new fs component
-	create-private-bridge -- Create a new private bridge
-	create -- Create a new pot (jail)
-	clone -- Clone a pot creating a new one
-	clone-fscomp - Clone a fscomp
-	rename -- Rename a pot
-	destroy -- Destroy a pot
-	prune   -- Destroy not running prunable pots
-	copy-in -- Copy a file or a directory into a pot
-	copy-out -- Copy a file or a directory from a pot
-	mount-in -- Mount a directory, a zfs dataset or a fscomp into a pot
-	add-dep -- Add a dependency
-	set-rss -- Set a resource constraint
-	get-rss -- Get the current resource usage
-	set-cmd -- Set the command to start the pot
-	set-env -- Set environment variabls inside a pot
-	set-hosts -- Set etc/hosts entries inside a pot
-	set-hook -- Set hook scripts for a pot
-	set-attr -- Set a pot's attribute
-	get-attr -- Get a pot's attribute
-	export-ports -- Let export tcp ports
-	start -- Start a jail (pot)
-	stop -- Stop a jail (pot)
-	term -- Start a terminal in a pot
-	run -- Start and open a terminal in a pot
-	snap/snapshot -- Take a snapshot of a pot
-	rollback/revert -- Restore the last snapshot
-	purge-snapshots -- Remove old/all snapshots
-	export -- Export a pot to a file
-	import -- Import a pot from a file or a URL
-	prepare -- Import and prepare a pot - designed for jail orchestrator
-	update-config -- Update the configuration of a pot
-	last-run-stats -- Get statistics about a pot's last run
-EOF
+	Commands:
+	    help    -- Show help
+	    version -- Show version of the pot command
+	    config  -- Show pot framework configuration
+	    ls/list -- List of the installed pots
+	    show    -- Show information on pots
+	    info    -- Print minimal information on a pot
+	    top     -- Run top(1) inside the pot
+	    ps      -- Show running pots
+	    init    -- Initialize the ZFS layout
+	    de-init -- Remove pot from your system
+	    vnet-start -- Start vnet configuration
+	    create-base -- Create a new base image
+	    create-fscomp -- Create a new fs component
+	    create-private-bridge -- Create a new private bridge
+	    create -- Create a new pot (jail)
+	    clone -- Clone a pot, creating a new one
+	    clone-fscomp -- Clone an fscomp
+	    rename -- Rename a pot
+	    destroy -- Destroy a pot
+	    prune   -- Destroy non-running, prunable pots
+	    copy-in -- Copy a file or a directory into a pot
+	    copy-out -- Copy a file or a directory out of a pot
+	    mount-in -- Mount directory, ZFS dataset, or fscomp into a pot
+	    add-dep -- Add a dependency
+	    set-rss -- Set a resource constraint
+	    get-rss -- Get the current resource usage
+	    set-cmd -- Set the command to start the pot
+	    set-env -- Set environment variables inside a pot
+	    set-hosts -- Set /etc/hosts entries inside a pot
+	    set-hook -- Set hook scripts for a pot
+	    set-attribute/set-attr -- Set an attribute on a pot
+	    get-attribute/set-attr -- Get an attribute from a pot
+	    export-ports -- Allows exposing tcp and udp ports
+	    start -- Start a pot (jail)
+	    stop -- Stop a pot (jail)
+	    term -- Open terminal inside of a pot
+	    run -- Same as term, but start pot if it is not running
+	    snap/snapshot -- Take a snapshot of a pot
+	    rollback/revert -- Restore the latest snapshot
+	    purge-snapshots -- Remove old/all snapshots
+	    export -- Export a pot to a file
+	    import -- Import a pot from a file or a URL
+	    prepare -- Import and prepare a pot, used by orchestrators
+	    update-config -- Update the configuration of a pot
+	    last-run-stats -- Get statistics about a pot's last run
+	EOF
 }
 
 # shellcheck disable=SC2034

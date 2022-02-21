@@ -3,12 +3,14 @@
 :
 
 set-env-help() {
-	echo "pot set-env [-hv] -p pot -E env"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -E var=value : the variable and the value to be added'
-	echo '     this option can be repeated more than once'
+	cat <<-"EOH"
+	pot set-env [-hv] -p pot -E env
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -E var=value : the variable and the value to be added
+	     this option can be repeated more than once
+	EOH
 }
 
 # $1 pot

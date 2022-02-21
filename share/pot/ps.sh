@@ -3,10 +3,12 @@
 
 ps-help()
 {
-	echo "pot ps [-hvq]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quite: print only active pot'\''s name'
+	cat <<-"EOH"
+	pot ps [-hvq]
+	  -h print this help
+	  -v verbose
+	  -q quiet : only print pot names
+	EOH
 }
 
 # $1 pot name

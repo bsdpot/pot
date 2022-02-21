@@ -4,10 +4,12 @@
 
 create-fscomp-help()
 {
-	echo "pot create-fscomp [-hv] -f name"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -f name : the fs component name (mandatory)'
+	cat <<-"EOH"
+	pot create-fscomp [-hv] -f name
+	  -h print this help
+	  -v verbose
+	  -f name : the fs component name (mandatory)
+	EOH
 }
 
 pot-create-fscomp()

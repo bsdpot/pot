@@ -4,16 +4,20 @@
 
 mount-in-help()
 {
-	echo "pot mount-in [-hvwr] -p pot -m mnt -f fscomp | -d directory | -z dataset"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -f fscomp : the fs component to be mounted'
-	echo '  -z zfs dataset : the zfs dataset to be mounted'
-	echo '  -d directory : the directory that has to be mounted in the pot (absolute pathname)'
-	echo '  -m mnt : the mount point inside the pot'
-	echo '  -w : '"don't use nullfs, but change the zfs mountpoint [usable only with -z and -f](potentially DANGEROUS)"
-	echo '  -r : mount in read-only'
+	cat <<-"EOH"
+	pot mount-in [-hvwr] -p pot -m mnt -f fscomp|-d dir|-z dataset
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -f fscomp : a fs component to be mounted
+	  -z zfs dataset : a ZFS dataset to be mounted
+	  -d dir : a directory on the host to be mounted,
+	           absolute pathname
+	  -m mnt : the mount point inside of the pot
+	  -w : change the ZFS mount point instead of using nullfs,
+	       potentially DANGEROUS and only usable with -z and -f
+	  -r : mount-in read-only
+	EOH
 }
 
 # $1 pot

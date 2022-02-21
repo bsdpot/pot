@@ -3,12 +3,14 @@
 
 prune-help()
 {
-	echo "pot prune [-hvq]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quite - prune with no output'
-	echo '  -g grace period - do not prune pots that just finished executing'
-	echo '  -n dry-run - do not destroy anything'
+	cat <<-"EOH"
+	pot prune [-hvq]
+	  -h print this help
+	  -v verbose
+	  -q quite - prune with no output
+	  -g grace_period - do not prune pots that just finished executing
+	  -n dry-run - do not destroy anything
+	EOH
 }
 
 # $1 pot name

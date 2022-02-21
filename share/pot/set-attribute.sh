@@ -2,15 +2,17 @@
 # shellcheck disable=SC3033,SC3040,SC3043
 :
 
-set-attr-help()
+set-attribute-help()
 {
-	echo "pot set-attr [-hv] -p pot -A attr -V value"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -A attribute : one of those attributes:'
-	echo '      '"$_POT_RW_ATTRIBUTES"
-	echo '  -V value : the new value for the attribute'
+	cat <<-EOH
+	pot set-attribute [-hv] -p pot -A attr -V value
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -A attribute : one of
+	$(echo "$_POT_RW_ATTRIBUTES" | xargs -n1 echo "     +" | sort)
+	  -V value : the new value for "attribute"
+	EOH
 }
 
 # check if the argument is a valid boolean value
@@ -42,7 +44,7 @@ _set_boolean_attribute()
 	_value=$3
 	if ! _value=$(_normalize_true_false "$_value") ; then
 		_error "value $_value is not a valid boolean value"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
@@ -62,7 +64,7 @@ _set_uint_attribute()
 
 	if [ -n "$(printf '%s' "${_value}" | tr -d '0-9')" ] ; then
 		_error "value $_value is not a valid uint value"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
@@ -87,7 +89,7 @@ pot-set-attribute()
 	while getopts "hvp:A:V:" _o ; do
 		case "$_o" in
 		h)
-			set-attr-help
+			set-attribute-help
 			return 0
 			;;
 		v)
@@ -103,35 +105,35 @@ pot-set-attribute()
 			_attr="$OPTARG"
 			;;
 		*)
-			set-attr-help
+			set-attribute-help
 			return 1
 		esac
 	done
 
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	if [ -z "$_attr" ]; then
 		_error "Option -A is mandatory"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	if [ -z "$_value" ]; then
 		_error "Option -V is mandatory"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	if ! _is_pot "$_pname" ; then
 		_error "$_pname is not a valid pot"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	# shellcheck disable=SC2086
 	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES ${_POT_JAIL_RW_ATTRIBUTES} ; then
 		_error "$_attr is not a valid attribute"
-		set-attr-help
+		set-attribute-help
 		return 1
 	fi
 	if ! _is_uid0 ; then

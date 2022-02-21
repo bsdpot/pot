@@ -7,12 +7,14 @@
 # add fscomp.conf management
 
 import-help() {
-	echo "pot import [-hv] -p pot -t tag -U URL"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the remote pot name'
-	echo '  -t tag : the tag of the pot'
-	echo '  -U URL : the base URL where to find the image file'
+	cat <<-"EOH"
+	pot import [-hv] -p pot -t tag -U URL
+	  -h print this help
+	  -v verbose
+	  -p pot : the remote pot name
+	  -t tag : the tag of the pot
+	  -U URL : the base URL where to find the image file
+	EOH
 }
 
 # $1 : remote pot name

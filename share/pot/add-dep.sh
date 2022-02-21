@@ -4,11 +4,14 @@
 
 add-dep-help()
 {
-	echo "pot add-dep [-hv] -p pot -P depPot"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -P depPot : the pot to run before '
+	cat <<-"EOH"
+	pot add-dep [-hv] -p potname -P depPot
+	  -h print this help
+	  -v verbose
+	  -p potname : the working pot
+	  -P depPot : the pot to depend on. Will be started automatically
+	              before starting the working pot "potname".
+	EOH
 }
 
 # $1 pot

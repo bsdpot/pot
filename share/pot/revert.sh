@@ -4,11 +4,13 @@
 
 revert-help()
 {
-	echo "pot revert [-hva] -p potname|-f fscomp"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p potname : the pot target of the revert'
-	echo '  -f fscomp : the fs component target of the revert'
+	cat <<-"EOH"
+	pot revert [-hv] -p potname|-f fscomp
+	  -h print this help
+	  -v verbose
+	  -p potname : the pot target of the revert
+	  -f fscomp : the fs component target of the revert
+	EOH
 }
 
 # $1 pot name

@@ -5,12 +5,14 @@
 
 config-help()
 {
-	echo 'pot config [-h][-v][-q] [-g name ]'
-	echo '  -h -- print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
-	echo '  -g name : get name value'
-	echo '    '"possible names are $_config_names"
+	cat <<-EOH
+	pot config [-hvq] [-g name]
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	  -g name : get value of config item "name", one of:
+	$(echo "$_config_names" | xargs -n1 echo "     +" | sort)
+	EOH
 }
 
 # $1 quiet

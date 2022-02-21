@@ -7,11 +7,13 @@
 
 init-help()
 {
-	echo 'pot init [-h][-v] [-f pf_file]'
-	echo '  -f pf_file : write pot anchors to this file (empty to skip),'
-	echo '     defaults to result of "sysrc -n pf_rules"'
-	echo '  -h print this help'
-	echo '  -v verbose'
+	cat <<-"EOH"
+	pot init [-hv] [-f pf_file]
+	  -f pf_file : write pot anchors to this file (empty to skip),
+	               defaults to result of `sysrc -n pf_rules`
+	  -h print this help
+	  -v verbose
+	EOH
 }
 
 pot-init()

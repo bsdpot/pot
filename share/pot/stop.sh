@@ -4,10 +4,14 @@
 
 stop-help()
 {
-	echo "pot stop [-hv] [-p] potname"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  potname : the pot that has to stop'
+	cat <<-"EOH"
+	pot stop [-hv] -p potname [pname]
+	  -h print this help
+	  -v verbose
+	  -p potname : the pot to be stopped
+
+	  pname : the pot to be stopped if "-p potname" not given
+	EOH
 }
 
 _js_cpu_rebalance()

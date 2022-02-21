@@ -2,15 +2,18 @@
 # shellcheck disable=SC3033,SC3040,SC3043
 :
 
-get-attr-help()
+get-attribute-help()
 {
-	echo "pot get-attr [-hvq] -p pot -A attr"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
-	echo '  -p pot : the working pot'
-	echo '  -A attribute : one of those attributes:'
-	echo '      '"$_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES"
+	cat <<-EOH
+	pot get-attribute [-hvq] -p pot -A attribute
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	  -p pot : the working pot
+	  -A attribute : get value of attribute, one of
+	$(echo "$_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES" |
+	  xargs -n1 echo "     +" | sort)
+	EOH
 }
 
 pot-get-attribute()
@@ -24,7 +27,7 @@ pot-get-attribute()
 	while getopts "hvqp:A:V:" _o ; do
 		case "$_o" in
 		h)
-			get-attr-help
+			get-attribute-help
 			${EXIT} 0
 			;;
 		v)
@@ -40,32 +43,32 @@ pot-get-attribute()
 			_attr="$OPTARG"
 			;;
 		*)
-			get-attr-help
+			get-attribute-help
 			${EXIT} 1
 		esac
 	done
 
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
-		get-attr-help
+		get-attribute-help
 		${EXIT} 1
 	fi
 	if [ -z "$_attr" ]; then
 		_error "Option -A is mandatory"
-		get-attr-help
+		get-attribute-help
 		${EXIT} 1
 	fi
 	if ! _is_pot "$_pname" "$_quiet" ; then
 		if [ "$_quiet" != "quiet" ]; then
 			_error "$_pname is not a valid pot"
-			get-attr-help
+			get-attribute-help
 		fi
 		${EXIT} 1
 	fi
 	# shellcheck disable=SC2086
 	if ! _is_in_list "$_attr" $_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES $_POT_JAIL_RW_ATTRIBUTES ; then
 		_error "$_attr is not a valid attribute"
-		get-attr-help
+		get-attribute-help
 		${EXIT} 1
 	fi
 	_value=$(_get_conf_var "$_pname" "pot.attr.$_attr")

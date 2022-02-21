@@ -4,16 +4,20 @@
 
 start-help()
 {
-	echo "pot start [-h] [-p] potname"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -s take a snapshot before to start'
-	echo '     snapshots are identified by the epoch'
-	echo '     all zfs datasets under the jail dataset are considered'
-	echo '  -S take a snapshot before to start [DEPRECATED]'
-	echo '     snapshots are identified by the epoch'
-	echo '     all zfs datasets mounted in rw are considered (full)'
-	echo '  potname : the jail that has to start'
+	cat <<-"EOH"
+	pot start [-h] -p potname [pname]
+	  -h print this help
+	  -v verbose
+	  -s take a snapshot before starting the pot
+	     snapshots are identified by the epoch
+	     all ZFS datasets under the jail dataset are considered
+	  -S take a snapshot before starting the pot [DEPRECATED]
+	     snapshots are identified by the epoch
+	     all ZFS datasets mounted in rw are considered (full)
+	  -p potname : the pot to be started
+
+	  pname : the pot to be started if "-p potname" not given
+	EOH
 }
 
 # $1 pot name

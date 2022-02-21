@@ -4,23 +4,27 @@
 
 prepare-help()
 {
-	echo "pot prepare [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd"
-	echo '        [-e port] [-N network-type] [-i ipaddr] [-B bridge-name]'
-	echo '  -h print this help'
-	echo '  -h verbose'
-	echo '  -p pot : the pot image'
-	echo '  -U URL : the base URL where to find the image file'
-	echo '  -t tag : the tag of the pot'
-	echo '  -a aID : the allocation ID'
-	echo '  -n potname : the new potname (used instead of pot_tag)'
-	echo '  -c cmd : the command line to start the container'
-	echo '  -N network-type : new network type of the imported pot'
-	echo '  -i ipaddr : an ip address or the keyword auto (if applicable)'
-	echo '  -e port : the tcp port'
-	echo '            This option can be repeated multiple time, to export more ports'
-	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
-	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
-	echo '  -s : start immediately the newly generated pot'
+	cat <<-"EOH"
+	pot prepare [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd
+	            [-e [proto:]port[:pot_port]] [-N network-type]
+	            [-i ipaddr] [-B bridge-name]
+	  -h print this help
+	  -h verbose
+	  -p pot : the pot image
+	  -U URL : the base URL where to find the image file
+	  -t tag : the tag of the pot
+	  -a aID : the allocation ID
+	  -n potname : the new potname (used instead of pot_tag)
+	  -c cmd : the command line to start the container
+	  -N network-type : new network type of the imported pot
+	  -i ipaddr : an ip address or the keyword auto (if applicable)
+	  -e [proto:]port[:pot_port] : port(s) to export
+	         This option can be repeated to export multiple ports.
+	         See `pot help export-ports` for details.
+	  -B bridge-name : the name of the private bridge to be used
+	  -S network-stack : the network stack (ipv4, ipv6 or dual)
+	  -s : start the newly generated pot immediately
+	EOH
 }
 
 pot-prepare()

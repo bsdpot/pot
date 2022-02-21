@@ -13,9 +13,18 @@ pot-help()
 		rollback)
 			_cmd=revert
 			;;
+		run)
+			_cmd=term
+			;;
 		snap)
 			_cmd=snapshot
 			;;
+		set-attr)
+			_cmd=set-attribute
+			;;
+		get-attr)
+			_cmd=get-attribute
+		;;
 	esac
 	if [ ! -r "${_POT_INCLUDE}/${_cmd}.sh" ]; then
 		_error "Command ${_cmd} unkown"

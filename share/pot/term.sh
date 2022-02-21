@@ -4,11 +4,16 @@
 
 term-help()
 {
-	echo "pot term [-hvf] [-p] potname"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -f force: it start the pot, if it'\''s not running'
-	echo '  potname : the desired pot'
+	cat <<-"EOH"
+	pot term [-hvf] -p potname [pname]
+	pot run [-hv] -p potname [pname]
+	  -h print this help
+	  -v verbose
+	  -f : start the pot if it is not running
+	  -p potname : the pot to open terminal in
+
+	  pname : pot to open terminal in if "-p potname" not given
+	EOH
 }
 
 # TODO a configurable shell or a login shell

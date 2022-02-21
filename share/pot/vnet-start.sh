@@ -4,10 +4,12 @@
 
 vnet-start-help()
 {
-	echo 'pot vnet-start [-h][-v]'
-	echo '  -h -- print this help'
-	echo '  -v verbose'
-	echo '  -B bridge-name (opional)'
+	cat <<-"EOH"
+	pot vnet-start [-hv] [-B bridge-name]
+	  -h print this help
+	  -v verbose
+	  -B bridge-name (optional)
+	EOH
 }
 
 _public_bridge_start()

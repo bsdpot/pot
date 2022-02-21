@@ -9,7 +9,7 @@
 . common-stub.sh
 
 # app specific stubs
-set-attr-help()
+set-attribute-help()
 {
 	__monitor HELP "$@"
 }

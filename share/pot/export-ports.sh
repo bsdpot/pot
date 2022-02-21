@@ -4,17 +4,25 @@
 
 export-ports-help()
 {
-	echo "pot export-ports configure the pot export ports - network type public-bridge only"
-	echo "pot export-ports [-hv] -p pot [-S] -e port ..."
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -e port : the tcp port'
-	echo '            This option can be repeated multiple time, to export more ports'
-	echo '            -e 80 will export tcp port 80 using an available port'
-	echo '            -e 80:30000 will export tcp port 80 using port 30000'
-	echo '            -e tcp:80:30000 will export tcp port 80 using port 30000'
-	echo '            -e udp:53:30053 will export udp port 53 using port 30053'
+	cat <<-"EOH"
+	pot export-ports configure exported ports - public-bridge only
+	pot export-ports [-hv] -p pot [-S] -e [proto:]port[:pot_port] ...
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -e [proto:]port[:pot_port] : port(s) to export
+	         proto can be tcp (default) or udp
+	         port is the port to export
+	         pot_port : a static port to NAT to inside the pot
+	                    dynamically allocated by default
+	         This option can be repeated to export multiple ports.
+
+	     Examples:
+	       -e 80            export proto tcp port 80 to a dynamic port
+	       -e 80:30000      export proto tcp port 80 to pot_port 30000
+	       -e tcp:80:30000  export proto tcp port 80 to pot_port 30000
+	       -e udp:53:30053  export proto udp port 53 to pot_port 30053
+	EOH
 }
 
 # $1 pot

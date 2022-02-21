@@ -4,16 +4,18 @@
 
 destroy-help()
 {
-	echo "pot destroy [-hvFr] [-p potname|-b basename|-f fscomp|-B bridge]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
-	echo '  -F force the stop and destroy'
-	echo '  -p potname : the pot name (mandatory)'
-	echo '  -b basename : the base name (mandatory)'
-	echo '  -f fscomp : the fscomp name (mandatory)'
-	echo '  -B bridge-name : the name of the bridge to be deleted (mandatory)'
-	echo '  -r : destroy recursively all pots based on this base/pot'
+	cat <<-"EOH"
+	pot destroy [-hvFr] [-p potname|-b basename|-f fscomp|-B bridge]
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	  -F force the stop and destroy
+	  -p potname : the pot name (mandatory)
+	  -b basename : the base name (mandatory)
+	  -f fscomp : the fscomp name (mandatory)
+	  -B bridge-name : the name of the bridge to be deleted (mandatory)
+	  -r : destroy recursively all pots based on this base/pot
+	EOH
 }
 
 # $1 zfs dataset

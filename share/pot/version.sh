@@ -4,10 +4,12 @@
 
 version-help()
 {
-	echo 'pot version [-h][-v][-q]'
-	echo '  -h -- print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
+	cat <<-"EOH"
+	pot version [-hvq]
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	EOH
 }
 
 

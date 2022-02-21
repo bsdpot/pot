@@ -4,13 +4,16 @@
 
 copy-out-help()
 {
-	echo "pot copy-out [-hv] -p pot -s source -d destination"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -F force copy operation for running jails (can partially expose the host file system)'
-	echo '  -p pot : the working pot'
-	echo '  -s source : the file or directory inside the pot'
-	echo '  -d destination : the location (directory) outside the pot to copy the source'
+	cat <<-"EOH"
+	pot copy-out [-hv] -p pot -s source -d dest
+	  -h print this help
+	  -v verbose
+	  -F force copy operation for running jails
+	     (warning: can expose parts of the host file system)
+	  -p pot : the working pot
+	  -s source : the file or directory inside the pot
+	  -d dest : the location (directory) on the host to copy-out to
+	EOH
 }
 
 # $1 source

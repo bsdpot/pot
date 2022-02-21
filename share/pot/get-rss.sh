@@ -4,11 +4,13 @@
 
 get-rss-help()
 {
-	echo "pot get-rss [-h] [-p pot|-a]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -J : output in JSON'
+	cat <<-"EOH"
+	pot get-rss [-h] -p pot
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -J : output in JSON format
+	EOH
 }
 
 # $1 pot name
@@ -66,7 +68,7 @@ pot-get-rss()
 		esac
 	done
 	if [ -z "$_pname" ]; then
-		_error "A pot name or -a are mandatory"
+		_error "A pot name is mandatory"
 		get-rss-help
 		${EXIT} 1
 	fi

@@ -3,14 +3,16 @@
 :
 
 set-hook-help() {
-	echo "pot set-hook [-hv] -p pot [-s hook]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -s hook : the pre-start hook'
-	echo '  -S hook : the post-start hook'
-	echo '  -t hook : the pre-stop hook'
-	echo '  -T hook : the post-stop hook'
+	cat <<-"EOH"
+	pot set-hook [-hv] -p pot [-s hook]
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -s hook : the pre-start hook
+	  -S hook : the post-start hook
+	  -t hook : the pre-stop hook
+	  -T hook : the post-stop hook
+	EOH
 }
 
 # $1 pot

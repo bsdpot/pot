@@ -4,14 +4,18 @@
 
 copy-in-help()
 {
-	echo "pot copy-in [-hv] -p pot -s source -d destination"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -F force copy operation for running jails (can partially expose the host file system)'
-	echo '  -p pot : the working pot'
-	echo '  -s source : the file or directory to be copied in'
-	echo '  -d destination : the final location inside the pot'
-	echo '  -c create missing path components to dirname(destination) inside the pot'
+	cat <<-"EOH"
+	pot copy-in [-hv] -p pot -s source -d dest
+	  -h print this help
+	  -v verbose
+	  -F force copy operation for running jails
+	     (WARNING: can expose parts of the host file system)
+	  -p pot : the working pot
+	  -s source : the file or directory to be copied in
+	  -d dest : the final location inside the pot
+	  -c create any missing path components to `dirname destination`
+	     inside the pot
+	EOH
 }
 
 # $1 source

@@ -4,10 +4,12 @@
 
 de-init-help()
 {
-	echo 'pot de-init [-h][-v][-f]'
-	echo '  -h -- print this help'
-	echo '  -v verbose'
-	echo '  -f force - stop all running pots'
+	cat <<-"EOH"
+	pot de-init [-hvf]
+	  -h print this help
+	  -v verbose
+	  -f force : stop all running pots
+	EOH
 }
 
 pot-de-init()

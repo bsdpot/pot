@@ -4,11 +4,13 @@
 
 create-private-bridge-help()
 {
-	echo 'pot create-private-bridge [-h][-v][-B name][-S size]'
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -B bridge name'
-	echo '  -S bridge size (number of host expected)'
+	cat <<-"EOH"
+	pot create-private-bridge [-hv] [-B name] [-S size]
+	  -h print this help
+	  -v verbose
+	  -B bridge name
+	  -S bridge size (number of host expected)
+	EOH
 }
 
 # $1 bridge-name

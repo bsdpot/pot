@@ -3,11 +3,13 @@
 :
 
 set-cmd-help() {
-	echo "pot set-cmd [-hv] -p pot -c cmd"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -p pot : the working pot'
-	echo '  -c cmd : the command line to start the container'
+	cat <<-"EOH"
+	pot set-cmd [-hv] -p pot -c cmd
+	  -h print this help
+	  -v verbose
+	  -p pot : the working pot
+	  -c cmd : the command line to start the container
+	EOH
 }
 
 pot-set-cmd()

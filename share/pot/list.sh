@@ -4,16 +4,18 @@
 
 list-help()
 {
-	echo "pot list [-hpbfFa][-qv]"
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -q quiet'
-	echo '  -p list pots (default)'
-	echo '  -b list bases instead of pots'
-	echo '  -f list fs components instead of pots'
-	echo '  -F list available flavours'
-	echo '  -B list available bridges (newtork type)'
-	echo '  -a list everything (-q not compatible)'
+	cat <<-"EOH"
+	pot list [-hpbfFa] [-qv]
+	  -h print this help
+	  -v verbose
+	  -q quiet
+	  -p list pots (default)
+	  -b list bases instead of pots
+	  -f list fs components instead of pots
+	  -F list available flavours
+	  -B list available bridges (network type)
+	  -a list everything (incompatible with -q)
+	EOH
 }
 
 # $1 pot name

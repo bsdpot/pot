@@ -7,34 +7,41 @@ _set_pipefail
 
 create-help()
 {
-	echo "pot create [-hv] -p potname [-N network-type] [-i ipaddr] [-l lvl] [-f flavour]"
-	echo '  [-b base | -P basepot ] [-d dns] [-t type]'
-	echo '  -h print this help'
-	echo '  -v verbose'
-	echo '  -k keep the pot, if create fails'
-	echo '  -p potname : the pot name (mandatory)'
-	echo '  -l lvl : pot level (only for type multi)'
-	echo '  -b base : the base pot'
-	echo '  -P pot : the pot to be used as reference'
-	echo '  -d dns : change dns resolver to one of:'
-	echo '           inherit       - inherit from jailhost (default)'
-	echo '           pot           - the pot configured in POT_DNS_NAME'
-	echo '           custom:<file> - copy <file> into pot configuration'
-	echo '           off           - leave resolver config unaltered'
-	echo '  -f flavour : flavour to be used'
-	echo '  -t type: single or multi (default multi)'
-	echo '         single: the pot is based on a unique ZFS dataset'
-	echo '         multi: the pot is composed by a classical collection of 3 ZFS dataset'
-	echo '  -N network-type: one of those'
-	echo '         inherit: inherit the host network stack (default)'
-	echo '         alias: use a static ip as alias configured directly to the host NIC'
-	echo '         public-bridge: use the internal commonly public bridge'
-	echo '         private-bridge: use an internal private bridge (with option -B)'
-	echo '  -i ipaddr : an ip address or the keyword auto (if compatible with the network-type)'
-	echo '         auto: usable with public-bridge and private-bridge (default)'
-	echo '         ipaddr: mandatory with alias, usable with public-bridge and private-bridge'
-	echo '  -B bridge-name : the name of the bridge to be used (private-bridge only)'
-	echo '  -S network-stack : the network stack (ipv4, ipv6 or dual)'
+	cat <<-"EOH"
+	pot create [-hv] -p potname [-N network-type] [-i ipaddr]
+	           [-l lvl] [-f flavour] [-b base|-P basepot]
+	           [-d dns] [-t type]
+	  -h print this help
+	  -v verbose
+	  -k keep the pot, if create fails
+	  -p potname : the pot name (mandatory)
+	  -l lvl : pot level (only for type multi)
+	  -b base : the base pot
+	  -P pot : the pot to be used as reference
+	  -d dns : pot dns resolver configuration, one of
+	           inherit*       - inherit from jailhost (*default)
+	           pot            - the pot configured in POT_DNS_NAME
+	           custom:<file>  - copy <file> into pot configuration
+	           off            - leave resolver config unaltered
+	  -f flavour : flavour to be used
+	  -t type: pot file system layout, one of
+	           single         - the pot is based on a unique ZFS dataset
+	           multi*         - the pot is composed by a classical
+	                            collection of 3 ZFS datasets (*default)
+	  -N network-type: pot network layout, one of
+	           inherit*       - inherit the host network stack (*default)
+	           alias          - configure a static ip alias directly on
+	                            the host's NIC
+	           public-bridge  - use the common internal public bridge
+	           private-bridge - use an internal private bridge (with -B)
+	  -i ipaddr : IP address selection, one of
+	           auto*          - automatically assign address (*default),
+	                            only works with (public|private)-bridge
+	           ipaddr         - mandatory with alias,
+	                            also works with (public|private)-bridge
+	  -B bridge-name : the name of the private bridge to be used
+	  -S network-stack : the network stack (ipv4, ipv6 or dual)
+	EOH
 }
 
 _cj_undo_create()

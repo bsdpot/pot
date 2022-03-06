@@ -195,6 +195,13 @@ pot-prepare()
 	if ! pot-cmd set-attribute -A localhost-tunnel -V YES -p "$_new_pname" ; then
 		_error "Couldn't enable the localhost-tunnel attribute - ignoring"
 	fi
+	if ! pot-cmd set-attribute -A no-etc-hosts -V YES -p "$_new_pname" ; then
+		_error "Couldn't disable the enrichment of /etc/hosts - ignoring"
+	fi
+	if ! pot-cmd set-attribute -A no-tmpfs -V YES -p "$_new_pname" ; then
+		_error "Couldn't disable tmpfs for /tmp - ignoring"
+	fi
+
 	if [ -n "$_ports" ]; then
 		for _p in $_ports ; do
 			_port_args="-e $_p $_port_args"

@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - start: correct invocation of prestart and poststart hooks (#200)
 - tinirc: configure address selection policy (#205)
+- fdescfs/procfs: fixed the correcte behavior of those attribute, such as mount them at start
 
 ## [0.14.0] 2021-10-31
 ### Added

@@ -76,12 +76,12 @@ _umount_mnt_p()
 	_mnt_p="${2#/}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
 	# absolute pathname of the mount point with escape character
-	_sed_string="$(echo "$_pdir/$_mnt_p" | sed 's#/#\\/#g')"
+	_sed_string="$(echo "$_pdir/m/$_mnt_p" | sed 's#/#\\/#g')"
 	_debug "umount_mnt_p: mnt_p:$_pdir/m/$_mnt_p"
-	${SED} -E -i '' " $_sed_string$ | $_sed_string /d" "$_pdir/conf/fscomp.conf"
+	${SED} -E -i '' " $_sed_string$| $_sed_string /d" "$_pdir/conf/fscomp.conf"
 
 	if _is_pot_running "$_pname" ; then
-		if _umount "$_mnt_p" ; then
+		if _umount "$_pdir/m/$_mnt_p" ; then
 			_debug "Umounted $_mnt_p on $_pname"
 		else
 			_error "Error umounting $_mnt_p on $_pname"

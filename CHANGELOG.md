@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - tinirc: wait for epair interface, exit early if it doesn't become available (#204)
 - ifconfig: label and group interfaces created by pot (#206)
 - clone: add dns option, to customize DNS configuration while cloning (#199)
+- prepare: add -d option to change dns configuration during clone (#192)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: always stop and cleanup non-persistent pots once pot.cmd finished, prevents stray background tasks from keeping them alive (#200)
 - prune: add flag "-g" to delay pruning of pots that just stopped, so users have a chance to inspect last-run-stats (#200)
 - help: rework usage screens (#209)
+- prepare: enable attribute no-tmpfs and no-etc-hosts (#192)
 
 ### Fixed
 - start: correct invocation of prestart and poststart hooks (#200)

@@ -23,13 +23,18 @@ prepare-help()
 	         See `pot help export-ports` for details.
 	  -B bridge-name : the name of the private bridge to be used
 	  -S network-stack : the network stack (ipv4, ipv6 or dual)
+	  -d dns : change pot dns resolver configuration, one of
+	           inherit       - inherit from jailhost
+	           pot           - the pot configured in POT_DNS_NAME
+	           custom:<file> - copy <file> into pot configuration
+	           off           - leave resolver config unaltered
 	  -s : start the newly generated pot immediately
 	EOH
 }
 
 pot-prepare()
 {
-	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _ipaddr_list _bridge_name
+	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _ipaddr_list _bridge_name _dns
 	_pname=
 	_ports=
 	_network_type=
@@ -38,8 +43,9 @@ pot-prepare()
 	_auto_start="NO"
 	_bridge_name=
 	_cmd=
+	_dns=
 	OPTIND=1
-	while getopts "hvp:U:t:c:e:a:n:sN:i:B:S:" _o ; do
+	while getopts "hvp:U:t:c:e:a:n:sN:i:B:S:d:" _o ; do
 		case "$_o" in
 		h)
 			prepare-help
@@ -108,7 +114,25 @@ pot-prepare()
 			fi
 			_network_stack="$OPTARG"
 			;;
-
+		d)
+			case $OPTARG in
+				inherit|pot|off)
+					_dns=$OPTARG
+					;;
+				custom:*)
+					if [ -r "${OPTARG##custom:}" ]; then
+						_dns=$OPTARG
+					else
+						_error "The file ${OPTARG##custom:} is not valid or readable"
+						${EXIT} 1
+					fi
+					;;
+				*)
+					_error "'${OPTART}' is not a valid dns option"
+					prepare-help
+					${EXIT} 1
+			esac
+			;;
 		*)
 			prepare-help
 			${EXIT} 1
@@ -174,6 +198,9 @@ pot-prepare()
 	if [ -n "$_network_stack" ]; then
 		_clone_network_opt="$_clone_network_opt -S $_network_stack"
 	fi
+	if [ -n "$_dns" ]; then
+		_clone_network_opt="$_clone_network_opt -d $_dns"
+	fi
 	# shellcheck disable=SC2086
 	if ! pot-cmd clone -P "${_imported_pname}" -p "${_new_pname}" $_clone_network_opt ; then
 		_error "Not able to clone imported pot as $_new_pname"
@@ -195,6 +222,13 @@ pot-prepare()
 	if ! pot-cmd set-attribute -A localhost-tunnel -V YES -p "$_new_pname" ; then
 		_error "Couldn't enable the localhost-tunnel attribute - ignoring"
 	fi
+	if ! pot-cmd set-attribute -A no-etc-hosts -V YES -p "$_new_pname" ; then
+		_error "Couldn't disable the enrichment of /etc/hosts - ignoring"
+	fi
+	if ! pot-cmd set-attribute -A no-tmpfs -V YES -p "$_new_pname" ; then
+		_error "Couldn't disable tmpfs for /tmp - ignoring"
+	fi
+
 	if [ -n "$_ports" ]; then
 		for _p in $_ports ; do
 			_port_args="-e $_p $_port_args"

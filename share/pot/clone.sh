@@ -36,7 +36,10 @@ _cj_undo_clone()
 	if [ -z "$_cleanup_pname" ]; then
 		${EXIT} 1
 	fi
-	pot-cmd stop "$_cleanup_pname"
+	# stop in subshell, so it won't end script execution
+	(
+		pot-cmd stop "$_cleanup_pname" >/dev/null 2>&1
+	)
 	if [ "$_cleanup_keep" != "YES" ]; then
 		pot-cmd destroy -Fp "$_cleanup_pname" -q
 	fi

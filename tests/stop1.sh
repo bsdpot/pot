@@ -2,6 +2,10 @@
 
 # system utilities stubs
 
+lockf()
+{
+	return 0
+}
 # UUT
 . ../share/pot/stop.sh
 
@@ -75,6 +79,45 @@ test_pot_stop_020()
 	assertEquals "Help calls" "0" "$HELP_CALLS"
 	assertEquals "Error calls" "0" "$ERROR_CALLS"
 	assertEquals "Stop calls" "1" "$STOPPED_CALLS"
+	assertEquals "stop args" "test-pot" "$STOPPED_CALL1_ARG1"
+	assertEquals "stop args" "NO" "$STOPPED_CALL1_ARG2"
+	assertEquals "stop args" "" "$STOPPED_CALL1_ARG3"
+}
+
+test_pot_stop_021()
+{
+	pot-stop -p test-pot
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "Stop calls" "1" "$STOPPED_CALLS"
+	assertEquals "stop args" "test-pot" "$STOPPED_CALL1_ARG1"
+	assertEquals "stop args" "NO" "$STOPPED_CALL1_ARG2"
+	assertEquals "stop args" "" "$STOPPED_CALL1_ARG3"
+}
+
+test_pot_stop_022()
+{
+	pot-stop -p test-pot -s
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "Stop calls" "1" "$STOPPED_CALLS"
+	assertEquals "stop args" "test-pot" "$STOPPED_CALL1_ARG1"
+	assertEquals "stop args" "YES" "$STOPPED_CALL1_ARG2"
+	assertEquals "stop args" "" "$STOPPED_CALL1_ARG3"
+}
+
+test_pot_stop_023()
+{
+	pot-stop -p test-pot -s -i epair4a
+	assertEquals "Exit rc" "0" "$?"
+	assertEquals "Help calls" "0" "$HELP_CALLS"
+	assertEquals "Error calls" "0" "$ERROR_CALLS"
+	assertEquals "Stop calls" "1" "$STOPPED_CALLS"
+	assertEquals "stop args" "test-pot" "$STOPPED_CALL1_ARG1"
+	assertEquals "stop args" "YES" "$STOPPED_CALL1_ARG2"
+	assertEquals "stop args" "epair4a" "$STOPPED_CALL1_ARG3"
 }
 
 setUp()

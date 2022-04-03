@@ -24,19 +24,17 @@ start-help()
 # $2 the network interface, if created
 start-cleanup()
 {
-	local _pname
+	local _pname _iface
 	_pname=$1
+	_iface=${2}a
 	if [ -z "$_pname" ]; then
 		return
 	fi
-	if [ -n "$2" ] && _is_valid_netif "${2}a" ; then
-		sleep 1 # try to avoid a race condition in the epair driver,
-			# potentially causing a kernel panic, which should
-			# be fixed in FreeBSD 13.1:
-			# https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
-		ifconfig "${2}a" destroy
+	if [ -n "$_iface" ] && _is_valid_netif "$_iface" ; then
+		pot-cmd stop -p "$_pname" -i "$_iface" -s
+	else
+		pot-cmd stop -p "$_pname" -s
 	fi
-	pot-cmd stop "$_pname"
 }
 
 # $1 pot name
@@ -558,7 +556,6 @@ _js_start()
 		)
 	fi
 
-	rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
 	rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 
 	_info "Starting the pot $_pname"
@@ -595,6 +592,17 @@ _js_start()
 	if [ "$_persist" = "NO" ]; then
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
+	# Here is where the pot is started
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s started
+	rc=$?
+	if [ $rc -eq 2 ]; then
+		_info "pot $_pname is already started (???)"
+	fi
+	if [ $rc -eq 1 ]; then
+		# should we retry (in case it's stopping?)
+		_error "pot $_pname is not in a state where it can be started"
+		# not returning, it could be catastrophic, but the situation is quite messed up
+	fi
 
 	wait "$_wait_pid"
 	_exit_code=$?
@@ -604,21 +612,39 @@ _js_start()
 	if [ "$_persist" = "NO" ]; then
 		rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 		# non-persistent jails always need to die
-		if [ ! -e "${POT_TMP:-/tmp}/pot_stopped_${_pname}" ]; then
-			start-cleanup "$_pname" "${_iface}"
+		# Here is where the pot is stopping
+		lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+		rc=$?
+		if [ $rc -eq 2 ]; then
+			_debug "pot $_pname is already stopping (maybe by a pot stop)"
+			return 0
 		fi
-		rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
-
+		if [ $rc -eq 1 ]; then
+			# should we retry (in case it's stopping?)
+			_error "pot $_pname is not in a state where it can be stopped"
+			# returning, but the situation is quite messed up
+			return 1
+		fi
+		start-cleanup "$_pname" "${_iface}"
 		if [ "$_exit_code" -ne 0 ]; then
 			# return code to signal application exit error
 			return 125
 		fi
 	elif ! _is_pot_running "$_pname" ; then
 		# persistent jail didn't come up, this is an error
-		if [ ! -e "${POT_TMP:-/tmp}/pot_stopped_${_pname}" ]; then
-			start-cleanup "$_pname" "${_iface}"
+		lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+		rc=$?
+		if [ $rc -eq 2 ]; then
+			_debug "pot $_pname is already stopping (maybe by a pot stop?)"
+			return 0
 		fi
-		rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
+		if [ $rc -eq 1 ]; then
+			# should we retry (in case it's stopping?)
+			_error "pot $_pname is not in a state where it can be stopped"
+			# returning, but the situation is quite messed up
+			return 1
+		fi
+		start-cleanup "$_pname" "${_iface}"
 		return 1
 	fi
 }
@@ -696,11 +722,24 @@ pot-start()
 	if ! _is_uid0 ; then
 		return 1
 	fi
-
 	if ! _is_pot_tmp_dir ; then
 		_error "failed to create the POT_TMP directory"
 		return 1
 	fi
+
+	# Here is where the command start
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s starting
+	rc=$?
+	if [ $rc -eq 2 ]; then
+		_error "pot $_pname is already starting"
+		return 1
+	fi
+	if [ $rc -eq 1 ]; then
+		# should we retry (in case it's stopping?)
+		_error "pot $_pname is not in a state where it can start"
+		return 1
+	fi
+
 	if ! _js_dep "$_pname" ; then
 		_error "dependecy failed to start"
 	fi

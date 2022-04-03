@@ -27,7 +27,7 @@ pot-set-status()
 		case "$_o" in
 		h)
 			set-status-help
-			${EXIT} 0
+			return 0
 			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
@@ -45,47 +45,48 @@ pot-set-status()
 			;;
 		*)
 			set-status-help
-			${EXIT} 1
+			return 1
 			;;
 		esac
 	done
 	if [ -z "$_pname" ]; then
 		_error "A pot name is mandatory"
 		set-status-help
-		${EXIT} 1
+		return 1
 	fi
 	if ! _is_pot "$_pname"; then
 		_error "$_pname is not a pot"
-		${EXIT} 1
+		return 1
 	fi
 
 	_current_status=$(_get_conf_var "$_pname" "pot.status")
 	# if current status is equal to new status, it means that some other pot command is
 	# taking care of the execution of the transition and an exit code 2 is returned
 	if [ "$_current_status" = "$_new_status" ]; then
-		${EXIT} 2
+		return 2
 	fi
 	# new status can only be accepted from a specific current status
 	# any other case, the command return an exit code 1
 	case "$_new_status" in
 		"starting")
-			if [ "$_current_status" != "stopped" ]; then
-				${EXIT} 1
+			if [ -n "$_current_status" ] && [ "$_current_status" != "stopped" ]; then
+				return 1
 			fi
 			;;
 		"started")
 			if [ "$_current_status" != "starting" ]; then
-				${EXIT} 1
+				return 1
 			fi
 			;;
 		"stopping")
-			if [ "$_current_status" != "started" ]; then
-				${EXIT} 1
+			# you can always stop a stopped pot (for cleanup reasons)
+			if [ "$_current_status" != "started" ] && [ "$_current_status" != "stopped" ]; then
+				return 1
 			fi
 			;;
 		"stopped")
 			if [ "$_current_status" != "stopping" ]; then
-				${EXIT} 1
+				return 1
 			fi
 			;;
 	esac

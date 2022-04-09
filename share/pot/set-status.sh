@@ -13,7 +13,7 @@ set-status-help()
 	  -h print this help
 	  -v verbose
 	  -p pname : pot name
-	  -s status : he status [starting started stopping stopped]
+	  -s status : the status [starting started stopping stopped]
 	EOH
 }
 

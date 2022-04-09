@@ -5,12 +5,16 @@
 stop-help()
 {
 	cat <<-"EOH"
-	pot stop [-hv] -p potname [pname]
+	pot stop [-hv] [-p] potname
 	  -h print this help
 	  -v verbose
+	  -i interace : network interface (INTERNAL USE ONLY)
 	  -p potname : the pot to be stopped
+	     the -p can be omitted and the last argument will be interpreted as the potname
 
-	  pname : the pot to be stopped if "-p potname" not given
+	  The option -i is intended to be used only by internal cleanup functions
+	  that knows in advance what interface pot is/was using.
+	  Usually, -i is NOT needed and it SHOULDN'T be used by users
 	EOH
 }
 

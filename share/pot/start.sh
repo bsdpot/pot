@@ -592,7 +592,7 @@ _js_start()
 	if [ "$_persist" = "NO" ]; then
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
-	# Here is where the pot is started
+	# Here is where the pot is makred as started
 	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s started
 	rc=$?
 	if [ $rc -eq 2 ]; then

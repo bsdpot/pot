@@ -592,13 +592,12 @@ _js_start()
 	if [ "$_persist" = "NO" ]; then
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
-	# Here is where the pot is makred as started
+	# Here is where the pot is marked as started
 	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s started
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_info "pot $_pname is already started (???)"
-	fi
-	if [ $rc -eq 1 ]; then
+	elif [ $rc -eq 1 ]; then
 		# should we retry (in case it's stopping?)
 		_error "pot $_pname is not in a state where it can be started"
 		# not returning, it could be catastrophic, but the situation is quite messed up

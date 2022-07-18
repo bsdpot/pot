@@ -617,8 +617,7 @@ _js_start()
 		if [ $rc -eq 2 ]; then
 			_debug "pot $_pname is already stopping (maybe by a pot stop)"
 			return 0
-		fi
-		if [ $rc -eq 1 ]; then
+		elif [ $rc -eq 1 ]; then
 			# should we retry (in case it's stopping?)
 			_error "pot $_pname is not in a state where it can be stopped"
 			# returning, but the situation is quite messed up

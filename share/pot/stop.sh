@@ -5,10 +5,10 @@
 stop-help()
 {
 	cat <<-"EOH"
-	pot stop [-hv] [-p] potname
+	pot stop [-hv] -p potname | potname
 	  -h print this help
 	  -v verbose
-	  -i interace : network interface (INTERNAL USE ONLY)
+	  -i interface : network interface (INTERNAL USE ONLY)
 	  -p potname : the pot to be stopped
 	     the -p can be omitted and the last argument will be interpreted as the potname
 

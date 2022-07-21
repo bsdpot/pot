@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - ifconfig: label and group interfaces created by pot (#206)
 - clone: add dns option, to customize DNS configuration while cloning (#199)
 - prepare: add -d option to change dns configuration during clone (#192)
+- signal: send signals to processes running inside a pot (#216)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)

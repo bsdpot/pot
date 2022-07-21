@@ -559,6 +559,7 @@ _js_start()
 	fi
 
 	rm -f "${POT_TMP:-/tmp}/pot_stopped_${_pname}"
+	rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 
 	_info "Starting the pot $_pname"
 	# shellcheck disable=SC2086
@@ -591,12 +592,17 @@ _js_start()
 	sleep 0.5
 	pkill -f -j "$_pname" "^sleep 1234$"
 
+        if [ "$_persist" = "NO" ]; then
+		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
+	fi
+
 	wait "$_wait_pid"
 	_exit_code=$?
 
 	echo "{ \"ExitCode\": $_exit_code }" > "$_confdir/.last_run_stats"
 
 	if [ "$_persist" = "NO" ]; then
+		rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 		# non-persistent jails always need to die
 		if [ ! -e "${POT_TMP:-/tmp}/pot_stopped_${_pname}" ]; then
 			start-cleanup "$_pname" "${_iface}"

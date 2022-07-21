@@ -138,6 +138,7 @@ usage() {
 	    prepare -- Import and prepare a pot, used by orchestrators
 	    update-config -- Update the configuration of a pot
 	    last-run-stats -- Get statistics about a pot's last run
+	    signal -- Send signal to pot
 	EOF
 }
 
@@ -193,7 +194,7 @@ case "${CMD}" in
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert|purge-snapshots|update-config|\
-	last-run-stats)
+	last-run-stats|signal)
 		pot-cmd "${CMD}" "$@"
 		exit $?
 		;;

@@ -725,7 +725,7 @@ pot-start()
 		return 1
 	fi
 
-	# Here is where the command start
+	# Here is where the pot is starting
 	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s starting
 	rc=$?
 	if [ $rc -eq 2 ]; then

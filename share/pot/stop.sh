@@ -9,6 +9,7 @@ stop-help()
 	  -h print this help
 	  -v verbose
 	  -i interface : network interface (INTERNAL USE ONLY)
+	  -s called from start (INTERNAL USE ONLY)
 	  -p potname : the pot to be stopped
 	     the -p can be omitted and the last argument will be interpreted as the potname
 

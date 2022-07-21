@@ -41,8 +41,9 @@ _js_stop()
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
-		if _is_pot_vnet "$_pname" && [ -z "$_epair" ]; then
+		if _is_pot_vnet "$_pname" && [ -z "$_epair" ] && [ "$_from_start" = "YES" ]; then
 			_epair=$(jexec "$_pname" ifconfig | grep ^epair | cut -d':' -f1)
+			_epair="${_epair%b}a"
 		fi
 
 		if [ -x "$_pdir/conf/prestop.sh" ]; then
@@ -58,12 +59,12 @@ _js_stop()
 	fi
 	# those are clean up operations for a pot already stopped
 	if [ -n "$_epair" ]; then
-		_debug "Remove ${_epair%b}[a|b] network interfaces"
+		_debug "Remove ${_epair%a}[a|b] network interfaces"
 		sleep 1 # try to avoid a race condition in the epair driver,
 				# potentially causing a kernel panic, which should
 				# be fixed in FreeBSD 13.1:
 				# https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
-		ifconfig "${_epair%b}"a destroy
+		ifconfig "${_epair}" destroy
 	elif [ "$_network_type" = "alias" ]; then
 		_ip=$( _get_ip_var "$_pname" )
 		_debug "Remove $_ip aliases"

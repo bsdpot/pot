@@ -592,7 +592,7 @@ _js_start()
 	sleep 0.5
 	pkill -f -j "$_pname" "^sleep 1234$"
 
-        if [ "$_persist" = "NO" ]; then
+	if [ "$_persist" = "NO" ]; then
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
 

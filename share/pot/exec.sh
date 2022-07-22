@@ -23,9 +23,57 @@ exec-help()
 	EOH
 }
 
+# Actually send signal to process inside pot
+# $1 pot name
+# $2 detach
+# $3 env (encoded with save_params)
+# $4 alloc_pty
+# $5 user_host
+# $6 user_pot
+# $7-$n command/args
+_exec_cmd()
+{
+	local _pname _detach _env _alloc_pty _user_host _user_pot
+	local _cmd
+
+	_pname=$1; shift
+	_detach=$1; shift
+	_env=$1; shift
+	_alloc_pty=$1; shift
+	_user_host=$1; shift
+	_user_pot=$1; shift
+
+	_debug "Exec in $_pname, cmd: $*"
+
+	# assemble command
+	_cmd=
+	if [ "$_alloc_pty" = "YES" ]; then
+		_cmd="$_cmd"$(_save_params "script" "-q" "/dev/null")
+	fi
+	_cmd="$_cmd"$(_save_params "jexec" "-l")
+	if [ -n "$_user_host" ]; then
+		_cmd="$_cmd"$(_save_params "-u" "$_user_host")
+	elif [ -n "$_user_pot" ]; then
+		_cmd="$_cmd"$(_save_params "-U" "$_user_pot")
+	fi
+	_cmd="$_cmd"$(_save_params "$_pname")
+	_cmd="$_cmd$_env"$(_save_params "$@")
+
+	# execute command
+	eval "set -- $_cmd"
+	if [ "$_detach" = "YES" ]; then
+		nohup "$@" >/dev/null 2>&1 &
+	else
+		"$@"
+	fi
+	_ret=$?
+
+	return $_ret
+}
+
 pot-exec()
 {
-	local _pname _detach _env _alloc_pty _cmd _user_host _user_pot _ret
+	local _pname _detach _env _alloc_pty _user_host _user_pot _ret
 	_pname=
 	_detach="NO"
 	_env=$(_save_params "env")
@@ -77,8 +125,7 @@ pot-exec()
 	shift $((OPTIND-1))
 
 	if [ "$#" -eq 0 ]; then
-		_error "COMMAND is mandatory"
-		exec-help
+		_error "A command is mandatory"
 		${EXIT} 1
 	fi
 
@@ -98,29 +145,6 @@ pot-exec()
 		${EXIT} 1
 	fi
 
-	_debug "Exec in $_pname, cmd: '$*'"
-	# assemble command
-	_cmd=
-	if [ "$_alloc_pty" = "YES" ]; then
-		_cmd="$_cmd"$(_save_params "script" "-q" "/dev/null")
-	fi
-	_cmd="$_cmd"$(_save_params "jexec" "-l")
-	if [ -n "$_user_host" ]; then
-		_cmd="$_cmd"$(_save_params "-u" "$_user_host")
-	elif [ -n "$_user_pot" ]; then
-		_cmd="$_cmd"$(_save_params "-U" "$_user_pot")
-	fi
-	_cmd="$_cmd"$(_save_params "$_pname")
-	_cmd="$_cmd$_env"$(_save_params "$@")
-
-	# execute command
-	eval "set -- $_cmd"
-	if [ "$_detach" = "YES" ]; then
-		nohup "$@" >/dev/null 2>&1 &
-	else
-		"$@"
-	fi
-	_ret=$?
-
-	return $_ret
+	_exec_cmd "$_pname" "$_detach" "$_env" \
+	  "$_alloc_pty" "$_user_host" "$_user_pot" "$@"
 }

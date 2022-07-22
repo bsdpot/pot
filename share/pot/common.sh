@@ -144,6 +144,15 @@ _is_absolute_path()
 	fi
 }
 
+# save encoded parameters suitable for use in `set --`
+_save_params () {
+	for i; do
+		printf %s\\n "$i" |\
+		sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/"
+	done
+	echo " "
+}
+
 # validate some values of the configuration files
 # $1 quiet / no _error messages are emitted
 _conf_check()

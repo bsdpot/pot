@@ -17,6 +17,33 @@ set-status-help()
 	EOH
 }
 
+# $1 pot name
+_get_status()
+{
+	local _pname _status_file
+	_pname="$1"
+	_status_file="${POT_TMP:-/tmp}/pot_status_${_pname}"
+
+	if [ ! -e "$_status_file" ]; then
+		return
+	fi
+	_value="$(grep "^pot.status=" "$_status_file" | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo "$_value"
+}
+
+# $1 pot name
+# $2 new status
+_set_status()
+{
+	local _pname _status_file _new_status
+	_pname="$1"
+	_new_statu="$2"
+	_status_file="${POT_TMP:-/tmp}/pot_status_${_pname}"
+
+	${SED} -i '' -e "/^pot.status=.*/d" "$_status_file"
+	echo "pot.status=$_new_status" >> "$_status_file"
+}
+
 pot-set-status()
 {
 	local _pname _new_status _current_status _conf
@@ -59,7 +86,7 @@ pot-set-status()
 		return 1
 	fi
 
-	_current_status=$(_get_conf_var "$_pname" "pot.status")
+	_current_status=$(_get_status "$_pname")
 	# if current status is equal to new status, it means that some other pot command is
 	# taking care of the execution of the transition and an exit code 2 is returned
 	if [ "$_current_status" = "$_new_status" ]; then
@@ -90,8 +117,5 @@ pot-set-status()
 			fi
 			;;
 	esac
-	_conf="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-
-	${SED} -i '' -e "/^pot.status=.*/d" "$_conf"
-	echo "pot.status=$_new_status" >> "$_conf"
+	_set_status "$_pname" "$_new_status"
 }

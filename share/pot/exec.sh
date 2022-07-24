@@ -36,12 +36,13 @@ _exec_cmd()
 	local _pname _detach _env _alloc_pty _user_host _user_pot
 	local _cmd
 
-	_pname=$1; shift
-	_detach=$1; shift
-	_env=$1; shift
-	_alloc_pty=$1; shift
-	_user_host=$1; shift
-	_user_pot=$1; shift
+	_pname=$1
+	_detach=$2
+	_env=$3
+	_alloc_pty=$4
+	_user_host=$5
+	_user_pot=$6
+	shift 6  # $@ contains command/args now
 
 	_debug "Exec in $_pname, cmd: $*"
 
@@ -142,6 +143,10 @@ pot-exec()
 
 	if ! _is_pot_running "$_pname" ; then
 		_error "The pot is not running"
+		${EXIT} 1
+	fi
+
+	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 

@@ -87,6 +87,7 @@ _rn_zfs()
 		fi
 		_debug "Renaming $_dset in $_nset"
 		zfs rename "$_dset" "$_nset"
+		_create_pot_mountpoint "${POT_FS_ROOT}/jails/$_newname/m"
 		_debug "Mount $_nset"
 		zfs mount "$_nset"
 		if _zfs_dataset_valid "$_nset/m" ; then

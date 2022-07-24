@@ -82,11 +82,6 @@ pot-init()
 			zfs create -o mountpoint="${POT_CACHE}" -o compression=off "${POT_ZFS_ROOT}/cache"
 		fi
 	fi
-
-	# set strict file system permissions where necessary
-	chown root:wheel "${POT_FS_ROOT}/jails"
-	chmod 0700 "${POT_FS_ROOT}/jails"
-
 	# create the bridges folder
 	mkdir -p "${POT_FS_ROOT}/bridges"
 	# create mandatory directories for logs

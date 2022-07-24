@@ -932,6 +932,32 @@ _get_pot_snaps()
 	done
 }
 
+# $1 mountpoint to adjust permissions for
+_fix_pot_mountpoint_permissions()
+{
+	local _mp
+	_mp="$1"
+
+	if [ "$(stat -f "%Lp" "${_mp}")" -ne "700" ]; then
+		_debug "Setting mountpoint permission for $_mp"
+		chmod 700 "$_mp" || exit 1
+	fi
+}
+
+# $1 mountpoint to create (proper permissions are applied)
+_create_pot_mountpoint()
+{
+	local _mp
+	_mp="$1"
+
+	if [ ! -d "$_mp" ]; then
+		_debug "Creating mountpoint $_mp"
+		mkdir -p "$_mp" || exit 1
+	fi
+
+	_fix_pot_mountpoint_permissions "$_mp"
+}
+
 # $1 pot name
 _pot_mount()
 {

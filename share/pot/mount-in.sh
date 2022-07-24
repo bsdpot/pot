@@ -64,6 +64,7 @@ _mountpoint_validation()
 	fi
 	# if the mountpoint doesn't exist, make it
 	if [ ! -d "$_mpdir/$_mnt_p" ]; then
+		_create_pot_mountpoint "$_mpdir"
 		if ! mkdir -p "$_mpdir/$_mnt_p" ; then
 			if eval $_mounted ; then
 				_pot_umount "$_pname" >/dev/null

@@ -201,5 +201,9 @@ pot-signal()
 		${EXIT} 1
 	fi
 
+	if ! _is_uid0 ; then
+		${EXIT} 1
+	fi
+
 	_send_signal "$_pname" "$_signal" "$_pid" "$_match" "$_force" "$_dry_run"
 }

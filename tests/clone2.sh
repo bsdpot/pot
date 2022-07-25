@@ -26,6 +26,11 @@ date()
 	fi
 }
 
+stat()
+{
+	echo 700
+}
+
 . pipefail-stub.sh
 
 # UUT

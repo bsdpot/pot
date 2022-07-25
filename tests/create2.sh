@@ -23,10 +23,22 @@ chmod()
 	if [ "$2" = "/tmp/jails/new-pot/m/tmp" ]; then
 		return 0 # true
 	fi
+	if [ "$2" = "/tmp/jails/new-pot/m" ]; then
+		return 0 # true
+	fi
 	if [ "$2" = "/tmp/jails/test-pot/m/tmp" ]; then
 		return 0 # true
 	fi
+	if [ "$2" = "/tmp/jails/test-pot/m" ]; then
+		return 0 # true
+	fi
 	/bin/chmod $@
+}
+
+stat()
+{
+	__monitor STAT "$@"
+	echo 700
 }
 
 . pipefail-stub.sh
@@ -79,6 +91,10 @@ test_cj_zfs_001()
 	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_002()
@@ -113,6 +129,10 @@ test_cj_zfs_002()
 	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_003()
@@ -147,6 +167,10 @@ test_cj_zfs_003()
 	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_004()
@@ -170,6 +194,10 @@ test_cj_zfs_004()
 	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/new-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_021()
@@ -181,6 +209,10 @@ test_cj_zfs_021()
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/test-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "info calls" "1" INFO_CALLS
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/test-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_022()
@@ -192,6 +224,10 @@ test_cj_zfs_022()
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/test-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "info calls" "3" INFO_CALLS
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/test-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_023()
@@ -203,6 +239,10 @@ test_cj_zfs_023()
 	assertEqualsMon "mkdir arg2" "${POT_FS_ROOT}/jails/test-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "info calls" "2" INFO_CALLS
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/test-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_041()
@@ -214,12 +254,17 @@ test_cj_zfs_041()
 	assertEqualsMon "zfs c1 arg2" "${POT_ZFS_ROOT}/jails/new-pot" ZFS_CALL1_ARG2
 	assertEqualsMon "zfs c2 arg1" "create" ZFS_CALL2_ARG1
 	assertEqualsMon "zfs c2 arg2" "${POT_ZFS_ROOT}/jails/new-pot/m" ZFS_CALL2_ARG2
-	assertEqualsMon "mkdir calls" "2" MKDIR_CALLS
-	assertEqualsMon "mkdir 1 arg2" "${POT_FS_ROOT}/jails/new-pot/m/tmp" MKDIR_CALL1_ARG2
-	assertEqualsMon "mkdir 2 arg2" "${POT_FS_ROOT}/jails/new-pot/m/dev" MKDIR_CALL2_ARG2
+	assertEqualsMon "mkdir calls" "3" MKDIR_CALLS
+	assertEqualsMon "mkdir 1 arg2" "${POT_FS_ROOT}/jails/new-pot/m" MKDIR_CALL1_ARG2
+	assertEqualsMon "mkdir 2 arg2" "${POT_FS_ROOT}/jails/new-pot/m/tmp" MKDIR_CALL2_ARG2
+	assertEqualsMon "mkdir 3 arg2" "${POT_FS_ROOT}/jails/new-pot/m/dev" MKDIR_CALL3_ARG2
 	assertEqualsMon "chmod calls" "1" CHMOD_CALLS
 	assertEqualsMon "chmod arg1" "1777" CHMOD_CALL1_ARG1
 	assertEqualsMon "chmod arg2" "${POT_FS_ROOT}/jails/new-pot/m/tmp" CHMOD_CALL1_ARG2
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_042()
@@ -229,12 +274,17 @@ test_cj_zfs_042()
 	assertEqualsMon "zfs calls" "1" ZFS_CALLS
 	assertEqualsMon "zfs arg1" "create" ZFS_CALL1_ARG1
 	assertEqualsMon "zfs arg2" "${POT_ZFS_ROOT}/jails/test-pot/m" ZFS_CALL1_ARG2
-	assertEqualsMon "mkdir calls" "2" MKDIR_CALLS
-	assertEqualsMon "mkdir 1 arg2" "${POT_FS_ROOT}/jails/test-pot/m/tmp" MKDIR_CALL1_ARG2
-	assertEqualsMon "mkdir 2 arg2" "${POT_FS_ROOT}/jails/test-pot/m/dev" MKDIR_CALL2_ARG2
+	assertEqualsMon "mkdir calls" "3" MKDIR_CALLS
+	assertEqualsMon "mkdir 1 arg2" "${POT_FS_ROOT}/jails/test-pot/m" MKDIR_CALL1_ARG2
+	assertEqualsMon "mkdir 2 arg2" "${POT_FS_ROOT}/jails/test-pot/m/tmp" MKDIR_CALL2_ARG2
+	assertEqualsMon "mkdir 3 arg2" "${POT_FS_ROOT}/jails/test-pot/m/dev" MKDIR_CALL3_ARG2
 	assertEqualsMon "chmod calls" "1" CHMOD_CALLS
 	assertEqualsMon "chmod arg1" "1777" CHMOD_CALL1_ARG1
 	assertEqualsMon "chmod arg2" "${POT_FS_ROOT}/jails/test-pot/m/tmp" CHMOD_CALL1_ARG2
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/test-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_043()
@@ -253,8 +303,13 @@ test_cj_zfs_043()
 	assertEqualsMon "zfs c3 arg5" "${POT_ZFS_ROOT}" ZFS_CALL3_ARG5
 	assertEqualsMon "zfs c4 arg1" "receive" ZFS_CALL4_ARG1
 	assertEqualsMon "zfs c4 arg2" "${POT_ZFS_ROOT}/jails/new-pot/m" ZFS_CALL4_ARG2
-	assertEqualsMon "mkdir calls" "0" MKDIR_CALLS
+	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
+	assertEqualsMon "mkdir 1 arg2" "${POT_FS_ROOT}/jails/new-pot/m" MKDIR_CALL1_ARG2
 	assertEqualsMon "chmod calls" "0" CHMOD_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 setUp()

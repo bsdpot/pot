@@ -938,7 +938,7 @@ _fix_pot_mountpoint_permissions()
 	local _mp
 	_mp="$1"
 
-	if [ "$(stat -f "%Lp" "${_mp}")" -ne "700" ]; then
+	if [ "$(stat -f "%Lp" "${_mp}")" != "700" ]; then
 		_debug "Setting mountpoint permission for $_mp"
 		chmod 700 "$_mp" || exit 1
 	fi

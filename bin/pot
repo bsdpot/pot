@@ -139,6 +139,7 @@ usage() {
 	    update-config -- Update the configuration of a pot
 	    last-run-stats -- Get statistics about a pot's last run
 	    signal -- Send signal to pot
+	    exec -- Execute a progam inside of a pot
 	EOF
 }
 
@@ -194,7 +195,7 @@ case "${CMD}" in
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert|purge-snapshots|update-config|\
-	last-run-stats|signal)
+	last-run-stats|signal|exec)
 		pot-cmd "${CMD}" "$@"
 		exit $?
 		;;

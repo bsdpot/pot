@@ -63,102 +63,102 @@ test_pot_destroy_001()
 {
 	pot-destroy
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 
 	setUp
 	pot-destroy -k bb
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 
 	setUp
 	pot-destroy -h
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 
 	setUp
 	pot-destroy -va
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_002()
 {
 	pot-destroy -p test-pot -b 11.1
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_003()
 {
 	pot-destroy -p test-no-pot
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_004()
 {
 	pot-destroy -p test-pot-0
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_005()
 {
 	pot-destroy -p test-pot-2 -f test-fscomp
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_006()
 {
 	pot-destroy -f test-fscomp -b 11.1
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_010()
@@ -166,12 +166,12 @@ test_pot_destroy_010()
 	# error - recursion is needed
 	pot-destroy -p test-pot
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_011()
@@ -179,94 +179,87 @@ test_pot_destroy_011()
 	# error - still running, force is needed
 	pot-destroy -p test-pot-run-2
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "1" "$POTDESTROY_CALLS"
-	assertEquals "_pot_zfs_destroy arg1" "test-pot-run-2" "$POTDESTROY_CALL1_ARG1"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "1" POTDESTROY_CALLS
+	assertEqualsMon "_pot_zfs_destroy arg1" "test-pot-run-2" POTDESTROY_CALL1_ARG1
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_020()
 {
 	pot-destroy -p test-pot -r
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "2" "$POTDESTROY_CALLS"
-	assertEquals "_pot_zfs_destroy arg1" "test-pot-2" "$POTDESTROY_CALL1_ARG1"
-	assertEquals "_pot_zfs_destroy arg2" "" "$POTDESTROY_CALL1_ARG2"
-	assertEquals "_pot_zfs_destroy arg1" "test-pot" "$POTDESTROY_CALL2_ARG1"
-	assertEquals "_pot_zfs_destroy arg2" "" "$POTDESTROY_CALL2_ARG2"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "2" POTDESTROY_CALLS
+	assertEqualsMon "_pot_zfs_destroy arg1" "test-pot-2" POTDESTROY_CALL1_ARG1
+	assertEqualsMon "_pot_zfs_destroy arg2" "" POTDESTROY_CALL1_ARG2
+	assertEqualsMon "_pot_zfs_destroy arg1" "test-pot" POTDESTROY_CALL2_ARG1
+	assertEqualsMon "_pot_zfs_destroy arg2" "" POTDESTROY_CALL2_ARG2
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_021()
 {
 	pot-destroy -p test-pot-run-2 -F
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "1" "$POTDESTROY_CALLS"
-	assertEquals "_pot_zfs_destroy arg1" "test-pot-run-2" "$POTDESTROY_CALL1_ARG1"
-	assertEquals "_pot_zfs_destroy arg2" "YES" "$POTDESTROY_CALL1_ARG2"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "1" POTDESTROY_CALLS
+	assertEqualsMon "_pot_zfs_destroy arg1" "test-pot-run-2" POTDESTROY_CALL1_ARG1
+	assertEqualsMon "_pot_zfs_destroy arg2" "YES" POTDESTROY_CALL1_ARG2
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_022()
 {
 	pot-destroy -p test-pot-2
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "1" "$POTDESTROY_CALLS"
-	assertEquals "_pot_zfs_destroy arg1" "test-pot-2" "$POTDESTROY_CALL1_ARG1"
-	assertEquals "_pot_zfs_destroy arg2" "" "$POTDESTROY_CALL1_ARG2"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "1" POTDESTROY_CALLS
+	assertEqualsMon "_pot_zfs_destroy arg1" "test-pot-2" POTDESTROY_CALL1_ARG1
+	assertEqualsMon "_pot_zfs_destroy arg2" "" POTDESTROY_CALL1_ARG2
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_060()
 {
 	pot-destroy -f test-no-fscomp
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "0" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy arg1" "" "$FSCOMPDESTROY_CALL1_ARG1"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "0" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy arg1" "" FSCOMPDESTROY_CALL1_ARG1
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 
 test_pot_destroy_061()
 {
 	pot-destroy -f test-fscomp
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "_pot_zfs_destroy calls" "0" "$POTDESTROY_CALLS"
-	assertEquals "_base_zfs_destroy calls" "0" "$BASEDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy calls" "1" "$FSCOMPDESTROY_CALLS"
-	assertEquals "_fscomp_zfs_destroy arg1" "test-fscomp" "$FSCOMPDESTROY_CALL1_ARG1"
-	assertEquals "_zfs_dataset_destroy calls" "0" "$ZFSDDESTROY_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_pot_zfs_destroy calls" "0" POTDESTROY_CALLS
+	assertEqualsMon "_base_zfs_destroy calls" "0" BASEDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy calls" "1" FSCOMPDESTROY_CALLS
+	assertEqualsMon "_fscomp_zfs_destroy arg1" "test-fscomp" FSCOMPDESTROY_CALL1_ARG1
+	assertEqualsMon "_zfs_dataset_destroy calls" "0" ZFSDDESTROY_CALLS
 }
 setUp()
 {
 	common_setUp
-	HELP_CALLS=0
-	ZFSDDESTROY_CALLS=0
-	POTDESTROY_CALLS=0
-	POTDESTROY_CALL1_ARG2=""
-	BASEDESTROY_CALLS=0
-	FSCOMPDESTROY_CALLS=0
-	ZFSDATASETVALID_CALLS=0
 }
 
 . shunit/shunit2

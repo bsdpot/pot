@@ -47,7 +47,6 @@ test_normalize_true_false_3()
 setUp()
 {
 	common_setUp
-	HELP_CALLS=0
 }
 
 . shunit/shunit2

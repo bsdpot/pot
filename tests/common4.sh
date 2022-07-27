@@ -64,9 +64,14 @@ test_is_init_020()
 
 setUp()
 {
+	__mon_init
 	POT_ZFS_ROOT=zpot
 	POT_FS_ROOT=/opt
-	QERR_CALLS=0
+}
+
+tearDown()
+{
+	__mon_tearDown
 }
 
 . shunit/shunit2

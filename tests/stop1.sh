@@ -40,48 +40,46 @@ test_pot_stop_001()
 {
 	pot-stop
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Stop calls" "0" "$STOPPED_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Stop calls" "0" STOPPED_CALLS
 
 	setUp
 	pot-stop -b bb
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Stop calls" "0" "$STOPPED_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Stop calls" "0" STOPPED_CALLS
 
 	setUp
 	pot-stop -h
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Stop calls" "0" "$STOPPED_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Stop calls" "0" STOPPED_CALLS
 }
 
 test_pot_stop_002()
 {
 	pot-stop non-existent-test-pot
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Stop calls" "0" "$STOPPED_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Stop calls" "0" STOPPED_CALLS
 }
 
 test_pot_stop_020()
 {
 	pot-stop test-pot
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "0" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Stop calls" "1" "$STOPPED_CALLS"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Stop calls" "1" STOPPED_CALLS
 }
 
 setUp()
 {
 	common_setUp
-	HELP_CALLS=0
-	STOPPED_CALLS=0
 }
 
 . shunit/shunit2

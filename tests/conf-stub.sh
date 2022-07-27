@@ -7,7 +7,7 @@ conf_setUp()
 
 	/bin/mkdir -p /tmp/jails/test-pot/conf
 	{
-		echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" 
+		echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro"
 		echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount"
 		echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount"
 	} > /tmp/jails/test-pot/conf/fscomp.conf
@@ -54,7 +54,7 @@ conf_setUp()
 		echo "host.hostname=\"test-pot-single-run.test\""
 		echo "pot.potbase="
 	} > /tmp/jails/test-pot-single-run/conf/pot.conf
-	
+
 	/bin/mkdir -p /tmp/jails/test-pot-vnet-ip4/conf
 	touch /tmp/jails/test-pot-vnet-ip4/conf/fscomp.conf
 	{
@@ -72,7 +72,6 @@ conf_setUp()
 		echo "vnet=true"
 		echo "pot.export.ports=80 443"
 	} > /tmp/jails/test-pot-vnet-ip4/conf/pot.conf
-	
 }
 
 conf_tearDown()

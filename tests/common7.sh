@@ -114,8 +114,14 @@ test_get_usable_hostname_004()
 
 setUp()
 {
+	__mon_init
 	__machine="amd64"
 	__arch="amd64"
+}
+
+tearDown()
+{
+	__mon_tearDown
 }
 
 . shunit/shunit2

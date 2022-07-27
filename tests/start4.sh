@@ -123,6 +123,7 @@ setUp()
 
 tearDown()
 {
+	common_tearDown
 	rm -rf /tmp/jails
 }
 . shunit/shunit2

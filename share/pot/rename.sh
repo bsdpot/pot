@@ -67,6 +67,7 @@ _rn_zfs()
 		zfs rename "$_dset" "$_nset"
 
 	#sudo zfs mount zroot/pot/jails/dns2
+		_create_pot_mountpoint "${POT_FS_ROOT}/jails/$_newname/m"
 		_debug "Mount $_nset"
 		zfs mount "$_nset"
 	#sudo zfs mount zroot/pot/jails/dns2/custom

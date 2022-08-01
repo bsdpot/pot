@@ -1,8 +1,14 @@
 #!/bin/sh
 
 if [ -z "$POT_MONITOR_TMP" ]; then
+	local p
+	if [ "$(uname)" = "Linux" ]; then
+		p=/dev/shm
+	else
+		p="${TMPDIR:-/tmp}"
+	fi
 	POT_MONITOR_TMP=$(command mktemp \
-	  "${TMPDIR:-/tmp}/pot-monitor.XXXXXX") || exit 1
+	  "${p}/pot-monitor.XXXXXX") || exit 1
 	export POT_MONITOR_TMP
 fi
 

@@ -26,7 +26,7 @@ stat()
 _zfs_dataset_valid()
 {
 	__monitor ZDVALID "$@"
-	case "$1" in 
+	case "$1" in
 		${POT_ZFS_ROOT}/jails/test-pot|\
 		${POT_ZFS_ROOT}/jails/test-pot/usr.local|\
 		${POT_ZFS_ROOT}/jails/test-pot/custom|\

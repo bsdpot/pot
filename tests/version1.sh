@@ -19,12 +19,12 @@ test_pot_version_001()
 {
 	pot-version -b bb
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
 
 	setUp
 	pot-version -h
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
 }
 
 test_pot_version_020()
@@ -51,7 +51,6 @@ test_pot_version_022()
 setUp()
 {
 	common_setUp
-	HELP_CALLS=0
 	_POT_VERSION="5.4.3"
 	_POT_VERBOSITY="1"
 

@@ -25,7 +25,7 @@ test_set_environment_000()
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
 
-	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=value"' "$(grep ^pot.env /tmp/jails/test-pot/conf/pot.conf)"
 }
 
@@ -37,7 +37,7 @@ test_set_environment_001()
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
 
-	assertEquals "pot.env lines" "2" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "2" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=value"' "$(grep "^pot.env=\"VAR=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR2=value2"' "$(grep "^pot.env=\"VAR2=" /tmp/jails/test-pot/conf/pot.conf)"
 }
@@ -48,7 +48,7 @@ test_set_environment_002()
 "VAR=value1 value2"
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
-	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=value1 value2"' "$(grep ^pot.env /tmp/jails/test-pot/conf/pot.conf)"
 }
 
@@ -59,7 +59,7 @@ test_set_environment_003()
 "VAR2=value3"
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
-	assertEquals "pot.env lines" "2" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "2" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=value1 value2"' "$(grep "^pot.env=\"VAR=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR2=value3"' "$(grep "^pot.env=\"VAR2=" /tmp/jails/test-pot/conf/pot.conf)"
 }
@@ -70,7 +70,7 @@ test_set_environment_004()
 "EMPTYVAR="
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
-	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="EMPTYVAR="' "$(grep ^pot.env /tmp/jails/test-pot/conf/pot.conf)"
 }
 
@@ -80,7 +80,7 @@ test_set_environment_005()
 "VAR=12*"
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
-	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=12*"' "$(grep ^pot.env /tmp/jails/test-pot/conf/pot.conf)"
 }
 
@@ -91,7 +91,7 @@ test_set_environment_006()
 "VAR2=?h* "
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
-	assertEquals "pot.env lines" "2" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "2" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=12*"' "$(grep "^pot.env=\"VAR=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR2=?h* "' "$(grep "^pot.env=\"VAR2=" /tmp/jails/test-pot/conf/pot.conf)"
 }
@@ -102,7 +102,7 @@ test_set_environment_007()
 "VAR=value1 \"value2\""
 EOF_SETENV
 	_set_environment test-pot /tmp/pot-set-env
-	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)" 
+	assertEquals "pot.env lines" "1" "$(grep -c "^pot.env=" /tmp/jails/test-pot/conf/pot.conf)"
 	assertEquals "pot.env args" 'pot.env="VAR=value1 \"value2\""' "$(grep "^pot.env=\"VAR=" /tmp/jails/test-pot/conf/pot.conf)"
 }
 

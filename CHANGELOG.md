@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - prune: add flag "-g" to delay pruning of pots that just stopped, so users have a chance to inspect last-run-stats (#200)
 - help: rework usage screens (#209)
 - prepare: enable attribute no-tmpfs and no-etc-hosts (#192)
+- tests: improved monitoring of tests, requires sysutils/flock on FreeBSD (#220)
 
 ### Fixed
 - start: correct invocation of prestart and poststart hooks (#200)

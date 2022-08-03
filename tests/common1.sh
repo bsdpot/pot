@@ -150,15 +150,15 @@ test_is_mounted()
 test_umount()
 {
 	_umount
-	assertEquals "0" "$UMOUNT_CALLS"
+	assertEqualsMon "umount calls1" "0" UMOUNT_CALLS
 
 	_umount /path/to/the/error
-	assertEquals "0" "$UMOUNT_CALLS"
+	assertEqualsMon "umount calls2" "0" UMOUNT_CALLS
 
 	_umount /opt/distfiles
-	assertEquals "1" "$UMOUNT_CALLS"
-	assertEquals "-f" "$UMOUNT_CALL1_ARG1"
-	assertEquals "/opt/distfiles" "$UMOUNT_CALL1_ARG2"
+	assertEqualsMon "umount calls3" "1" UMOUNT_CALLS
+	assertEqualsMon "umount c1 arg1" "-f" UMOUNT_CALL1_ARG1
+	assertEqualsMon "umount c1 arg2" "/opt/distfiles" UMOUNT_CALL1_ARG2
 }
 
 test_is_rctl_available()
@@ -200,12 +200,16 @@ test_is_absolute_path()
 
 setUp()
 {
+	__mon_init
 	_POT_VERBOSITY=1
-	UMOUNT_CALLS=0
 	SYSCTL_OUTPUT="1"
 	SYSCTL_RC=0
 	WHICH_POTNET_FAIL="NO"
-	FETCH_CALLS=0
+}
+
+tearDown()
+{
+	__mon_tearDown
 }
 
 . shunit/shunit2

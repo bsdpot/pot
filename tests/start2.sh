@@ -65,7 +65,7 @@ _get_pot_export_ports()
 test_js_export_ports_001()
 {
 	_js_export_ports test-pot80
-	assertEquals "pfctl calls" "1" "$PFCTL_CALLS"
+	assertEqualsMon "pfctl calls" "1" PFCTL_CALLS
 	assertEquals "pfrules lines" "1" "$( wc -l $MKTEMP_FILE | awk '{print $1}')"
 	assertEquals "rdr rule" "rdr pass on em2 proto tcp from any to (em2) port 3333 -> 1.2.3.4 port 80" "$(sed '1!d' $MKTEMP_FILE)"
 }
@@ -74,7 +74,7 @@ test_js_export_ports_001()
 test_js_export_ports_002()
 {
 	_js_export_ports test-pot80s3000
-	assertEquals "pfctl calls" "1" "$PFCTL_CALLS"
+	assertEqualsMon "pfctl calls" "1" PFCTL_CALLS
 	assertEquals "pfrules lines" "1" "$( wc -l $MKTEMP_FILE | awk '{print $1}')"
 	assertEquals "rdr rule" "rdr pass on em2 proto tcp from any to (em2) port 3000 -> 1.2.3.4 port 80" "$(sed '1!d' $MKTEMP_FILE)"
 }
@@ -82,7 +82,7 @@ test_js_export_ports_002()
 test_js_export_ports_003()
 {
 	_js_export_ports test-pot80433
-	assertEquals "pfctl calls" "1" "$PFCTL_CALLS"
+	assertEqualsMon "pfctl calls" "1" PFCTL_CALLS
 	assertEquals "pfrules lines" "2" "$( wc -l $MKTEMP_FILE | awk '{print $1}')"
 	assertEquals "rdr rule" "rdr pass on em2 proto tcp from any to (em2) port 3333 -> 1.2.3.4 port 80" "$(sed '1!d' $MKTEMP_FILE)"
 	assertEquals "rdr rule" "rdr pass on em2 proto tcp from any to (em2) port 3000 -> 1.2.3.4 port 433" "$(sed '2!d' $MKTEMP_FILE)"
@@ -91,7 +91,7 @@ test_js_export_ports_003()
 test_js_export_ports_004()
 {
 	_js_export_ports test-pot53udp80433tcp
-	assertEquals "pfctl calls" "1" "$PFCTL_CALLS"
+	assertEqualsMon "pfctl calls" "1" PFCTL_CALLS
 	assertEquals "pfrules lines" "3" "$( wc -l $MKTEMP_FILE | awk '{print $1}')"
 	assertEquals "rdr rule" "rdr pass on em2 proto udp from any to (em2) port 53 -> 1.2.3.4 port 53" "$(sed '1!d' $MKTEMP_FILE)"
 	assertEquals "rdr rule" "rdr pass on em2 proto tcp from any to (em2) port 3333 -> 1.2.3.4 port 80" "$(sed '2!d' $MKTEMP_FILE)"
@@ -100,10 +100,6 @@ test_js_export_ports_004()
 setUp()
 {
 	common_setUp
-	PFCTL_CALLS=0
-	GETEXPORTPORTS_CALLS=0
-	RNDPORT_CALLS=0
-
 	POT_FS_ROOT=/tmp
 	POT_ZFS_ROOT=zpot
 	POT_EXTIF="em2"
@@ -111,6 +107,7 @@ setUp()
 
 tearDown()
 {
+	common_tearDown
 	/bin/rm -f $MKTEMP_FILE
 }
 . shunit/shunit2

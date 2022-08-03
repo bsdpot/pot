@@ -81,7 +81,13 @@ test_is_flavour_001()
 
 setUp()
 {
+	__mon_init
 	_POT_VERBOSITY=1
+}
+
+tearDown()
+{
+	__mon_tearDown
 }
 
 . shunit/shunit2

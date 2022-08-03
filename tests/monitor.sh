@@ -1,8 +1,14 @@
 #!/bin/sh
+# shellcheck disable=SC3043
 
 if [ -z "$POT_MONITOR_TMP" ]; then
-	POT_MONITOR_TMP=$(command mktemp \
-	  "${TMPDIR:-/tmp}/pot-monitor.XXXXXX") || exit 1
+	if [ "$(command uname)" = "Linux" ]; then
+		POT_MONITOR_TMP=/dev/shm
+	else
+		POT_MONITOR_TMP="${TMPDIR:-/tmp}"
+	fi
+	POT_MONITOR_TMP=$(command mktemp -d \
+	  "${POT_MONITOR_TMP}/pot-monitor.XXXXXX") || exit 1
 	export POT_MONITOR_TMP
 fi
 
@@ -12,7 +18,7 @@ __mon_put()
 	k="$1"
 	shift
 	v="$*"
-	echo "$k:$(echo "$v" | openssl base64 -A)" >>"$POT_MONITOR_TMP"
+	printf %s "$v" >"$POT_MONITOR_TMP/$k"
 }
 
 __mon_get()
@@ -21,8 +27,9 @@ __mon_get()
 	k="$1"
 	d="$2"
 
-	r="$(grep "^$k:" "$POT_MONITOR_TMP" | tail -n1 | \
-		cut -d : -f 2 | openssl base64 -d)"
+	if [ -e "$POT_MONITOR_TMP/$k" ]; then
+		r=$(command cat "$POT_MONITOR_TMP/$k")
+	fi
 
 	if [ -n "$r" ]; then
 		echo "$r"
@@ -33,20 +40,18 @@ __mon_get()
 
 __mon_export()
 {
-	local k v line
+	local k v
 
-	while read -r line ; do
-		k="$(echo "$line" | cut -d : -f 1)"
-		v="$(echo "$line" | cut -d : -f 2)"
-		if [ -n "$k" ]; then
-			export "$k"="$(echo "$v" | openssl base64 -d)"
-		fi
-	done < "$POT_MONITOR_TMP"
+	for k in "$POT_MONITOR_TMP"/*; do
+		v=$(command cat "$k")
+		export "$k"="$v"
+	done
 }
 
 __mon_init()
 {
-	: >"$POT_MONITOR_TMP" || exit 1
+	command mkdir -p "$POT_MONITOR_TMP" || exit 1
+	command rm -f "$POT_MONITOR_TMP"/* || exit 1
 }
 
 __monitor_int()
@@ -77,7 +82,7 @@ __monitor()
 __mon_tearDown()
 {
 	if [ -e "$POT_MONITOR_TMP" ]; then
-		command rm "$POT_MONITOR_TMP"
+		command rm -rf "$POT_MONITOR_TMP"
 	fi
 	if [ -e "$POT_MONITOR_TMP.lock" ]; then
 		command rm "$POT_MONITOR_TMP.lock"

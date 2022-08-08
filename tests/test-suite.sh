@@ -15,6 +15,15 @@ else
 	echo
 fi
 
+if ! command -v flock >/dev/null; then
+	echo "flock not found." 1>&2
+	if [ "$(uname)" = "FreeBSD" ]; then
+		echo "Consider installing sysutils/flock" 1>&2
+		echo "(pkg install flock)" 1>&2
+	fi
+	exit 1
+fi
+
 suites=$(ls ./*.sh)
 rc=0
 for s in $suites ; do

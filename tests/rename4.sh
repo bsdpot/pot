@@ -47,6 +47,7 @@ setUp()
 
 tearDown()
 {
+	common_tearDown
 	conf_tearDown
 }
 

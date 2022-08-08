@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - clone: add dns option, to customize DNS configuration while cloning (#199)
 - prepare: add -d option to change dns configuration during clone (#192)
 - signal: send signals to processes running inside a pot (#216)
+- exec: command to execute programs inside a running pot (#217)
 
 ### Changed
 - Stop logging trivial commands like get-rss to syslog by default (#190)
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - prune: add flag "-g" to delay pruning of pots that just stopped, so users have a chance to inspect last-run-stats (#200)
 - help: rework usage screens (#209)
 - prepare: enable attribute no-tmpfs and no-etc-hosts (#192)
+- tests: improved monitoring of tests, requires sysutils/flock on FreeBSD (#220)
 
 ### Fixed
 - start: correct invocation of prestart and poststart hooks (#200)

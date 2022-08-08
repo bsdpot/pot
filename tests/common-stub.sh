@@ -300,7 +300,7 @@ _is_valid_release()
 	   *)
 		   return 1 # false
 		   ;;
-   esac
+	esac
 }
 
 _is_valid_netif()
@@ -351,23 +351,18 @@ _get_bridge_var()
 
 common_setUp()
 {
+	__mon_init
 	_POT_VERBOSITY=1
 	POT_DNS_NAME=dns
-	ERROR_CALLS=0
-	INFO_CALLS=0
-	DEBUG_CALLS=0
-	ISUID0_CALLS=0
-	ISPOT_CALLS=0
-	ISPOTRUN_CALLS=0
-	ISBASE_CALLS=0
-	ISFSCOMP_CALLS=0
-	GETCONFVAR_CALLS=0
-	GETPOTBASE_CALLS=0
-	ZFSEXIST_CALLS=0
-	POTZFSSNAP_CALLS=0
-	RMVPOTSNAP_CALLS=0
-	POTZFSSNAPFULL_CALLS=0
-	FSCOMPZFSSNAP_CALLS=0
-	RMVFSCOMPSNAP_CALLS=0
-	GETBRIDGEVAR_CALLS=0
+}
+
+common_tearDown()
+{
+	__mon_tearDown
+}
+
+# can be overridden by tests
+tearDown()
+{
+	common_tearDown
 }

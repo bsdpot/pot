@@ -6,6 +6,17 @@ zfs()
 	__monitor ZFS "$@"
 }
 
+mkdir()
+{
+	__monitor MKDIR "$@"
+}
+
+stat()
+{
+	__monitor STAT "$@"
+	echo 700
+}
+
 # UUT
 . ../share/pot/rename.sh
 
@@ -62,6 +73,11 @@ test_rn_zfs_001()
 	assertEqualsMon "zfs c8 arg2" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL8_ARG2
 	assertEqualsMon "zfs c9 arg1" "mount" ZFS_CALL9_ARG1
 	assertEqualsMon "zfs c9 arg2" "${POT_ZFS_ROOT}/jails/new-pot/usr.local" ZFS_CALL9_ARG2
+	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_rn_zfs_002()
@@ -85,6 +101,11 @@ test_rn_zfs_002()
 	assertEqualsMon "zfs c5 arg2" "${POT_ZFS_ROOT}/jails/new-pot-2" ZFS_CALL5_ARG2
 	assertEqualsMon "zfs c6 arg1" "mount" ZFS_CALL6_ARG1
 	assertEqualsMon "zfs c6 arg2" "${POT_ZFS_ROOT}/jails/new-pot-2/custom" ZFS_CALL6_ARG2
+	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot-2/m" STAT_CALL1_ARG3
 }
 
 test_rn_zfs_003()
@@ -108,6 +129,12 @@ test_rn_zfs_003()
 	assertEqualsMon "zfs c5 arg2" "${POT_ZFS_ROOT}/jails/new-pot-single" ZFS_CALL5_ARG2
 	assertEqualsMon "zfs c6 arg1" "mount" ZFS_CALL6_ARG1
 	assertEqualsMon "zfs c6 arg2" "${POT_ZFS_ROOT}/jails/new-pot-single/m" ZFS_CALL6_ARG2
+	assertEqualsMon "mkdir calls" "1" MKDIR_CALLS
+	assertEqualsMon "mkdir 1 arg2" "${POT_FS_ROOT}/jails/new-pot-single/m" MKDIR_CALL1_ARG2
+	assertEqualsMon "stat calls" "1" STAT_CALLS
+	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
+	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
+	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot-single/m" STAT_CALL1_ARG3
 }
 
 setUp()

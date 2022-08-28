@@ -78,6 +78,9 @@ _c_zfs_single()
 	else
 		_info "$_pdset exists already"
 	fi
+
+	_create_pot_mountpoint "$_pdir/m"
+
 	if [ -z "$_potbase" ]; then
 		# create an empty dataset
 		if ! zfs create "$_pdset/m" ; then
@@ -137,9 +140,7 @@ _c_zfs_multi()
 		_info "$_pdset exists already"
 	fi
 	# Create the root mountpoint
-	if [ ! -d "$_pdir/m" ]; then
-		mkdir -p "$_pdir/m"
-	fi
+	_create_pot_mountpoint "$_pdir/m"
 	# lvl 0 images mount directly usr.local and custom
 	if [ "$_lvl" = "0" ]; then
 		return 0

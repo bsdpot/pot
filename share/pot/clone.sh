@@ -99,6 +99,7 @@ _cj_zfs()
 		fi
 		_debug "clone $_dset@$_snap into $_jdset/m"
 		zfs clone -o mountpoint="$_pdir/m" "$_dset@$_snap" "$_jdset/m"
+		_fix_pot_mountpoint_permissions "$_pdir/m"
 		touch "$_pdir/conf/fscomp.conf"
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )
@@ -120,10 +121,7 @@ _cj_zfs()
 		done < "${_pbdir}/conf/fscomp.conf"
 	elif [ "$_pb_type" = "multi" ]; then
 		# Create the root mountpoint
-		if [ ! -d "$_pdir/m" ]; then
-			_debug "Create root mountpoint dir ($_pdir/m)"
-			mkdir -p "$_pdir/m"
-		fi
+		_create_pot_mountpoint "$_pdir/m"
 		if [ -z "$_snap" ]; then
 			__last_snap="YES"
 		fi

@@ -27,7 +27,8 @@ _get_status()
 	if [ ! -e "$_status_file" ]; then
 		return
 	fi
-	_value="$(grep "^pot.status=" "$_status_file" | tr -d ' \t"' | cut -f2 -d'=' )"
+	_value="$(grep "^pot.status=" "$_status_file" | tail -n 1 \
+		|tr -d ' \t"' | cut -f2 -d'=' )"
 	echo "$_value"
 }
 
@@ -37,11 +38,14 @@ _set_status()
 {
 	local _pname _status_file _new_status
 	_pname="$1"
-	_new_statu="$2"
+	_new_status="$2"
 	_status_file="${POT_TMP:-/tmp}/pot_status_${_pname}"
 
-	${SED} -i '' -e "/^pot.status=.*/d" "$_status_file"
 	echo "pot.status=$_new_status" >> "$_status_file"
+	# remove first (and outdated) occurrence of pot.status
+	${SED} -i '' -n -e ":a" \
+		-e '/^pot\.status=/{n;bc' -e ':c' -e 'p;n;bc' -e '}' \
+		-e "p;n;ba" "$_status_file"
 }
 
 pot-set-status()

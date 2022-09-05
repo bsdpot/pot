@@ -195,7 +195,7 @@ case "${CMD}" in
 	start|stop|term|\
 	rename|clone|clone-fscomp|promote|\
 	snapshot|revert|purge-snapshots|update-config|\
-	last-run-stats|signal|exec)
+	last-run-stats|signal|exec|set-status)
 		pot-cmd "${CMD}" "$@"
 		exit $?
 		;;

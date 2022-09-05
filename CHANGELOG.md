@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fdescfs/procfs: fixed the correcte behavior of those attribute, such as mount them at start
 - mount-out: fix it
 - clone: fix cleanup after failed clone (#214)
+- start/stop: heavy rework to fix concurrency (#202)
 
 ## [0.14.0] 2021-10-31
 ### Added

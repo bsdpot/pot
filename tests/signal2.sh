@@ -44,14 +44,14 @@ _get_conf_var()
 test_send_signal_001()
 {
 	_send_signal test-pot SIGINFO "" "" "NO" "NO"
-	assertEquals "pgrep calls" "0" "$PGREP_CALLS"
-	assertEquals "pkill calls" "1" "$PKILL_CALLS"
-	assertEquals "pkill arg1" "-SIGINFO" "$PKILL_CALL1_ARG1"
-	assertEquals "pkill arg2" "-j" "$PKILL_CALL1_ARG2"
-	assertEquals "pkill arg3" "test-pot" "$PKILL_CALL1_ARG3"
-	assertEquals "pkill arg4" "-F" "$PKILL_CALL1_ARG4"
-	assertEquals "pkill arg5" "/tmp/pot_main_pid_test-pot" "$PKILL_CALL1_ARG5"
-	assertEquals "rm calls" "0" "$RM_CALLS"
+	assertEqualsMon "pgrep calls" "0" PGREP_CALLS
+	assertEqualsMon "pkill calls" "1" PKILL_CALLS
+	assertEqualsMon "pkill arg1" "-SIGINFO" PKILL_CALL1_ARG1
+	assertEqualsMon "pkill arg2" "-j" PKILL_CALL1_ARG2
+	assertEqualsMon "pkill arg3" "test-pot" PKILL_CALL1_ARG3
+	assertEqualsMon "pkill arg4" "-F" PKILL_CALL1_ARG4
+	assertEqualsMon "pkill arg5" "/tmp/pot_main_pid_test-pot" PKILL_CALL1_ARG5
+	assertEqualsMon "rm calls" "0" RM_CALLS
 }
 
 test_send_signal_002()
@@ -59,8 +59,8 @@ test_send_signal_002()
 	_send_signal test-pot-presist SIGINFO "" "" "NO" "NO"
 	rc=$?
 	assertEquals "return code" "1" "$rc"
-	assertEquals "pgrep calls" "0" "$PGREP_CALLS"
-	assertEquals "pkill calls" "0" "$PKILL_CALLS"
+	assertEqualsMon "pgrep calls" "0" PGREP_CALLS
+	assertEqualsMon "pkill calls" "0" PKILL_CALLS
 }
 
 test_send_signal_003()
@@ -68,43 +68,43 @@ test_send_signal_003()
 	_send_signal test-pot-presist SIGINFO "" "" "YES" "NO"
 	rc=$?
 	assertEquals "return code" "0" "$rc"
-	assertEquals "pgrep calls" "0" "$PGREP_CALLS"
-	assertEquals "pkill calls" "0" "$PKILL_CALLS"
+	assertEqualsMon "pgrep calls" "0" PGREP_CALLS
+	assertEqualsMon "pkill calls" "0" PKILL_CALLS
 }
 
 test_send_signal_010()
 {
 	_send_signal test-pot SIGINFO "" "command" "NO" "NO"
-	assertEquals "pgrep calls" "0" "$PGREP_CALLS"
-	assertEquals "pkill calls" "1" "$PKILL_CALLS"
-	assertEquals "pkill arg1" "-SIGINFO" "$PKILL_CALL1_ARG1"
-	assertEquals "pkill arg2" "-j" "$PKILL_CALL1_ARG2"
-	assertEquals "pkill arg3" "test-pot" "$PKILL_CALL1_ARG3"
-	assertEquals "pkill arg4" "command" "$PKILL_CALL1_ARG4"
-	assertEquals "rm calls" "0" "$RM_CALLS"
+	assertEqualsMon "pgrep calls" "0" PGREP_CALLS
+	assertEqualsMon "pkill calls" "1" PKILL_CALLS
+	assertEqualsMon "pkill arg1" "-SIGINFO" PKILL_CALL1_ARG1
+	assertEqualsMon "pkill arg2" "-j" PKILL_CALL1_ARG2
+	assertEqualsMon "pkill arg3" "test-pot" PKILL_CALL1_ARG3
+	assertEqualsMon "pkill arg4" "command" PKILL_CALL1_ARG4
+	assertEqualsMon "rm calls" "0" RM_CALLS
 }
 
 test_send_signal_011()
 {
 	_send_signal test-pot SIGINFO "1234" "" "NO" "NO"
-	assertEquals "pgrep calls" "0" "$PGREP_CALLS"
-	assertEquals "pkill calls" "1" "$PKILL_CALLS"
-	assertEquals "pkill arg1" "-SIGINFO" "$PKILL_CALL1_ARG1"
-	assertEquals "pkill arg2" "-j" "$PKILL_CALL1_ARG2"
-	assertEquals "pkill arg3" "test-pot" "$PKILL_CALL1_ARG3"
-	assertEquals "pkill arg4" "-F" "$PKILL_CALL1_ARG4"
-	assertEquals "pkill arg5" "/dev/null" "$PKILL_CALL1_ARG5"
-	assertEquals "rm calls" "1" "$RM_CALLS"
+	assertEqualsMon "pgrep calls" "0" PGREP_CALLS
+	assertEqualsMon "pkill calls" "1" PKILL_CALLS
+	assertEqualsMon "pkill arg1" "-SIGINFO" PKILL_CALL1_ARG1
+	assertEqualsMon "pkill arg2" "-j" PKILL_CALL1_ARG2
+	assertEqualsMon "pkill arg3" "test-pot" PKILL_CALL1_ARG3
+	assertEqualsMon "pkill arg4" "-F" PKILL_CALL1_ARG4
+	assertEqualsMon "pkill arg5" "/dev/null" PKILL_CALL1_ARG5
+	assertEqualsMon "rm calls" "1" RM_CALLS
 }
 
 test_send_signal_020()
 {
 	_send_signal test-pot SIGINFO "" "" "NO" "YES"
-	assertEquals "pgrep calls" "1" "$PGREP_CALLS"
-	assertEquals "pkill arg1" "-j" "$PGREP_CALL1_ARG1"
-	assertEquals "pkill arg2" "test-pot" "$PGREP_CALL1_ARG2"
-	assertEquals "pkill arg4" "/tmp/pot_main_pid_test-pot" "$PGREP_CALL1_ARG4"
-	assertEquals "pkill calls" "0" "$PKILL_CALLS"
+	assertEqualsMon "pgrep calls" "1" PGREP_CALLS
+	assertEqualsMon "pkill arg1" "-j" PGREP_CALL1_ARG1
+	assertEqualsMon "pkill arg2" "test-pot" PGREP_CALL1_ARG2
+	assertEqualsMon "pkill arg4" "/tmp/pot_main_pid_test-pot" PGREP_CALL1_ARG4
+	assertEqualsMon "pkill calls" "0" PKILL_CALLS
 }
 
 setUp()

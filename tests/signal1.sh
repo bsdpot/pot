@@ -12,7 +12,7 @@
 # app specific stubs
 signal-help()
 {
-	HELP_CALLS=$(( HELP_CALLS + 1 ))
+	__monitor HELP "$@"
 }
 
 _get_signal_names()
@@ -47,127 +47,128 @@ test_pot_signal_001()
 {
 	pot-signal
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 
 	setUp
 	pot-signal -b bb
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 
 	setUp
 	pot-signal -h
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 
 	setUp
 	pot-signal -v
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Help calls" "1" "$HELP_CALLS"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Help calls" "1" HELP_CALLS
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 }
 
 test_pot_signal_002()
 {
 	pot-signal -p test-pot -s SIGBAD
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Validate signal calls" "1" "$VALIDATESIGNALNAME_CALLS"
-	assertEquals "Validate signal arg" "SIGBAD" "$VALIDATESIGNALNAME_CALL1_ARG1"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Validate signal calls" "1" VALIDATESIGNALNAME_CALLS
+	assertEqualsMon "Validate signal arg" "SIGBAD" VALIDATESIGNALNAME_CALL1_ARG1
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 
 	setUp
 	pot-signal -p test-pot -P 1234 -m cmd
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Validate pid calls" "0" "$VALIDATEPID_CALLS"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Validate pid calls" "0" VALIDATEPID_CALLS
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 
 	setUp
 	pot-signal -p test-pot -P cmd
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Validate pid calls" "1" "$VALIDATEPID_CALLS"
-	assertEquals "Validate pid calls" "cmd" "$VALIDATEPID_CALL1_ARG1"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Validate pid calls" "1" VALIDATEPID_CALLS
+	assertEqualsMon "Validate pid calls" "cmd" VALIDATEPID_CALL1_ARG1
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 }
 
 test_pot_signal_003()
 {
 	pot-signal -p test-pot -P 1234
 	assertEquals "Exit rc" "1" "$?"
-	assertEquals "Error calls" "1" "$ERROR_CALLS"
-	assertEquals "Validate pid calls" "1" "$VALIDATEPID_CALLS"
-	assertEquals "Validate pid calls" "1234" "$VALIDATEPID_CALL1_ARG1"
-	assertEquals "Validate signal calls" "1" "$VALIDATESIGNALNAME_CALLS"
-	assertEquals "Validate signal arg" "SIGINFO" "$VALIDATESIGNALNAME_CALL1_ARG1"
-	assertEquals "_is_pot_running calls" "1" "$ISPOTRUN_CALLS"
-	assertEquals "Send signal calls" "0" "$SENDSIGNAL_CALLS"
+	assertEqualsMon "Error calls" "1" ERROR_CALLS
+	assertEqualsMon "Validate pid calls" "1" VALIDATEPID_CALLS
+	assertEqualsMon "Validate pid calls" "1234" VALIDATEPID_CALL1_ARG1
+	assertEqualsMon "Validate signal calls" "1" VALIDATESIGNALNAME_CALLS
+	assertEqualsMon "Validate signal arg" "SIGINFO" VALIDATESIGNALNAME_CALL1_ARG1
+	assertEqualsMon "_is_pot_running calls" "1" ISPOTRUN_CALLS
+	assertEqualsMon "Send signal calls" "0" SENDSIGNAL_CALLS
 }
 
 test_pot_signal_020()
 {
 	pot-signal -p test-pot-run
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "1" "$SENDSIGNAL_CALLS"
-	assertEquals "Send signal arg1" "test-pot-run" "$SENDSIGNAL_CALL1_ARG1"
-	assertEquals "Send signal arg2" "SIGINFO" "$SENDSIGNAL_CALL1_ARG2"
-	assertEquals "Send signal arg3" "" "$SENDSIGNAL_CALL1_ARG3"
-	assertEquals "Send signal arg4" "" "$SENDSIGNAL_CALL1_ARG4"
-	assertEquals "Send signal arg5" "NO" "$SENDSIGNAL_CALL1_ARG5"
-	assertEquals "Send signal arg6" "NO" "$SENDSIGNAL_CALL1_ARG6"
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "1" SENDSIGNAL_CALLS
+	assertEqualsMon "Send signal arg1" "test-pot-run" SENDSIGNAL_CALL1_ARG1
+	assertEqualsMon "Send signal arg2" "SIGINFO" SENDSIGNAL_CALL1_ARG2
+	assertEqualsMon "Send signal arg3" "" SENDSIGNAL_CALL1_ARG3
+	assertEqualsMon "Send signal arg4" "" SENDSIGNAL_CALL1_ARG4
+	assertEqualsMon "Send signal arg5" "NO" SENDSIGNAL_CALL1_ARG5
+	assertEqualsMon "Send signal arg6" "NO" SENDSIGNAL_CALL1_ARG6
 
 	setUp
 	pot-signal -p test-pot-run -s SIGHUP
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "1" "$SENDSIGNAL_CALLS"
-	assertEquals "Send signal arg1" "test-pot-run" "$SENDSIGNAL_CALL1_ARG1"
-	assertEquals "Send signal arg2" "SIGHUP" "$SENDSIGNAL_CALL1_ARG2"
-	assertEquals "Send signal arg3" "" "$SENDSIGNAL_CALL1_ARG3"
-	assertEquals "Send signal arg4" "" "$SENDSIGNAL_CALL1_ARG4"
-	assertEquals "Send signal arg5" "NO" "$SENDSIGNAL_CALL1_ARG5"
-	assertEquals "Send signal arg6" "NO" "$SENDSIGNAL_CALL1_ARG6"
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "1" SENDSIGNAL_CALLS
+	assertEqualsMon "Send signal arg1" "test-pot-run" SENDSIGNAL_CALL1_ARG1
+	assertEqualsMon "Send signal arg2" "SIGHUP" SENDSIGNAL_CALL1_ARG2
+	assertEqualsMon "Send signal arg3" "" SENDSIGNAL_CALL1_ARG3
+	assertEqualsMon "Send signal arg4" "" SENDSIGNAL_CALL1_ARG4
+	assertEqualsMon "Send signal arg5" "NO" SENDSIGNAL_CALL1_ARG5
+	assertEqualsMon "Send signal arg6" "NO" SENDSIGNAL_CALL1_ARG6
 }
 
 test_pot_signal_021()
 {
 	pot-signal -p test-pot-run -s SIGHUP -P 1234 -f -C
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "1" "$SENDSIGNAL_CALLS"
-	assertEquals "Send signal arg1" "test-pot-run" "$SENDSIGNAL_CALL1_ARG1"
-	assertEquals "Send signal arg2" "SIGHUP" "$SENDSIGNAL_CALL1_ARG2"
-	assertEquals "Send signal arg3" "1234" "$SENDSIGNAL_CALL1_ARG3"
-	assertEquals "Send signal arg4" "" "$SENDSIGNAL_CALL1_ARG4"
-	assertEquals "Send signal arg5" "YES" "$SENDSIGNAL_CALL1_ARG5"
-	assertEquals "Send signal arg6" "YES" "$SENDSIGNAL_CALL1_ARG6"
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "1" SENDSIGNAL_CALLS
+	assertEqualsMon "Send signal arg1" "test-pot-run" SENDSIGNAL_CALL1_ARG1
+	assertEqualsMon "Send signal arg2" "SIGHUP" SENDSIGNAL_CALL1_ARG2
+	assertEqualsMon "Send signal arg3" "1234" SENDSIGNAL_CALL1_ARG3
+	assertEqualsMon "Send signal arg4" "" SENDSIGNAL_CALL1_ARG4
+	assertEqualsMon "Send signal arg5" "YES" SENDSIGNAL_CALL1_ARG5
+	assertEqualsMon "Send signal arg6" "YES" SENDSIGNAL_CALL1_ARG6
 }
 
 test_pot_signal_022()
 {
 	pot-signal -p test-pot-run -s SIGINFO -m grep -f -C
 	assertEquals "Exit rc" "0" "$?"
-	assertEquals "Error calls" "0" "$ERROR_CALLS"
-	assertEquals "Send signal calls" "1" "$SENDSIGNAL_CALLS"
-	assertEquals "Send signal arg1" "test-pot-run" "$SENDSIGNAL_CALL1_ARG1"
-	assertEquals "Send signal arg2" "SIGINFO" "$SENDSIGNAL_CALL1_ARG2"
-	assertEquals "Send signal arg3" "" "$SENDSIGNAL_CALL1_ARG3"
-	assertEquals "Send signal arg4" "grep" "$SENDSIGNAL_CALL1_ARG4"
-	assertEquals "Send signal arg5" "YES" "$SENDSIGNAL_CALL1_ARG5"
-	assertEquals "Send signal arg6" "YES" "$SENDSIGNAL_CALL1_ARG6"
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "Send signal calls" "1" SENDSIGNAL_CALLS
+	assertEqualsMon "Send signal arg1" "test-pot-run" SENDSIGNAL_CALL1_ARG1
+	assertEqualsMon "Send signal arg2" "SIGINFO" SENDSIGNAL_CALL1_ARG2
+	assertEqualsMon "Send signal arg3" "" SENDSIGNAL_CALL1_ARG3
+	assertEqualsMon "Send signal arg4" "grep" SENDSIGNAL_CALL1_ARG4
+	assertEqualsMon "Send signal arg5" "YES" SENDSIGNAL_CALL1_ARG5
+	assertEqualsMon "Send signal arg6" "YES" SENDSIGNAL_CALL1_ARG6
 }
 
 setUp()
 {
 	common_setUp
+	ERROR_CALLS=0
 	HELP_CALLS=0
 	GETSIGNALNAMES_CALLS=0
 	VALIDATESIGNALNAME_CALLS=0

@@ -110,13 +110,6 @@ test_send_signal_020()
 setUp()
 {
 	common_setUp
-	PKILL_CALLS=0
-	PKILL_CALL1_ARG4=
-	PKILL_CALL1_ARG5=
-	PGREP_CALLS=0
-	MKTEMP_CALLS=0
-	RM_CALLS=0
-	GETCONFVAR_CALLS=0
 }
 
 . shunit/shunit2

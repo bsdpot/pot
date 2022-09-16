@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ## [0.15.1] 2022-09-16
+### Fixed
+- set-status: fix a bug that delete the status (#224)
 
 ## [0.15.0] 2022-09-11
 ### Added

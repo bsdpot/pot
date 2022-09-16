@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.15.1] 2022-09-16
 ### Fixed
-- set-status: fix a bug that delete the status (#224)
+- set-status: fix a bug that deletes the status (#224)
+- start: fix pot getting stuck in state "starting" on pot start failure (#227)
 
 ## [0.15.0] 2022-09-11
 ### Added

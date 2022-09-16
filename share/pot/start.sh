@@ -30,6 +30,8 @@ start-cleanup()
 	if [ -z "$_pname" ]; then
 		return
 	fi
+	# doa state will only be set if pot is in state "starting"
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s doa
 	if [ -n "$_iface" ] && _is_valid_netif "$_iface" ; then
 		pot-cmd stop -p "$_pname" -i "$_iface" -s
 	else

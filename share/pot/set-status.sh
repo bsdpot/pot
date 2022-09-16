@@ -2,18 +2,18 @@
 # shellcheck disable=SC3033,SC3040,SC3043
 :
 
-: "${_POT_INTERNAL_STATUS:="starting started stopping stopped"}"
+: "${_POT_INTERNAL_STATUS:="starting doa started stopping stopped"}"
 
 set-status-help()
 {
-	cat <<-"EOH"
+	cat <<-EOH
 	Internal command, DO NOT USE IF YOU DON'T KNOW WHAT YOU ARE DOING!
 	This command is meant to be invoked using lockf
 	pot set-status [-hv] [-p pname] [-s status]
 	  -h print this help
 	  -v verbose
 	  -p pname : pot name
-	  -s status : the status [starting started stopping stopped]
+	  -s status : the status [$_POT_INTERNAL_STATUS]
 	EOH
 }
 
@@ -106,14 +106,16 @@ pot-set-status()
 				return 1
 			fi
 			;;
-		"started")
+		"started" | "doa")
 			if [ "$_current_status" != "starting" ]; then
 				return 1
 			fi
 			;;
 		"stopping")
 			# you can always stop a stopped pot (for cleanup reasons)
-			if [ "$_current_status" != "started" ] && [ "$_current_status" != "stopped" ]; then
+			if [ "$_current_status" != "started" ] &&
+			   [ "$_current_status" != "doa" ] &&
+			   [ "$_current_status" != "stopped" ]; then
 				return 1
 			fi
 			;;

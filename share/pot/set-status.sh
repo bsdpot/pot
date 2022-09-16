@@ -44,12 +44,10 @@ _set_status()
 	echo "pot.status=$_new_status" >> "$_status_file"
 	# remove first (and outdated) occurrence of pot.status
 	if [ "$(grep -c "^pot\.status=" "$_status_file")" -gt 1 ]; then
-		${SED} -i '' -e '1d' "$_status_file"
+		${SED} -i '' -n -e ":a" \
+			-e '/^pot\.status=/{n;bc' -e ':c' -e 'p;n;bc' -e '}' \
+			-e "p;n;ba" "$_status_file"
 	fi
-	## not sorking wolution
-	#${SED} -i '' -n -e ":a" \
-		#-e '/^pot\.status=/{n;bc' -e ':c' -e 'p;n;bc' -e '}' \
-		#-e "p;n;ba" "$_status_file"
 }
 
 pot-set-status()

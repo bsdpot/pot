@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- stop: Destroy epair interface if stop is not called from start (#229)
+
 ## [0.15.2] 2022-09-17
 ### Fixed
 - start: fix pot getting stuck in state "starting" on pot start failure (#227)

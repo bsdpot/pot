@@ -41,7 +41,7 @@ _js_stop()
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
-		if _is_pot_vnet "$_pname" && [ -z "$_epair" ] && [ "$_from_start" = "YES" ]; then
+		if _is_pot_vnet "$_pname" && [ -z "$_epair" ]; then
 			_epair=$(jexec "$_pname" ifconfig | grep ^epair | cut -d':' -f1)
 			_epair="${_epair%b}a"
 		fi

@@ -8,13 +8,14 @@ stop-help()
 	pot stop [-hv] -p potname | potname
 	  -h print this help
 	  -v verbose
-	  -i interface : network interface (INTERNAL USE ONLY)
+	  -i interface : network interface (epaira) (INTERNAL USE ONLY)
 	  -s called from start (INTERNAL USE ONLY)
 	  -p potname : the pot to be stopped
-	     the -p can be omitted and the last argument will be interpreted as the potname
+	     the -p can be omitted and the last argument will be interpreted
+	     as the potname
 
-	  The option -i is intended to be used only by internal cleanup functions
-	  that knows in advance what interface pot is/was using.
+	  The option -i is intended to be used only by internal cleanup
+	  functions that knows in advance what interface pot is/was using.
 	  Usually, -i is NOT needed and it SHOULDN'T be used by users
 	EOH
 }
@@ -34,18 +35,14 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _pdir _epair _ip _aname _from_start
+	local _pname _pdir _epaira _ip _aname _from_start
 	_pname="$1"
 	_from_start="$2"
-	_epair="$3"
+	_epaira="$3"
+
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
-		if _is_pot_vnet "$_pname" && [ -z "$_epair" ]; then
-			_epair=$(jexec "$_pname" ifconfig | grep ^epair | cut -d':' -f1)
-			_epair="${_epair%b}a"
-		fi
-
 		if [ -x "$_pdir/conf/prestop.sh" ]; then
 			_info "Executing the pre-stop script for the pot $_pname"
 			(
@@ -58,13 +55,13 @@ _js_stop()
 		jail -q -r "$_pname"
 	fi
 	# those are clean up operations for a pot already stopped
-	if [ -n "$_epair" ]; then
-		_debug "Remove ${_epair%a}[a|b] network interfaces"
+	if [ -n "$_epaira" ]; then
+		_debug "Remove ${_epaira} network interface (and its b-side)"
 		sleep 1 # try to avoid a race condition in the epair driver,
 				# potentially causing a kernel panic, which should
 				# be fixed in FreeBSD 13.1:
 				# https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
-		ifconfig "${_epair}" destroy
+		ifconfig "${_epaira}" destroy
 	elif [ "$_network_type" = "alias" ]; then
 		_ip=$( _get_ip_var "$_pname" )
 		_debug "Remove $_ip aliases"
@@ -210,7 +207,8 @@ pot-stop()
 	fi
 
 	# Here is where the pot is stopping
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+	_epaira="$(lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" \
+	  "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping)"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		if [ $_from_start = "YES" ]; then
@@ -224,6 +222,10 @@ pot-stop()
 		_error "pot $_pname is not in a state where it can be stopped"
 		${EXIT} 1
 	fi
+	if [ -z "$_ifname" ]; then
+		_ifname="$_epaira"
+	fi
+
 	if ! _js_stop "$_pname" "$_from_start" "$_ifname"; then
 		_error "Stop the pot $_pname failed"
 		${EXIT} 1

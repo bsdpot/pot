@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- import: Remove the mountpoint permission fix to avoid a regressiong (#233)
 
 ## [0.15.3] 2022-09-17
 

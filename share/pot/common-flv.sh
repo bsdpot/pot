@@ -17,13 +17,13 @@ _get_flavour_script()
 {
 	local _flv_name
 	_flv_name="$1"
-	if [ -f "$_flv_name" ] && [ -x "$_flv_name" ] && [ "$_flv_name" != "${_flv_name%%.sh}" ]; then ## it's a script path name
+	if [ -f "$_flv_name" ] && [ "$_flv_name" != "${_flv_name%%.sh}" ]; then ## it's a script path name
 		echo "$_flv_name"
-	elif [ -f "$_flv_name.sh" ] && [ -x "$_flv_name.sh" ];  then ## it's a path name
+	elif [ -f "$_flv_name.sh" ];  then ## it's a path name
 		echo "$_flv_name.sh"
-	elif [ -f "./$_flv_name.sh" ] && [ -x "./$_flv_name.sh" ]; then
+	elif [ -f "./$_flv_name.sh" ]; then
 		echo "./$_flv_name.sh"
-	elif [ -f "${_POT_FLAVOUR_DIR}/$_flv_name.sh" ] || [ -x "${_POT_FLAVOUR_DIR}/$_flv_name.sh" ]; then
+	elif [ -f "${_POT_FLAVOUR_DIR}/$_flv_name.sh" ]; then
 		echo "${_POT_FLAVOUR_DIR}/$_flv_name.sh"
 	fi
 }
@@ -129,6 +129,7 @@ _exec_flv()
 		_debug "Starting $_pname pot for the initial bootstrap"
 		pot-cmd start "$_pname"
 		cp -v "${_flv_script}" "$_pdir/m/tmp"
+		chmod a+x "$_pdir/m/tmp/$(basename "${_flv_script}" )"
 		_debug "Executing $_flv script on $_pname"
 		if ! jexec "$_pname" "/tmp/$(basename "${_flv_script}")" "$_pname" ; then
 			_error "create: flavour $_flv failed (script)"

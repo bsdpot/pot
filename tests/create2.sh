@@ -38,7 +38,7 @@ chmod()
 stat()
 {
 	__monitor STAT "$@"
-	echo 700
+	echo 755
 }
 
 . pipefail-stub.sh

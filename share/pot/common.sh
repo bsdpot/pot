@@ -935,7 +935,7 @@ _get_pot_snaps()
 # $1 mountpoint to adjust permissions for
 _fix_pot_mountpoint_permissions()
 {
-	local _mp
+	local _mp _exp_perm
 	_mp="$1"
 	_exp_perm="755"
 

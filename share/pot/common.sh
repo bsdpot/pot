@@ -940,7 +940,10 @@ _fix_pot_mountpoint_permissions()
 
 	if [ "$(stat -f "%Lp" "${_mp}")" != "700" ]; then
 		_debug "Setting mountpoint permission for $_mp"
-		chmod 700 "$_mp" || exit 1
+		# chomd 755 allows everyone inside the jail to access the file system
+		# permissions like 700 don't allow access to the file system to any non-user also in the jail
+		# causing issue to applications like nginx
+		chmod 755 "$_mp" || exit 1
 	fi
 }
 

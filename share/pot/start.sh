@@ -138,7 +138,8 @@ _js_etc_hosts()
 }
 
 # returns interface names of epaira and epairb
-# optional prefix, one char
+# $1 pot name
+# $2 prefix (optional)
 _js_create_epair()
 {
 	local _epaira _epaira_renamed _epairb _prefix
@@ -149,7 +150,7 @@ _js_create_epair()
 	if [ -z "${_epaira}" ]; then
 		_error "ifconfig epair failed" >&2
 		start-cleanup "$_pname"
-		exit 1 # false
+		${EXIT} 1 # false
 	fi
 
 	_epairb="${_epaira%a}b"
@@ -159,7 +160,7 @@ _js_create_epair()
 	if [ -z "${_epaira_renamed}" ]; then
 		_error "ifconfig epair rename failed" >&2
 		start-cleanup "$_pname" "$_epaira"
-		exit 1 # false
+		${EXIT} 1 # false
 	fi
 
 	echo "$_epaira_renamed"
@@ -555,7 +556,7 @@ _js_start()
 		_param="$_param vnet"
 		_stack="$( _get_pot_network_stack "$_pname" )"
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv4" ]; then
-			_tmp="$( _js_create_epair '4' )" || return 1
+			_tmp="$( _js_create_epair "$_pname" '4' )" || return 1
 			# shellcheck disable=SC2086
 			set -- $_tmp
 
@@ -566,7 +567,7 @@ _js_start()
 			_js_export_ports "$_pname"
 		fi
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv6" ]; then
-			_tmp="$( _js_create_epair '6' )" || return 1
+			_tmp="$( _js_create_epair "$_pname" '6' )" || return 1
 			# shellcheck disable=SC2086
 			set -- $_tmp
 
@@ -578,7 +579,7 @@ _js_start()
 		fi
 		;;
 	"private-bridge")
-		_tmp="$( _js_create_epair '4' )" || return 1
+		_tmp="$( _js_create_epair "$_pname" '4' )" || return 1
 		# shellcheck disable=SC2086
 		set -- $_tmp
 

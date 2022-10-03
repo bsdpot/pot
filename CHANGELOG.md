@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Reverted the change of permissions of pot root mountpoint to fix a regression (#233)
+- set-attr: fix no-etc-hosts attribute handling
 
 ## [0.15.3] 2022-09-17
 ### Fixed

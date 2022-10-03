@@ -6,10 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Fixed
-- import: Remove the mountpoint permission fix to avoid a regressiong (#233)
+- Reverted the change of permissions of pot root mountpoint to fix a regressiong (#233)
 
 ## [0.15.3] 2022-09-17
-
 ### Fixed
 - stop: Destroy epair interface if stop is not called from start (#229)
 

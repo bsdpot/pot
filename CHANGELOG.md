@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+- flavours: scripts are made executable when loading
+- destroy: remove status file when destroying
+
 ### Fixed
 - Reverted the change of permissions of pot root mountpoint to fix a regression (#233)
+- set-attr: fix no-etc-hosts attribute handling
 
 ## [0.15.3] 2022-09-17
 ### Fixed

@@ -309,4 +309,7 @@ pot-destroy()
 			${EXIT} 1
 		fi
 	fi
+	if [ -f "${POT_TMP:-/tmp}/pot_status_${_pname}" ]; then
+		rm -f "${POT_TMP:-/tmp}/pot_status_${_pname}"
+	fi
 }

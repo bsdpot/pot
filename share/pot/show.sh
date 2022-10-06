@@ -75,7 +75,7 @@ _show_pot_run()
 	_ip="$( _get_ip_var "$_pname" )"
 	if [ "$_network_type" = "public-bridge" ]; then
 		_aname="$( _get_pot_rdr_anchor_name "$_pname")"
-		if pfctl -a "pot-rdr" -s Anchors | grep -q "pot-rdr/${_aname}$" ; then
+		if pfctl -a "pot-rdr" -s Anchors 2>/dev/null | grep -q "pot-rdr/${_aname}$" ; then
 			printf "\\n\\tNetwork port redirection\\n"
 			pfctl -a "pot-rdr/$_aname" -s nat -P | grep -F \ "${_ip}"\  | sed 's/rdr pass on .* inet proto tcp from any to //g' | sed 's/ =//g' | while read -r rule ; do
 				printf "\\t\\t%s\\n" "$rule"

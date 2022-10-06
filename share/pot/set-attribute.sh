@@ -144,6 +144,7 @@ pot-set-attribute()
 		"early-start-at-boot"|\
 		"persistent"|\
 		"no-rc-script"|\
+		"no-etc-hosts"|\
 		"prunable"|\
 		"localhost-tunnel")
 			_cmd=_set_boolean_attribute

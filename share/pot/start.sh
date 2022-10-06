@@ -142,9 +142,10 @@ _js_etc_hosts()
 # $2 prefix (optional)
 _js_create_epair()
 {
-	local _epaira _epaira_renamed _epairb _prefix
+	local _epaira _epaira_renamed _epairb _pname _prefix
 
-	_prefix="$1"
+	_pname="$1"
+	_prefix="$2"
 	_epaira=$(ifconfig epair create descr "$_pname" group "pot")
 
 	if [ -z "${_epaira}" ]; then

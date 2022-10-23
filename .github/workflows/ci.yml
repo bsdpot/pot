@@ -1,0 +1,86 @@
+name: Run CI
+on:
+  workflow_dispatch:
+  push:
+    branches: [ github-ci-action ]
+#  pull_request:
+#    branches: [ master ]
+
+jobs:
+  ci_test_suite:
+    name: CI test suite
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          - { os: macos-12 }
+        release: [ "13.1" ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run tests/CI/run.sh
+      uses: vmactions/freebsd-vm@v0
+      with:
+        mem: 8192
+        usesh: true
+        copyback: false
+        prepare: pkg install -y curl gmake potnet freebsd-release-manifests nmap
+        run: |
+          #####################################################################################
+          ###  Prepare, build, and test
+          #####################################################################################
+          ###  based on ref: <https://github.com/rust-lang/rustup/pull/2783>
+          ###  and on ref: <https://github.com/uutils/coreutils/commit/86c610a84b8b6c>
+          ###  * NOTE: All steps need to be run in this block, otherwise, we are operating back
+          ###    on the mac host
+          set -exo pipefail
+          #
+          ### Basic user setup ################################################################
+          TEST_USER=tester
+          TEST_USER_HOME="/opt/$TEST_USER"
+          REPO_NAME=${GITHUB_WORKSPACE##*/}
+          WORKSPACE_PARENT="/Users/runner/work/${REPO_NAME}"
+          WORKSPACE="${WORKSPACE_PARENT}/${REPO_NAME}"
+          OS_VERSION="$(freebsd-version | awk -F- '{print $1}')"
+          PUB_INTF="$(netstat -4rn | grep default | awk '{ print $4}')"
+          ifconfig
+          #
+          mkdir -p "$TEST_USER_HOME"
+          pw adduser -n "$TEST_USER" -d "$TEST_USER_HOME" -c "Tester" -h -
+          chown -R "$TEST_USER":"$TEST_USER" "$TEST_USER_HOME"
+          chown -R "$TEST_USER":"$TEST_USER" "/$WORKSPACE_PARENT"/
+          whoami
+          #
+          ### Output some information about the environment  ##################################
+          # environment
+          echo "## environment"
+          env | sort
+          # tooling info
+          echo "## installed packages"
+          pkg info
+          #
+          ### Create zpool ####################################################################
+          dd if=/dev/zero of=/zfs1 bs=1 count=1 seek=2G
+          zdev=$(mdconfig -a -t vnode -S 4096 -f /zfs1)
+          zpool create -f zroot "$zdev"
+          #
+          ### Configure pf and pot ############################################################
+          echo "set skip on lo0" >/etc/pf.conf
+          echo pass >>/etc/pf.conf
+          service pf enable
+          service pf start
+          bin/pot init
+          #
+          ### Run CI tests ################################################
+          cd "$WORKSPACE"
+          cp -f etc/pot/pot.default.conf etc/pot/pot.conf
+          cd tests/CI
+          set +e
+          FAULT=0
+          ./run.sh || FAULT=1
+          echo "Log output:"
+          cat pot-ci-*
+          if [ $FAULT -ne 0 ]; then exit 1; fi
+          #
+          ### Finished ########################################################################
+          echo "Done"

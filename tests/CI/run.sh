@@ -9,7 +9,7 @@ error() {
 	test_name="${1:-unknown}"
 	echo "Test ${test_name} failed ($2)" >> $logfile
 	end
-	exit
+	exit 1
 }
 
 begin()
@@ -20,7 +20,7 @@ begin()
 	fi
 	if [ ! -d /var/cache/pot ]; then
 		echo "pot's cache cannot be generated - aborting"
-		exit
+		exit 1
 	fi
 }
 
@@ -36,6 +36,11 @@ success()
 
 empty_check() {
 	if [ -n "$(pot ls -q)" ]; then
+		echo "POT LS IS:"
+		pot ls -q
+		ls -al /opt/pot/jails
+		ls -al /opt/pot/jails/*
+		zfs list
 		error "$1" "pot not deleted"
 	fi
 	if [ -n "$(pot ls -qb)" ]; then
@@ -158,12 +163,12 @@ export_test() {
 	local type=$2
 	case $type in
 	single)
-		if ! pot export -p $name -t 0 ; then
+		if ! pot export -p $name -t 0 -l 0; then
 			error $name export-single
 		fi
 		;;
 	multi)
-		if pot export -p $name ; then
+		if pot export -p $name -l 0; then
 			error $name export-no-multi
 		fi
 		return
@@ -522,8 +527,15 @@ BROKEN_FLV
 	empty_check $name
 }
 
-STACKS="ipv4 dual ipv6"
-VERSIONS="12.2 11.4"
+STACKS="ipv4"
+if ping6 -c3 www.kame.net; then
+	echo "IPv6 seems to work, add dual and ipv6 stacks"
+	STACKS="$STACKS dual ipv6"
+else
+	echo "IPv6 not available, only testing $STACKS"
+fi
+
+VERSIONS="12.3 13.1"
 TYPES="single multi"
 #NETWORKS="alias inherit public-bridge private-bridge"
 NETWORKS="inherit public-bridge private-bridge"

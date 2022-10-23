@@ -41,9 +41,9 @@ _pot_zfs_destroy()
 	_jdset=${POT_ZFS_ROOT}/jails/$_pname
 	if ! _zfs_dataset_valid "$_jdset" ; then
 		## if a directory is found, just remove if
-		if [ -d "${_POT_FS_ROOT}/jails/$_pname" ]; then
+		if [ -d "${POT_FS_ROOT}/jails/$_pname" ]; then
 			_debug "Dataset of $_pname not found, but removing the directory anyway"
-			rm -rf "${_POT_FS_ROOT}/jails/$_pname"
+			rm -rf "${POT_FS_ROOT}/jails/$_pname"
 			return 0 # true
 		fi
 		_error "$_pname not found"
@@ -61,6 +61,10 @@ _pot_zfs_destroy()
 		_error "zfs failed to destroy the dataset $_jdset"
 		return 1 # false
 	fi
+	if [ -d "${POT_FS_ROOT}/jails/$_pname" ]; then
+		_debug "Removing leftover mountpoint ${POT_FS_ROOT}/jails/$_pname"
+		rm -rf "${POT_FS_ROOT}/jails/$_pname"
+	fi
 	rm -f "/usr/local/etc/syslog.d/${_pname}.conf" "/usr/local/etc/newsyslog.conf.d/${_pname}.conf" "/var/log/pot/${_pname}.log"
 	return $?
 }
@@ -71,8 +75,15 @@ _base_zfs_destroy()
 	local _bname _bdset
 	_bname=$1
 	_bdset=${POT_ZFS_ROOT}/bases/$_bname
-	_zfs_dataset_destroy "$_bdset"
-	return $?
+	if ! _zfs_dataset_destroy "$_bdset" ; then
+		_error "zfs failed to destroy the dataset $_bdset"
+		return 1 # false
+	fi
+	if [ -d "${POT_FS_ROOT}/bases/$_bname" ]; then
+		_debug "Removing leftover mountpoint ${POT_FS_ROOT}/bases/$_bname"
+		rm -rf "${POT_FS_ROOT}/bases/$_bname"
+	fi
+	return 0
 }
 
 # $1 base name
@@ -81,8 +92,15 @@ _fscomp_zfs_destroy()
 	local _fname _fdset
 	_fname=$1
 	_fdset=${POT_ZFS_ROOT}/fscomp/$_fname
-	_zfs_dataset_destroy "$_fdset"
-	return $?
+	if ! _zfs_dataset_destroy "$_fdset" ; then
+		_error "zfs failed to destroy the dataset $_fdset"
+		return 1 # false
+	fi
+	if [ -d "${POT_FS_ROOT}/fscomp/$_fname" ]; then
+		_debug "Removing leftover mountpoint ${POT_FS_ROOT}/fscomp/$_fname"
+		rm -rf "${POT_FS_ROOT}/fscomp/$_fname"
+	fi
+	return 0
 }
 
 pot-destroy()

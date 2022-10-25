@@ -8,13 +8,14 @@ stop-help()
 	pot stop [-hv] -p potname | potname
 	  -h print this help
 	  -v verbose
-	  -i interface : network interface (INTERNAL USE ONLY)
+	  -i interface(s) : network interface (epaira) (INTERNAL USE ONLY)
 	  -s called from start (INTERNAL USE ONLY)
 	  -p potname : the pot to be stopped
-	     the -p can be omitted and the last argument will be interpreted as the potname
+	     the -p can be omitted and the last argument will be interpreted
+	     as the potname
 
-	  The option -i is intended to be used only by internal cleanup functions
-	  that knows in advance what interface pot is/was using.
+	  The option -i is intended to be used only by internal cleanup
+	  functions that knows in advance what interface pot is/was using.
 	  Usually, -i is NOT needed and it SHOULDN'T be used by users
 	EOH
 }
@@ -34,18 +35,13 @@ _js_cpu_rebalance()
 # $1 pot name
 _js_stop()
 {
-	local _pname _pdir _epair _ip _aname _from_start
+	local _pname _pdir _epaira _epaira_ifs _ip _aname _from_start
 	_pname="$1"
 	_from_start="$2"
-	_epair="$3"
+	_epaira_ifs="$3"
 	_pdir="${POT_FS_ROOT}/jails/$_pname"
 	_network_type=$( _get_pot_network_type "$_pname" )
 	if _is_pot_running "$_pname" ; then
-		if _is_pot_vnet "$_pname" && [ -z "$_epair" ]; then
-			_epair=$(jexec "$_pname" ifconfig | grep ^epair | cut -d':' -f1)
-			_epair="${_epair%b}a"
-		fi
-
 		if [ -x "$_pdir/conf/prestop.sh" ]; then
 			_info "Executing the pre-stop script for the pot $_pname"
 			(
@@ -58,13 +54,15 @@ _js_stop()
 		jail -q -r "$_pname"
 	fi
 	# those are clean up operations for a pot already stopped
-	if [ -n "$_epair" ]; then
-		_debug "Remove ${_epair%a}[a|b] network interfaces"
-		sleep 1 # try to avoid a race condition in the epair driver,
+	if [ -n "$_epaira_ifs" ]; then
+		for _epaira in $(echo "$_epaira_ifs" | tr : ' '); do
+			_debug "Remove ${_epaira} epair network interfaces"
+			sleep 1 # try to avoid a race condition in the epair driver,
 				# potentially causing a kernel panic, which should
 				# be fixed in FreeBSD 13.1:
 				# https://cgit.freebsd.org/src/commit/?h=stable/13&id=f4aba8c9f0c
-		ifconfig "${_epair}" destroy
+			ifconfig "${_epaira}" destroy
+		done
 	elif [ "$_network_type" = "alias" ]; then
 		_ip=$( _get_ip_var "$_pname" )
 		_debug "Remove $_ip aliases"
@@ -148,24 +146,11 @@ _js_rm_resolv()
 	fi
 }
 
-_epair_cleanup()
-{
-	local _epairs_a _epairs_b
-	_epairs_b="$(ifconfig | grep '^epair[0-9][0-9]*b' | sed 's/:.*$//' | sort)"
-	_epairs_a="$(ifconfig | grep '^epair[0-9][0-9]*a' | sed 's/:.*$//' | sort)"
-	for _e in $_epairs_b ; do
-		# shellcheck disable=SC2086
-		if _is_in_list "${_e%b}a" $_epairs_a ; then
-			ifconfig "$_e" destroy
-		fi
-	done
-}
-
 pot-stop()
 {
-	local _pname _ifname _from_start
+	local _pname _ifnames _from_start
 	_pname=
-	_ifname=
+	_ifnames=
 	_from_start="NO"
 
 	OPTIND=1
@@ -182,7 +167,7 @@ pot-stop()
 			_pname="$OPTARG"
 			;;
 		i)
-			_ifname="$OPTARG"
+			_ifnames="$OPTARG"
 			;;
 		s)
 			_from_start="YES"
@@ -210,13 +195,14 @@ pot-stop()
 	fi
 
 	# Here is where the pot is stopping
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+	_epaira_ifs="$(lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" \
+	  "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping)"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		if [ $_from_start = "YES" ]; then
 			_debug "pot $_pname is already stopping, but we are cleaning up from start-cleanup"
 		else
-			_error "pot $_pname is arleady stopping!"
+			_error "pot $_pname is already stopping!"
 			${EXIT} 1
 		fi
 	fi
@@ -224,7 +210,11 @@ pot-stop()
 		_error "pot $_pname is not in a state where it can be stopped"
 		${EXIT} 1
 	fi
-	if ! _js_stop "$_pname" "$_from_start" "$_ifname"; then
+	if [ -z "$_ifnames" ]; then
+		_ifnames="$_epaira_ifs"
+	fi
+
+	if ! _js_stop "$_pname" "$_from_start" "$_ifnames"; then
 		_error "Stop the pot $_pname failed"
 		${EXIT} 1
 	fi
@@ -233,14 +223,11 @@ pot-stop()
 	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopped
 	rc=$?
 	if [ $rc -eq 2 ]; then
-		_error "pot $_pname is arleady stopped!"
+		_error "pot $_pname is already stopped!"
 		${EXIT} 1
 	fi
 	if [ $rc -eq 1 ]; then
 		_error "pot $_pname is not in a state where it can marked as stopped"
 		${EXIT} 1
 	fi
-	# Currently, epair clean up could remove interfaces created to start another pot
-	# it shouldn't be needed if after a start there is alwasy a stop
-	#_epair_cleanup
 }

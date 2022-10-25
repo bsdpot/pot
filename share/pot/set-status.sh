@@ -12,6 +12,7 @@ set-status-help()
 	pot set-status [-hv] [-p pname] [-s status]
 	  -h print this help
 	  -v verbose
+	  -i interface(s) : network interface (epaira)
 	  -p pname : pot name
 	  -s status : the status [$_POT_INTERNAL_STATUS]
 	EOH
@@ -52,11 +53,13 @@ _set_status()
 
 pot-set-status()
 {
-	local _pname _new_status _current_status _conf
+	local _pname _new_status _tmp _current_status _current_ifnames _conf
+	local _ifnames
+	_ifnames=""
 	_pname=""
 	_new_status=""
 	OPTIND=1
-	while getopts "hvp:s:" _o ; do
+	while getopts "hvp:i:s:" _o ; do
 		case "$_o" in
 		h)
 			set-status-help
@@ -67,6 +70,9 @@ pot-set-status()
 			;;
 		p)
 			_pname="$OPTARG"
+			;;
+		i)
+			_ifnames="$OPTARG"
 			;;
 		s)
 			# shellcheck disable=SC2086
@@ -92,7 +98,9 @@ pot-set-status()
 		return 1
 	fi
 
-	_current_status=$(_get_status "$_pname")
+	_tmp=$(_get_status "$_pname")
+	_current_status=$(echo "$_tmp" | cut -d, -f1)
+	_current_ifnames=$(echo "$_tmp" | cut -d, -f2)
 	# if current status is equal to new status, it means that some other pot command is
 	# taking care of the execution of the transition and an exit code 2 is returned
 	if [ "$_current_status" = "$_new_status" ]; then
@@ -105,6 +113,7 @@ pot-set-status()
 			if [ -n "$_current_status" ] && [ "$_current_status" != "stopped" ]; then
 				return 1
 			fi
+			_ifnames=""
 			;;
 		"started" | "doa")
 			if [ "$_current_status" != "starting" ]; then
@@ -113,17 +122,20 @@ pot-set-status()
 			;;
 		"stopping")
 			# you can always stop a stopped pot (for cleanup reasons)
-			if [ "$_current_status" != "started" ] &&
+			if [ "$_current_status" != "started" ] && \
 			   [ "$_current_status" != "doa" ] &&
 			   [ "$_current_status" != "stopped" ]; then
 				return 1
 			fi
+			_ifnames="$_current_ifnames"
+			echo "$_ifnames"
 			;;
 		"stopped")
 			if [ "$_current_status" != "stopping" ]; then
 				return 1
 			fi
+			_ifnames=""
 			;;
 	esac
-	_set_status "$_pname" "$_new_status"
+	_set_status "$_pname" "$_new_status,$_ifnames"
 }

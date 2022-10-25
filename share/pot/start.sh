@@ -24,16 +24,27 @@ start-help()
 # $2 the network interface, if created
 start-cleanup()
 {
-	local _pname _iface
+	local _pname _epaira _epaira2 _ifaces
 	_pname=$1
-	_iface=${2}a
+	_epaira=$2
+	_epaira2=$3
+	_ifaces=
 	if [ -z "$_pname" ]; then
 		return
 	fi
 	# doa state will only be set if pot is in state "starting"
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s doa
-	if [ -n "$_iface" ] && _is_valid_netif "$_iface" ; then
-		pot-cmd stop -p "$_pname" -i "$_iface" -s
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" \
+	  set-status -p "$_pname" -s doa
+	if [ -n "$_epaira" ] && _is_valid_netif "$_epaira" ; then
+		_ifaces="$_epaira"
+	fi
+	if [ -n "$_epaira2" ] && _is_valid_netif "$_epaira2" ; then
+		_ifaces="$_ifaces:$_epaira2"
+	fi
+	_ifaces="${_ifaces#:}"
+
+	if [ -n "$_ifaces" ]; then
+		pot-cmd stop -p "$_pname" -i "$_ifaces" -s
 	else
 		pot-cmd stop -p "$_pname" -s
 	fi
@@ -126,34 +137,53 @@ _js_etc_hosts()
 	grep '^pot.hosts=' "$_cfile" | sed 's/^pot.hosts=//g' >> "$_phosts"
 }
 
+# returns interface names of epaira and epairb
+# $1 pot name
+# $2 prefix (optional)
 _js_create_epair()
 {
-	local _epair
-	_epair=$(ifconfig epair create descr "$_pname" group "pot")
+	local _epaira _epaira_renamed _epairb _pname _prefix
 
-	if [ -z "${_epair}" ]; then
-		_error "ifconfig epair failed"
+	_pname="$1"
+	_prefix="$2"
+	_epaira=$(ifconfig epair create descr "$_pname" group "pot")
+
+	if [ -z "${_epaira}" ]; then
+		_error "ifconfig epair failed" >&2
 		start-cleanup "$_pname"
-		exit 1 # false
+		${EXIT} 1 # false
 	fi
-	echo "${_epair%a}"
+
+	_epairb="${_epaira%a}b"
+	_epaira_renamed=$(ifconfig "$_epaira" name \
+	    "$(printf "p%s%x%x" "$_prefix" "$(date +%s)" "$$")")
+
+	if [ -z "${_epaira_renamed}" ]; then
+		_error "ifconfig epair rename failed" >&2
+		start-cleanup "$_pname" "$_epaira"
+		${EXIT} 1 # false
+	fi
+
+	echo "$_epaira_renamed"
+	echo "$_epairb"
 }
 
 # $1 pot name
-# $2 epair interface
+# $2 epaira interface
+# $3 epairb interface
 _js_vnet()
 {
-	local _pname _bridge _epair _epairb _ip
+	local _pname _bridge _epaira _epairb _ip
 	_pname=$1
 	if ! _is_vnet_ipv4_up ; then
 		_info "Internal network not found! Calling vnet-start to fix the issue"
 		pot-cmd vnet-start
 	fi
 	_bridge=$(_pot_bridge_ipv4)
-	_epair=${2}a
-	_epairb="${2}b"
-	ifconfig "${_epair}" up
-	ifconfig "$_bridge" addm "${_epair}"
+	_epaira=$2
+	_epairb=$3
+	ifconfig "$_epaira" up
+	ifconfig "$_bridge" addm "$_epaira"
 	_ip=$( _get_ip_var "$_pname" )
 	## if norcscript - write a ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
@@ -179,20 +209,22 @@ _js_vnet()
 }
 
 # $1 pot name
-# $2 epair interface
+# $2 epaira interface
+# $3 epairb interface
+# $4 stack (ipv6 or dual)
 _js_vnet_ipv6()
 {
-	local _pname _bridge _epair _epairb _ip
+	local _pname _bridge _epaira _epairb _ip
 	_pname=$1
 	if ! _is_vnet_ipv6_up ; then
 		_info "Internal network not found! Calling vnet-start to fix the issue"
 		pot-cmd vnet-start
 	fi
 	_bridge=$(_pot_bridge_ipv6)
-	_epair=${2}a
-	_epairb="${2}b"
-	ifconfig "${_epair}" up
-	ifconfig "$_bridge" addm "${_epair}"
+	_epaira=$2
+	_epairb=$3
+	ifconfig "$_epaira" up
+	ifconfig "$_bridge" addm "$_epaira"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
@@ -202,7 +234,7 @@ _js_vnet_ipv6()
 		        exit 1
 		    fi
 		fi
-		ifconfig ${_epairb} inet6 up accept_rtadv
+		ifconfig ${_epairb} inet6 up accept_rtadv -ifdisabled
 		/sbin/rtsol -d ${_epairb}
 		EOT
 	else # use rc scripts
@@ -210,7 +242,7 @@ _js_vnet_ipv6()
 		if [ -w "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf" ]; then
 			sed -i '' '/ifconfig_epair[0-9][0-9]*[ab]_ipv6/d' "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf"
 		fi
-		echo "ifconfig_${_epairb}_ipv6=\"inet6 accept_rtadv auto_linklocal\"" >> "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf"
+		echo "ifconfig_${_epairb}_ipv6=\"inet6 accept_rtadv auto_linklocal -ifdisabled\"" >> "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf"
 		sysrc -f "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.conf" rtsold_enable="YES"
 		# Fix a bug in the rtsold rc script in 11.3
 		sed -i '' 's/nojail/nojailvnet/' "${POT_FS_ROOT}/jails/$_pname/m/etc/rc.d/rtsold"
@@ -218,10 +250,11 @@ _js_vnet_ipv6()
 }
 
 # $1 pot name
-# $2 epair interface
+# $2 epaira interface
+# $3 epairb interface
 _js_private_vnet()
 {
-	local _pname _bridge_name _bridge _epair _epairb _ip _net_size _gateway
+	local _pname _bridge_name _bridge _epaira _epairb _ip _net_size _gateway
 	_pname=$1
 	_bridge_name="$( _get_conf_var "$_pname" bridge )"
 	if ! _is_vnet_ipv4_up "$_bridge_name" ; then
@@ -229,10 +262,10 @@ _js_private_vnet()
 		pot-cmd vnet-start -B "$_bridge_name"
 	fi
 	_bridge="$(_private_bridge "$_bridge_name")"
-	_epair=${2}a
-	_epairb="${2}b"
-	ifconfig "${_epair}" up
-	ifconfig "$_bridge" addm "${_epair}"
+	_epaira=$2
+	_epairb=$3
+	ifconfig "$_epaira" up
+	ifconfig "$_bridge" addm "$_epaira"
 	_ip=$( _get_ip_var "$_pname"  )
 	_net_size="$(_get_bridge_var "$_bridge_name" net)"
 	_net_size="${_net_size##*/}"
@@ -415,11 +448,11 @@ _js_env()
 # $1 jail name
 _js_start()
 {
-	local _pname _confdir _iface _hostname _osrelease _param _ip _cmd _persist
-	local _stack _value _name _type _wait_pid _exit_code
+	local _pname _confdir _epaira _epairb _ipv6_epaira _ipv6_epairb
+	local _ifaces _hostname _osrelease _param _ip _cmd _persist
+	local _stack _value _name _type _wait_pid _exit_code _tmp
 	_pname="$1"
 	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_iface=
 	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
 	_param="$_param allow.chflags exec.clean mount.devfs"
 	_param="$_param sysvmsg=new sysvsem=new sysvshm=new"
@@ -524,24 +557,42 @@ _js_start()
 		_param="$_param vnet"
 		_stack="$( _get_pot_network_stack "$_pname" )"
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv4" ]; then
-			_iface="$( _js_create_epair )"
-			_js_vnet "$_pname" "$_iface"
-			_param="$_param vnet.interface=${_iface}b"
+			_tmp="$( _js_create_epair "$_pname" '4' )" || return 1
+			# shellcheck disable=SC2086
+			set -- $_tmp
+
+			_epaira=$1
+			_epairb=$2
+			_js_vnet "$_pname" "$_epaira" "$_epairb"
+			_param="$_param vnet.interface=${_epairb}"
 			_js_export_ports "$_pname"
 		fi
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv6" ]; then
-			_iface="$( _js_create_epair )"
-			_js_vnet_ipv6 "$_pname" "$_iface"
-			_param="$_param vnet.interface=${_iface}b"
+			_tmp="$( _js_create_epair "$_pname" '6' )" || return 1
+			# shellcheck disable=SC2086
+			set -- $_tmp
+
+			_ipv6_epaira=$1
+			_ipv6_epairb=$2
+			_js_vnet_ipv6 "$_pname" "$_ipv6_epaira" \
+			  "$_ipv6_epairb" "$_stack"
+			_param="$_param vnet.interface=${_ipv6_epairb}"
 		fi
 		;;
 	"private-bridge")
-		_iface="$( _js_create_epair )"
-		_js_private_vnet "$_pname" "$_iface"
-		_param="$_param vnet vnet.interface=${_iface}b"
+		_tmp="$( _js_create_epair "$_pname" '4' )" || return 1
+		# shellcheck disable=SC2086
+		set -- $_tmp
+
+		_epaira=$1
+		_epairb=$2
+		_js_private_vnet "$_pname" "$_epaira" "$_epairb"
+		_param="$_param vnet vnet.interface=${_epairb}"
 		_js_export_ports "$_pname"
 		;;
 	esac
+	_ifaces="$_epaira:$_ipv6_epaira"
+	_ifaces="${_ifaces#:}"
 	_js_env "$_pname"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		_js_norc "$_pname"
@@ -595,7 +646,8 @@ _js_start()
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
 	# Here is where the pot is marked as started
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s started
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status \
+	  -p "$_pname" -s started -i "$_ifaces"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_info "pot $_pname is already started (???)"
@@ -625,7 +677,7 @@ _js_start()
 			# returning, but the situation is quite messed up
 			return 1
 		fi
-		start-cleanup "$_pname" "${_iface}"
+		start-cleanup "$_pname" "${_epaira}" "${_ipv6_epaira}"
 		if [ "$_exit_code" -ne 0 ]; then
 			# return code to signal application exit error
 			return 125
@@ -644,7 +696,7 @@ _js_start()
 			# returning, but the situation is quite messed up
 			return 1
 		fi
-		start-cleanup "$_pname" "${_iface}"
+		start-cleanup "$_pname" "${_epaira}" "${_ipv6_epaira}"
 		return 1
 	fi
 }

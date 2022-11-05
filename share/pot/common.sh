@@ -935,22 +935,6 @@ _get_pot_snaps()
 	done
 }
 
-# $1 mountpoint to adjust permissions for
-_fix_pot_mountpoint_permissions()
-{
-	local _mp _exp_perm
-	_mp="$1"
-	_exp_perm="755"
-
-	if [ "$(stat -f "%Lp" "${_mp}")" != "$_exp_perm" ]; then
-		_debug "Setting mountpoint permission for $_mp"
-		# chomd 755 allows everyone inside the jail to access the file system
-		# permissions like 700 don't allow access to the file system to any non-user also in the jail
-		# causing issue to applications like nginx
-		chmod "$_exp_perm" "$_mp" || ${EXIT} 1
-	fi
-}
-
 # $1 mountpoint to create (proper permissions are applied)
 _create_pot_mountpoint()
 {
@@ -961,8 +945,6 @@ _create_pot_mountpoint()
 		_debug "Creating mountpoint $_mp"
 		mkdir -p "$_mp" || exit 1
 	fi
-
-	_fix_pot_mountpoint_permissions "$_mp"
 }
 
 # $1 pot name

@@ -107,7 +107,6 @@ _import_pot()
 		xzcat "${POT_CACHE}/$_filename" | zfs receive \
 		  $(_get_zfs_receive_extra_args) "${POT_ZFS_ROOT}/jails/$_pname"
 	fi
-	_fix_pot_mountpoint_permissions "${POT_FS_ROOT}/jails/$_pname/m"
 
 	# pot.conf modifications
 	_hostname="${_pname}.$( hostname )"

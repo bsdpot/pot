@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - flavours: scripts are made executable when loading
 - destroy: remove status file when destroying
 - vnet: use unique epaira interface names (#232)
+- Add pot group to protect pot root (#240)
 
 ### Fixed
 - Reverted the change of permissions of pot root mountpoint to fix a regression (#233)

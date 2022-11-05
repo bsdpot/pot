@@ -18,7 +18,7 @@ init-help()
 
 pot-init()
 {
-	local pf_file
+	local pf_file dataset
 	pf_file="$(sysrc -n pf_rules)"
 	OPTIND=1
 	while getopts "hvf:" _o ; do
@@ -42,6 +42,11 @@ pot-init()
 		${EXIT} 1
 	fi
 
+	if ! _conf_check "init" ; then
+		_qerror "init" "Configuration not valid, please verify it"
+		return 1 # false
+	fi
+
 	if ! _zfs_exist "${POT_ZFS_ROOT}" "${POT_FS_ROOT}" ; then
 		if _zfs_dataset_valid "${POT_ZFS_ROOT}" ; then
 			_error "${POT_ZFS_ROOT} is an invalid POT root"
@@ -63,19 +68,21 @@ pot-init()
 		fi
 	fi
 
+	# set root directory permissions and ownership
+	chmod 750 "${POT_FS_ROOT}" || ${EXIT} 1
+	chown root:"${POT_GROUP:-pot}" "${POT_FS_ROOT}" || ${EXIT} 1
+
 	# create mandatory datasets
-	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/bases" ; then
-		_debug "creating ${POT_ZFS_ROOT}/bases"
-		zfs create "${POT_ZFS_ROOT}/bases"
-	fi
-	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/jails" ; then
-		_debug "creating ${POT_ZFS_ROOT}/jails"
-		zfs create "${POT_ZFS_ROOT}/jails"
-	fi
-	if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/fscomp" ; then
-		_debug "creating ${POT_ZFS_ROOT}/fscomp"
-		zfs create "${POT_ZFS_ROOT}/fscomp"
-	fi
+	for dataset in bases jails fscomp; do
+		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/$dataset" ; then
+			_debug "creating ${POT_ZFS_ROOT}/$dataset"
+			zfs create "${POT_ZFS_ROOT}/$dataset" || ${EXIT} 1
+		fi
+		if ! _zfs_mounted "${POT_ZFS_ROOT}/$dataset"; then
+			_debug "mounting ${POT_ZFS_ROOT}/$dataset"
+			zfs mount "${POT_ZFS_ROOT}/$dataset" || ${EXIT} 1
+		fi
+	done
 	if ! _zfs_exist "${POT_ZFS_ROOT}/cache" "${POT_CACHE}" ; then
 		_debug "creating ${POT_ZFS_ROOT}/cache mounted as ${POT_CACHE}"
 		if ! _zfs_dataset_valid "${POT_ZFS_ROOT}/cache" ; then

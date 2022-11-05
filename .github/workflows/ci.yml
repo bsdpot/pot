@@ -69,6 +69,7 @@ jobs:
           echo pass >>/etc/pf.conf
           service pf enable
           service pf start
+          pw groupadd pot
           bin/pot init
           #
           ### Run CI tests ################################################

@@ -67,6 +67,7 @@ setUp()
 	__mon_init
 	POT_ZFS_ROOT=zpot
 	POT_FS_ROOT=/opt
+	POT_GROUP="$(id -ng)"
 }
 
 tearDown()

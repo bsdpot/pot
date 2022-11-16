@@ -7,7 +7,7 @@ prepare-help()
 	cat <<-"EOH"
 	pot prepare [-hvS] -p pot -U URL -t tag -a aID -n potname -c cmd
 	            [-e [proto:]port[:pot_port]] [-N network-type]
-	            [-i ipaddr] [-B bridge-name]
+	            [-i ipaddr] [-B bridge-name] [-C pubkey]
 	  -h print this help
 	  -h verbose
 	  -p pot : the pot image
@@ -29,12 +29,16 @@ prepare-help()
 	           custom:<file> - copy <file> into pot configuration
 	           off           - leave resolver config unaltered
 	  -s : start the newly generated pot immediately
+	  -C pubkey : verify with public key 'pubkey' using signify(1)
+	              on pot import
 	EOH
 }
 
 pot-prepare()
 {
-	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname _auto_start _network_type _ipaddr _ipaddr_list _bridge_name _dns
+	local _pname _o _URL _tag _tpname _cmd _ports _allocation_tag _new_pname
+	local _auto_start _network_type _ipaddr _ipaddr_list _bridge_name _dns
+	local _sign_pubkey
 	_pname=
 	_ports=
 	_network_type=
@@ -44,8 +48,9 @@ pot-prepare()
 	_bridge_name=
 	_cmd=
 	_dns=
+	_sign_pubkey=
 	OPTIND=1
-	while getopts "hvp:U:t:c:e:a:n:sN:i:B:S:d:" _o ; do
+	while getopts "hvp:U:t:c:e:a:n:sN:i:B:S:d:C:" _o ; do
 		case "$_o" in
 		h)
 			prepare-help
@@ -133,6 +138,9 @@ pot-prepare()
 					${EXIT} 1
 			esac
 			;;
+		C)
+			_sign_pubkey="$OPTARG"
+			;;
 		*)
 			prepare-help
 			${EXIT} 1
@@ -172,7 +180,8 @@ pot-prepare()
 		${EXIT} 1
 	fi
 	if ! _is_pot "$_imported_pname" quiet ; then
-		if ! pot-cmd import -U "$_URL" -t "$_tag" -p "$_pname" ; then
+		if ! pot-cmd import -U "$_URL" -t "$_tag" -p "$_pname" \
+		    -C "$_sign_pubkey"; then
 			_error "pot import failed"
 			pot-cmd stop "$_imported_pname"
 			${EXIT} 1

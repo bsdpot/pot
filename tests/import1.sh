@@ -26,6 +26,12 @@ _import_pot()
 	__monitor IMPORTS "$@"
 }
 
+# only has to exist, isn't called in tests
+signify()
+{
+	true
+}
+
 test_pot_import_001()
 {
 	pot-import -b bb
@@ -164,11 +170,35 @@ test_pot_import_042()
 	assertEqualsMon "_fetch_pot calls" "1" FETCHPOT_CALLS
 	assertEqualsMon "_fetch_pot arg1" "test-pot-single" FETCHPOT_CALL1_ARG1
 	assertEqualsMon "_fetch_pot arg2" "1.0" FETCHPOT_CALL1_ARG2
-	assertEqualsMon "_fetch_pot arg3" "https://example.org" FETCHPOT_CALL1_ARG3
+	assertEqualsMon "_fetch_pot arg3" "" FETCHPOT_CALL1_ARG3
+	assertEqualsMon "_fetch_pot arg4" "https://example.org" FETCHPOT_CALL1_ARG4
 	assertEqualsMon "_import calls" "1" IMPORTS_CALLS
 	assertEqualsMon "_import arg1" "test-pot-single" IMPORTS_CALL1_ARG1
 	assertEqualsMon "_import arg2" "1.0" IMPORTS_CALL1_ARG2
 	assertEqualsMon "_import arg3" "test-pot-single_1_0" IMPORTS_CALL1_ARG3
+}
+
+test_pot_import_043()
+{
+	pot-import -p test-pot-single -t 1.0 -U https://example.org -C import1.sh
+	assertEquals "Exit rc" "0" "$?"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_fetch_pot calls" "1" FETCHPOT_CALLS
+	assertEqualsMon "_fetch_pot arg1" "test-pot-single" FETCHPOT_CALL1_ARG1
+	assertEqualsMon "_fetch_pot arg2" "1.0" FETCHPOT_CALL1_ARG2
+	assertEqualsMon "_fetch_pot arg3" "import1.sh" FETCHPOT_CALL1_ARG3
+	assertEqualsMon "_fetch_pot arg4" "https://example.org" FETCHPOT_CALL1_ARG4
+	assertEqualsMon "_import calls" "1" IMPORTS_CALLS
+	assertEqualsMon "_import arg1" "test-pot-single" IMPORTS_CALL1_ARG1
+	assertEqualsMon "_import arg2" "1.0" IMPORTS_CALL1_ARG2
+	assertEqualsMon "_import arg3" "test-pot-single_1_0" IMPORTS_CALL1_ARG3
+}
+
+test_pot_import_044()
+{
+	pot-import -p test-pot-single -t 1.0 -U https://example.org -C nonexistent
+	assertEquals "Exit rc" "1" "$?"
 }
 
 setUp()

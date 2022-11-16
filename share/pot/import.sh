@@ -8,28 +8,31 @@
 
 import-help() {
 	cat <<-"EOH"
-	pot import [-hv] -p pot -t tag -U URL
+	pot import [-hv] -p pot -t tag -U URL [-C pubkey]
 	  -h print this help
 	  -v verbose
 	  -p pot : the remote pot name
 	  -t tag : the tag of the pot
 	  -U URL : the base URL where to find the image file
+	  -C pubkey : verify with public key 'pubkey' using signify(1)
 	EOH
 }
 
 # $1 : remote pot name
 # $2 : tag
-# $3 : URL
+# $3 : pubkey (if non-empty, signature is fetched)
+# $4 : URL
 _fetch_pot()
 {
 	local _filename
 	_filename="${1}_${2}.xz"
-	if ! _fetch_pot_internal "$1" "$2" "$3" ; then
+	if ! _fetch_pot_internal "$1" "$2" "$3" "$4" ; then
 		# remove the artifacts and retry, but only once
 		rm -f "${POT_CACHE}/${_filename}" \
 			"${POT_CACHE}/${_filename}.meta" \
-			"${POT_CACHE}/${_filename}.skein"
-		if ! _fetch_pot_internal "$1" "$2" "$3" ; then
+			"${POT_CACHE}/${_filename}.skein" \
+			"${POT_CACHE}/${_filename}.skein.sig"
+		if ! _fetch_pot_internal "$1" "$2" "$3" "$4"; then
 			return 1 # false
 		fi
 		return 0 # true
@@ -39,25 +42,42 @@ _fetch_pot()
 
 # $1 : remote pot name
 # $2 : tag
-# $3 : URL
+# $3 : pubkey (if non-empty, signature is fetched)
+# $4 : URL
 _fetch_pot_internal()
 {
-	local _rpname _tag _URL _filename
+	local _rpname _tag _sign_pubkey _URL _filename
 	_rpname=$1
 	_tag=$2
+	_sign_pubkey=$3
 	_filename="${1}_${2}.xz"
-	if [ -z "$3" ]; then
+	if [ -z "$4" ]; then
 		_URL="file://"
 	else
-		_URL="$3"
-	fi
-	if [ ! -r "${POT_CACHE}/$_filename" ]; then
-		if ! fetch "$_URL/$_filename" --output "${POT_CACHE}/$_filename" ; then
-			return 1 # false
-		fi
+		_URL="$4"
 	fi
 	if [ ! -r "${POT_CACHE}/$_filename.skein" ]; then
 		if ! fetch "$_URL/$_filename.skein" --output "${POT_CACHE}/$_filename.skein" ; then
+			return 1 # false
+		fi
+	fi
+	if [ -n "$_sign_pubkey" ]; then
+		if [ ! -r "${POT_CACHE}/$_filename.skein.sig" ]; then
+			if ! fetch "$_URL/$_filename.skein.sig" \
+			    --output "${POT_CACHE}/$_filename.skein.sig" ; then
+				return 1 # false
+			fi
+		fi
+		if signify -V -p "$_sign_pubkey" -x "${POT_CACHE}/$_filename.skein.sig" \
+		    -m "${POT_CACHE}/$_filename.skein"; then
+			_debug "Signature verification succeeded"
+		else
+			_error "Signature verification failed"
+			return 1 # false
+		fi
+	fi
+	if [ ! -r "${POT_CACHE}/$_filename" ]; then
+		if ! fetch "$_URL/$_filename" --output "${POT_CACHE}/$_filename" ; then
 			return 1 # false
 		fi
 	fi
@@ -84,12 +104,13 @@ _fetch_pot_internal()
 _import_pot()
 {
 	local _pname _rpname _tag _filename _network_type _newip _cdir
-	local _origin_pname _origin_snap
+	local _sign_pubkey _origin_pname _origin_snap
 	_rpname="$1"
 	_tag="$2"
 	_pname="$3"
-	_origin_pname="$4"
-	_origin_snap="$5"
+	_sign_pubkey="$4"
+	_origin_pname="$5"
+	_origin_snap="$6"
 	_filename="${_rpname}_${_tag}.xz"
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 
@@ -107,7 +128,6 @@ _import_pot()
 		xzcat "${POT_CACHE}/$_filename" | zfs receive \
 		  $(_get_zfs_receive_extra_args) "${POT_ZFS_ROOT}/jails/$_pname"
 	fi
-	_fix_pot_mountpoint_permissions "${POT_FS_ROOT}/jails/$_pname/m"
 
 	# pot.conf modifications
 	_hostname="${_pname}.$( hostname )"
@@ -137,15 +157,16 @@ _import_pot()
 
 pot-import()
 {
-	local _rpname _tag _URL _pname
+	local _rpname _tag _URL _pname _sign_pubkey
 	_rpname=
 	_tag=
 	_URL=
+	_sign_pubkey=
 	local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin
 	local _filename
 
 	OPTIND=1
-	while getopts "hvp:t:U:" _o ; do
+	while getopts "hvp:t:U:C:" _o ; do
 		case "$_o" in
 		h)
 			import-help
@@ -167,6 +188,9 @@ pot-import()
 				${EXIT} 1
 			fi
 			_URL="$OPTARG"
+			;;
+		C)
+			_sign_pubkey="$OPTARG"
 			;;
 		*)
 			import-help
@@ -191,11 +215,22 @@ pot-import()
 		import-help
 		${EXIT} 1
 	fi
+	if [ -n "$_sign_pubkey" ]; then
+		if [ ! -r "$_sign_pubkey" ]; then
+			_error "Public key $_sign_pubkey not found"
+			${EXIT} 1
+		fi
+		if ! type "signify" >/dev/null 2>&1; then
+			_error "Could not find 'signify',"\
+			       "try 'pkg install signify'"
+			${EXIT} 1
+		fi
+	fi
 	if ! _is_uid0 ; then
 		${EXIT} 1
 	fi
 	_info "importing $_rpname @ $_tag as $_pname"
-	if ! _fetch_pot "$_rpname" "$_tag" "$_URL" ; then
+	if ! _fetch_pot "$_rpname" "$_tag" "$_sign_pubkey" "$_URL" ; then
 		${EXIT} 1
 	fi
 
@@ -213,7 +248,8 @@ pot-import()
 		# XXX: assumes remote name equals local name
 		if ! _is_pot "${_dep_origin}" quiet ; then
 			_info "Installing dependency ${_dep_origin}"
-			if ! pot-cmd import -p "$_dep_pname" -t "$_dep_tag" -U "$_URL"; then
+			if ! pot-cmd import -p "$_dep_pname" -t "$_dep_tag" \
+			    -U "$_URL" -C "$_sign_pubkey"; then
 				${EXIT} 1
 			fi
 		else
@@ -224,7 +260,8 @@ pot-import()
 		_info "Pot $_pname has no dependencies"
 	fi
 
-	if ! _import_pot "$_rpname" "$_tag" "$_pname" "$_dep_origin" "$_dep_snap"; then
+	if ! _import_pot "$_rpname" "$_tag" "$_pname" "$_sign_pubkey" \
+	    "$_dep_origin" "$_dep_snap"; then
 		${EXIT} 1
 	fi
 	return 0

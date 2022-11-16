@@ -8,7 +8,7 @@
 
 export-help() {
 	cat <<-"EOH"
-	pot export [-hv] -p pot [-s snapshot] [-t tag] [-D dir] [-l level]
+	pot export [-hv] -p pot [-S seckey] [-t tag] [-D dir] [-l level]
 	  -h print this help
 	  -v verbose
 	  -p pot : the working pot
@@ -21,6 +21,7 @@ export-help() {
 	  -F : force export of multiple snapshot
 	       (by default, only one snapshot is allowed)
 	  -A : auto-fix number of snapshots (only one snapshot is allowed)
+	  -S : sign with secure key 'seckey' using signify(1)
 	EOH
 }
 
@@ -30,17 +31,20 @@ export-help() {
 # $4 : check tag - if 'YES', make sure tags are not decreasing
 # $5 : target directory - where to write the file
 # $6 : compression level
+# $7 : key to sign with signify
 _export_pot()
 {
 	local _pname _dset _snap _tag _check_tag _prev_tag _prev_snap
-	local  _dir _file _clvl _meta _origin _origin_pname_snapshot
+	local _dir _file _clvl _sign_seckey _meta _origin _origin_pname_snapshot
 	local _origin_pname _origin_snapshot _origin_tag _highest_version
+	local _noerr
 	_pname="$1"
 	_snap="$2"
 	_tag="$3"
 	_check_tag="$4"
 	_dir="$5"
 	_clvl="$6"
+	_sign_seckey="$7"
 	_file="${_dir}/${_pname}_${_tag}.xz"
 	_dset="${POT_ZFS_ROOT}/jails/$_pname"
 	_meta="-"
@@ -81,8 +85,19 @@ _export_pot()
 	elif [ ! -r "${_file}" ]; then
 		return 1 # false
 	else
+		_noerr=0
 		echo "$_meta" > "${_file}.meta"
+		_noerr=$((_noerr+$?))
 		(cat "${_file}" "${_file}.meta") | skein1024 -q > "${_file}.skein"
+		_noerr=$((_noerr+$?))
+		if [ -n "$_sign_seckey" ]; then
+			signify -S -s "$_sign_seckey" -m "${_file}.skein"
+			_noerr=$((_noerr+$?))
+		fi
+		if [ "$_noerr" != 0 ]; then
+			_error "Export failed"
+			rm -f "${_file}" "${_file}.meta" "${_file}.skein" "${_file}.skein.sig"
+		fi
 		zfs set :pot.tag="${_tag}" "${_dset}"
 		zfs set :pot.snap="${_snap}" "${_dset}"
 		return 0 # true
@@ -91,7 +106,7 @@ _export_pot()
 
 pot-export()
 {
-	local _pname _snap _tag _dir _auto_purge _force _check_tag
+	local _pname _snap _tag _dir _auto_purge _force _check_tag _sign_seckey
 	_pname=
 	_snap=
 	_tag=
@@ -100,8 +115,9 @@ pot-export()
 	_auto_purge=
 	_force=
 	_check_tag=
+	_sign_seckey=
 	OPTIND=1
-	while getopts "hvcp:t:D:l:FA" _o ; do
+	while getopts "hvcp:t:D:l:FAS:" _o ; do
 		case "$_o" in
 		h)
 			export-help
@@ -141,6 +157,9 @@ pot-export()
 		A)
 			_auto_purge="YES"
 			;;
+		S)
+			_sign_seckey="$OPTARG"
+			;;
 		*)
 			export-help
 			${EXIT} 1
@@ -160,6 +179,18 @@ pot-export()
 	if  [ "$(_get_pot_type "$_pname")" != "single" ]; then
 		_error "pot $_pname not supported - only single type pot can be exported"
 		${EXIT} 1
+	fi
+
+	if [ -n "$_sign_seckey" ]; then
+		if [ ! -r "$_sign_seckey" ]; then
+			_error "Signature key $_sign_seckey not found"
+			${EXIT} 1
+		fi
+		if ! type "signify" >/dev/null 2>&1; then
+			_error "Could not find 'signify',"\
+			       "try 'pkg install signify'"
+			${EXIT} 1
+		fi
 	fi
 
 	_snap="$(_zfs_last_snap "${POT_ZFS_ROOT}/jails/$_pname" )"
@@ -200,6 +231,6 @@ pot-export()
 		${EXIT} 1
 	fi
 	_info "exporting $_pname @ $_snap to ${_dir}/${_pname}_${_tag}.xz"
-	_export_pot "$_pname" "$_snap" "$_tag" "$_check_tag" "${_dir}" "${_clvl}"
+	_export_pot "$_pname" "$_snap" "$_tag" "$_check_tag" "${_dir}" "${_clvl}" "$_sign_seckey"
 	return $?
 }

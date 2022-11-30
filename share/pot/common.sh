@@ -10,7 +10,7 @@ _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
-_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs children'
+_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets children'
 
 # N: arg name jail command, T: type of data, D: deafult value
 # devfs is always mounted
@@ -35,6 +35,9 @@ _POT_DEFAULT_tmpfs_D='NO'
 _POT_DEFAULT_zfs_N='allow.mount.zfs'
 _POT_DEFAULT_zfs_T='bool'
 _POT_DEFAULT_zfs_D='NO'
+_POT_DEFAULT_raw_sockets_N='allow.raw_sockets'
+_POT_DEFAULT_raw_sockets_T='bool'
+_POT_DEFAULT_raw_sockets_D='NO'
 _POT_DEFAULT_children_N='children.max'
 _POT_DEFAULT_children_T='uint'
 _POT_DEFAULT_children_D='0'

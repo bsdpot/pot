@@ -7,7 +7,7 @@ Every running instance is called `pot`, like the one that I use to cook all the 
 It's heavily based on FreeBSD, in particular on jails, ZFS, pf and rctl.
 
 The project's initial goal was to prove that FreeBSD has all the technologies to have a container-alike environment.
-The project then evolved in something more robust and feature-rich.
+The project then evolved into something more robust and feature-rich.
 
 The project was presented for the first time at FOSDEM 2018: ([talk page](https://archive.fosdem.org/2018/schedule/event/pot_container_framework/))
 

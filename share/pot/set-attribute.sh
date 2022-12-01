@@ -10,7 +10,8 @@ set-attribute-help()
 	  -v verbose
 	  -p pot : the working pot
 	  -A attribute : one of
-	$(echo "$_POT_RW_ATTRIBUTES" | xargs -n1 echo "     +" | sort)
+	$(echo "$_POT_RW_ATTRIBUTES $_POT_JAIL_RW_ATTRIBUTES" |
+	  xargs -n1 echo "     +" | sort)
 	  -V value : the new value for "attribute"
 	EOH
 }

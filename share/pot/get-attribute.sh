@@ -11,8 +11,8 @@ get-attribute-help()
 	  -q quiet
 	  -p pot : the working pot
 	  -A attribute : get value of attribute, one of
-	$(echo "$_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES" |
-	  xargs -n1 echo "     +" | sort)
+	$(echo "$_POT_RW_ATTRIBUTES $_POT_RO_ATTRIBUTES \
+	  $_POT_JAIL_RW_ATTRIBUTES" | xargs -n1 echo "     +" | sort)
 	EOH
 }
 

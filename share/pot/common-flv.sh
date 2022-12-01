@@ -81,7 +81,7 @@ _flv_set_cmd()
 
 _exec_flv()
 {
-	local _pname _flv _pdir _flv_cmd_file _flv_script _flv_dir _previous_pwd
+	local _pname _flv _pdir _flv_cmd_file _flv_script _flv_dir _previous_pwd _persist
 	_pname=$1
 	_flv=$2
 	_pdir=${POT_FS_ROOT}/jails/$_pname
@@ -127,6 +127,15 @@ _exec_flv()
 	_flv_script="$( _get_flavour_script "$_flv" )"
 	if [ -n "${_flv_script}" ]; then
 		_debug "Starting $_pname pot for the initial bootstrap"
+
+		_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
+		if [ "$_persist" = "NO" ]; then
+			_debug "Setting pot $_pname temporarily to persistent"
+			if ! pot-cmd set-attribute -A persistent -V YES -p "$_pname" ; then
+				return 1
+			fi
+		fi
+
 		pot-cmd start "$_pname"
 		cp -v "${_flv_script}" "$_pdir/m/tmp"
 		chmod a+x "$_pdir/m/tmp/$(basename "${_flv_script}" )"
@@ -136,6 +145,12 @@ _exec_flv()
 			return 1
 		fi
 		pot-cmd stop "$_pname"
+		if [ "$_persist" = "NO" ]; then
+			_debug "Reverting pot $_pname to non-persistent"
+			if ! pot-cmd set-attribute -A persistent -V NO -p "$_pname" ; then
+				return 1
+			fi
+		fi
 	else
 		_debug "No shell script available for the flavour $_flv"
 	fi

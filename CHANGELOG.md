@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - set-attr: fix no-etc-hosts attribute handling
 - Remove leftover mount points on destroy (#236)
 - set-attr/get-attr: fix help output (#245)
+- Fix running flavour script on non-persistent pot (#238)
 
 ## [0.15.3] 2022-09-17
 ### Fixed

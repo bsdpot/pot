@@ -9,6 +9,12 @@
 # common stubs
 . common-stub.sh
 
+# only has to exist, isn't called in tests
+signify()
+{
+	true
+}
+
 _is_zfs_pot_snap()
 {
 	__monitor ISZFSSNAP "$@"
@@ -295,6 +301,29 @@ test_pot_export_052()
 	assertEqualsMon "_export arg3" "1.0" EXPORTS_CALL1_ARG3
 	assertEqualsMon "_export arg4" "" EXPORTS_CALL1_ARG4
 	assertEqualsMon "_export arg5" "." EXPORTS_CALL1_ARG5
+}
+
+test_pot_export_053()
+{
+	pot-export -p test-pot-single-0 -t 1.0 -A -S export1.sh
+	assertEquals "Exit rc" "0" "$?"
+	assertEqualsMon "Help calls" "0" HELP_CALLS
+	assertEqualsMon "Error calls" "0" ERROR_CALLS
+	assertEqualsMon "_is_zfs_pot_snap calls" "0" ISZFSSNAP_CALLS
+	assertEqualsMon "pot-cmd calls" "1" POTCMD_CALLS
+	assertEqualsMon "pot-cmd arg1" "snapshot" POTCMD_CALL1_ARG1
+	assertEqualsMon "_export calls" "1" EXPORTS_CALLS
+	assertEqualsMon "_export arg1" "test-pot-single-0" EXPORTS_CALL1_ARG1
+	assertEqualsMon "_export arg2" "123123123" EXPORTS_CALL1_ARG2
+	assertEqualsMon "_export arg3" "1.0" EXPORTS_CALL1_ARG3
+	assertEqualsMon "_export arg4" "" EXPORTS_CALL1_ARG4
+	assertEqualsMon "_export arg5" "." EXPORTS_CALL1_ARG5
+}
+
+test_pot_export_054()
+{
+	pot-export -p test-pot-single-0 -t 1.0 -A -S nonexistent
+	assertEquals "Exit rc" "1" "$?"
 }
 
 setUp()

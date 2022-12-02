@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - set-attr: add jail attribute "raw_sockets" (#247)
+- import/export/prepare: support signing pots (#221)
 
 ### Changed
 - flavours: scripts are made executable when loading

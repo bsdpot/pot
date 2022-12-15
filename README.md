@@ -23,6 +23,10 @@ More in details:
 ### Nomad pot driver integration
 A driver to allow [nomad](https://www.nomadproject.io) to interact with `pot` has been developed and available [here](https://github.com/trivago/nomad-pot-driver)
 
+### Ansible Collection
+
+There is pot collection for Ansible provided by github user @zilti available at https://galaxy.ansible.com/zilti/pot.
+
 ### Online help
 `pot` provide an online help:
 ```

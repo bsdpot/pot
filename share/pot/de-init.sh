@@ -42,10 +42,10 @@ pot-de-init()
 		${EXIT} 1
 	fi
 	for _p in $_pots ; do
-		if _is_pot_running $_p ; then
+		if _is_pot_running "$_p" ; then
 			if [ -n "$_force" ]; then
 				_debug "Stop the pot $_p"
-				pot-cmd stop $_p
+				pot-cmd stop "$_p"
 			else
 				_error "At least on pot is still running. Use -f to force the stop of all pots"
 				${EXIT} 1

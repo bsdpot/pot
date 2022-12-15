@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.15.4] 2022-12-15
 ### Added
 - set-attr: add jail attributes "raw_sockets", "sysvipc" (#247, #248)
 - import/export/prepare: support signing pots (#221)

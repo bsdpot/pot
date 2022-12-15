@@ -79,8 +79,6 @@ _c_zfs_single()
 		_info "$_pdset exists already"
 	fi
 
-	_create_pot_mountpoint "$_pdir/m"
-
 	if [ -z "$_potbase" ]; then
 		# create an empty dataset
 		if ! zfs create "$_pdset/m" ; then

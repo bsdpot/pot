@@ -171,6 +171,10 @@ _conf_check()
 		_qerror "$1" "POT_FS_ROOT is mandatory"
 		return 1 # false
 	fi
+	if ! getent group "${POT_GROUP:-pot}" >/dev/null 2>&1; then
+		_qerror "$1" "Group '${POT_GROUP:-pot}' is missing, create it or change POT_GROUP"
+		return 1 # false
+	fi
 	return 0 # true
 }
 
@@ -234,6 +238,16 @@ _zfs_exist()
 	_mnt_="$(zfs list -H -o mountpoint "$1" 2> /dev/null )"
 	if [ "$_mnt_" != "$2" ]; then
 		return 1 # false
+	fi
+	return 0 # true
+}
+
+# check if the dataset $1 is mounted
+# $1 the dataset NAME
+_zfs_mounted()
+{
+	if [ "$(zfs get -Ho value mounted "$1")" != "yes" ]; then
+		return 1; # false
 	fi
 	return 0 # true
 }
@@ -938,22 +952,6 @@ _get_pot_snaps()
 	done
 }
 
-# $1 mountpoint to adjust permissions for
-_fix_pot_mountpoint_permissions()
-{
-	local _mp _exp_perm
-	_mp="$1"
-	_exp_perm="755"
-
-	if [ "$(stat -f "%Lp" "${_mp}")" != "$_exp_perm" ]; then
-		_debug "Setting mountpoint permission for $_mp"
-		# chomd 755 allows everyone inside the jail to access the file system
-		# permissions like 700 don't allow access to the file system to any non-user also in the jail
-		# causing issue to applications like nginx
-		chmod "$_exp_perm" "$_mp" || ${EXIT} 1
-	fi
-}
-
 # $1 mountpoint to create (proper permissions are applied)
 _create_pot_mountpoint()
 {
@@ -964,8 +962,6 @@ _create_pot_mountpoint()
 		_debug "Creating mountpoint $_mp"
 		mkdir -p "$_mp" || exit 1
 	fi
-
-	_fix_pot_mountpoint_permissions "$_mp"
 }
 
 # $1 pot name
@@ -1097,8 +1093,20 @@ pot-cmd()
 	shift
 	if [ ! -r "${_POT_INCLUDE}/${_cmd}.sh" ]; then
 		_error "Fatal error! $_cmd implementation not found!"
-		exit 1
+		${EXIT} 1
 	fi
+
+	if [ "$_cmd" != "init" ]&& [ "$_cmd" != "de-init" ] ; then
+		if [ ! -d "$POT_FS_ROOT" ]; then
+			_error "$POT_FS_ROOT does not exist, please run 'pot init'"
+			${EXIT} 1
+		fi
+		if [ ! -r "$POT_FS_ROOT" ]; then
+			_error "Current user has no read access to $POT_FS_ROOT"
+			${EXIT} 1
+		fi
+	fi
+
 	# shellcheck disable=SC1090
 	. "${_POT_INCLUDE}/${_cmd}.sh"
 	_func=pot-${_cmd}

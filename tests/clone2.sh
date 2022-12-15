@@ -26,12 +26,6 @@ date()
 	fi
 }
 
-stat()
-{
-	__monitor STAT "$@"
-	echo 700
-}
-
 . pipefail-stub.sh
 
 # UUT
@@ -97,10 +91,6 @@ test_cj_zfs_001()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/custom" ZFS_CALL3_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot/custom@4321" ZFS_CALL3_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL3_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_002()
@@ -117,10 +107,6 @@ test_cj_zfs_002()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/custom" ZFS_CALL2_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-2/custom@4321" ZFS_CALL2_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL2_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_003()
@@ -140,10 +126,6 @@ test_cj_zfs_003()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/custom" ZFS_CALL3_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot/custom@4321" ZFS_CALL3_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL3_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_004()
@@ -160,10 +142,6 @@ test_cj_zfs_004()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/custom" ZFS_CALL2_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-2/custom@4321" ZFS_CALL2_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL2_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_005()
@@ -188,10 +166,6 @@ test_cj_zfs_005()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/custom" ZFS_CALL5_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-nosnap/custom@55555" ZFS_CALL5_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL5_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_020()
@@ -202,10 +176,6 @@ test_cj_zfs_020()
 	assertEqualsMon "zfs arg1" "create" ZFS_CALL1_ARG1
 	assertEqualsMon "zfs arg2" "${POT_ZFS_ROOT}/jails/new-pot" ZFS_CALL1_ARG2
 	assertEqualsMon "undo_clone calls" "1" UNDO_CLONE_CALLS
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_040()
@@ -221,10 +191,6 @@ test_cj_zfs_040()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/m" ZFS_CALL2_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-single/m@6688" ZFS_CALL2_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/m" ZFS_CALL2_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_041()
@@ -240,10 +206,6 @@ test_cj_zfs_041()
 	assertEqualsMon "zfs arg3" "mountpoint=${POT_FS_ROOT}/jails/new-pot/m" ZFS_CALL2_ARG3
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-single-run/m@6688" ZFS_CALL2_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/m" ZFS_CALL2_ARG5
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_060()
@@ -260,10 +222,6 @@ test_cj_zfs_060()
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot-single/m@12345678" ZFS_CALL2_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/m" ZFS_CALL2_ARG5
 	assertEqualsMon "zfs last snap calls" "0" ZFSLASTSNAP_CALLS
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 test_cj_zfs_061()
@@ -284,10 +242,6 @@ test_cj_zfs_061()
 	assertEqualsMon "zfs arg4" "${POT_ZFS_ROOT}/jails/test-pot/custom@12345678" ZFS_CALL3_ARG4
 	assertEqualsMon "zfs arg5" "${POT_ZFS_ROOT}/jails/new-pot/custom" ZFS_CALL3_ARG5
 	assertEqualsMon "zfs last snap calls" "0" ZFSLASTSNAP_CALLS
-	assertEqualsMon "stat calls" "1" STAT_CALLS
-	assertEqualsMon "stat arg1" "-f" STAT_CALL1_ARG1
-	assertEqualsMon "stat arg2" "%Lp" STAT_CALL1_ARG2
-	assertEqualsMon "stat arg3" "${POT_FS_ROOT}/jails/new-pot/m" STAT_CALL1_ARG3
 }
 
 setUp()

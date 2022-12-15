@@ -99,7 +99,6 @@ _cj_zfs()
 		fi
 		_debug "clone $_dset@$_snap into $_jdset/m"
 		zfs clone -o mountpoint="$_pdir/m" "$_dset@$_snap" "$_jdset/m"
-		_fix_pot_mountpoint_permissions "$_pdir/m"
 		touch "$_pdir/conf/fscomp.conf"
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )

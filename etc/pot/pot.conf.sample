@@ -13,6 +13,9 @@
 # This is where pot is going to store temporary files
 # POT_TMP=/tmp
 
+# This is the group owning POT_FS_ROOT
+# POT_GROUP=pot
+
 # This is the suffix added to temporary files created using mktemp,
 # X is a placeholder for a random character, see mktemp(1)
 # POT_MKTEMP_SUFFIX=.XXXXXXXX

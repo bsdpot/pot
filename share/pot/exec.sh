@@ -69,7 +69,7 @@ _exec_cmd()
 	fi
 	_ret=$?
 
-	return $_ret
+	return "$_ret"
 }
 
 pot-exec()

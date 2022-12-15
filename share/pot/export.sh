@@ -87,6 +87,7 @@ _export_pot()
 	else
 		_noerr=0
 		echo "$_meta" > "${_file}.meta"
+		# shellcheck disable=SC2320
 		_noerr=$((_noerr+$?))
 		(cat "${_file}" "${_file}.meta") | skein1024 -q > "${_file}.skein"
 		_noerr=$((_noerr+$?))

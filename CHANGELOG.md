@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Fixed
-- version: Don't require pot root to exist to run version command (#XXX)
+- version: Don't require pot root to exist to run version command (#253)
 
 ## [0.15.4] 2022-12-15
 ### Added

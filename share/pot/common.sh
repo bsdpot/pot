@@ -1098,11 +1098,11 @@ pot-cmd()
 
 	if [ "$_cmd" != "init" ] && [ "$_cmd" != "de-init" ] && [ "$_cmd" != "version" ] ; then
 		if [ ! -d "$POT_FS_ROOT" ]; then
-			_error "$POT_FS_ROOT does not exist, please run 'pot init'"
+			>&2 _error "$POT_FS_ROOT does not exist, please run 'pot init'"
 			${EXIT} 1
 		fi
 		if [ ! -r "$POT_FS_ROOT" ]; then
-			_error "Current user has no read access to $POT_FS_ROOT"
+			>&2 _error "Current user has no read access to $POT_FS_ROOT"
 			${EXIT} 1
 		fi
 	fi

@@ -116,6 +116,7 @@ usage() {
 	    copy-in -- Copy a file or a directory into a pot
 	    copy-out -- Copy a file or a directory out of a pot
 	    mount-in -- Mount directory, ZFS dataset, or fscomp into a pot
+	    mount-out -- Unmount directory, ZFS dataset, or fscomp from a pot
 	    add-dep -- Add a dependency
 	    set-rss -- Set a resource constraint
 	    get-rss -- Get the current resource usage

@@ -144,11 +144,11 @@ _mount_dir()
 	_mnt_p="${3#/}"
 	_opt="${4}"
 	_pdir=$POT_FS_ROOT/jails/$_pname
-	_debug "add directory:$_dir mnt_p:$_pdir/m/$_mnt_p opt:$_opt"
+	_debug "add directory:$_dir mnt_p:/$_mnt_p opt:$_opt"
 	if [ -z "$_opt" ]; then
-		${ECHO} "$_dir $_pdir/m/$_mnt_p" >> "$_pdir/conf/fscomp.conf"
+		${ECHO} "$_dir /$_mnt_p" >> "$_pdir/conf/fscomp.conf"
 	else
-		${ECHO} "$_dir $_pdir/m/$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
+		${ECHO} "$_dir /$_mnt_p $_opt" >> "$_pdir/conf/fscomp.conf"
 	fi
 	if _is_pot_running "$_pname" ; then
 		if ! mount_nullfs -o "${_opt:-rw}" "$_dir" "$_pdir/m/$_mnt_p" ; then

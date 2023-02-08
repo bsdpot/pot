@@ -185,7 +185,7 @@ pot-mount-in()
 			_fscomp="$OPTARG"
 			;;
 		d)
-			_dir="$OPTARG"
+			_dir="${OPTARG%/}"
 			;;
 		z)
 			_dset="$OPTARG"

@@ -99,25 +99,7 @@ _cj_zfs()
 		fi
 		_debug "clone $_dset@$_snap into $_jdset/m"
 		zfs clone -o mountpoint="$_pdir/m" "$_dset@$_snap" "$_jdset/m"
-		touch "$_pdir/conf/fscomp.conf"
-		while read -r line ; do
-			_dset=$( echo "$line" | awk '{print $1}' )
-			_mnt_p=$( echo "$line" | awk '{print $2}' )
-			_opt=$( echo "$line" | awk '{print $3}' )
-			# ro components are replicated "as is"
-			if [ "$_opt" = ro ] ; then
-				_debug "$_dset ${_pdir}/${_mnt_p##"${_pbdir}"/} $_opt"
-				echo "$_dset ${_pdir}/${_mnt_p##"${_pbdir}"/} $_opt" >> "$_pdir/conf/fscomp.conf"
-			else
-				# managing fscomp datasets - the simple way - no clone support for fscomp
-				if [ "$_dset" != "${_dset##"${POT_ZFS_ROOT}"/fscomp}" ]; then
-					_debug "$_dset $_pdir/${_mnt_p##"${_pbdir}"/}"
-					echo "$_dset $_pdir/${_mnt_p##"${_pbdir}"/}" >> "$_pdir/conf/fscomp.conf"
-				else
-					_error "not able to manage $_dset"
-				fi
-			fi
-		done < "${_pbdir}/conf/fscomp.conf"
+		cp "${_pbdir}/conf/fscomp.conf" "$_pdir/conf/fscomp.conf"
 	elif [ "$_pb_type" = "multi" ]; then
 		# Create the root mountpoint
 		_create_pot_mountpoint "$_pdir/m"

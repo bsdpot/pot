@@ -973,6 +973,10 @@ _pot_mount()
 		return 1 # false
 	fi
 	while read -r line ; do
+		if [ -z "$line" ]; then
+			_debug "Empty line found. Skipping."
+			continue
+		fi
 		_dset=$( echo "$line" | awk '{print $1}' )
 		_mnt_p=$( echo "$line" | awk '{print $2}' )
 		_opt=$( echo "$line" | awk '{print $3}' )

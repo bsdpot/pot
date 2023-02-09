@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - pot-cmd: Output problems with pot root to stderr (#254)
 - version: Don't require pot root to exist to run version command (#253)
+- mount-in: Skip empty lines in fscomp.conf during mount process (#258)
 
 ## [0.15.4] 2022-12-15
 ### Added

@@ -10,7 +10,7 @@ _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
-_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvipc children'
+_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvipc sysvshm sysvsem sysvmsg children mlock'
 
 # N: arg name jail command, T: type of data, D: deafult value
 # devfs is always mounted
@@ -41,9 +41,21 @@ _POT_DEFAULT_raw_sockets_D='NO'
 _POT_DEFAULT_sysvipc_N='allow.sysvipc'
 _POT_DEFAULT_sysvipc_T='bool'
 _POT_DEFAULT_sysvipc_D='NO'
+_POT_DEFAULT_sysvshm_N='sysvshm'
+_POT_DEFAULT_sysvshm_T='str'
+_POT_DEFAULT_sysvshm_D='disable'
+_POT_DEFAULT_sysvsem_N='sysvsem'
+_POT_DEFAULT_sysvsem_T='str'
+_POT_DEFAULT_sysvsem_D='disable'
+_POT_DEFAULT_sysvmsg_N='sysvmsg'
+_POT_DEFAULT_sysvmsg_T='str'
+_POT_DEFAULT_sysvmsg_D='disable'
 _POT_DEFAULT_children_N='children.max'
 _POT_DEFAULT_children_T='uint'
 _POT_DEFAULT_children_D='0'
+_POT_DEFAULT_mlock_N='allow.mlock'
+_POT_DEFAULT_mlock_T='bool'
+_POT_DEFAULT_mlock_D='NO'
 # 0:everything, 1:chroot+below(poudriere), 2:just chroot(normal jail)
 _POT_DEFAULT_enforce_statfs_N='enforce_statfs'
 _POT_DEFAULT_enforce_statfs_T='uint'

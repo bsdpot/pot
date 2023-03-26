@@ -1014,6 +1014,7 @@ _pot_mount()
 		_dset=$( echo "$line" | awk '{print $1}' )
 		_mnt_p=$( echo "$line" | awk '{print $2}' )
 		_mnt_p="${POT_FS_ROOT}/jails/$_pname/m$_mnt_p"
+		_mnt_p="${_mnt_p%/}"
 		_opt=$( echo "$line" | awk '{print $3}' )
 		if [ "$_opt" = "zfs-remount" ]; then
 			# if the mountpoint doesn't exist, zfs will create it
@@ -1095,6 +1096,7 @@ _pot_umount()
 			_dset=$( echo "$line" | awk '{print $1}' )
 			_mnt_p=$( echo "$line" | awk '{print $2}' )
 			_mnt_p="${POT_FS_ROOT}/jails/$_pname/m$_mnt_p"
+			_mnt_p=${_mnt_p%/}
 			_opt=$( echo "$line" | awk '{print $3}' )
 			if [ "$_opt" = "zfs-remount" ]; then
 				_node=${POT_FS_ROOT}/jails/$_pname/$(basename "$_dset")

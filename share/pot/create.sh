@@ -271,24 +271,24 @@ _cj_conf()
 	if [ "$_type" = "multi" ]; then
 		case $_lvl in
 		0)
-			echo "$_bdset ${_jdir}/m"
-			echo "$_bdset/usr.local ${_jdir}/m/usr/local"
-			echo "$_bdset/custom ${_jdir}/m/opt/custom"
+			echo "$_bdset /"
+			echo "$_bdset/usr.local /usr/local"
+			echo "$_bdset/custom /opt/custom"
 			;;
 		1)
-			echo "$_bdset ${_jdir}/m ro"
-			echo "$_jdset/usr.local ${_jdir}/m/usr/local zfs-remount"
-			echo "$_jdset/custom ${_jdir}/m/opt/custom zfs-remount"
+			echo "$_bdset / ro"
+			echo "$_jdset/usr.local /usr/local zfs-remount"
+			echo "$_jdset/custom /opt/custom zfs-remount"
 			;;
 		2)
-			echo "$_bdset ${_jdir}/m ro"
+			echo "$_bdset / ro"
 			if [ "$_pblvl" -eq 1 ]; then
-				echo "$_pbdset/usr.local ${_jdir}/m/usr/local ro"
+				echo "$_pbdset/usr.local /usr/local ro"
 			else
 				_pbpb="$( _get_conf_var "$_potbase" pot.potbase )"
-				echo "${POT_ZFS_ROOT}/jails/$_pbpb/usr.local ${_jdir}/m/usr/local ro"
+				echo "${POT_ZFS_ROOT}/jails/$_pbpb/usr.local /usr/local ro"
 			fi
-			echo "$_jdset/custom ${_jdir}/m/opt/custom zfs-remount"
+			echo "$_jdset/custom /opt/custom zfs-remount"
 			;;
 		esac
 	fi

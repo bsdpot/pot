@@ -64,9 +64,9 @@ test_cj_conf_001()
 	# level 0
 	_cj_conf new-pot 11.1 inherit "" 0 inherit multi
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/bases/11.1/usr.local /tmp/jails/new-pot/m/usr/local" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/bases/11.1/custom /tmp/jails/new-pot/m/opt/custom" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 /" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/bases/11.1/usr.local /usr/local" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/bases/11.1/custom /opt/custom" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=0" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -88,9 +88,9 @@ test_cj_conf_002()
 {
 	_cj_conf new-pot 11.1 inherit "" 1 inherit multi
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=1" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -111,15 +111,14 @@ test_cj_conf_002()
 test_cj_conf_003()
 {
 	/bin/mkdir -p /tmp/jails/test-pot/conf
-	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
-	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
+	echo "zpot/bases/11.1 / ro" >> /tmp/jails/test-pot/conf/fscomp.conf
+	echo "zpot/jails/test-pot/usr.local /usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
+	echo "zpot/jails/test-pot/custom /opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
 	_cj_conf new-pot 11.1 inherit "" 1 inherit multi "" test-pot
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/test-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=1" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -140,15 +139,14 @@ test_cj_conf_003()
 test_cj_conf_004()
 {
 	/bin/mkdir -p /tmp/jails/test-pot/conf
-	echo "zpot/bases/11.1 /tmp/jails/test-pot/m ro" >> /tmp/jails/test-pot/conf/fscomp.conf
-	echo "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
-	echo "zpot/jails/test-pot/custom /tmp/jails/test-pot/m/opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
+	echo "zpot/bases/11.1 / ro" >> /tmp/jails/test-pot/conf/fscomp.conf
+	echo "zpot/jails/test-pot/usr.local /usr/local zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
+	echo "zpot/jails/test-pot/custom /opt/custom zfs-remount" >> /tmp/jails/test-pot/conf/fscomp.conf
 	_cj_conf new-pot 11.1 inherit "" 2 inherit multi "" test-pot
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/test-pot/m/usr/local" "$(sed '2!d' /tmp/jails/test-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=2" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -169,9 +167,9 @@ test_cj_conf_005()
 {
 	_cj_conf new-pot 11.1 inherit "" 2 inherit multi "" test-pot-2
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /tmp/jails/new-pot/m/usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/test-pot/usr.local /usr/local ro" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=2" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -193,9 +191,9 @@ test_cj_conf_006()
 {
 	_cj_conf new-pot 11.1 public-bridge 10.1.2.3 1 inherit multi
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=1" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -217,9 +215,9 @@ test_cj_conf_007()
 {
 	_cj_conf new-pot 11.1 inherit "" 1 pot multi
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=1" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -242,9 +240,9 @@ test_cj_conf_008()
 {
 	_cj_conf new-pot 11.1 public-bridge 10.1.2.3 1 pot multi
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=1" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"
@@ -267,9 +265,9 @@ test_cj_conf_009()
 {
 	_cj_conf new-pot 11.1 alias 10.1.2.3 1 pot multi
 	assertEquals "return code" "0" "$?"
-	assertEquals "fscomp args1" "zpot/bases/11.1 /tmp/jails/new-pot/m ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /tmp/jails/new-pot/m/usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
-	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /tmp/jails/new-pot/m/opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args1" "zpot/bases/11.1 / ro" "$(sed '1!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args2" "zpot/jails/new-pot/usr.local /usr/local zfs-remount" "$(sed '2!d' /tmp/jails/new-pot/conf/fscomp.conf)"
+	assertEquals "fscomp args3" "zpot/jails/new-pot/custom /opt/custom zfs-remount" "$(sed '3!d' /tmp/jails/new-pot/conf/fscomp.conf)"
 	assertEquals "pot.level" "pot.level=1" "$(grep ^pot.level /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "pot.base" "pot.base=11.1" "$(grep ^pot.base /tmp/jails/new-pot/conf/pot.conf)"
 	assertEquals "osrelease" "osrelease=\"11.1-RELEASE\"" "$(grep ^osrelease /tmp/jails/new-pot/conf/pot.conf)"

@@ -1010,6 +1010,7 @@ _pot_mount()
 	if ! _is_pot "$_pname" ; then
 		return 1 # false
 	fi
+	_update_fscomp "$_pname"
 	while read -r line ; do
 		_dset=$( echo "$line" | awk '{print $1}' )
 		_mnt_p=$( echo "$line" | awk '{print $2}' )
@@ -1091,6 +1092,7 @@ _pot_umount()
 		_umount "$_jdir/m/proc"
 	fi
 	if [ -e "$_jdir/conf/fscomp.conf" ]; then
+		_update_fscomp "$_pname"
 		tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )

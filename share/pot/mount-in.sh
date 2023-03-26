@@ -312,6 +312,7 @@ pot-mount-in()
 		return 1
 	fi
 	if ! _real_mnt_p="$(_mountpoint_validation "$_pname" "$_mnt_p" )" ; then
+		echo "$_real_mnt_p"
 		_error "The mountpoint is not valid!"
 		return 1
 	fi

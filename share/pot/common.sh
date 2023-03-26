@@ -972,7 +972,7 @@ _is_fscomp_old()
 	_fsconf="${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
 	while read -r line; do
 		_mnt_p=$( echo "$line" | awk '{print $2}' )
-		_stripped_mnt_p="${_mnt_p##${POT_FS_ROOT}/jails/$_pname/m}"
+		_stripped_mnt_p="${_mnt_p##"${POT_FS_ROOT}/jails/$_pname/m"}"
 		if [ "$_stripped_mnt_p" != "$_mnt_p" ]; then
 			return 0 # true
 		fi
@@ -992,7 +992,7 @@ _update_fscomp()
 			_dset=$( echo "$line" | awk '{print $1}' )
 			_mnt_p=$( echo "$line" | awk '{print $2}' )
 			_opt=$( echo "$line" | awk '{print $3}' )
-			_stripped_mnt_p="${_mnt_p##${POT_FS_ROOT}/jails/$_pname/m}"
+			_stripped_mnt_p="${_mnt_p##"${POT_FS_ROOT}/jails/$_pname/m"}"
 			if [ -z "$_stripped_mnt_p" ]; then
 				_stripped_mnt_p="/"
 			fi

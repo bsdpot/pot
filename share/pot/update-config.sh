@@ -134,6 +134,9 @@ _update_one_pot()
 		_info "rss.cpuset has been deprecated; please use the more generic rss.cpus"
 		${SED} -i '' -e "/pot.rss.cpuset=.*/d" "$_conf"
 	fi
+
+	# remove the base pot path from mountpoints in fscomp.conf
+	_update_fscomp "$_pname"
 }
 
 _update_all_pots()

@@ -965,6 +965,44 @@ _create_pot_mountpoint()
 }
 
 # $1 pot name
+_is_fscomp_old()
+{
+	local _pname _fsconf _mnt_p _stripped_mnt_p
+	_pname="$1"
+	_fsconf="${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
+	while read -r line; do
+		_mnt_p=$( echo "$line" | awk '{print $2}' )
+		_stripped_mnt_p="${_mnt_p##${POT_FS_ROOT}/jails/$_pname/m}"
+		if [ "$_stripped_mnt_p" != "$_mnt_p" ]; then
+			return 0 # true
+		fi
+	done < "$_fsconf"
+	return 1 # false
+}
+
+# $1 pot name
+_update_fscomp()
+{
+	local _pname _fsconf _mnt_p _stripped_mnt_p _dset _opt _tmpfile
+	_pname="$1"
+	if _is_fscomp_old "$_pname" ; then
+		_fsconf="${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
+		_tmpfile=$(mktemp "${POT_TMP:-/tmp}/fscomp.conf.${_pname}${POT_MKTEMP_SUFFIX}")
+		while read -r line; do
+			_dset=$( echo "$line" | awk '{print $1}' )
+			_mnt_p=$( echo "$line" | awk '{print $2}' )
+			_opt=$( echo "$line" | awk '{print $3}' )
+			_stripped_mnt_p="${_mnt_p##${POT_FS_ROOT}/jails/$_pname/m}"
+			if [ -z "$_stripped_mnt_p" ]; then
+				_stripped_mnt_p="/"
+			fi
+			${ECHO} "$_dset $_stripped_mnt_p $_opt" >> "$_tmpfile"
+		done < "$_fsconf"
+		mv "$_tmpfile" "$_fsconf"
+	fi
+}
+
+# $1 pot name
 _pot_mount()
 {
 	local _pname _dset _mnt_p _opt _node

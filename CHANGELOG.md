@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - set-attr: Add support for setting devfs_ruleset (#270)
-- set-attr: Add support for setting sysvshm sysvsem sysvmsg, retire sysvipc attribute, which was always a noop (#263)
+- set-attr: Add support for setting mlock, sysvshm, sysvsem, sysvmsg, retire sysvipc attribute, which was always a noop (#263)
 
 ### Fixed
 - pot-cmd: Output problems with pot root to stderr (#254)

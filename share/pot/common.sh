@@ -10,7 +10,7 @@ _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
-_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvipc sysvshm sysvsem sysvmsg children mlock'
+_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvipc sysvshm sysvsem sysvmsg children mlock devfs_ruleset'
 
 # N: arg name jail command, T: type of data, D: deafult value
 # devfs is always mounted
@@ -53,6 +53,9 @@ _POT_DEFAULT_sysvmsg_D='disable'
 _POT_DEFAULT_children_N='children.max'
 _POT_DEFAULT_children_T='uint'
 _POT_DEFAULT_children_D='0'
+_POT_DEFAULT_devfs_ruleset_N='devfs_ruleset'
+_POT_DEFAULT_devfs_ruleset_T='uint'
+_POT_DEFAULT_devfs_ruleset_D='4'
 _POT_DEFAULT_mlock_N='allow.mlock'
 _POT_DEFAULT_mlock_T='bool'
 _POT_DEFAULT_mlock_D='NO'

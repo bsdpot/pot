@@ -73,6 +73,28 @@ _set_uint_attribute()
 	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
 }
 
+# $1 pot name
+# $2 attribute name
+# $3 value
+_set_sysvopt_attribute()
+{
+	local _pname _value _cdir
+	_pname=$1
+	_attr=$2
+	_value=$3
+
+	if [ "$_value" != "new" ] && [ "$_value" != "inherit" ] && \
+	    [ "$_value" != "disable" ]; then
+		_error "value must be one of 'new', 'inherit', 'disable'"
+		set-attribute-help
+		return 1
+	fi
+
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
+}
+
 _ignored_parameter()
 {
 	local _attr
@@ -171,6 +193,9 @@ pot-set-attribute()
 				;;
 			(uint)
 				_cmd=_set_uint_attribute
+				;;
+			(sysvopt)
+				_cmd=_set_sysvopt_attribute
 				;;
 			(*)
 				_ignored_parameter "$_attr"

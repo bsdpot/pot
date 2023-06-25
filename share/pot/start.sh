@@ -451,22 +451,26 @@ _js_start()
 	local _pname _confdir _epaira _epairb _ipv6_epaira _ipv6_epairb
 	local _ifaces _hostname _osrelease _param _ip _cmd _persist
 	local _stack _value _name _type _wait_pid _exit_code _tmp
+	local _default
 	_pname="$1"
 	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
+	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af"
 	_param="$_param allow.chflags exec.clean mount.devfs"
-	_param="$_param sysvmsg=new sysvsem=new sysvshm=new"
 
 	for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 		# shellcheck disable=SC1083,2086
 		eval _name=\"\${_POT_DEFAULT_${_attr}_N}\"
 		# shellcheck disable=SC1083,2086
 		eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
+		# shellcheck disable=SC1083,2086
+		eval _default=\"\${_POT_DEFAULT_${_attr}_D}\"
 		_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
 		if [ "${_value}" = "YES" ]; then
 			_param="$_param ${_name}"
 		elif [ "${_type}" != "bool" ] && [ -n "${_value}" ]; then
 			_param="$_param ${_name}=${_value}"
+		elif [ "${_type}" = "sysvopt" ] && [ -z "${_value}" ]; then
+			_param="$_param ${_name}=${_default}"
 		fi
 	done
 

@@ -324,7 +324,7 @@ _js_get_free_rnd_port()
 # $1 pot name
 _js_export_ports()
 {
-	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt _to_arg
+	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt _to_arg _bridge
 	_pname=$1
 	_ip="$( _get_ip_var "$_pname" )"
 	_ports="$( _get_pot_export_ports "$_pname" )"
@@ -333,6 +333,7 @@ _js_export_ports()
 	fi
 	_pfrules=$(mktemp "${POT_TMP:-/tmp}/pot_pfrules_${_pname}${POT_MKTEMP_SUFFIX}") || exit 1
 	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
+	_bridge=$(_pot_bridge_ipv4)
 	for _port in $_ports ; do
 		_proto_port="tcp"
 		if [ "${_port#udp:}" != "${_port}" ]; then
@@ -355,20 +356,27 @@ _js_export_ports()
 		fi
 
 		_debug "Redirect: from $_to_arg : $_proto_port:$_host_port to $_ip : $_proto_port:$_pot_port"
-		echo "rdr pass on $POT_EXTIF proto $_proto_port from any to $_to_arg port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
-		_excl_list="$_excl_list $_host_port"
-		if [ -n "$POT_EXTRA_EXTIF" ]; then
-			for extra_netif in $POT_EXTRA_EXTIF ; do
-				echo "rdr pass on $extra_netif proto $_proto_port from any to ($extra_netif) port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
-			done
-		fi
-		if [ "$_lo_tunnel" = "YES" ]; then
-			_pdir="${POT_FS_ROOT}/jails/$_pname"
-			if [ -x "/usr/local/bin/ncat" ]; then
-				cp /usr/local/bin/ncat "$_pdir/ncat-$_pname-$_pot_port"
-				daemon -f -p "$_pdir/ncat-$_pot_port.pid" "$_pdir/ncat-$_pname-$_pot_port" -lk $_ncat_opt "$_host_port" -c "/usr/local/bin/ncat $_ncat_opt $_ip $_pot_port"
-			else
-				_error "nmap package is missing, localhost-tunnel attribute ignored"
+		if [ -n "$POT_EXPORT_PORTS_PF_RULES_HOOK" ]; then
+			"$POT_EXPORT_PORTS_PF_RULES_HOOK" \
+			  "$POT_EXTIF" "$_bridge" "$POT_NETWORK" "$POT_GATEWAY" \
+			  "$_proto_port" "$_host_port" "$_ip" "$_pot_port" >> "$_pfrules"
+		else
+			echo "rdr pass on $POT_EXTIF proto $_proto_port from any to $_to_arg port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
+
+			_excl_list="$_excl_list $_host_port"
+			if [ -n "$POT_EXTRA_EXTIF" ]; then
+				for extra_netif in $POT_EXTRA_EXTIF ; do
+					echo "rdr pass on $extra_netif proto $_proto_port from any to ($extra_netif) port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
+				done
+			fi
+			if [ "$_lo_tunnel" = "YES" ]; then
+				_pdir="${POT_FS_ROOT}/jails/$_pname"
+				if [ -x "/usr/local/bin/ncat" ]; then
+					cp /usr/local/bin/ncat "$_pdir/ncat-$_pname-$_pot_port"
+					daemon -f -p "$_pdir/ncat-$_pot_port.pid" "$_pdir/ncat-$_pname-$_pot_port" -lk $_ncat_opt "$_host_port" -c "/usr/local/bin/ncat $_ncat_opt $_ip $_pot_port"
+				else
+					_error "nmap package is missing, localhost-tunnel attribute ignored"
+				fi
 			fi
 		fi
 	done

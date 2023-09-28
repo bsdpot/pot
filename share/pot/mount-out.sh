@@ -19,14 +19,14 @@ _is_mountpoint_used()
 {
 	local _pname _mnt_p _proot
 	_pname="$1"
-	_mnt_p="${2#/}"
+	_mnt_p="${2}"
 	_conf=$POT_FS_ROOT/jails/$_pname/conf/fscomp.conf
 	_proot=$POT_FS_ROOT/jails/$_pname/m
 	## spaces in this sequences of grep have been introduced to detect exact matches only
 	## a pattern like /mnt/test would match /mnt/test and /mnt/test2
 	## with those spaces we try be more precise in detecting the exact match
-	if grep -q " $_proot/$_mnt_p$" "$_conf" ||
-		grep -q " $_proot/$_mnt_p " "$_conf" ; then
+	if grep -q " $_mnt_p$" "$_conf" ||
+		grep -q " $_mnt_p " "$_conf" ; then
 		# mount point already used
 		return 0 # true
 	fi
@@ -47,10 +47,6 @@ _mountpoint_validation()
 	_mnt_p="$2"
 	_mpdir=$POT_FS_ROOT/jails/$_pname/m
 	_mounted=false # false
-	if ! _is_mountpoint_used "$_pname" "$_mnt_p" ; then
-		_error "The mount point $_mnt_p is not in use"
-		return 1 # false
-	fi
 	if ! _is_pot_running "$_pname" ; then
 		_mounted=true # true
 		if ! _pot_mount "$_pname" >/dev/null ; then
@@ -61,6 +57,10 @@ _mountpoint_validation()
 	_real_mnt=$( chroot "$_mpdir" /bin/realpath "$_mnt_p")
 	if eval $_mounted ; then
 		_pot_umount "$_pname" >/dev/null
+	fi
+	if ! _is_mountpoint_used "$_pname" "$_real_mnt" ; then
+		_error "The mount point $_mnt_p is not in use"
+		return 1 # false
 	fi
 	echo "$_real_mnt"
 	return 0 # true
@@ -146,6 +146,7 @@ pot-mount-out()
 		return 1
 	fi
 	if ! _real_mnt_p="$(_mountpoint_validation "$_pname" "$_mnt_p" )" ; then
+		echo "$_real_mnt_p"
 		_error "The mountpoint is not valid!"
 		return 1
 	fi

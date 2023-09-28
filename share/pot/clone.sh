@@ -80,6 +80,7 @@ _cj_zfs()
 		rm -f "$_pdir/conf/fscomp.conf"
 	fi
 	_debug "Cloning $_potbase with snap $_snap"
+	_update_fscomp "$_potbase"
 	if [ "$_pb_type" = "single" ]; then
 		_dset="${_pbdset}/m"
 		if [ -z "$_snap" ]; then
@@ -99,25 +100,7 @@ _cj_zfs()
 		fi
 		_debug "clone $_dset@$_snap into $_jdset/m"
 		zfs clone -o mountpoint="$_pdir/m" "$_dset@$_snap" "$_jdset/m"
-		touch "$_pdir/conf/fscomp.conf"
-		while read -r line ; do
-			_dset=$( echo "$line" | awk '{print $1}' )
-			_mnt_p=$( echo "$line" | awk '{print $2}' )
-			_opt=$( echo "$line" | awk '{print $3}' )
-			# ro components are replicated "as is"
-			if [ "$_opt" = ro ] ; then
-				_debug "$_dset ${_pdir}/${_mnt_p##"${_pbdir}"/} $_opt"
-				echo "$_dset ${_pdir}/${_mnt_p##"${_pbdir}"/} $_opt" >> "$_pdir/conf/fscomp.conf"
-			else
-				# managing fscomp datasets - the simple way - no clone support for fscomp
-				if [ "$_dset" != "${_dset##"${POT_ZFS_ROOT}"/fscomp}" ]; then
-					_debug "$_dset $_pdir/${_mnt_p##"${_pbdir}"/}"
-					echo "$_dset $_pdir/${_mnt_p##"${_pbdir}"/}" >> "$_pdir/conf/fscomp.conf"
-				else
-					_error "not able to manage $_dset"
-				fi
-			fi
-		done < "${_pbdir}/conf/fscomp.conf"
+		cp "${_pbdir}/conf/fscomp.conf" "$_pdir/conf/fscomp.conf"
 	elif [ "$_pb_type" = "multi" ]; then
 		# Create the root mountpoint
 		_create_pot_mountpoint "$_pdir/m"
@@ -130,8 +113,8 @@ _cj_zfs()
 			_opt=$( echo "$line" | awk '{print $3}' )
 			# ro components are replicated "as is"
 			if [ "$_opt" = ro ] ; then
-				_debug "$_dset ${_pdir}/${_mnt_p##"${_pbdir}"/} $_opt"
-				echo "$_dset ${_pdir}/${_mnt_p##"${_pbdir}"/} $_opt" >> "$_pdir/conf/fscomp.conf"
+				_debug "$_dset ${_mnt_p} $_opt"
+				echo "$_dset ${_mnt_p} $_opt" >> "$_pdir/conf/fscomp.conf"
 			else
 				# managing potbase datasets
 				if [ "$_dset" != "${_dset##"${_pbdset}"}" ]; then
@@ -157,17 +140,17 @@ _cj_zfs()
 						_debug "clone $_dset@$_snap into $_jdset/$_dname"
 						zfs clone -o mountpoint="$_pdir/$_dname" "$_dset@$_snap" "$_jdset/$_dname"
 						if [ -z "$_opt" ]; then
-							_debug "$_jdset/$_dname $_pdir/${_mnt_p##"${_pbdir}"/}"
-							echo "$_jdset/$_dname $_pdir/${_mnt_p##"${_pbdir}"/}" >> "$_pdir/conf/fscomp.conf"
+							_debug "$_jdset/$_dname ${_mnt_p}"
+							echo "$_jdset/$_dname ${_mnt_p}" >> "$_pdir/conf/fscomp.conf"
 						else
-							_debug "$_jdset/$_dname $_pdir/${_mnt_p##"${_pbdir}"/} $_opt"
-							echo "$_jdset/$_dname $_pdir/${_mnt_p##"${_pbdir}"/} $_opt" >> "$_pdir/conf/fscomp.conf"
+							_debug "$_jdset/$_dname ${_mnt_p} $_opt"
+							echo "$_jdset/$_dname ${_mnt_p} $_opt" >> "$_pdir/conf/fscomp.conf"
 						fi
 					fi
 				# managing fscomp datasets - the simple way - no clone support for fscomp
 				elif [ "$_dset" != "${_dset##"${POT_ZFS_ROOT}"/fscomp}" ]; then
-					_debug "$_dset $_pdir/${_mnt_p##"${_pbdir}"/}"
-					echo "$_dset $_pdir/${_mnt_p##"${_pbdir}"/}" >> "$_pdir/conf/fscomp.conf"
+					_debug "$_dset ${_mnt_p}"
+					echo "$_dset ${_mnt_p}" >> "$_pdir/conf/fscomp.conf"
 				else
 					_error "not able to manage $_dset"
 				fi

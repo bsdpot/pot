@@ -10,7 +10,7 @@ _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
-_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvshm sysvsem sysvmsg children mlock devfs_ruleset'
+_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvshm sysvsem sysvmsg children mlock devfs_ruleset exec_stop stop_timeout'
 
 # N: arg name jail command, T: type of data, D: deafult value
 # devfs is always mounted
@@ -23,9 +23,9 @@ _POT_DEFAULT_fdescfs_D='NO'
 _POT_DEFAULT_linprocfs_N='allow.mount.linprocfs'
 _POT_DEFAULT_linprocfs_T='bool'
 _POT_DEFAULT_linprocfs_D='NO'
-_POT_DEFAULT_nullcfs_N='allow.mount.nullfs'
-_POT_DEFAULT_nullcfs_T='bool'
-_POT_DEFAULT_nullcfs_D='NO'
+_POT_DEFAULT_nullfs_N='allow.mount.nullfs'
+_POT_DEFAULT_nullfs_T='bool'
+_POT_DEFAULT_nullfs_D='NO'
 _POT_DEFAULT_procfs_N='mount.procfs'
 _POT_DEFAULT_procfs_T='bool'
 _POT_DEFAULT_procfs_D='NO'
@@ -56,6 +56,12 @@ _POT_DEFAULT_devfs_ruleset_D='4'
 _POT_DEFAULT_mlock_N='allow.mlock'
 _POT_DEFAULT_mlock_T='bool'
 _POT_DEFAULT_mlock_D='NO'
+_POT_DEFAULT_exec_stop_N='exec.stop'
+_POT_DEFAULT_exec_stop_T='string'
+_POT_DEFAULT_exec_stop_D=''
+_POT_DEFAULT_stop_timeout_N='stop.timeout'
+_POT_DEFAULT_stop_timeout_T='uint'
+_POT_DEFAULT_stop_timeout_D='10'
 # 0:everything, 1:chroot+below(poudriere), 2:just chroot(normal jail)
 _POT_DEFAULT_enforce_statfs_N='enforce_statfs'
 _POT_DEFAULT_enforce_statfs_T='uint'
@@ -508,6 +514,18 @@ _get_conf_var()
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_var="$2"
 	_value="$( grep "^$_var=" "$_cdir/pot.conf" | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo "$_value"
+}
+
+# $1 pot name
+# $2 var name
+_get_conf_var_string()
+{
+	local _pname _cdir _var _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_var="$2"
+	_value="$( grep "^$_var=" "$_cdir/pot.conf" | cut -f2 -d'=' )"
 	echo "$_value"
 }
 

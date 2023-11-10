@@ -462,8 +462,8 @@ _js_start()
 	local _default
 	_pname="$1"
 	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af"
-	_param="$_param allow.chflags exec.clean mount.devfs"
+	_param=$(_save_params "allow.set_hostname=false" "allow.raw_sockets" \
+	         "allow.socket_af" "allow.chflags" "exec.clean" "mount.devfs")
 
 	for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 		# shellcheck disable=SC1083,2086
@@ -472,25 +472,33 @@ _js_start()
 		eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
 		# shellcheck disable=SC1083,2086
 		eval _default=\"\${_POT_DEFAULT_${_attr}_D}\"
-		_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
-		if [ "${_value}" = "YES" ]; then
-			_param="$_param ${_name}"
-		elif [ "${_type}" != "bool" ] && [ -n "${_value}" ]; then
-			_param="$_param ${_name}=${_value}"
-		elif [ "${_type}" = "sysvopt" ] && [ -z "${_value}" ]; then
-			_param="$_param ${_name}=${_default}"
+		if [ "$_type" = "string" ]; then
+			_value="$(_get_conf_var_string "$_pname" "pot.attr.${_attr}")"
+		else
+			_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
+		fi
+
+		if [ "$_type" = "bool" ] && [ "$_value" = "YES" ]; then
+			_param="$_param"$(_save_params "$_name")
+		elif [ "$_type" != "bool" ] && [ -n "$_value" ]; then
+			_param="$_param"$(_save_params "$_name=$_value")
+		elif [ "$_type" = "sysvopt" ] && [ -z "$_value" ]; then
+			_param="$_param"$(_save_params "$_name=$_default")
 		fi
 	done
 
 	_hostname="$( _get_conf_var "$_pname" host.hostname )"
 	_osrelease="$( _get_os_release "$_pname" )"
-	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
-	_param="$_param path=${POT_FS_ROOT}/jails/$_pname/m"
+	_param="$_param"$(_save_params "name=$_pname" \
+	                  "host.hostname=$_hostname" \
+	                  "osrelease=$_osrelease" \
+	                  "path=${POT_FS_ROOT}/jails/$_pname/m")
+
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	if [ "$_persist" != "NO" ]; then
-		_param="$_param persist"
+		_param="$_param"$(_save_params "persist")
 	else
-		_param="$_param nopersist"
+		_param="$_param"$(_save_params "nopersist")
 	fi
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		if [ "$( _get_pot_network_stack "$_pname" )" = "ipv4" ]; then
@@ -519,13 +527,14 @@ _js_start()
 	"inherit")
 		case "$( _get_pot_network_stack "$_pname" )" in
 			"dual")
-				_param="$_param ip4=inherit ip6=inherit"
+				_param="$_param"$(_save_params \
+				                  "ip4=inherit" "ip6=inherit")
 				;;
 			"ipv4")
-				_param="$_param ip4=inherit"
+				_param="$_param"$(_save_params "ip4=inherit")
 				;;
 			"ipv6")
-				_param="$_param ip6=inherit"
+				_param="$_param"$(_save_params "ip6=inherit")
 				;;
 		esac
 		;;
@@ -537,16 +546,16 @@ _js_start()
 				_ip4addr="$( _get_alias_ipv4 "$_pname" "$_ip" )"
 				_ip6addr="$( _get_alias_ipv6 "$_pname" "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
-					_param="$_param ip4.addr=$_ip4addr"
+					_param="$_param"$(_save_params "ip4.addr=$_ip4addr")
 				fi
 				if [ -n "$_ip6addr" ]; then
-					_param="$_param ip6.addr=$_ip6addr"
+					_param="$_param"$(_save_params "ip6.addr=$_ip6addr")
 				fi
 				;;
 			"ipv4")
 				_ip4addr="$( _get_alias_ipv4 "$_pname" "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
-					_param="$_param ip4.addr=$_ip4addr"
+					_param="$_param"$(_save_params "ip4.addr=$_ip4addr")
 				else
 					_error "No ipv4 address found for $_pname"
 					start-cleanup "$_pname"
@@ -556,7 +565,7 @@ _js_start()
 			"ipv6")
 				_ip6addr="$( _get_alias_ipv6 "$_pname" "$_ip" )"
 				if [ -n "$_ip6addr" ]; then
-					_param="$_param ip6.addr=$_ip6addr"
+					_param="$_param"$(_save_params "ip6.addr=$_ip6addr")
 				else
 					_error "No ipv6 address found for $_pname"
 					start-cleanup "$_pname"
@@ -566,7 +575,7 @@ _js_start()
 		esac
 		;;
 	"public-bridge")
-		_param="$_param vnet"
+		_param="$_param"$(_save_params "vnet")
 		_stack="$( _get_pot_network_stack "$_pname" )"
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv4" ]; then
 			_tmp="$( _js_create_epair "$_pname" '4' )" || return 1
@@ -576,7 +585,7 @@ _js_start()
 			_epaira=$1
 			_epairb=$2
 			_js_vnet "$_pname" "$_epaira" "$_epairb"
-			_param="$_param vnet.interface=${_epairb}"
+			_param="$_param"$(_save_params "vnet.interface=$_epairb")
 			_js_export_ports "$_pname"
 		fi
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv6" ]; then
@@ -588,7 +597,7 @@ _js_start()
 			_ipv6_epairb=$2
 			_js_vnet_ipv6 "$_pname" "$_ipv6_epaira" \
 			  "$_ipv6_epairb" "$_stack"
-			_param="$_param vnet.interface=${_ipv6_epairb}"
+			_param="$_param"$(_save_params "vnet.interface=$_ipv6_epairb")
 		fi
 		;;
 	"private-bridge")
@@ -599,7 +608,7 @@ _js_start()
 		_epaira=$1
 		_epairb=$2
 		_js_private_vnet "$_pname" "$_epaira" "$_epairb"
-		_param="$_param vnet vnet.interface=${_epairb}"
+		_param="$_param"$(_save_params "vnet" "vnet.interface=$_epairb")
 		_js_export_ports "$_pname"
 		;;
 	esac
@@ -624,8 +633,10 @@ _js_start()
 	rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 
 	_info "Starting the pot $_pname"
-	# shellcheck disable=SC2086
-	jail -c $_param exec.start="sh -c 'sleep 1234&'"
+	# execute command
+	eval "set -- $_param"
+	echo "$@"
+	jail -c "$@" exec.start="sh -c 'sleep 1234&'"
 
 	if [ -e "$_confdir/pot.conf" ] && _is_pot_prunable "$_pname" ; then
 		# set-attr cannot be used for read-only attributes

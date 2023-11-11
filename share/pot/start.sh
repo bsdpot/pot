@@ -635,7 +635,7 @@ _js_start()
 	_info "Starting the pot $_pname"
 	# execute command
 	eval "set -- $_param"
-	echo "$@"
+	_debug "Pot $_pname jail params are: $*"
 	jail -c "$@" exec.start="sh -c 'sleep 1234&'"
 
 	if [ -e "$_confdir/pot.conf" ] && _is_pot_prunable "$_pname" ; then

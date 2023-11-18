@@ -76,6 +76,21 @@ _set_uint_attribute()
 # $1 pot name
 # $2 attribute name
 # $3 value
+_set_string_attribute()
+{
+	local _pname _value _cdir
+	_pname=$1
+	_attr=$2
+	_value=$3
+
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
+}
+
+# $1 pot name
+# $2 attribute name
+# $3 value
 _set_sysvopt_attribute()
 {
 	local _pname _value _cdir
@@ -193,6 +208,9 @@ pot-set-attribute()
 				;;
 			(uint)
 				_cmd=_set_uint_attribute
+				;;
+			(string)
+				_cmd=_set_string_attribute
 				;;
 			(sysvopt)
 				_cmd=_set_sysvopt_attribute

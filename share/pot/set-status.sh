@@ -21,13 +21,22 @@ set-status-help()
 # $1 pot name
 _get_status()
 {
-	local _pname _status_file
+	local _pname _status_file _uptime _mod_time
 	_pname="$1"
 	_status_file="${POT_TMP:-/tmp}/pot_status_${_pname}"
 
 	if [ ! -e "$_status_file" ]; then
 		return
 	fi
+
+	_mod_time=$(stat -f "%m" "$_status_file")
+	_uptime=$(_get_system_uptime)
+
+	if [ "$_uptime" -gt "$_mod_time" ]; then
+		>&2 _debug "Ignoring oudated status file $_status_file of pot $_pname"
+		return
+	fi
+
 	_value="$(grep "^pot.status=" "$_status_file" | tail -n 1 \
 		|tr -d ' \t"' | cut -f2 -d'=' )"
 	echo "$_value"

@@ -211,8 +211,7 @@ pot-stop()
 	fi
 
 	# Here is where the pot is stopping
-	_epaira_ifs="$(lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" \
-	  "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping)"
+	_epaira_ifs="$(_set_pot_status "$_pname" stopping)"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		if [ $_from_start = "YES" ]; then
@@ -236,7 +235,7 @@ pot-stop()
 	fi
 	_js_rm_resolv "$_pname"
 	_pot_umount "$_pname"
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopped
+	_set_pot_status "$_pname" stopped
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_error "pot $_pname is already stopped!"

@@ -234,6 +234,30 @@ _is_pot_tmp_dir()
 	fi
 }
 
+# set status of pot, locks properly
+# $1 pot name
+# $2 status to set
+# $3 interfaces for pot (epaira)
+_set_pot_status()
+{
+	local _pname _status _interfaces _verbose _param
+	_pname=$1
+	_status=$2
+	_interfaces=$3
+	_param=$(_save_params "-p" "$_pname" "-s" "$_status")
+	if [ -n "$_interfaces" ]; then
+		_param="$_param"$(_save_params "-i" "$_interfaces")
+	fi
+	if [ "$_POT_VERBOSITY" -gt 1 ]; then
+		_verbose=$(printf -- "-%${_POT_VERBOSITY}s" |\
+		  tr " " "v" | sed s/v//)
+		_param="$_param"$(_save_params "$_verbose")
+	fi
+	eval "set -- $_param"
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}"\
+	  set-status "$@"
+}
+
 # check if the dataset is a dataset name
 # $1 the dataset NAME
 # tested

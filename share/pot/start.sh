@@ -33,8 +33,7 @@ start-cleanup()
 		return
 	fi
 	# doa state will only be set if pot is in state "starting"
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" \
-	  set-status -p "$_pname" -s doa
+	_set_pot_status "$_pname" doa
 	if [ -n "$_epaira" ] && _is_valid_netif "$_epaira" ; then
 		_ifaces="$_epaira"
 	fi
@@ -671,8 +670,7 @@ _js_start()
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
 	# Here is where the pot is marked as started
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status \
-	  -p "$_pname" -s started -i "$_ifaces"
+	_set_pot_status "$_pname" started "$_ifaces"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_info "pot $_pname is already started (???)"
@@ -691,7 +689,7 @@ _js_start()
 		rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 		# non-persistent jails always need to die
 		# Here is where the pot is stopping
-		lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+		_set_pot_status "$_pname" stopping
 		rc=$?
 		if [ $rc -eq 2 ]; then
 			_debug "pot $_pname is already stopping (maybe by a pot stop)"
@@ -709,7 +707,7 @@ _js_start()
 		fi
 	elif ! _is_pot_running "$_pname" ; then
 		# persistent jail didn't come up, this is an error
-		lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+		_set_pot_status "$_pname" stopping
 		rc=$?
 		if [ $rc -eq 2 ]; then
 			_debug "pot $_pname is already stopping (maybe by a pot stop?)"
@@ -805,7 +803,7 @@ pot-start()
 	fi
 
 	# Here is where the pot is starting
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s starting
+	_set_pot_status "$_pname" starting
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_error "pot $_pname is already starting"

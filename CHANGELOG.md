@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - start: Fix setting of nullfs attribute
+- set-status: Ignore status files that predate system boot (#278)
 
 ## [0.15.6] 2023-09-29
 ### Added

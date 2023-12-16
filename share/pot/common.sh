@@ -177,6 +177,11 @@ _save_params () {
 	echo " "
 }
 
+# get system boot time in seconds since the epoch
+_get_system_uptime() {
+	sysctl -n kern.boottime | sed -e 's/.*[^u]sec = \([0-9]*\).*$/\1/'
+}
+
 # validate some values of the configuration files
 # $1 quiet / no _error messages are emitted
 _conf_check()

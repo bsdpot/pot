@@ -506,7 +506,9 @@ _js_start()
 		else
 			prec=35
 		fi
-		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		cat >"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		# created automatically by pot, changes will be overwritten
+		echo \$\$ >/tmp/tinirc.pid
 		if sysctl -n kern.features.inet6 >/dev/null 2>&1; then
 		        ip6addrctl flush >/dev/null 2>&1
 		        ip6addrctl install /dev/stdin <<EOF

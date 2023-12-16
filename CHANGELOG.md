@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- tinirc: Write tinirc's pid to /tmp/tinirc.pid (#277)
 - set-attr/stop: Add attributes exec_stop and stop_timeout (#275)
 
 ### Fixed
+- tinirc: Overwrite tinirc on start instead of appending to an existing file (#277)
 - start: Fix setting of nullfs attribute
 
 ## [0.15.6] 2023-09-29

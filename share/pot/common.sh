@@ -249,8 +249,8 @@ _set_pot_status()
 		_param="$_param"$(_save_params "-i" "$_interfaces")
 	fi
 	if [ "$_POT_VERBOSITY" -gt 1 ]; then
-		_verbose=$(printf -- "-%${_POT_VERBOSITY}s" |\
-		  tr " " "v" | sed s/v//)
+		_verbose=$(printf -- "-%$(( _POT_VERBOSITY - 1 ))s" |\
+		  tr " " "v")
 		_param="$_param"$(_save_params "$_verbose")
 	fi
 	eval "set -- $_param"

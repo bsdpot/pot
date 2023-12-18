@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - tinirc: Overwrite tinirc on start instead of appending to an existing file (#277)
 - start: Fix setting of nullfs attribute
 - set-status: Ignore status files that predate system boot (#278)
+- set-status: Forward verbosity flags (#279)
 
 ## [0.15.6] 2023-09-29
 ### Added

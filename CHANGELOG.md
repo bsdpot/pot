@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: Fix setting of nullfs attribute
 - set-status: Ignore status files that predate system boot (#278)
 - set-status: Forward verbosity flags (#279)
+- network: Find bridge interfaces by interface group, this allows custom bridge names (#282)
 
 ## [0.15.6] 2023-09-29
 ### Added

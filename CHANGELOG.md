@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - tinirc: Write tinirc's pid to /tmp/tinirc.pid (#277)
 - set-attr/stop: Add attributes exec_stop and stop_timeout (#275)
+- init/de-init: Add flag "-m" to be minimally intrusive, add flag -p to specify pf file (#284)
+- init: Add flag -s to not alter syslogd settings, deprecate flag -f pf_file, as it is replaced by -p (#284)
 - vnet: Add global configuration POT_ISOLATE_VNET_POTS to prevent direct traffic between VNET pots (#283)
 
 ### Fixed
@@ -15,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - start: Fix setting of nullfs attribute
 - set-status: Ignore status files that predate system boot (#278)
 - set-status: Forward verbosity flags (#279)
+- network: Find bridge interfaces by interface group, this allows custom bridge names (#282)
 
 ## [0.15.6] 2023-09-29
 ### Added

@@ -5,31 +5,42 @@
 de-init-help()
 {
 	cat <<-"EOH"
-	pot de-init [-hvf]
-	  -h print this help
-	  -v verbose
+	pot de-init [-hmvf] [-p pf_file]
 	  -f force : stop all running pots
+	  -p pf_file : remove anchors to this file (empty to skip),
+	               defaults to result of `sysrc -n pf_rules`
+	  -h print this help
+	  -m minimal modifications (alias for `-p ''`)
+	     WARNING: Still destroys POT_ZFS_ROOT
+	  -v verbose
 	EOH
 }
 
 pot-de-init()
 {
-	local _pots _p _force _zopt
+	local _pots _p _force _zopt _pf_file
 	_force=
 	_zopt=
+	_pf_file="$(sysrc -n pf_rules)"
 	OPTIND=1
-	while getopts "hvf" _o ; do
+	while getopts "fhmvp:" _o ; do
 		case "$_o" in
+		f)
+			_force="force"
+			;;
 		h)
 			de-init-help
 			${EXIT} 0
 			;;
+		m)
+			_pf_file=""
+			;;
+		p)
+			_pf_file="$OPTARG"
+			;;
 		v)
 			_POT_VERBOSITY=$(( _POT_VERBOSITY + 1))
 			_zopt="-v"
-			;;
-		f)
-			_force="force"
 			;;
 		?)
 			de-init-help
@@ -59,13 +70,15 @@ pot-de-init()
 		_info "Deinstall pot ($POT_ZFS_ROOT)"
 		zfs destroy -r $_zopt "${POT_ZFS_ROOT}"
 	fi
-	# Remove pf entries
-	pf_file="$(sysrc -n pf_rules)"
-	sed -i '' '/^nat-anchor pot-nat$/d' "$pf_file"
-	sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' "$pf_file"
-	# Final message
 	echo "zfs datasets have been removed"
-	echo "pf configuration file should be clean (please check $pf_file)"
+	# Remove pf entries if needed
+	if [ -n "$_pf_file" ]; then
+		sed -i '' '/^nat-anchor pot-nat$/d' "$_pf_file"
+		sed -i '' '/^rdr-anchor "pot-rdr\/\*"$/d' "$_pf_file"
+		echo "pf configuration file should be clean"
+		echo "  - please check $_pf_file and reload it"
+	fi
+	# Final message
 	echo "check your rc.conf for potential leftovers variable like:"
 	echo '  syslogd_flags'
 	echo '  pot_enable'

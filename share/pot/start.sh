@@ -172,7 +172,7 @@ _js_create_epair()
 # $3 epairb interface
 _js_vnet()
 {
-	local _pname _bridge _epaira _epairb _ip
+	local _pname _bridge _epaira _epairb _ip _param
 	_pname=$1
 	if ! _is_vnet_ipv4_up ; then
 		_info "Internal network not found! Calling vnet-start to fix the issue"
@@ -182,9 +182,14 @@ _js_vnet()
 	_epaira=$2
 	_epairb=$3
 	ifconfig "$_epaira" up
-	ifconfig "$_bridge" addm "$_epaira"
+	_param=$(_save_params "addm" "$_epaira")
+	if [ "$(_normalize_true_false "$POT_ISOLATE_VNET_POTS")" = "YES" ]; then
+		_param="$_param"$(_save_params "private" "$_epaira")
+	fi
+	eval "set -- $_param"
+	ifconfig "$_bridge" "$@"
 	_ip=$( _get_ip_var "$_pname" )
-	## if norcscript - write a ad-hoc one
+	## if norcscript - write an ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
@@ -213,7 +218,7 @@ _js_vnet()
 # $4 stack (ipv6 or dual)
 _js_vnet_ipv6()
 {
-	local _pname _bridge _epaira _epairb _ip
+	local _pname _bridge _epaira _epairb _ip _param
 	_pname=$1
 	if ! _is_vnet_ipv6_up ; then
 		_info "Internal network not found! Calling vnet-start to fix the issue"
@@ -223,7 +228,12 @@ _js_vnet_ipv6()
 	_epaira=$2
 	_epairb=$3
 	ifconfig "$_epaira" up
-	ifconfig "$_bridge" addm "$_epaira"
+	_param=$(_save_params "addm" "$_epaira")
+	if [ "$(_normalize_true_false "$POT_ISOLATE_VNET_POTS")" = "YES" ]; then
+		_param="$_param"$(_save_params "private" "$_epaira")
+	fi
+	eval "set -- $_param"
+	ifconfig "$_bridge" "$@"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
@@ -253,7 +263,8 @@ _js_vnet_ipv6()
 # $3 epairb interface
 _js_private_vnet()
 {
-	local _pname _bridge_name _bridge _epaira _epairb _ip _net_size _gateway
+	local _pname _bridge_name _bridge _epaira _epairb _ip _net_size
+	local _gateway _param
 	_pname=$1
 	_bridge_name="$( _get_conf_var "$_pname" bridge )"
 	if ! _is_vnet_ipv4_up "$_bridge_name" ; then
@@ -264,12 +275,18 @@ _js_private_vnet()
 	_epaira=$2
 	_epairb=$3
 	ifconfig "$_epaira" up
+	_param=$(_save_params "addm" "$_epaira")
+	if [ "$(_normalize_true_false "$POT_ISOLATE_VNET_POTS")" = "YES" ]; then
+		_param="$_param"$(_save_params "private" "$_epaira")
+	fi
+	eval "set -- $_param"
+	ifconfig "$_bridge" "$@"
 	ifconfig "$_bridge" addm "$_epaira"
 	_ip=$( _get_ip_var "$_pname"  )
 	_net_size="$(_get_bridge_var "$_bridge_name" net)"
 	_net_size="${_net_size##*/}"
 	_gateway="$(_get_bridge_var "$_bridge_name" gateway)"
-	## if norcscript - write a ad-hoc one
+	## if norcscript - write an ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then

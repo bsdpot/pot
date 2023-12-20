@@ -16,24 +16,6 @@ set-attribute-help()
 	EOH
 }
 
-# check if the argument is a valid boolean value
-# if valid, it returns true and it echo a normalized version of the boolean value (YES/NO)
-# if not valid, it return false
-_normalize_true_false() {
-	case $1 in
-		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn])
-			echo YES
-			return 0 # true
-			;;
-		[Nn][Oo]|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff])
-			echo NO
-			return 0 # true
-			;;
-		*)
-			return 1 # false
-	esac
-}
-
 # $1 pot name
 # $2 attribute name
 # $3 value

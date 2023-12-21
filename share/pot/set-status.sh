@@ -33,7 +33,7 @@ _get_status()
 	_uptime=$(_get_system_uptime)
 
 	if [ "$_uptime" -gt "$_mod_time" ]; then
-		>&2 _debug "Ignoring oudated status file $_status_file of pot $_pname"
+		>&2 _debug "Ignoring outdated status file $_status_file of pot $_pname"
 		return
 	fi
 

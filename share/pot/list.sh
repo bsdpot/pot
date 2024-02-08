@@ -5,7 +5,7 @@
 list-help()
 {
 	cat <<-"EOH"
-	pot list [-hpbfFa] [-qv]
+	pot list [-hpbfFa] [-qvo]
 	  -h print this help
 	  -v verbose
 	  -q quiet
@@ -15,6 +15,9 @@ list-help()
 	  -F list available flavours
 	  -B list available bridges (network type)
 	  -a list everything (incompatible with -q)
+	  -o format: output format, one of
+		    text - textual (the default)
+		    json - JSON format
 	EOH
 }
 
@@ -51,22 +54,44 @@ _ls_info_pot()
 
 _ls_pots()
 {
-	local _pots _q
+	local _pots _q _format _i
 	_q=$1
+	_format=$2
 	_pots=$( _get_pot_list )
 	if [ -z "$_pots" ]; then
 		if [ "$_q" != "quiet" ]; then
-			echo "No pot created yet..."
+			if [ "$_format" = "json" ]; then
+				echo "[]"
+			else
+				echo "No pot created yet..."
+			fi
 		fi
 		return
 	fi
-	for _p in $_pots; do
+	if [ "$_format" = "json" ]; then
+		printf "["
+	fi
+	_i=0
+	set -- $_pots
+	for _p do	
 		if [ "$_q" = "quiet" ]; then
-			echo "$_p"
+        	if [ "$_format" = "json" ]; then
+				printf "{\"name\": \"%s\"}" "$_p"
+			else
+				echo "$_p"
+			fi
 		else
-			_ls_info_pot "$_p"
+			_ls_info_pot "$_p" "$_format"
+		fi
+		_i=$(( _i + 1 ))
+		# if not the last item add ,
+		if [ "$_i" != "$#" -a "$_format" = "json" ]; then
+			printf ","
 		fi
 	done
+	if [ "$_format" = "json" ]; then
+		printf "]\\n"
+	fi
 }
 
 _ls_bases()
@@ -142,11 +167,12 @@ _ls_bridges()
 
 pot-list()
 {
-	local _obj _q
+	local _obj _q _format
 	_obj="pots"
+	_format="text"
 	_q=
 	OPTIND=1
-	while getopts "hvbfFapqB" _o ; do
+	while getopts "hvbfFapqBo:" _o ; do
 		case "$_o" in
 		h)
 			list-help
@@ -157,6 +183,15 @@ pot-list()
 			;;
 		q)
 			_q="quiet"
+			;;
+		o)
+			if [ "$OPTARG" = "text" ] || [ "$OPTARG" = "json" ]; then
+				_format="$OPTARG"
+			else
+				_error "Format $OPTARG not supported"
+				list-help
+				${EXIT} 1
+			fi
 			;;
 		p)
 			if [ "$_obj" != "pots" ]; then
@@ -220,7 +255,7 @@ pot-list()
 	fi
 	case $_obj in
 		"pots"|"ppots")
-			_ls_pots "$_q"
+			_ls_pots "$_q" "$_format"
 			;;
 		"bases")
 			_ls_bases "$_q"

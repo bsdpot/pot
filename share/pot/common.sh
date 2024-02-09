@@ -1008,6 +1008,17 @@ _print_pot_fscomp()
 		printf "\\t\\t%s => %s\\n" "${_mnt_p##"${POT_FS_ROOT}"/jails/}" "${_dset##"${POT_ZFS_ROOT}"/}"
 	done < "$1"
 }
+# $1 fscomp.conf absolute pathname
+_print_pot_fscomp_json()
+{
+	local _dset _mnt_p _out
+	while read -r line ; do
+		_dset=$( echo "$line" | awk '{print $1}' )
+		_mnt_p=$( echo "$line" | awk '{print $2}' )
+    	_out=$(printf %s"{\"d\": \"%s\", \"m\":\"%s\"}," "$_out" "${_mnt_p##"${POT_FS_ROOT}"/jails/}" "${_dset##"${POT_ZFS_ROOT}"/}")
+	done < "$1"
+	printf "[%s]" "${_out%?}"
+}
 
 # $1 pot name
 _print_pot_snaps()
@@ -1018,6 +1029,20 @@ _print_pot_snaps()
 		for _s in $( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1" | tr '\n' ' ' ) ; do
 			printf "\\t\\t%s\\n" "$_s"
 		done
+	fi
+}
+
+# $1 pot name
+_print_pot_snaps_json()
+{
+	local _out
+	if [ -z "$( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1")" ]; then
+		printf "[]"
+	else
+		for _s in $( zfs list -t snapshot -o name -Hr "${POT_ZFS_ROOT}/jails/$1" | tr '\n' ' ' ) ; do
+			_out=$(printf "%s\"%s\"," "$_out" "$_s")
+		done
+		printf "[%s]" "${_out%?}"
 	fi
 }
 

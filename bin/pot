@@ -118,6 +118,7 @@ usage() {
 	    mount-in -- Mount directory, ZFS dataset, or fscomp into a pot
 	    mount-out -- Unmount directory, ZFS dataset, or fscomp from a pot
 	    add-dep -- Add a dependency
+	    set-aliases -- Set alias hostname for the pot's addr in /etc/hosts
 	    set-rss -- Set a resource constraint
 	    get-rss -- Get the current resource usage
 	    set-cmd -- Set the command to start the pot
@@ -190,7 +191,7 @@ case "${CMD}" in
 	create-base|create-fscomp|create|\
 	create-private-bridge|\
 	copy-in|copy-out|mount-in|mount-out|prune|set-hook|\
-	destroy|add-dep|set-rss|get-rss|set-cmd|set-env|set-hosts|\
+	destroy|add-dep|set-aliases|set-rss|get-rss|set-cmd|set-env|set-hosts|\
 	export|import|prepare|\
 	export-ports|set-attribute|get-attribute|\
 	start|stop|term|\

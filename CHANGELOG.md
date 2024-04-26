@@ -4,7 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.16.0] 2023-12-30
+### Added
+- tinirc: Write tinirc's pid to /tmp/tinirc.pid (#277)
+- set-attr/stop: Add attributes exec_stop and stop_timeout (#275)
+- init/de-init: Add flag "-m" to be minimally intrusive, add flag -p to specify pf file (#284)
+- init: Add flag -s to not alter syslogd settings, deprecate flag -f pf_file, as it is replaced by -p (#284)
+- vnet: Add global configuration POT_ISOLATE_VNET_POTS to prevent direct traffic between VNET pots (#283)
+
+### Fixed
+- tinirc: Overwrite tinirc on start instead of appending to an existing file (#277)
+- start: Fix setting of nullfs attribute
+- set-status: Ignore status files that predate system boot (#278)
+- set-status: Forward verbosity flags (#279)
+- network: Find bridge interfaces by interface group, this allows custom bridge names (#282)
+
+## [0.15.6] 2023-09-29
+### Added
+- start: Add custom pf rule configuration hook, POT_EXPORT_PORTS_PF_RULES_HOOK (#273)
+- Remove basepath from mountpoint, make mount-in/out errors more visible (#259)
+
+## [0.15.5] 2023-06-29
+### Added
+- set-attr: Add support for setting devfs_ruleset (#270)
+- set-attr: Add support for setting mlock, sysvshm, sysvsem, sysvmsg, retire sysvipc attribute, which was always a noop (#263)
+
 ### Fixed
 - pot-cmd: Output problems with pot root to stderr (#254)
 - version: Don't require pot root to exist to run version command (#253)

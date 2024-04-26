@@ -16,24 +16,6 @@ set-attribute-help()
 	EOH
 }
 
-# check if the argument is a valid boolean value
-# if valid, it returns true and it echo a normalized version of the boolean value (YES/NO)
-# if not valid, it return false
-_normalize_true_false() {
-	case $1 in
-		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn])
-			echo YES
-			return 0 # true
-			;;
-		[Nn][Oo]|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff])
-			echo NO
-			return 0 # true
-			;;
-		*)
-			return 1 # false
-	esac
-}
-
 # $1 pot name
 # $2 attribute name
 # $3 value
@@ -68,6 +50,43 @@ _set_uint_attribute()
 		set-attribute-help
 		return 1
 	fi
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
+}
+
+# $1 pot name
+# $2 attribute name
+# $3 value
+_set_string_attribute()
+{
+	local _pname _value _cdir
+	_pname=$1
+	_attr=$2
+	_value=$3
+
+	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
+	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
+	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
+}
+
+# $1 pot name
+# $2 attribute name
+# $3 value
+_set_sysvopt_attribute()
+{
+	local _pname _value _cdir
+	_pname=$1
+	_attr=$2
+	_value=$3
+
+	if [ "$_value" != "new" ] && [ "$_value" != "inherit" ] && \
+	    [ "$_value" != "disable" ]; then
+		_error "value must be one of 'new', 'inherit', 'disable'"
+		set-attribute-help
+		return 1
+	fi
+
 	_cdir="$POT_FS_ROOT/jails/$_pname/conf"
 	${SED} -i '' -e "/^pot.attr.$_attr=.*/d" "$_cdir/pot.conf"
 	echo "pot.attr.$_attr=$_value" >> "$_cdir/pot.conf"
@@ -171,6 +190,12 @@ pot-set-attribute()
 				;;
 			(uint)
 				_cmd=_set_uint_attribute
+				;;
+			(string)
+				_cmd=_set_string_attribute
+				;;
+			(sysvopt)
+				_cmd=_set_sysvopt_attribute
 				;;
 			(*)
 				_ignored_parameter "$_attr"

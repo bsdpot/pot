@@ -33,8 +33,7 @@ start-cleanup()
 		return
 	fi
 	# doa state will only be set if pot is in state "starting"
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" \
-	  set-status -p "$_pname" -s doa
+	_set_pot_status "$_pname" doa
 	if [ -n "$_epaira" ] && _is_valid_netif "$_epaira" ; then
 		_ifaces="$_epaira"
 	fi
@@ -173,7 +172,7 @@ _js_create_epair()
 # $3 epairb interface
 _js_vnet()
 {
-	local _pname _bridge _epaira _epairb _ip
+	local _pname _bridge _epaira _epairb _ip _param
 	_pname=$1
 	if ! _is_vnet_ipv4_up ; then
 		_info "Internal network not found! Calling vnet-start to fix the issue"
@@ -183,9 +182,14 @@ _js_vnet()
 	_epaira=$2
 	_epairb=$3
 	ifconfig "$_epaira" up
-	ifconfig "$_bridge" addm "$_epaira"
+	_param=$(_save_params "addm" "$_epaira")
+	if [ "$(_normalize_true_false "$POT_ISOLATE_VNET_POTS")" = "YES" ]; then
+		_param="$_param"$(_save_params "private" "$_epaira")
+	fi
+	eval "set -- $_param"
+	ifconfig "$_bridge" "$@"
 	_ip=$( _get_ip_var "$_pname" )
-	## if norcscript - write a ad-hoc one
+	## if norcscript - write an ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
@@ -214,7 +218,7 @@ _js_vnet()
 # $4 stack (ipv6 or dual)
 _js_vnet_ipv6()
 {
-	local _pname _bridge _epaira _epairb _ip
+	local _pname _bridge _epaira _epairb _ip _param
 	_pname=$1
 	if ! _is_vnet_ipv6_up ; then
 		_info "Internal network not found! Calling vnet-start to fix the issue"
@@ -224,7 +228,12 @@ _js_vnet_ipv6()
 	_epaira=$2
 	_epairb=$3
 	ifconfig "$_epaira" up
-	ifconfig "$_bridge" addm "$_epaira"
+	_param=$(_save_params "addm" "$_epaira")
+	if [ "$(_normalize_true_false "$POT_ISOLATE_VNET_POTS")" = "YES" ]; then
+		_param="$_param"$(_save_params "private" "$_epaira")
+	fi
+	eval "set -- $_param"
+	ifconfig "$_bridge" "$@"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
@@ -254,7 +263,8 @@ _js_vnet_ipv6()
 # $3 epairb interface
 _js_private_vnet()
 {
-	local _pname _bridge_name _bridge _epaira _epairb _ip _net_size _gateway
+	local _pname _bridge_name _bridge _epaira _epairb _ip _net_size
+	local _gateway _param
 	_pname=$1
 	_bridge_name="$( _get_conf_var "$_pname" bridge )"
 	if ! _is_vnet_ipv4_up "$_bridge_name" ; then
@@ -265,12 +275,18 @@ _js_private_vnet()
 	_epaira=$2
 	_epairb=$3
 	ifconfig "$_epaira" up
+	_param=$(_save_params "addm" "$_epaira")
+	if [ "$(_normalize_true_false "$POT_ISOLATE_VNET_POTS")" = "YES" ]; then
+		_param="$_param"$(_save_params "private" "$_epaira")
+	fi
+	eval "set -- $_param"
+	ifconfig "$_bridge" "$@"
 	ifconfig "$_bridge" addm "$_epaira"
 	_ip=$( _get_ip_var "$_pname"  )
 	_net_size="$(_get_bridge_var "$_bridge_name" net)"
 	_net_size="${_net_size##*/}"
 	_gateway="$(_get_bridge_var "$_bridge_name" gateway)"
-	## if norcscript - write a ad-hoc one
+	## if norcscript - write an ad-hoc one
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
 		if ! ifconfig ${_epairb} >/dev/null 2>&1; then
@@ -324,7 +340,7 @@ _js_get_free_rnd_port()
 # $1 pot name
 _js_export_ports()
 {
-	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt _to_arg
+	local _pname _ip _ports _excl_list _pot_port _host_port _proto_port _aname _pdir _ncat_opt _to_arg _bridge
 	_pname=$1
 	_ip="$( _get_ip_var "$_pname" )"
 	_ports="$( _get_pot_export_ports "$_pname" )"
@@ -333,6 +349,7 @@ _js_export_ports()
 	fi
 	_pfrules=$(mktemp "${POT_TMP:-/tmp}/pot_pfrules_${_pname}${POT_MKTEMP_SUFFIX}") || exit 1
 	_lo_tunnel="$(_get_conf_var "$_pname" "pot.attr.localhost-tunnel")"
+	_bridge=$(_pot_bridge_ipv4)
 	for _port in $_ports ; do
 		_proto_port="tcp"
 		if [ "${_port#udp:}" != "${_port}" ]; then
@@ -355,20 +372,27 @@ _js_export_ports()
 		fi
 
 		_debug "Redirect: from $_to_arg : $_proto_port:$_host_port to $_ip : $_proto_port:$_pot_port"
-		echo "rdr pass on $POT_EXTIF proto $_proto_port from any to $_to_arg port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
-		_excl_list="$_excl_list $_host_port"
-		if [ -n "$POT_EXTRA_EXTIF" ]; then
-			for extra_netif in $POT_EXTRA_EXTIF ; do
-				echo "rdr pass on $extra_netif proto $_proto_port from any to ($extra_netif) port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
-			done
-		fi
-		if [ "$_lo_tunnel" = "YES" ]; then
-			_pdir="${POT_FS_ROOT}/jails/$_pname"
-			if [ -x "/usr/local/bin/ncat" ]; then
-				cp /usr/local/bin/ncat "$_pdir/ncat-$_pname-$_pot_port"
-				daemon -f -p "$_pdir/ncat-$_pot_port.pid" "$_pdir/ncat-$_pname-$_pot_port" -lk $_ncat_opt "$_host_port" -c "/usr/local/bin/ncat $_ncat_opt $_ip $_pot_port"
-			else
-				_error "nmap package is missing, localhost-tunnel attribute ignored"
+		if [ -n "$POT_EXPORT_PORTS_PF_RULES_HOOK" ]; then
+			"$POT_EXPORT_PORTS_PF_RULES_HOOK" \
+			  "$POT_EXTIF" "$_bridge" "$POT_NETWORK" "$POT_GATEWAY" \
+			  "$_proto_port" "$_host_port" "$_ip" "$_pot_port" >> "$_pfrules"
+		else
+			echo "rdr pass on $POT_EXTIF proto $_proto_port from any to $_to_arg port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
+
+			_excl_list="$_excl_list $_host_port"
+			if [ -n "$POT_EXTRA_EXTIF" ]; then
+				for extra_netif in $POT_EXTRA_EXTIF ; do
+					echo "rdr pass on $extra_netif proto $_proto_port from any to ($extra_netif) port $_host_port -> $_ip port $_pot_port" >> "$_pfrules"
+				done
+			fi
+			if [ "$_lo_tunnel" = "YES" ]; then
+				_pdir="${POT_FS_ROOT}/jails/$_pname"
+				if [ -x "/usr/local/bin/ncat" ]; then
+					cp /usr/local/bin/ncat "$_pdir/ncat-$_pname-$_pot_port"
+					daemon -f -p "$_pdir/ncat-$_pot_port.pid" "$_pdir/ncat-$_pname-$_pot_port" -lk $_ncat_opt "$_host_port" -c "/usr/local/bin/ncat $_ncat_opt $_ip $_pot_port"
+				else
+					_error "nmap package is missing, localhost-tunnel attribute ignored"
+				fi
 			fi
 		fi
 	done
@@ -451,34 +475,46 @@ _js_start()
 	local _pname _confdir _epaira _epairb _ipv6_epaira _ipv6_epairb
 	local _ifaces _hostname _osrelease _param _ip _cmd _persist
 	local _stack _value _name _type _wait_pid _exit_code _tmp
+	local _default
 	_pname="$1"
 	_confdir="${POT_FS_ROOT}/jails/$_pname/conf"
-	_param="allow.set_hostname=false allow.raw_sockets allow.socket_af allow.sysvipc"
-	_param="$_param allow.chflags exec.clean mount.devfs"
-	_param="$_param sysvmsg=new sysvsem=new sysvshm=new"
+	_param=$(_save_params "allow.set_hostname=false" "allow.raw_sockets" \
+	         "allow.socket_af" "allow.chflags" "exec.clean" "mount.devfs")
 
 	for _attr in ${_POT_JAIL_RW_ATTRIBUTES} ; do
 		# shellcheck disable=SC1083,2086
 		eval _name=\"\${_POT_DEFAULT_${_attr}_N}\"
 		# shellcheck disable=SC1083,2086
 		eval _type=\"\${_POT_DEFAULT_${_attr}_T}\"
-		_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
-		if [ "${_value}" = "YES" ]; then
-			_param="$_param ${_name}"
-		elif [ "${_type}" != "bool" ] && [ -n "${_value}" ]; then
-			_param="$_param ${_name}=${_value}"
+		# shellcheck disable=SC1083,2086
+		eval _default=\"\${_POT_DEFAULT_${_attr}_D}\"
+		if [ "$_type" = "string" ]; then
+			_value="$(_get_conf_var_string "$_pname" "pot.attr.${_attr}")"
+		else
+			_value="$(_get_conf_var "$_pname" "pot.attr.${_attr}")"
+		fi
+
+		if [ "$_type" = "bool" ] && [ "$_value" = "YES" ]; then
+			_param="$_param"$(_save_params "$_name")
+		elif [ "$_type" != "bool" ] && [ -n "$_value" ]; then
+			_param="$_param"$(_save_params "$_name=$_value")
+		elif [ "$_type" = "sysvopt" ] && [ -z "$_value" ]; then
+			_param="$_param"$(_save_params "$_name=$_default")
 		fi
 	done
 
 	_hostname="$( _get_conf_var "$_pname" host.hostname )"
 	_osrelease="$( _get_os_release "$_pname" )"
-	_param="$_param name=$_pname host.hostname=$_hostname osrelease=$_osrelease"
-	_param="$_param path=${POT_FS_ROOT}/jails/$_pname/m"
+	_param="$_param"$(_save_params "name=$_pname" \
+	                  "host.hostname=$_hostname" \
+	                  "osrelease=$_osrelease" \
+	                  "path=${POT_FS_ROOT}/jails/$_pname/m")
+
 	_persist="$(_get_conf_var "$_pname" "pot.attr.persistent")"
 	if [ "$_persist" != "NO" ]; then
-		_param="$_param persist"
+		_param="$_param"$(_save_params "persist")
 	else
-		_param="$_param nopersist"
+		_param="$_param"$(_save_params "nopersist")
 	fi
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-rc-script")" = "YES" ]; then
 		if [ "$( _get_pot_network_stack "$_pname" )" = "ipv4" ]; then
@@ -486,7 +522,9 @@ _js_start()
 		else
 			prec=35
 		fi
-		cat >>"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		cat >"${POT_FS_ROOT}/jails/$_pname/m/tmp/tinirc" <<-EOT
+		# created automatically by pot, changes will be overwritten
+		echo \$\$ >/tmp/tinirc.pid
 		if sysctl -n kern.features.inet6 >/dev/null 2>&1; then
 		        ip6addrctl flush >/dev/null 2>&1
 		        ip6addrctl install /dev/stdin <<EOF
@@ -507,13 +545,14 @@ _js_start()
 	"inherit")
 		case "$( _get_pot_network_stack "$_pname" )" in
 			"dual")
-				_param="$_param ip4=inherit ip6=inherit"
+				_param="$_param"$(_save_params \
+				                  "ip4=inherit" "ip6=inherit")
 				;;
 			"ipv4")
-				_param="$_param ip4=inherit"
+				_param="$_param"$(_save_params "ip4=inherit")
 				;;
 			"ipv6")
-				_param="$_param ip6=inherit"
+				_param="$_param"$(_save_params "ip6=inherit")
 				;;
 		esac
 		;;
@@ -525,16 +564,16 @@ _js_start()
 				_ip4addr="$( _get_alias_ipv4 "$_pname" "$_ip" )"
 				_ip6addr="$( _get_alias_ipv6 "$_pname" "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
-					_param="$_param ip4.addr=$_ip4addr"
+					_param="$_param"$(_save_params "ip4.addr=$_ip4addr")
 				fi
 				if [ -n "$_ip6addr" ]; then
-					_param="$_param ip6.addr=$_ip6addr"
+					_param="$_param"$(_save_params "ip6.addr=$_ip6addr")
 				fi
 				;;
 			"ipv4")
 				_ip4addr="$( _get_alias_ipv4 "$_pname" "$_ip" )"
 				if [ -n "$_ip4addr" ]; then
-					_param="$_param ip4.addr=$_ip4addr"
+					_param="$_param"$(_save_params "ip4.addr=$_ip4addr")
 				else
 					_error "No ipv4 address found for $_pname"
 					start-cleanup "$_pname"
@@ -544,7 +583,7 @@ _js_start()
 			"ipv6")
 				_ip6addr="$( _get_alias_ipv6 "$_pname" "$_ip" )"
 				if [ -n "$_ip6addr" ]; then
-					_param="$_param ip6.addr=$_ip6addr"
+					_param="$_param"$(_save_params "ip6.addr=$_ip6addr")
 				else
 					_error "No ipv6 address found for $_pname"
 					start-cleanup "$_pname"
@@ -554,7 +593,7 @@ _js_start()
 		esac
 		;;
 	"public-bridge")
-		_param="$_param vnet"
+		_param="$_param"$(_save_params "vnet")
 		_stack="$( _get_pot_network_stack "$_pname" )"
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv4" ]; then
 			_tmp="$( _js_create_epair "$_pname" '4' )" || return 1
@@ -564,7 +603,7 @@ _js_start()
 			_epaira=$1
 			_epairb=$2
 			_js_vnet "$_pname" "$_epaira" "$_epairb"
-			_param="$_param vnet.interface=${_epairb}"
+			_param="$_param"$(_save_params "vnet.interface=$_epairb")
 			_js_export_ports "$_pname"
 		fi
 		if [ "$_stack" = "dual" ] || [ "$_stack" = "ipv6" ]; then
@@ -576,7 +615,7 @@ _js_start()
 			_ipv6_epairb=$2
 			_js_vnet_ipv6 "$_pname" "$_ipv6_epaira" \
 			  "$_ipv6_epairb" "$_stack"
-			_param="$_param vnet.interface=${_ipv6_epairb}"
+			_param="$_param"$(_save_params "vnet.interface=$_ipv6_epairb")
 		fi
 		;;
 	"private-bridge")
@@ -587,7 +626,7 @@ _js_start()
 		_epaira=$1
 		_epairb=$2
 		_js_private_vnet "$_pname" "$_epaira" "$_epairb"
-		_param="$_param vnet vnet.interface=${_epairb}"
+		_param="$_param"$(_save_params "vnet" "vnet.interface=$_epairb")
 		_js_export_ports "$_pname"
 		;;
 	esac
@@ -612,8 +651,10 @@ _js_start()
 	rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 
 	_info "Starting the pot $_pname"
-	# shellcheck disable=SC2086
-	jail -c $_param exec.start="sh -c 'sleep 1234&'"
+	# execute command
+	eval "set -- $_param"
+	_debug "Pot $_pname jail params are: $*"
+	jail -c "$@" exec.start="sh -c 'sleep 1234&'"
 
 	if [ -e "$_confdir/pot.conf" ] && _is_pot_prunable "$_pname" ; then
 		# set-attr cannot be used for read-only attributes
@@ -646,8 +687,7 @@ _js_start()
 		echo "$_wait_pid" >"${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 	fi
 	# Here is where the pot is marked as started
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status \
-	  -p "$_pname" -s started -i "$_ifaces"
+	_set_pot_status "$_pname" started "$_ifaces"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_info "pot $_pname is already started (???)"
@@ -666,7 +706,7 @@ _js_start()
 		rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"
 		# non-persistent jails always need to die
 		# Here is where the pot is stopping
-		lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+		_set_pot_status "$_pname" stopping
 		rc=$?
 		if [ $rc -eq 2 ]; then
 			_debug "pot $_pname is already stopping (maybe by a pot stop)"
@@ -684,7 +724,7 @@ _js_start()
 		fi
 	elif ! _is_pot_running "$_pname" ; then
 		# persistent jail didn't come up, this is an error
-		lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping
+		_set_pot_status "$_pname" stopping
 		rc=$?
 		if [ $rc -eq 2 ]; then
 			_debug "pot $_pname is already stopping (maybe by a pot stop?)"
@@ -780,7 +820,7 @@ pot-start()
 	fi
 
 	# Here is where the pot is starting
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s starting
+	_set_pot_status "$_pname" starting
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_error "pot $_pname is already starting"

@@ -36,6 +36,7 @@ _js_cpu_rebalance()
 _js_stop()
 {
 	local _pname _pdir _epaira _epaira_ifs _ip _aname _from_start
+	local _exec_stop _stop_timeout
 	_pname="$1"
 	_from_start="$2"
 	_epaira_ifs="$3"
@@ -51,7 +52,22 @@ _js_stop()
 			)
 		fi
 		_debug "Stop the pot $_pname"
-		jail -q -r "$_pname"
+
+		_exec_stop="$(_get_conf_var_string "$_pname" "pot.attr.exec_stop")"
+		_stop_timeout="$(_get_conf_var "$_pname" "pot.attr.stop_timeout")"
+		(
+			echo "$_pname {"
+			if [ -n "$_exec_stop" ]; then
+				printf "  %s=%s;\n" "exec.stop" \
+				       "$(echo "$_exec_stop" | sed 's/["\]/\\&/g; s/.*/"&"/')"
+
+				# balance quotes for cheap syntax highlighting editors'
+			fi
+			if [ -n "$_stop_timeout" ]; then
+				printf "  %s=%s;\n" "stop.timeout" "$_stop_timeout"
+			fi
+			echo "}"
+		) | jail -f- -q -r "$_pname"
 	fi
 	# those are clean up operations for a pot already stopped
 	if [ -n "$_epaira_ifs" ]; then
@@ -195,8 +211,7 @@ pot-stop()
 	fi
 
 	# Here is where the pot is stopping
-	_epaira_ifs="$(lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" \
-	  "${_POT_PATHNAME}" set-status -p "$_pname" -s stopping)"
+	_epaira_ifs="$(_set_pot_status "$_pname" stopping)"
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		if [ $_from_start = "YES" ]; then
@@ -220,7 +235,7 @@ pot-stop()
 	fi
 	_js_rm_resolv "$_pname"
 	_pot_umount "$_pname"
-	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopped
+	_set_pot_status "$_pname" stopped
 	rc=$?
 	if [ $rc -eq 2 ]; then
 		_error "pot $_pname is already stopped!"

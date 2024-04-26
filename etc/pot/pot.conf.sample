@@ -43,6 +43,9 @@
 # POT_NETWORK_vlan20=192.168.100.0/24
 # POT_NETWORK_vlan50=10.50.50.0/24
 
+# Do not allow bridge-based pots to forward traffic to each other
+# POT_ISOLATE_VNET_POTS=true
+
 # DNS on the Internal Virtual Network
 
 # name of the pot running the DNS

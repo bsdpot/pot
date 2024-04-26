@@ -10,7 +10,7 @@ _pot_bridge()
 _pot_bridge_ipv4()
 {
 	local _bridges
-	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	_bridges=$( ifconfig -g bridge )
 	if [ -z "$_bridges" ]; then
 		return
 	fi
@@ -26,7 +26,7 @@ _pot_bridge_ipv4()
 _pot_bridge_ipv6()
 {
 	local _bridges
-	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	_bridges=$( ifconfig -g bridge )
 	if [ -z "$_bridges" ]; then
 		return
 	fi
@@ -43,7 +43,7 @@ _private_bridge()
 {
 	local _bridges _bridge _bridge_ip
 	_bridge="$1"
-	_bridges=$( ifconfig | grep ^bridge | cut -f1 -d':' )
+	_bridges=$( ifconfig -g bridge )
 	if [ -z "$_bridges" ]; then
 		return
 	fi

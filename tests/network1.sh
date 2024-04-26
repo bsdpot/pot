@@ -61,6 +61,13 @@ bridge2: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	root id 00:00:00:00:00:00 priority 32768 ifcost 0 port 0
 EOF--
 		return 0 # true
+	elif [ "$1" = "-g" ] && [ "$2" = "bridge" ]; then
+		cat << EOF--
+bridge0
+bridge1
+bridge2
+EOF--
+		return 0 # true
 	elif [ "$1" = "bridge0" ]; then
 		cat << EOF--
 bridge0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500

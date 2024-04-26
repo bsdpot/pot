@@ -74,6 +74,11 @@ _cj_undo_clone()
 	__monitor UNDO_CLONE "$@"
 }
 
+_update_fscomp()
+{
+	:
+}
+
 test_cj_zfs_001()
 {
 	_cj_zfs new-pot test-pot NO

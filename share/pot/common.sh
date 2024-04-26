@@ -10,7 +10,7 @@ _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
-_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvipc children devfs_ruleset'
+_POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvshm sysvsem sysvmsg children mlock devfs_ruleset exec_stop stop_timeout'
 
 # N: arg name jail command, T: type of data, D: default value
 # devfs is always mounted
@@ -23,9 +23,9 @@ _POT_DEFAULT_fdescfs_D='NO'
 _POT_DEFAULT_linprocfs_N='allow.mount.linprocfs'
 _POT_DEFAULT_linprocfs_T='bool'
 _POT_DEFAULT_linprocfs_D='NO'
-_POT_DEFAULT_nullcfs_N='allow.mount.nullfs'
-_POT_DEFAULT_nullcfs_T='bool'
-_POT_DEFAULT_nullcfs_D='NO'
+_POT_DEFAULT_nullfs_N='allow.mount.nullfs'
+_POT_DEFAULT_nullfs_T='bool'
+_POT_DEFAULT_nullfs_D='NO'
 _POT_DEFAULT_procfs_N='mount.procfs'
 _POT_DEFAULT_procfs_T='bool'
 _POT_DEFAULT_procfs_D='NO'
@@ -38,15 +38,30 @@ _POT_DEFAULT_zfs_D='NO'
 _POT_DEFAULT_raw_sockets_N='allow.raw_sockets'
 _POT_DEFAULT_raw_sockets_T='bool'
 _POT_DEFAULT_raw_sockets_D='NO'
-_POT_DEFAULT_sysvipc_N='allow.sysvipc'
-_POT_DEFAULT_sysvipc_T='bool'
-_POT_DEFAULT_sysvipc_D='NO'
+_POT_DEFAULT_sysvshm_N='sysvshm'
+_POT_DEFAULT_sysvshm_T='sysvopt'
+_POT_DEFAULT_sysvshm_D='new'
+_POT_DEFAULT_sysvsem_N='sysvsem'
+_POT_DEFAULT_sysvsem_T='sysvopt'
+_POT_DEFAULT_sysvsem_D='new'
+_POT_DEFAULT_sysvmsg_N='sysvmsg'
+_POT_DEFAULT_sysvmsg_T='sysvopt'
+_POT_DEFAULT_sysvmsg_D='new'
 _POT_DEFAULT_children_N='children.max'
 _POT_DEFAULT_children_T='uint'
 _POT_DEFAULT_children_D='0'
 _POT_DEFAULT_devfs_ruleset_N='devfs_ruleset'
 _POT_DEFAULT_devfs_ruleset_T='uint'
 _POT_DEFAULT_devfs_ruleset_D='4'
+_POT_DEFAULT_mlock_N='allow.mlock'
+_POT_DEFAULT_mlock_T='bool'
+_POT_DEFAULT_mlock_D='NO'
+_POT_DEFAULT_exec_stop_N='exec.stop'
+_POT_DEFAULT_exec_stop_T='string'
+_POT_DEFAULT_exec_stop_D=''
+_POT_DEFAULT_stop_timeout_N='stop.timeout'
+_POT_DEFAULT_stop_timeout_T='uint'
+_POT_DEFAULT_stop_timeout_D='10'
 # 0:everything, 1:chroot+below(poudriere), 2:just chroot(normal jail)
 _POT_DEFAULT_enforce_statfs_N='enforce_statfs'
 _POT_DEFAULT_enforce_statfs_T='uint'
@@ -162,6 +177,29 @@ _save_params () {
 	echo " "
 }
 
+# get system boot time in seconds since the epoch
+_get_system_uptime() {
+	sysctl -n kern.boottime | sed -e 's/.*[^u]sec = \([0-9]*\).*$/\1/'
+}
+
+# check if the argument is a valid boolean value
+# if valid, it returns true and it echo a normalized version of the boolean value (YES/NO)
+# if not valid, it return false
+_normalize_true_false() {
+	case $1 in
+		[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|[Oo][Nn])
+			echo YES
+			return 0 # true
+			;;
+		[Nn][Oo]|[Ff][Aa][Ll][Ss][Ee]|[Oo][Ff][Ff])
+			echo NO
+			return 0 # true
+			;;
+		*)
+			return 1 # false
+	esac
+}
+
 # validate some values of the configuration files
 # $1 quiet / no _error messages are emitted
 _conf_check()
@@ -212,6 +250,30 @@ _is_pot_tmp_dir()
 	if [ ! -d "$_pot_tmp" ]; then
 		return 1 # false
 	fi
+}
+
+# set status of pot, locks properly
+# $1 pot name
+# $2 status to set
+# $3 interfaces for pot (epaira)
+_set_pot_status()
+{
+	local _pname _status _interfaces _verbose _param
+	_pname=$1
+	_status=$2
+	_interfaces=$3
+	_param=$(_save_params "-p" "$_pname" "-s" "$_status")
+	if [ -n "$_interfaces" ]; then
+		_param="$_param"$(_save_params "-i" "$_interfaces")
+	fi
+	if [ "$_POT_VERBOSITY" -gt 1 ]; then
+		_verbose=$(printf -- "-%$(( _POT_VERBOSITY - 1 ))s" |\
+		  tr " " "v")
+		_param="$_param"$(_save_params "$_verbose")
+	fi
+	eval "set -- $_param"
+	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}"\
+	  set-status "$@"
 }
 
 # check if the dataset is a dataset name
@@ -499,6 +561,18 @@ _get_conf_var()
 	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
 	_var="$2"
 	_value="$( grep "^$_var=" "$_cdir/pot.conf" | tr -d ' \t"' | cut -f2 -d'=' )"
+	echo "$_value"
+}
+
+# $1 pot name
+# $2 var name
+_get_conf_var_string()
+{
+	local _pname _cdir _var _value
+	_pname="$1"
+	_cdir="${POT_FS_ROOT}/jails/$_pname/conf"
+	_var="$2"
+	_value="$( grep "^$_var=" "$_cdir/pot.conf" | cut -f2 -d'=' )"
 	echo "$_value"
 }
 
@@ -968,6 +1042,44 @@ _create_pot_mountpoint()
 }
 
 # $1 pot name
+_is_fscomp_old()
+{
+	local _pname _fsconf _mnt_p _stripped_mnt_p
+	_pname="$1"
+	_fsconf="${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
+	while read -r line; do
+		_mnt_p=$( echo "$line" | awk '{print $2}' )
+		_stripped_mnt_p="${_mnt_p##"${POT_FS_ROOT}/jails/$_pname/m"}"
+		if [ "$_stripped_mnt_p" != "$_mnt_p" ]; then
+			return 0 # true
+		fi
+	done < "$_fsconf"
+	return 1 # false
+}
+
+# $1 pot name
+_update_fscomp()
+{
+	local _pname _fsconf _mnt_p _stripped_mnt_p _dset _opt _tmpfile
+	_pname="$1"
+	if _is_fscomp_old "$_pname" ; then
+		_fsconf="${POT_FS_ROOT}/jails/$_pname/conf/fscomp.conf"
+		_tmpfile=$(mktemp "${POT_TMP:-/tmp}/fscomp.conf.${_pname}${POT_MKTEMP_SUFFIX}")
+		while read -r line; do
+			_dset=$( echo "$line" | awk '{print $1}' )
+			_mnt_p=$( echo "$line" | awk '{print $2}' )
+			_opt=$( echo "$line" | awk '{print $3}' )
+			_stripped_mnt_p="${_mnt_p##"${POT_FS_ROOT}/jails/$_pname/m"}"
+			if [ -z "$_stripped_mnt_p" ]; then
+				_stripped_mnt_p="/"
+			fi
+			${ECHO} "$_dset $_stripped_mnt_p $_opt" >> "$_tmpfile"
+		done < "$_fsconf"
+		mv "$_tmpfile" "$_fsconf"
+	fi
+}
+
+# $1 pot name
 _pot_mount()
 {
 	local _pname _dset _mnt_p _opt _node
@@ -975,6 +1087,7 @@ _pot_mount()
 	if ! _is_pot "$_pname" ; then
 		return 1 # false
 	fi
+	_update_fscomp "$_pname"
 	while read -r line ; do
 		if [ -z "$line" ]; then
 			_debug "Empty line found. Skipping."
@@ -982,6 +1095,8 @@ _pot_mount()
 		fi
 		_dset=$( echo "$line" | awk '{print $1}' )
 		_mnt_p=$( echo "$line" | awk '{print $2}' )
+		_mnt_p="${POT_FS_ROOT}/jails/$_pname/m$_mnt_p"
+		_mnt_p="${_mnt_p%/}"
 		_opt=$( echo "$line" | awk '{print $3}' )
 		if [ "$_opt" = "zfs-remount" ]; then
 			# if the mountpoint doesn't exist, zfs will create it
@@ -1058,10 +1173,13 @@ _pot_umount()
 		_umount "$_jdir/m/proc"
 	fi
 	if [ -e "$_jdir/conf/fscomp.conf" ]; then
+		_update_fscomp "$_pname"
 		tail -r "$_jdir/conf/fscomp.conf" > "$_tmpfile"
 		while read -r line ; do
 			_dset=$( echo "$line" | awk '{print $1}' )
 			_mnt_p=$( echo "$line" | awk '{print $2}' )
+			_mnt_p="${POT_FS_ROOT}/jails/$_pname/m$_mnt_p"
+			_mnt_p=${_mnt_p%/}
 			_opt=$( echo "$line" | awk '{print $3}' )
 			if [ "$_opt" = "zfs-remount" ]; then
 				_node=${POT_FS_ROOT}/jails/$_pname/$(basename "$_dset")

@@ -220,6 +220,8 @@ pot-stop()
 	fi
 	_js_rm_resolv "$_pname"
 	_pot_umount "$_pname"
+	. "${_POT_INCLUDE}/start.sh"
+	_update_dynamic_hosts
 	lockf "${POT_TMP:-/tmp}/pot-lock-$_pname" "${_POT_PATHNAME}" set-status -p "$_pname" -s stopped
 	rc=$?
 	if [ $rc -eq 2 ]; then

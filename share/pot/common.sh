@@ -5,14 +5,14 @@
 : "${ECHO:=echo}"
 : "${SED:=sed}"
 
-_POT_RW_ATTRIBUTES="start-at-boot early-start-at-boot persistent no-rc-script prunable localhost-tunnel no-tmpfs no-etc-hosts"
+_POT_RW_ATTRIBUTES="start-at-boot early-start-at-boot persistent no-rc-script prunable localhost-tunnel no-tmpfs no-etc-hosts dynamic-etc-hosts"
 _POT_RO_ATTRIBUTES="to-be-pruned"
 _POT_NETWORK_TYPES="inherit alias public-bridge private-bridge"
 
 # not devfs handles separately
 _POT_JAIL_RW_ATTRIBUTES='enforce_statfs mount fdescfs linprocfs nullfs procfs tmpfs zfs raw_sockets sysvipc children devfs_ruleset'
 
-# N: arg name jail command, T: type of data, D: deafult value
+# N: arg name jail command, T: type of data, D: default value
 # devfs is always mounted
 _POT_DEFAULT_mount_N='allow.mount'
 _POT_DEFAULT_mount_T='bool'

@@ -133,8 +133,17 @@ _js_etc_hosts()
 			;;
 		esac
 	fi
-	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-	grep '^pot.hosts=' "$_cfile" | sed 's/^pot.hosts=//g' >> "$_phosts"
+}
+
+_update_dynamic_hosts() {
+  local _pots _pot _dynamic
+  _pots=$( _get_pot_list )
+  for _pot in $_pots ; do
+    _dynamic="$( _get_conf_var "$_pot" pot.attr.dynamic-etc-hosts)"
+    if [ "$_dynamic" = "YES" ]; then
+      _js_etc_hosts $_pot
+    fi
+  done
 }
 
 # returns interface names of epaira and epairb
@@ -824,5 +833,6 @@ pot-start()
 		_error "$_pname failed to start"
 		return 1
 	fi
+	_update_dynamic_hosts
 	return 0
 }

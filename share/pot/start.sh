@@ -113,12 +113,12 @@ _js_resolv()
 # $1 pot name
 _js_etc_hosts()
 {
-	local _pname _phosts _hostname _bridge_name _cfile _aliases
+	local _pname _phosts _hostname _bridge_name _cfile _dynamics
 	_pname="$1"
 	_phosts="${POT_FS_ROOT}/jails/$_pname/m/etc/hosts"
 	_hostname="$( _get_conf_var "$_pname" host.hostname )"
-	_aliases="$( _get_conf_var "$_pname" pot.aliases )"
-	[ -n "$_aliases" ] && aopt="--aliases-included" || aopt=""
+	_dynamics="$( _get_conf_var "$_pname" pot.attr.dynamic-etc-hosts )"
+	[ "$_dynamics" = "YES" ] && aopt="--aliases-included" || aopt=""
 	printf "::1 localhost %s\n" "$_hostname" > "$_phosts"
 	printf "127.0.0.1 localhost %s\n" "$_hostname" >> "$_phosts"
 	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"

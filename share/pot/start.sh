@@ -144,6 +144,7 @@ _update_dynamic_hosts() {
   for _pot in $_pots ; do
     _dynamic="$( _get_conf_var "$_pot" pot.attr.dynamic-etc-hosts)"
     if [ "$_dynamic" = "YES" ]; then
+		  _debug "updating etc-hosts for ${_pot}"
       _js_etc_hosts $_pot
     fi
   done

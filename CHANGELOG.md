@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unrelease
+### Added
+- import/prepare: Support setting a default signature public key to verify pot signature (#296)
+
 ## [0.16.0] 2023-12-30
 ### Added
 - tinirc: Write tinirc's pid to /tmp/tinirc.pid (#277)

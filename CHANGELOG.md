@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unrelease
+## Unreleased
 ### Added
 - import/prepare: Support setting a default signature public key to verify pot signature (#296)
+
+### Fixed
+- prune: Only attempt to stop pot if it is running (#295)
 
 ## [0.16.0] 2023-12-30
 ### Added

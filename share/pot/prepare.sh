@@ -48,7 +48,7 @@ pot-prepare()
 	_bridge_name=
 	_cmd=
 	_dns=
-	_sign_pubkey=
+	_sign_pubkey="$POT_DEFAULT_SIGNATURE_PUBKEY"
 	OPTIND=1
 	while getopts "hvp:U:t:c:e:a:n:sN:i:B:S:d:C:" _o ; do
 		case "$_o" in

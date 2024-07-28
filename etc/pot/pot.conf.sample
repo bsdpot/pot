@@ -54,6 +54,10 @@
 # IP of the DNS
 # POT_DNS_IP=10.192.0.2
 
+# Path to default public key to verify pot signatures using signify(1)
+# on import/prepare - can be overridden using `-C pubkey`.
+# POT_DEFAULT_SIGNATURE_PUBKEY=/usr/local/etc/pot/sign_key.pub
+
 # VPN support
 
 # name of the tunnel network interface

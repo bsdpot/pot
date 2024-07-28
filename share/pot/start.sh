@@ -699,8 +699,9 @@ _js_start()
 
 	wait "$_wait_pid"
 	_exit_code=$?
+	_epoch=$(date +%s)
 
-	echo "{ \"ExitCode\": $_exit_code }" > "$_confdir/.last_run_stats"
+	echo "{ \"ExitCode\": $_exit_code, \"StartedAt\": $_epoch }" > "$_confdir/.last_run_stats"
 
 	if [ "$_persist" = "NO" ]; then
 		rm -f "${POT_TMP:-/tmp}/pot_main_pid_${_pname}"

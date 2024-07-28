@@ -161,7 +161,7 @@ pot-import()
 	_rpname=
 	_tag=
 	_URL=
-	_sign_pubkey=
+	_sign_pubkey="$POT_DEFAULT_SIGNATURE_PUBKEY"
 	local _meta _dep_pname_tag _dep_snap _dep_pname _dep_tag _dep_origin
 	local _filename
 

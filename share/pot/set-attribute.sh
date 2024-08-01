@@ -165,6 +165,7 @@ pot-set-attribute()
 		"persistent"|\
 		"no-rc-script"|\
 		"no-etc-hosts"|\
+		"dynamic-etc-hosts"|\
 		"prunable"|\
 		"localhost-tunnel")
 			_cmd=_set_boolean_attribute

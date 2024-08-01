@@ -83,9 +83,17 @@ _update_one_pot()
 		_debug "pot.attr.no-tmpfs=NO"
 		echo "pot.attr.no-tmpfs=NO" >> "$_conf"
 	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.aliases")" ]; then
+		_debug "updating extra hosts in $_pname"
+		echo "pot.attr.aliases=NO" >> "$_conf"
+	fi
 	if [ -z "$(_get_conf_var "$_pname" "pot.attr.no-etc-hosts")" ]; then
 		_debug "pot.attr.no-etc-hosts=NO"
 		echo "pot.attr.no-etc-hosts=NO" >> "$_conf"
+	fi
+	if [ -z "$(_get_conf_var "$_pname" "pot.attr.dynamic-etc-hosts")" ]; then
+		_debug "pot.attr.dynamic-etc-hosts=NO"
+		echo "pot.attr.dynamic-etc-hosts=NO" >> "$_conf"
 	fi
 
 	# convert pot.export.static.ports=80 to the new format pot.export.ports=80:80

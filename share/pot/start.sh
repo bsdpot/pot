@@ -113,27 +113,41 @@ _js_resolv()
 # $1 pot name
 _js_etc_hosts()
 {
-	local _pname _phosts _hostname _bridge_name _cfile
+	local _pname _phosts _hostname _bridge_name _cfile _dynamics
 	_pname="$1"
 	_phosts="${POT_FS_ROOT}/jails/$_pname/m/etc/hosts"
 	_hostname="$( _get_conf_var "$_pname" host.hostname )"
+	_dynamics="$( _get_conf_var "$_pname" pot.attr.dynamic-etc-hosts )"
+	[ "$_dynamics" = "YES" ] && aopt="--aliases-included" || aopt=""
 	printf "::1 localhost %s\n" "$_hostname" > "$_phosts"
 	printf "127.0.0.1 localhost %s\n" "$_hostname" >> "$_phosts"
+	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
+	grep '^pot.hosts=' "$_cfile" | sed 's/^pot.hosts=//g' >> "$_phosts"
 	if [ "$(_get_conf_var "$_pname" "pot.attr.no-etc-hosts")" = "YES" ]; then
 		_debug "Attribute no-etchosts: no additional /etc/hosts entries injected"
 	else
 		case "$( _get_conf_var "$_pname" network_type )" in
 		"public-bridge")
-			potnet etc-hosts >> "$_phosts"
+			potnet etc-hosts $aopt >> "$_phosts"
 			;;
 		"private-bridge")
 			_bridge_name="$( _get_conf_var "$_pname" bridge )"
-			potnet etc-hosts -b "$_bridge_name" >> "$_phosts"
+			potnet etc-hosts -b "$_bridge_name" $aopt >> "$_phosts"
 			;;
 		esac
 	fi
-	_cfile="${POT_FS_ROOT}/jails/$_pname/conf/pot.conf"
-	grep '^pot.hosts=' "$_cfile" | sed 's/^pot.hosts=//g' >> "$_phosts"
+}
+
+_update_dynamic_hosts() {
+  local _pots _pot _dynamic
+  _pots=$( _get_pot_list )
+  for _pot in $_pots ; do
+    _dynamic="$( _get_conf_var "$_pot" pot.attr.dynamic-etc-hosts)"
+    if [ "$_dynamic" = "YES" ]; then
+		  _debug "updating etc-hosts for ${_pot}"
+      _js_etc_hosts $_pot
+    fi
+  done
 }
 
 # returns interface names of epaira and epairb
@@ -864,5 +878,6 @@ pot-start()
 		_error "$_pname failed to start"
 		return 1
 	fi
+	_update_dynamic_hosts
 	return 0
 }

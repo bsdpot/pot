@@ -234,6 +234,9 @@ pot-prepare()
 	if ! pot-cmd set-attribute -A no-etc-hosts -V YES -p "$_new_pname" ; then
 		_error "Couldn't disable the enrichment of /etc/hosts - ignoring"
 	fi
+	if ! pot-cmd set-attribute -A dynamic-etc-hosts -V NO -p "$_new_pname" ; then
+		_error "Couldn't disable the enrichment of dynamic /etc/hosts - ignoring"
+	fi
 	if ! pot-cmd set-attribute -A no-tmpfs -V YES -p "$_new_pname" ; then
 		_error "Couldn't disable tmpfs for /tmp - ignoring"
 	fi

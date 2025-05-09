@@ -1,3 +1,4 @@
+# THIS REPOSITORY IS NO LONGER ACTIVELY MAINTAINED, IT HAS MOVED TO https://codeberg.org/bsdpot/pot
 # pot
 
 [![build-badge](https://github.com/pizzamig/pot/workflows/unit-test/badge.svg)](https://github.com/pizzamig/pot/actions) [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
